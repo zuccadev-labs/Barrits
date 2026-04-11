@@ -28,10 +28,10 @@ El flujo operativo del repositorio queda definido asi:
 
 | Evento | Pipeline | Jobs que se ejecutan |
 | --- | --- | --- |
-| Push a `dev` | CI de integracion | `typecheck -> build -> test -> examples -> jsr-dry-run` |
-| Push a `main` | CI estable | `typecheck -> build -> test -> examples -> jsr-dry-run` |
-| PR hacia `dev` | CI de integracion | `typecheck -> build -> test -> examples -> jsr-dry-run` |
-| PR hacia `main` | CI estable | `typecheck -> build -> test -> examples -> jsr-dry-run` |
+| Push a `dev` | CI de integracion + seguridad | `typecheck -> build -> test -> examples -> jsr-dry-run` y `dependency-review or audit` |
+| Push a `main` | CI estable + seguridad | `typecheck -> build -> test -> examples -> jsr-dry-run` y `dependency-review or audit` |
+| PR hacia `dev` | CI de integracion + seguridad | `typecheck -> build -> test -> examples -> jsr-dry-run` y `dependency-review + audit` |
+| PR hacia `main` | CI estable + seguridad | `typecheck -> build -> test -> examples -> jsr-dry-run` y `dependency-review + audit` |
 | Push tag `pre-v*` | Prerelease | `validate-tag -> publish npm:next -> publish jsr -> GitHub prerelease` |
 | Push tag `v*` | Release | `validate-tag -> publish npm:latest -> publish jsr -> GitHub release` |
 
