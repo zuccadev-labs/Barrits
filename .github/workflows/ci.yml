@@ -33,6 +33,9 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Setup npm
+        run: npm install --global npm@11.6.2
+
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
