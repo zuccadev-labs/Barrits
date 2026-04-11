@@ -6,19 +6,19 @@ El formato sigue la idea de Keep a Changelog y el versionado esperado del SDK ac
 
 ## [0.1.0-rc.1] - 2026-04-11
 
-### Added
+### Added in 0.1.0-rc.1
 
 - flujo formal de ramas `feature/* -> dev -> main` con proteccion y PR obligatorios para promociones
 - soporte de prereleases mediante tags `pre-vX.Y.Z-rc.N` con publicacion diferenciada para npm y JSR
 - GitHub Release automatica para prereleases y releases estables
 
-### Changed
+### Changed in 0.1.0-rc.1
 
 - CI y Security ahora validan `dev` y `main` tanto en push como en pull request
 - release workflow valida la rama objetivo del tag y el versionado sincronizado entre npm y JSR
 - actualizacion del toolchain y de las dependencias directas del monorepo a las ultimas versiones compatibles verificadas
 
-### Fixed
+### Fixed in 0.1.0-rc.1
 
 - fallback limpio para `dependency-review` cuando GitHub no tiene dependency graph habilitado en el repositorio
 - sincronizacion del pipeline de publicacion con `npm 11.6.2`, version validada para este grafo de dependencias
