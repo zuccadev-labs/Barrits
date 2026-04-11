@@ -33,7 +33,7 @@ En `jsr.io` yo hago esto:
 
 1. entro con la cuenta que sera duena del scope `@barrits`
 2. creo el scope si todavia no existe
-3. creo o reviso el paquete `@barrits/barrits`
+3. creo o reviso el paquete `@zuccadev-labs/barrits`
 4. confirmo que el nombre coincide con [packages/sdk/ts_js/jsr.json](../../../packages/sdk/ts_js/jsr.json)
 
 ## Paso 3: vincular el repositorio en JSR
