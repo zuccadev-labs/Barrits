@@ -1,6 +1,6 @@
 {
   "name": "@barrits/barrits",
-  "version": "0.1.0",
+  "version": "0.1.0-rc.1",
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
