@@ -17,7 +17,27 @@ permissions:
   contents: read
 
 jobs:
+  dependency-review-support:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    outputs:
+      supported: ${{ steps.probe.outputs.supported }}
+
+    steps:
+      - name: Probe dependency graph support
+        id: probe
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api repos/${{ github.repository }}/dependency-graph/sbom *> $null; then
+            "supported=true" >> $env:GITHUB_OUTPUT
+          else
+            "supported=false" >> $env:GITHUB_OUTPUT
+          fi
+
   dependency-review:
+    needs: dependency-review-support
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
@@ -28,7 +48,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Dependency graph unavailable
+        if: needs.dependency-review-support.outputs.supported != 'true'
+        run: |
+          Write-Host "Dependency graph is not enabled for this repository."
+          Write-Host "Skipping dependency-review until GitHub support is available in repo settings."
+
       - name: Dependency review
+        if: needs.dependency-review-support.outputs.supported == 'true'
         uses: actions/dependency-review-action@v4
 
   npm-audit:
