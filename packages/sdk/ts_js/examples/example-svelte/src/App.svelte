@@ -1,7 +1,7 @@
 <script lang="ts">
   import manifest from "virtual:barrits/manifest";
 
-  import { createBuildManifestSummary, movingAverageSeries, sumar } from "barrits";
+  import { createBuildManifestSummary, movingAverageSeries, sumar } from "@zuccadev-labs/barrits";
 
   const manifestSummary = createBuildManifestSummary(manifest);
   const movingAverage = movingAverageSeries([

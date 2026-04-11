@@ -153,11 +153,11 @@ export const createImportBlock = (
       return `${AUTO_IMPORTS_START}\n${AUTO_IMPORTS_END}`;
     }
 
-    return [AUTO_IMPORTS_START, `import { ${names.join(", ")} } from "barrits";`, AUTO_IMPORTS_END].join("\n");
+    return [AUTO_IMPORTS_START, `import { ${names.join(", ")} } from "@zuccadev-labs/barrits";`, AUTO_IMPORTS_END].join("\n");
   }
 
   const binding = mode === "namespace-access" ? "barrits" : "brt";
-  return [AUTO_IMPORTS_START, `import { ${binding} } from "barrits";`, AUTO_IMPORTS_END].join("\n");
+  return [AUTO_IMPORTS_START, `import { ${binding} } from "@zuccadev-labs/barrits";`, AUTO_IMPORTS_END].join("\n");
 };
 
 export const applyManagedImports = (

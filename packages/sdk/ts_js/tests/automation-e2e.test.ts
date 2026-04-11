@@ -48,14 +48,14 @@ test("imports and automation flow stays consistent for named and namespace modes
 
   assert.deepEqual(summary.domains, ["logic"]);
   assert.ok(summary.importStatements.some((statement) => statement.includes("duplicar")));
-  assert.ok(summary.importStatements.some((statement) => statement === 'import { duplicar } from "barrits";'));
+  assert.ok(summary.importStatements.some((statement) => statement === 'import { duplicar } from "@zuccadev-labs/barrits";'));
   assert.ok(summary.importStatements.some((statement) => statement === "barrits.logic.duplicar"));
   assert.ok(summary.importStatements.some((statement) => statement === "brt.logic.duplicar"));
   assert.match(importsModuleSource, /export const importMap = \{/);
   assert.match(importsModuleSource, /"duplicar"/);
-  assert.match(namedImportSource, /import \{ duplicar \} from "barrits";/);
-  assert.match(namespaceImportSource, /import \{ barrits \} from "barrits";/);
-  assert.match(aliasImportSource, /import \{ brt \} from "barrits";/);
+  assert.match(namedImportSource, /import \{ duplicar \} from "@zuccadev-labs\/barrits";/);
+  assert.match(namespaceImportSource, /import \{ barrits \} from "@zuccadev-labs\/barrits";/);
+  assert.match(aliasImportSource, /import \{ brt \} from "@zuccadev-labs\/barrits";/);
   assert.equal(updatedAgainSource, aliasImportSource);
   assert.deepEqual(summary.traitDiagnostics, []);
 });
@@ -100,7 +100,7 @@ test("discovery and automation also work when barrits lives inside src", async (
   const summary = createBuildManifestSummary(manifest);
 
   assert.deepEqual(summary.domains, ["logic"]);
-  assert.ok(summary.importStatements.includes('import { duplicar } from "barrits";'));
+  assert.ok(summary.importStatements.includes('import { duplicar } from "@zuccadev-labs/barrits";'));
 });
 
 test("automation infers nested namespace paths from the file tree and accepts JSDoc overrides", async () => {

@@ -2,8 +2,8 @@ import { fileURLToPath } from "node:url";
 
 import { build } from "esbuild";
 
-import { defineBarritsPackage, toBarritsAutomationOptions } from "barrits";
-import { barritsEsbuildPlugin } from "barrits/esbuild";
+import { defineBarritsPackage, toBarritsAutomationOptions } from "@zuccadev-labs/barrits";
+import { barritsEsbuildPlugin } from "@zuccadev-labs/barrits/esbuild";
 
 const barritsPackage = defineBarritsPackage({
   runtime: "other",

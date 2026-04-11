@@ -1,4 +1,4 @@
-import { binarySearch, findSortedRange, linearSearch, lowerBound, upperBound } from "barrits";
+import { binarySearch, findSortedRange, linearSearch, lowerBound, upperBound } from "@zuccadev-labs/barrits";
 
 import { incidents, packageWeights } from "../data/operational-data.mjs";
 

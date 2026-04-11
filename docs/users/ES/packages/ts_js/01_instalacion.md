@@ -7,7 +7,7 @@ Yo instalo `barrits` como paquete normal de JavaScript o TypeScript. Mi recomend
 Si yo estoy en npm, instalo asi:
 
 ```bash
-npm install barrits
+npm install @zuccadev-labs/barrits
 ```
 
 Si yo trabajo dentro de este monorepo, el paquete real vive en `packages/sdk/ts_js` y los ejemplos ya lo consumen por workspace local.
@@ -16,9 +16,9 @@ Si yo trabajo dentro de este monorepo, el paquete real vive en `packages/sdk/ts_
 
 Cuando yo instalo el paquete, recibo:
 
-- la superficie principal `barrits`
+- la superficie principal `@zuccadev-labs/barrits`
 - subpaths para Node, Deno y plugins de bundler
-- helpers de consumo en `barrits/consume`
+- helpers de consumo en `@zuccadev-labs/barrits/consume`
 - una CLI util como fallback operativo
 
 ## Cuando yo tambien necesito Deno

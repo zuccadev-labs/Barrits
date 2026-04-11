@@ -19,13 +19,13 @@
     "packages/sdk/*/examples/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace barrits",
-    "test": "npm run test --workspace barrits",
-    "typecheck": "npm run typecheck --workspace barrits",
-    "benchmark:algorithms": "npm run benchmark:algorithms --workspace barrits",
-    "publish:jsr:dry-run": "npm run publish:jsr:dry-run --workspace barrits",
-    "barrits:dev": "npm run barrits:dev --workspace barrits",
-    "barrits:build": "npm run barrits:build --workspace barrits"
+    "build": "npm run build --workspace @zuccadev-labs/barrits",
+    "test": "npm run test --workspace @zuccadev-labs/barrits",
+    "typecheck": "npm run typecheck --workspace @zuccadev-labs/barrits",
+    "benchmark:algorithms": "npm run benchmark:algorithms --workspace @zuccadev-labs/barrits",
+    "publish:jsr:dry-run": "npm run publish:jsr:dry-run --workspace @zuccadev-labs/barrits",
+    "barrits:dev": "npm run barrits:dev --workspace @zuccadev-labs/barrits",
+    "barrits:build": "npm run barrits:build --workspace @zuccadev-labs/barrits"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.0.0",

@@ -6,7 +6,7 @@ Mapa actual:
 
 - `example-nodejs/`: showcase operativo, scripts locales y consumo del paquete desde Node.js.
 - `example-deno/`: consumo desde Deno con tareas `deno task` y adapter Deno.
-- `example-react/`: frontend Vite + React usando `barrits/vite`.
+- `example-react/`: frontend Vite + React usando `@zuccadev-labs/barrits/vite`.
 - `example-vue/`: frontend Vite + Vue usando el mismo contrato package-first.
 - `example-solid/`: frontend Vite + Solid con discovery sobre `src/barrits/`.
 - `example-svelte/`: frontend Vite + Svelte con el mismo patron visible.

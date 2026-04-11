@@ -18,7 +18,7 @@ const child = spawn(
     process.execPath,
     "-e",
     [
-      'import { readNodeBuildManifestSummary } from "barrits/node";',
+      'import { readNodeBuildManifestSummary } from "@zuccadev-labs/barrits/node";',
       'const manifestPath = process.env.BARRITS_BUILD_MANIFEST;',
       'if (!manifestPath) throw new Error("missing build manifest");',
       'const summary = await readNodeBuildManifestSummary(manifestPath);',

@@ -6,7 +6,7 @@ Objetivo del ejemplo:
 
 - mantener la lectura de artifacts fuera del renderer
 - validar rutas desde el backend Tauri
-- reutilizar `barrits/consume` para resumir manifests y snapshots
+- reutilizar `@zuccadev-labs/barrits/consume` para resumir manifests y snapshots
 - entregar al frontend solo payloads aptos para UI
 
 Comandos disponibles:

@@ -1,4 +1,4 @@
-import { chunk, groupBy, indexBy, uniqueBy } from "barrits";
+import { chunk, groupBy, indexBy, uniqueBy } from "@zuccadev-labs/barrits";
 
 import { customers, inventoryMovements } from "../data/operational-data.mjs";
 

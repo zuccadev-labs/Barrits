@@ -8,7 +8,7 @@ Yo uso este `README` como entrada rapida del ejemplo. La documentacion oficial d
 Resumen local:
 
 - este ejemplo separa renderer y backend para leer artifacts de forma segura
-- reutiliza `barrits/consume` para resumir manifests y snapshots
+- reutiliza `@zuccadev-labs/barrits/consume` para resumir manifests y snapshots
 - entrega al frontend solo datos controlados
 
 Comandos rapidos:

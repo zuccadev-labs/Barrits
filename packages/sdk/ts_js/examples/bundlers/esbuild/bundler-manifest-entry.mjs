@@ -1,6 +1,6 @@
 import manifest from "barrits:manifest";
 
-import { createBuildManifestSummary } from "barrits/consume";
+import { createBuildManifestSummary } from "@zuccadev-labs/barrits/consume";
 
 export const bundlerSummary = createBuildManifestSummary(manifest);
 

@@ -7,7 +7,7 @@
     "build": "node ../../../../../node_modules/vite/bin/vite.js build"
   },
   "dependencies": {
-    "barrits": "file:../..",
+    "@zuccadev-labs/barrits": "file:../..",
     "svelte": "^5.55.3"
   },
   "devDependencies": {
