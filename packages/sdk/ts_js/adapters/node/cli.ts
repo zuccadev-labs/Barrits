@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { watch } from "node:fs";
 import { dirname, resolve } from "node:path";

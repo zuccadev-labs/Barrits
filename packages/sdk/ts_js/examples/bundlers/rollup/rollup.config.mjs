@@ -1,7 +1,7 @@
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 
-import { defineBarritsPackage, toBarritsAutomationOptions } from "barrits";
-import { barritsRollupPlugin } from "barrits/rollup";
+import { defineBarritsPackage, toBarritsAutomationOptions } from "@zuccadev-labs/barrits";
+import { barritsRollupPlugin } from "@zuccadev-labs/barrits/rollup";
 
 const barritsPackage = defineBarritsPackage({
   runtime: "other",

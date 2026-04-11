@@ -1,5 +1,5 @@
 {
-  "name": "barrits",
+  "name": "@zuccadev-labs/barrits",
   "version": "0.1.0",
   "description": "Package-first functional automation for barrits/ domains, manifests and live watch flows.",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zuccadev-labs/Barrits.git",
+    "url": "git+https://github.com/zuccadev-labs/Barrits.git",
     "directory": "packages/sdk/ts_js"
   },
   "keywords": [

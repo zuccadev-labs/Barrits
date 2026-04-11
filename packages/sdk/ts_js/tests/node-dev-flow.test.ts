@@ -80,7 +80,7 @@ test("node dev flow runs a child consumer with manifest and snapshot outputs", a
   assert.deepEqual(payload.buildDomains, ["logic"]);
   assert.equal(payload.snapshotMode, "dev");
   assert.deepEqual(payload.snapshotDomains, ["logic"]);
-  assert.ok(payload.importStatements.includes('import { duplicar } from "barrits";'));
+  assert.ok(payload.importStatements.includes('import { duplicar } from "@zuccadev-labs/barrits";'));
 
   const buildManifestPath = join(projectRoot, ".cache", "barrits", "build-manifest.json");
   const snapshotPath = join(projectRoot, ".cache", "barrits", "watch-snapshot.json");
