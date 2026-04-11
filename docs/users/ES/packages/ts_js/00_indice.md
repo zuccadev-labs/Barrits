@@ -12,7 +12,14 @@ Orden de lectura:
 6. `06_comandos-y-runtimes.md`: yo documento como uso la CLI en Node y Deno cuando necesito fallback operativo.
 7. `07_manifests-bundlers-y-consumo.md`: yo explico `@zuccadev-labs/barrits/consume`, manifests, snapshots y plugins de bundlers.
 8. `08_traits-y-composicion.md`: yo documento la superficie declarativa de traits y cuando me conviene usarla.
+9. `09_referencia-de-api.md`: yo concentro la referencia de metodos publicos, subpaths y usos reales para no duplicar esa explicacion en cada README.
 
 Documentacion complementaria:
 
 - `examples/00_indice.md`: yo concentro aqui la cobertura oficial de la carpeta `packages/sdk/ts_js/examples/`.
+
+Regla editorial:
+
+- el `README.md` del paquete es la portada publica que se ve en npm y JSR
+- esta carpeta expande el uso real en espanol
+- los README de ejemplos aterrizan cada demo y enlazan aqui en vez de repetir la referencia completa de API

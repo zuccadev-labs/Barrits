@@ -6,6 +6,7 @@ Mapa actual:
 
 - `example-nodejs/`: showcase operativo, scripts locales y consumo del paquete desde Node.js.
 - `example-deno/`: consumo desde Deno con tareas `deno task` y adapter Deno.
+- `example-bun/`: consumo desde Bun con scripts `bun run` y contrato package-first.
 - `example-react/`: frontend Vite + React usando `@zuccadev-labs/barrits/vite`.
 - `example-vue/`: frontend Vite + Vue usando el mismo contrato package-first.
 - `example-solid/`: frontend Vite + Solid con discovery sobre `src/barrits/`.
@@ -15,7 +16,7 @@ Mapa actual:
 
 Lo que yo valido con esta malla:
 
-- runtimes puros de Node.js y Deno
+- runtimes puros de Node.js, Deno y Bun
 - frontend package-first con plugin Vite
 - consumo visible desde `barrits/` o `src/barrits/`
 - lectura segura de manifests y snapshots desde backend controlado

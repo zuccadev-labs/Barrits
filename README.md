@@ -116,7 +116,7 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-  R[barr&tis monorepo] --> S[packages/sdk/ts_js]
+  R[barrits monorepo] --> S[packages/sdk/ts_js]
   S --> C1[src]
   S --> C2[adapters]
   S --> C3[tests]
@@ -147,7 +147,7 @@ El alcance real hoy es este:
 - adapters para Node.js y Deno
 - plugins para Vite, esbuild, Rollup y Webpack
 - helpers de consumo para leer manifests y snapshots sin arrastrar tooling innecesario
-- ejemplos ejecutables para Node.js, Deno, React, Vue, Solid, Svelte, bundlers y Tauri
+- ejemplos ejecutables para Node.js, Deno, Bun, React, Vue, Solid, Svelte, bundlers y Tauri
 - pipeline de validacion con build, tests, ejemplos representativos y dry-run de JSR
 
 No presento este repositorio como plataforma multi-SDK completa hoy. Lo presento como un monorepo preparado para crecer con ese estandar sin rehacer la raiz cada vez que se incorpore otro lenguaje.
@@ -195,7 +195,6 @@ Hoy no necesito otro registro publico para cubrir los recorridos actuales. Si la
 - cada SDK vive en `packages/sdk/<lenguaje>/`
 - los ejemplos visibles viven dentro del SDK correspondiente
 - la documentacion principal en espanol sigue el patron `docs/<area>/ES/packages/<sdk>/`
-- la cobertura inicial en ingles para uso y ejemplos vive en `docs/users/EN/packages/ts_js/`
 
 ## Punto de entrada recomendado
 
@@ -209,8 +208,7 @@ Si yo quiero entender el producto y entrar por la capa correcta, leo esto primer
 - [packages/sdk/ts_js/README.md](packages/sdk/ts_js/README.md)
 - [docs/users/ES/packages/ts_js/00_indice.md](docs/users/ES/packages/ts_js/00_indice.md)
 - [docs/users/ES/packages/ts_js/examples/00_indice.md](docs/users/ES/packages/ts_js/examples/00_indice.md)
-- [docs/users/EN/packages/ts_js/00_index.md](docs/users/EN/packages/ts_js/00_index.md)
-- [docs/users/EN/packages/ts_js/examples/00_index.md](docs/users/EN/packages/ts_js/examples/00_index.md)
+- [docs/users/ES/packages/ts_js/09_referencia-de-api.md](docs/users/ES/packages/ts_js/09_referencia-de-api.md)
 - [docs/development/ES/packages/ts_js/00_indice.md](docs/development/ES/packages/ts_js/00_indice.md)
 - [docs/investigations/ES/packages/ts_js/00_indice.md](docs/investigations/ES/packages/ts_js/00_indice.md)
 

@@ -1,6 +1,6 @@
-# 02 Node.js y Deno
+# 02 Node.js, Deno y Bun
 
-Yo separo estos dos ejemplos porque prueban runtimes reales sin depender de un frontend Vite.
+Yo separo estos tres ejemplos porque prueban runtimes reales sin depender de un frontend Vite.
 
 ## Node.js
 
@@ -28,8 +28,19 @@ Yo abro `packages/sdk/ts_js/examples/example-deno/` cuando quiero validar:
 
 Este ejemplo me confirma que el contrato package-first no depende de Node.js y que la superficie Deno-safe del paquete sigue siendo consumible desde el propio runtime.
 
-## Como elijo entre ambos
+## Bun
+
+Yo abro `packages/sdk/ts_js/examples/example-bun/` cuando quiero validar:
+
+- `bun run dev`: ejecucion directa de un consumidor Bun
+- `bun run build`: build con CLI del paquete y runtime Bun
+- `bun run inspect`: inspeccion del proyecto con el adapter Node ejecutado desde Bun
+
+Este ejemplo me confirma que `@zuccadev-labs/barrits` tambien es consumible desde Bun usando el mismo contrato package-first y las mismas utilidades funcionales.
+
+## Como elijo entre los tres
 
 - yo uso Node.js si quiero showcase operativo, scripts y benchmark
 - yo uso Deno si quiero validar CLI, inspeccion y build desde `deno task`
+- yo uso Bun si quiero validar scripts `bun run` con una integracion package-first minimalista
 - si necesito plugin de bundler, no entro aqui: voy directo a `bundlers/`
