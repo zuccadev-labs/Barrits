@@ -15,7 +15,7 @@ Yo uso este documento como checklist final antes de publicar la primera version.
 
 - environment `npm`
 - environment `jsr`
-- secret `NPM_TOKEN_PUBLICAR_NPM`
+- trusted publishing de npm apuntando a `zuccadev-labs/Barrits` con `release.yml`
 
 Condicion adicional para JSR:
 

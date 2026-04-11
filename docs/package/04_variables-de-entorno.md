@@ -4,7 +4,7 @@ En `.env` las agrupo por environment con comentarios para que el archivo siga si
 
 Mapa actual usado en este repo:
 
-- `NPM_TOKEN_PUBLICAR_NPM`: token real para `npm publish`
+- `NPM_TOKEN_PUBLICAR_NPM`: opcional y solo de compatibilidad temporal si no se usa trusted publishing en npm
 - `ENTORNO_PUBLICAR_NPM`: nombre del environment GitHub para npm
 - `ENTORNO_PUBLICAR_JSR`: nombre del environment GitHub para JSR
 - `RUTA_PAQUETE_PUBLICAR_NODE`: ruta del paquete npm dentro del monorepo
