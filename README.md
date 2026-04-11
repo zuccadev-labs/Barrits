@@ -90,7 +90,7 @@ En organizaciones grandes, el costo no suele estar solo en exportar funciones. E
 - el SDK genera artifacts operativos estables
 - los adapters consumen esos artifacts en vez de inventar otra capa de integracion
 
-## Valor para una gran corporacion
+## Valor
 
 - estandariza una superficie transversal para Node.js, Deno, Vite y bundlers sin fragmentar el producto por equipo o runtime
 - separa core portable, adapters y ejemplos reales para que la evolucion tecnica no rompa el contrato publico sin visibilidad
@@ -170,7 +170,7 @@ Lo que no afirmo desde este README:
 - no afirmo una auditoria externa de seguridad independiente cerrada
 - no afirmo que el SDK elimine la necesidad de controles de seguridad del producto consumidor
 
-La posicion correcta para una gran corporacion es esta: `barrits` reduce superficie de error operacional y centraliza contratos de automatizacion, pero debe integrarse dentro del marco de seguridad de la organizacion que lo adopta.
+La posicion correcta es esta: `barrits` reduce superficie de error operacional y centraliza contratos de automatizacion, pero debe integrarse dentro del marco de seguridad de la organizacion que lo adopta.
 
 Para la politica de disclosure y el marco de endurecimiento del repositorio, yo uso [SECURITY.md](SECURITY.md).
 
