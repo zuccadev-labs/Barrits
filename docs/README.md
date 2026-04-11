@@ -1,4 +1,4 @@
-# Documentacion de barr&tis
+# Documentacion de barrits
 
 Yo uso esta carpeta como landing documental superior del monorepo. Aqui separo la documentacion por area y por SDK para que no se mezcle uso, mantenimiento tecnico y contexto historico.
 
@@ -50,8 +50,7 @@ Si yo quiero usarlo:
 - [users/ES/packages/ts_js/00_indice.md](users/ES/packages/ts_js/00_indice.md)
 - [users/ES/packages/ts_js/03_ejemplos-y-recorridos.md](users/ES/packages/ts_js/03_ejemplos-y-recorridos.md)
 - [users/ES/packages/ts_js/examples/00_indice.md](users/ES/packages/ts_js/examples/00_indice.md)
-- [users/EN/packages/ts_js/00_index.md](users/EN/packages/ts_js/00_index.md)
-- [users/EN/packages/ts_js/examples/00_index.md](users/EN/packages/ts_js/examples/00_index.md)
+- [users/ES/packages/ts_js/09_referencia-de-api.md](users/ES/packages/ts_js/09_referencia-de-api.md)
 - [users/ES/packages/ts_js/05_automatizacion-y-configuracion.md](users/ES/packages/ts_js/05_automatizacion-y-configuracion.md)
 
 Si yo quiero mantenerlo o extenderlo:
