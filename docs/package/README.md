@@ -6,7 +6,7 @@ En esta area no documento el uso del SDK ni su arquitectura interna. Aqui concen
 
 Modelo vigente de publicacion:
 
-- `npm` publica con `NPM_TOKEN_PUBLICAR_NPM`
+- `npm` publica con trusted publishing y OIDC
 - `JSR` publica desde GitHub Actions con OIDC
 - no uso `JSR_TOKEN` en el flujo actual del repositorio
 

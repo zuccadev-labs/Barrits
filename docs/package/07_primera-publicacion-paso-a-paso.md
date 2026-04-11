@@ -8,7 +8,7 @@ Yo verifico estas condiciones:
 
 1. [docs/package/05_release-readiness.md](05_release-readiness.md) esta en verde
 2. el paquete JSR ya esta vinculado al repositorio en `jsr.io`
-3. GitHub tiene `NPM_TOKEN_PUBLICAR_NPM`
+3. npm tiene configurado trusted publishing para `zuccadev-labs/Barrits` con el workflow `release.yml`
 4. los environments `npm` y `jsr` existen
 5. las ramas `dev` y `main` estan protegidas y el merge ocurre por PR
 
