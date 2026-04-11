@@ -1,7 +1,7 @@
 import { fileURLToPath } from "node:url";
 
-import { defineBarritsPackage, toBarritsAutomationOptions } from "barrits";
-import { barritsWebpackPlugin } from "barrits/webpack";
+import { defineBarritsPackage, toBarritsAutomationOptions } from "@zuccadev-labs/barrits";
+import { barritsWebpackPlugin } from "@zuccadev-labs/barrits/webpack";
 
 const barritsPackage = defineBarritsPackage({
   runtime: "node",

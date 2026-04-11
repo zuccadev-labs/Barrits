@@ -1,4 +1,4 @@
-import { movingAverage, rollingSum, slidingWindow, windowDelta } from "barrits";
+import { movingAverage, rollingSum, slidingWindow, windowDelta } from "@zuccadev-labs/barrits";
 
 const throughputPerMinute = [120, 132, 140, 138, 155, 160, 172];
 

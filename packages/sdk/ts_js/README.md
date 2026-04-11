@@ -7,13 +7,13 @@ Mi enfoque recomendado es package-first: yo configuro el proyecto consumidor y d
 ## Instalacion
 
 ```bash
-npm install barrits
+npm install @zuccadev-labs/barrits
 ```
 
 ## Inicio rapido
 
 ```ts
-import { defineBarritsPackage } from "barrits";
+import { defineBarritsPackage } from "@zuccadev-labs/barrits";
 
 export const barritsPackage = defineBarritsPackage({
   runtime: "react",
@@ -24,7 +24,7 @@ export const barritsPackage = defineBarritsPackage({
 Si yo quiero defaults del proyecto, agrego `barrits.config.ts`:
 
 ```ts
-import { defineBarritsConfig } from "barrits";
+import { defineBarritsConfig } from "@zuccadev-labs/barrits";
 
 export default defineBarritsConfig({
   runtime: "react",
@@ -38,16 +38,16 @@ export default defineBarritsConfig({
 
 El paquete expone estas familias de entrada:
 
-- `barrits`
-- `barrits/node`
-- `barrits/deno`
-- `barrits/consume`
-- `barrits/vite`
-- `barrits/esbuild`
-- `barrits/rollup`
-- `barrits/webpack`
-- `barrits/node/cli`
-- `barrits/deno/cli`
+- `@zuccadev-labs/barrits`
+- `@zuccadev-labs/barrits/node`
+- `@zuccadev-labs/barrits/deno`
+- `@zuccadev-labs/barrits/consume`
+- `@zuccadev-labs/barrits/vite`
+- `@zuccadev-labs/barrits/esbuild`
+- `@zuccadev-labs/barrits/rollup`
+- `@zuccadev-labs/barrits/webpack`
+- `@zuccadev-labs/barrits/node/cli`
+- `@zuccadev-labs/barrits/deno/cli`
 
 ## Ejemplos reales
 

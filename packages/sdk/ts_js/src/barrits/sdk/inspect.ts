@@ -1213,7 +1213,7 @@ const planImportActions = (
         domain: "api",
         sourceFile: "api/flat.ts",
         kind: "named-import",
-        statement: `import { ${exportedMember.name} } from "barrits";`,
+        statement: `import { ${exportedMember.name} } from "@zuccadev-labs/barrits";`,
       });
     }
   }
@@ -1275,7 +1275,7 @@ const planImportActions = (
       domain: "root",
       sourceFile: "index.ts",
       kind: "named-import",
-      statement: `import { ${exportedMember.name} } from "barrits";`,
+      statement: `import { ${exportedMember.name} } from "@zuccadev-labs/barrits";`,
     });
   }
 

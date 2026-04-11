@@ -1,4 +1,4 @@
-import { averageBy, bucketByInterval, detectTimeSeriesGaps, differenceSeries, movingAverageSeries, resampleSeries } from "barrits";
+import { averageBy, bucketByInterval, detectTimeSeriesGaps, differenceSeries, movingAverageSeries, resampleSeries } from "@zuccadev-labs/barrits";
 
 const latencySeries = [
   { timestamp: 1_710_000_000_000, value: 120 },

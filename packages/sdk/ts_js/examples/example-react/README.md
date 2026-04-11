@@ -8,7 +8,7 @@ Yo uso este `README` como entrada rapida del ejemplo. La documentacion oficial d
 Resumen local:
 
 - este ejemplo es la base frontend mas directa con Vite + React
-- usa `barrits/vite` y el contrato package-first
+- usa `@zuccadev-labs/barrits/vite` y el contrato package-first
 - evita comandos manuales del motor operativo en el flujo normal
 
 Comandos rapidos:

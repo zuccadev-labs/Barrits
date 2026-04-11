@@ -33,7 +33,7 @@ Eso incluye:
 - descriptors detectados
 - drift entre metadata JSDoc y contrato runtime
 - categorias como `drift`, `impossible` y `non-verifiable`
-- agregados que luego puede consumir `barrits/consume`
+- agregados que luego puede consumir `@zuccadev-labs/barrits/consume`
 
 ## Como pienso los contratos operativos
 

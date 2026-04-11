@@ -1,4 +1,4 @@
-import { readNodeLanguageToolSnapshot } from "barrits/node";
+import { readNodeLanguageToolSnapshot } from "@zuccadev-labs/barrits/node";
 
 const snapshotPath = process.env.BARRITS_WATCH_SNAPSHOT ?? process.argv[2];
 
