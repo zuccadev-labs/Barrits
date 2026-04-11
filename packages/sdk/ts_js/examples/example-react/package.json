@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "barrits": "file:../..",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-router-dom": "^7.9.4"
   },
   "devDependencies": {

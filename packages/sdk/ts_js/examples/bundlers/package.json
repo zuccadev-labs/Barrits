@@ -14,10 +14,10 @@
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^16.0.3",
-    "esbuild": "^0.25.3",
+    "esbuild": "^0.28.0",
     "rollup": "^4.40.0",
     "vite": "^7.0.0",
-    "webpack": "^5.99.0",
+    "webpack": "^5.106.1",
     "webpack-cli": "^6.0.1"
   }
 }
