@@ -41,6 +41,8 @@ jobs:
             "supported=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           }
 
+          exit 0
+
   dependency-review:
     needs: dependency-review-support
     if: github.event_name == 'pull_request'
