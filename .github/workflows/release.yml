@@ -3,6 +3,10 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
+      release_tag:
+        description: Existing tag to publish, using vX.Y.Z or pre-vX.Y.Z-rc.N
+        required: true
+        type: string
       publish_npm:
         description: Publish the Node.js package to npm
         required: true
@@ -16,13 +20,117 @@ on:
   push:
     tags:
       - 'v*'
+      - 'pre-v*'
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+
+    outputs:
+      release_tag: ${{ steps.context.outputs.release_tag }}
+      release_version: ${{ steps.context.outputs.release_version }}
+      release_channel: ${{ steps.context.outputs.release_channel }}
+      target_branch: ${{ steps.context.outputs.target_branch }}
+      release_sha: ${{ steps.context.outputs.release_sha }}
+      npm_dist_tag: ${{ steps.context.outputs.npm_dist_tag }}
+      is_prerelease: ${{ steps.context.outputs.is_prerelease }}
+      release_name: ${{ steps.context.outputs.release_name }}
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Setup npm
+        run: npm install --global npm@11.6.2
+
+      - name: Resolve release context
+        id: context
+        run: |
+          git fetch --force origin main dev --tags
+
+          $tag = if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            "${{ inputs.release_tag }}"
+          } else {
+            "${{ github.ref_name }}"
+          }
+
+          if (-not $tag) {
+            throw "A release tag is required. Use vX.Y.Z for stable releases or pre-vX.Y.Z-rc.N for prereleases."
+          }
+
+          if ($tag.StartsWith("pre-v")) {
+            $channel = "prerelease"
+            $version = $tag.Substring(5)
+            $targetBranch = "dev"
+            $npmTag = "next"
+            $isPrerelease = "true"
+            $releaseName = "Barrits prerelease $version"
+          } elseif ($tag.StartsWith("v")) {
+            $channel = "release"
+            $version = $tag.Substring(1)
+            $targetBranch = "main"
+            $npmTag = "latest"
+            $isPrerelease = "false"
+            $releaseName = "Barrits $version"
+          } else {
+            throw "Unsupported tag format '$tag'. Expected vX.Y.Z or pre-vX.Y.Z-rc.N."
+          }
+
+          if ($channel -eq "prerelease" -and $version -notmatch "-") {
+            throw "Prerelease tags must include a prerelease SemVer suffix, for example pre-v0.2.0-rc.1."
+          }
+
+          if ($channel -eq "release" -and $version -match "-") {
+            throw "Stable release tags must not include prerelease suffixes."
+          }
+
+          $packageVersion = node -p "require('./packages/sdk/ts_js/package.json').version"
+          $jsrVersion = node -p "require('./packages/sdk/ts_js/jsr.json').version"
+
+          if ($packageVersion -ne $version) {
+            throw "package.json version '$packageVersion' does not match tag version '$version'."
+          }
+
+          if ($jsrVersion -ne $version) {
+            throw "jsr.json version '$jsrVersion' does not match tag version '$version'."
+          }
+
+          $releaseSha = git rev-list -n 1 $tag
+          if (-not $releaseSha) {
+            throw "Unable to resolve commit SHA for tag '$tag'."
+          }
+
+          $remoteBranches = git branch -r --contains $releaseSha | Out-String
+          if ($remoteBranches -notmatch "origin/$targetBranch") {
+            throw "Commit $releaseSha is not contained in origin/$targetBranch."
+          }
+
+          "release_tag=$tag" >> $env:GITHUB_OUTPUT
+          "release_version=$version" >> $env:GITHUB_OUTPUT
+          "release_channel=$channel" >> $env:GITHUB_OUTPUT
+          "target_branch=$targetBranch" >> $env:GITHUB_OUTPUT
+          "release_sha=$releaseSha" >> $env:GITHUB_OUTPUT
+          "npm_dist_tag=$npmTag" >> $env:GITHUB_OUTPUT
+          "is_prerelease=$isPrerelease" >> $env:GITHUB_OUTPUT
+          "release_name=$releaseName" >> $env:GITHUB_OUTPUT
+
   publish-npm:
+    needs: prepare
     if: github.event_name != 'workflow_dispatch' || inputs.publish_npm
     runs-on: ubuntu-latest
     environment: npm
@@ -34,6 +142,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -56,11 +167,12 @@ jobs:
 
       - name: Publish npm package
         working-directory: packages/sdk/ts_js
-        run: npm publish --access public --provenance
+        run: npm publish --access public --provenance --tag ${{ needs.prepare.outputs.npm_dist_tag }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_PUBLICAR_NPM }}
 
   publish-jsr:
+    needs: prepare
     if: github.event_name != 'workflow_dispatch' || inputs.publish_jsr
     runs-on: ubuntu-latest
     environment: jsr
@@ -72,6 +184,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -93,3 +208,20 @@ jobs:
       - name: Publish JSR package
         working-directory: packages/sdk/ts_js
         run: npx jsr publish
+
+  github-release:
+    needs:
+      - prepare
+      - publish-npm
+      - publish-jsr
+    if: always() && needs.prepare.result == 'success' && (needs['publish-npm'].result == 'success' || needs['publish-npm'].result == 'skipped') && (needs['publish-jsr'].result == 'success' || needs['publish-jsr'].result == 'skipped')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.release_tag }}
+          name: ${{ needs.prepare.outputs.release_name }}
+          prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' }}
+          generate_release_notes: true

@@ -15,6 +15,42 @@ Licencia actual del repositorio y del SDK activo: `MIT`.
 - documentacion separada por uso, desarrollo, investigacion y publicacion
 - licencia `MIT` con atribucion explicita al autor del repositorio
 
+## CI/CD y ramas
+
+El flujo operativo del repositorio queda definido asi:
+
+- `feature/*` o cualquier rama de trabajo entra por PR hacia `dev`
+- `dev` concentra integracion, validacion y prereleases
+- `main` queda reservado para releases estables
+- las publicaciones no salen por push directo a ramas, salen por tags creados despues de un PR mergeado
+
+### Que pasa cuando hago push o PR
+
+| Evento | Pipeline | Jobs que se ejecutan |
+| --- | --- | --- |
+| Push a `dev` | CI de integracion | `typecheck -> build -> test -> examples -> jsr-dry-run` |
+| Push a `main` | CI estable | `typecheck -> build -> test -> examples -> jsr-dry-run` |
+| PR hacia `dev` | CI de integracion | `typecheck -> build -> test -> examples -> jsr-dry-run` |
+| PR hacia `main` | CI estable | `typecheck -> build -> test -> examples -> jsr-dry-run` |
+| Push tag `pre-v*` | Prerelease | `validate-tag -> publish npm:next -> publish jsr -> GitHub prerelease` |
+| Push tag `v*` | Release | `validate-tag -> publish npm:latest -> publish jsr -> GitHub release` |
+
+### Reglas del flujo
+
+1. una rama de trabajo nunca deberia publicar directo
+2. si el cambio apunta a integracion o validacion intermedia, hago PR hacia `dev`
+3. cuando `dev` queda listo para distribucion de prueba, subo la version prerelease en `package.json` y `jsr.json`, por ejemplo `0.2.0-rc.1`
+4. luego creo y hago push del tag `pre-v0.2.0-rc.1`
+5. cuando la integracion validada pasa a estable, hago PR de `dev` hacia `main`
+6. despues del merge a `main`, subo la version estable, por ejemplo `0.2.0`
+7. luego creo y hago push del tag `v0.2.0`
+
+### Regla de tags
+
+- `pre-vX.Y.Z-rc.N` publica prerelease desde `dev`
+- `vX.Y.Z` publica release estable desde `main`
+- el workflow valida que el commit etiquetado pertenezca a la rama correcta y que `package.json` y `jsr.json` coincidan con la version del tag
+
 ## Superficies cubiertas hoy
 
 | Superficie | Estado | Canal principal |
@@ -149,7 +185,8 @@ Para la politica de disclosure y el marco de endurecimiento del repositorio, yo 
 Con los dos canales actuales cubro todos los ejemplos visibles del repo:
 
 - `npm` cubre Node.js, React, Vue, Solid, Svelte, bundlers y Tauri
-- `JSR` cubre Deno
+- `npm prerelease` usa el dist-tag `next` cuando publico desde `pre-v*`
+- `JSR` cubre Deno tanto para prerelease como para release estable, segun la version definida en `jsr.json`
 
 Hoy no necesito otro registro publico para cubrir los recorridos actuales. Si la corporacion requiere distribucion interna, prefiero un mirror o registry corporativo antes que abrir un tercer canal publico.
 
