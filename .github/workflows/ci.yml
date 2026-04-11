@@ -47,6 +47,11 @@ jobs:
         with:
           deno-version: v2.x
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Install dependencies
         run: npm ci
 
@@ -85,6 +90,13 @@ jobs:
           Push-Location './packages/sdk/ts_js/examples/example-deno'
           deno task build
           deno task inspect
+          Pop-Location
+
+      - name: Validate Bun example
+        run: |
+          Push-Location './packages/sdk/ts_js/examples/example-bun'
+          bun run dev
+          bun run inspect
           Pop-Location
 
       - name: Build Tauri frontend shell
