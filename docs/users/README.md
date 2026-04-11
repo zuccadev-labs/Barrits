@@ -25,16 +25,6 @@ Mi recorrido recomendado es este:
 - [ES/packages/ts_js/examples/00_indice.md](ES/packages/ts_js/examples/00_indice.md)
 - [ES/packages/ts_js/05_automatizacion-y-configuracion.md](ES/packages/ts_js/05_automatizacion-y-configuracion.md)
 
-### EN
-
-#### packages
-
-##### ts_js
-
-- [EN/packages/ts_js/00_index.md](EN/packages/ts_js/00_index.md)
-- [EN/packages/ts_js/03_examples-and-journeys.md](EN/packages/ts_js/03_examples-and-journeys.md)
-- [EN/packages/ts_js/examples/00_index.md](EN/packages/ts_js/examples/00_index.md)
-
 ## Alcance de esta area
 
 Aqui yo documento:
@@ -42,6 +32,7 @@ Aqui yo documento:
 - instalacion
 - primeros pasos
 - ejemplos reales de consumo
+
 - buenas practicas
 - automatizacion y configuracion visible al usuario
 - comandos y runtimes como fallback operativo
