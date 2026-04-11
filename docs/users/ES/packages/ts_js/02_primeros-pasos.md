@@ -7,7 +7,7 @@ Yo empiezo con `barrits` como paquete y no como comando. Mi primer paso es descr
 Yo puedo empezar con algo asi:
 
 ```ts
-import { defineBarritsPackage } from "barrits";
+import { defineBarritsPackage } from "@zuccadev-labs/barrits";
 
 export const barritsPackage = defineBarritsPackage({
   runtime: "react",
@@ -20,7 +20,7 @@ export const barritsPackage = defineBarritsPackage({
 Si yo quiero defaults del proyecto, creo `barrits.config.ts` en la raiz:
 
 ```ts
-import { defineBarritsConfig } from "barrits";
+import { defineBarritsConfig } from "@zuccadev-labs/barrits";
 
 export default defineBarritsConfig({
   runtime: "react",

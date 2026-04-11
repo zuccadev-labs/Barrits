@@ -4,7 +4,7 @@ import {
   readLanguageToolSnapshot,
   type BarritsConsumedStateSummary,
   type BarritsLanguageToolSnapshot,
-} from "barrits/consume";
+} from "@zuccadev-labs/barrits/consume";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 

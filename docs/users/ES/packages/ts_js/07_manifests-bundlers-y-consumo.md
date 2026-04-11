@@ -2,9 +2,9 @@
 
 Yo uso manifests y snapshots como contratos entre el motor de `barrits` y el tooling externo. Asi evito reimplementar discovery dentro de cada bundler o backend.
 
-## Lo que expone `barrits/consume`
+## Lo que expone `@zuccadev-labs/barrits/consume`
 
-Yo uso `barrits/consume` cuando necesito leer manifests o snapshots sin arrastrar plugins ni codigo de runtime no necesario.
+Yo uso `@zuccadev-labs/barrits/consume` cuando necesito leer manifests o snapshots sin arrastrar plugins ni codigo de runtime no necesario.
 
 Superficies utiles:
 
@@ -14,7 +14,7 @@ Superficies utiles:
 - `readWatchSnapshotSummary()`
 - `readLanguageToolSnapshot()`
 
-Si yo necesito delegar el acceso al filesystem, uso las funciones `read*` con un `readTextFile(path)` inyectable y dejo que `barrits/consume` haga la validacion estructural del payload.
+Si yo necesito delegar el acceso al filesystem, uso las funciones `read*` con un `readTextFile(path)` inyectable y dejo que `@zuccadev-labs/barrits/consume` haga la validacion estructural del payload.
 
 ## Como pienso `build` y `watch`
 
@@ -28,10 +28,10 @@ Cuando existen `traitDiagnostics`, yo tambien recibo agregados listos para tooli
 
 Yo ya tengo subpaths y ejemplos reales para:
 
-- `barrits/vite`
-- `barrits/esbuild`
-- `barrits/rollup`
-- `barrits/webpack`
+- `@zuccadev-labs/barrits/vite`
+- `@zuccadev-labs/barrits/esbuild`
+- `@zuccadev-labs/barrits/rollup`
+- `@zuccadev-labs/barrits/webpack`
 
 Mi regla practica es esta: `barrits` genera discovery y manifest; el bundler solo consume ese contrato mediante un adapter pequeno.
 

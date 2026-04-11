@@ -1,8 +1,8 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-import { defineBarritsPackage, toBarritsAutomationOptions } from "barrits";
-import { barritsVitePlugin } from "barrits/vite";
+import { defineBarritsPackage, toBarritsAutomationOptions } from "@zuccadev-labs/barrits";
+import { barritsVitePlugin } from "@zuccadev-labs/barrits/vite";
 
 const barritsPackage = defineBarritsPackage({
   runtime: "react",

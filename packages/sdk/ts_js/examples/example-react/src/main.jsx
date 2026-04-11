@@ -2,7 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import manifest from "virtual:barrits/manifest";
 
-import { createBuildManifestSummary, maxDrawdown, movingAverageSeries, orderBy } from "barrits";
+import { createBuildManifestSummary, maxDrawdown, movingAverageSeries, orderBy } from "@zuccadev-labs/barrits";
 import { AppRouterProvider, useAppRouter } from "./barrits";
 
 const latencySeries = [

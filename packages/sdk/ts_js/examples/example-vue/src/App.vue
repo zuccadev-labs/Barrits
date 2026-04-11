@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import manifest from "virtual:barrits/manifest";
 
-import { createBuildManifestSummary, maxDrawdown, movingAverageSeries, orderBy } from "barrits";
+import { createBuildManifestSummary, maxDrawdown, movingAverageSeries, orderBy } from "@zuccadev-labs/barrits";
 
 const latencySeries = [
   { timestamp: 1710000000000, value: 120 },
