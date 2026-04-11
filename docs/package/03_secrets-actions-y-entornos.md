@@ -24,7 +24,7 @@ Regla importante de GitHub:
 
 Secrets que yo recomiendo configurar en GitHub:
 
-- `NPM_TOKEN_PUBLICAR_NPM`: token con permiso de publicacion al paquete npm
+- `NPM_TOKEN_PUBLICAR_NPM`: no es necesario en el flujo recomendado porque npm debe publicar con trusted publishing y OIDC
 
 Requisito adicional para JSR:
 
