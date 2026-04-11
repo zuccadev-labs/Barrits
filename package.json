@@ -26,5 +26,9 @@
     "publish:jsr:dry-run": "npm run publish:jsr:dry-run --workspace barrits",
     "barrits:dev": "npm run barrits:dev --workspace barrits",
     "barrits:build": "npm run barrits:build --workspace barrits"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@vitejs/plugin-react": "^6.0.1"
   }
 }

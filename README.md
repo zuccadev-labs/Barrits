@@ -1,4 +1,4 @@
-# Barrits
+# Barrits - Barrels and Traits
 
 ## Open SDK monorepo for contract-first automation
 

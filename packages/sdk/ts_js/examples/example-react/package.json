@@ -8,12 +8,12 @@
   },
   "dependencies": {
     "barrits": "file:../..",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
     "react-router-dom": "^7.9.4"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.7.0",
-    "vite": "^7.0.0"
+    "@vitejs/plugin-react": "^6.0.1",
+    "vite": "^8.0.8"
   }
 }
