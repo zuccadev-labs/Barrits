@@ -6,7 +6,7 @@ Current map:
 
 - `example-nodejs/`: operational showcase, local scripts, and package consumption from Node.js.
 - `example-deno/`: Deno consumption with `deno task` and the Deno adapter.
-- `example-react/`: Vite + React frontend using `barrits/vite`.
+- `example-react/`: Vite + React frontend using `@zuccadev-labs/barrits/vite`.
 - `example-vue/`: Vite + Vue frontend using the same package-first contract.
 - `example-solid/`: Vite + Solid frontend with discovery over `src/barrits/`.
 - `example-svelte/`: Vite + Svelte frontend with the same visible pattern.

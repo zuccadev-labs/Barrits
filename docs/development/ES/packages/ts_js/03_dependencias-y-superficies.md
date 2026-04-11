@@ -16,10 +16,10 @@ Yo acepto dependencias distintas segun la capa:
 Yo publico estas familias de entradas:
 
 - `barrits`: superficie principal del paquete
-- `barrits/node`: adapter para Node
-- `barrits/deno`: adapter para Deno
-- `barrits/vite`, `barrits/esbuild`, `barrits/rollup`, `barrits/webpack`: plugins de build
-- `barrits/consume`: lectura segura de manifest y snapshot
+- `@zuccadev-labs/barrits/node`: adapter para Node
+- `@zuccadev-labs/barrits/deno`: adapter para Deno
+- `@zuccadev-labs/barrits/vite`, `@zuccadev-labs/barrits/esbuild`, `@zuccadev-labs/barrits/rollup`, `@zuccadev-labs/barrits/webpack`: plugins de build
+- `@zuccadev-labs/barrits/consume`: lectura segura de manifest y snapshot
 - `barrits/node/cli` y `barrits/deno/cli`: entrypoints operativos
 
 ## Mis reglas internas de dependencia

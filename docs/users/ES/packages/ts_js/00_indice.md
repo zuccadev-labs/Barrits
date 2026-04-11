@@ -10,7 +10,7 @@ Orden de lectura:
 4. `04_buenas-practicas.md`: yo dejo las practicas que sigo para mantener la experiencia package-first.
 5. `05_automatizacion-y-configuracion.md`: yo explico `barrits.config.*`, `automationDirectory` y el ciclo de vida de automatizacion.
 6. `06_comandos-y-runtimes.md`: yo documento como uso la CLI en Node y Deno cuando necesito fallback operativo.
-7. `07_manifests-bundlers-y-consumo.md`: yo explico `barrits/consume`, manifests, snapshots y plugins de bundlers.
+7. `07_manifests-bundlers-y-consumo.md`: yo explico `@zuccadev-labs/barrits/consume`, manifests, snapshots y plugins de bundlers.
 8. `08_traits-y-composicion.md`: yo documento la superficie declarativa de traits y cuando me conviene usarla.
 
 Documentacion complementaria:

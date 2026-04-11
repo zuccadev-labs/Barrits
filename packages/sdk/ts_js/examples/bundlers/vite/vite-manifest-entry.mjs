@@ -1,6 +1,6 @@
 import manifest from "virtual:barrits/manifest";
 
-import { createBuildManifestSummary } from "barrits/consume";
+import { createBuildManifestSummary } from "@zuccadev-labs/barrits/consume";
 
 export const viteSummary = createBuildManifestSummary(manifest);
 

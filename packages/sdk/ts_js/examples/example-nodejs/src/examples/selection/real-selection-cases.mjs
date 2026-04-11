@@ -1,4 +1,4 @@
-import { paginate, partitionBy, rankBy, topK } from "barrits";
+import { paginate, partitionBy, rankBy, topK } from "@zuccadev-labs/barrits";
 
 import { incidents, releaseCandidates } from "../data/operational-data.mjs";
 

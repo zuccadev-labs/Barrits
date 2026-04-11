@@ -8,7 +8,7 @@ Quiero llegar a este estado:
 
 - `npm` publica sin token desde GitHub Actions usando trusted publishing con OIDC
 - `JSR` publica sin token desde GitHub Actions usando OIDC
-- el workflow de release del repo no depende de `NPM_TOKEN_PUBLICAR_NPM` ni de `JSR_TOKEN`
+- el workflow de release del repo no depende normalmente de `NPM_TOKEN_PUBLICAR_NPM` ni de `JSR_TOKEN`
 
 ## Paso 1: preparar GitHub
 
@@ -18,7 +18,7 @@ En GitHub yo verifico estas condiciones:
 2. el workflow [release.yml](../../.github/workflows/release.yml) conserva `permissions.id-token: write`
 3. existe el environment `jsr`
 4. existe el environment `npm`
-5. el paquete `barrits` en npm tiene configurado trusted publishing para GitHub Actions
+5. el paquete `@zuccadev-labs/barrits` en npm tiene configurado trusted publishing para GitHub Actions, o todavia estoy en la fase de bootstrap inicial para crearlo por primera vez
 
 Matiz importante:
 
@@ -28,6 +28,12 @@ Matiz importante:
 Para `JSR` en GitHub Actions no creo `JSR_TOKEN_PUBLICAR_JSR` porque no forma parte del flujo actual.
 
 Para `npm` tampoco necesito `NPM_TOKEN_PUBLICAR_NPM` si el paquete ya esta configurado con trusted publishing.
+
+Matiz corporativo importante para el primer publish:
+
+- si `@zuccadev-labs/barrits` todavia no existe en npm y la UI no deja configurar trusted publishing porque exige seleccionar primero un paquete existente, hago un primer publish de bootstrap con `NPM_TOKEN_PUBLICAR_NPM`
+- ese token debe ser granular, con alcance minimo y permiso de publicacion sobre la org o paquete objetivo
+- despues del primer publish, configuro trusted publishing sobre `@zuccadev-labs/barrits` y dejo el token solo como compatibilidad de emergencia o lo retiro del flujo
 
 ## Paso 2: crear o revisar el paquete en JSR
 
@@ -40,7 +46,9 @@ En `jsr.io` yo hago esto:
 
 ## Paso 2.5: crear trusted publisher en npm
 
-En `npmjs.com` yo hago esto sobre el paquete `barrits`:
+Si el paquete ya existe, hago esto:
+
+En `npmjs.com` yo hago esto sobre el paquete `@zuccadev-labs/barrits`:
 
 1. abro `Package Settings` -> `Trusted publishing`
 2. elijo `GitHub Actions`
@@ -50,6 +58,14 @@ En `npmjs.com` yo hago esto sobre el paquete `barrits`:
 6. cargo `Environment name`: `npm`
 
 El matiz importante es que el nombre del workflow debe ser solo `release.yml`, no la ruta completa.
+
+Si el paquete no existe todavia, hago esto antes:
+
+1. creo o reutilizo un token granular `NPM_TOKEN_PUBLICAR_NPM` con permisos minimos de publish
+2. ejecuto el primer release para crear `@zuccadev-labs/barrits` en npm
+3. vuelvo a `npmjs.com`, ahora si selecciono el paquete recien creado
+4. configuro `Trusted publishing` con `release.yml` y environment `npm`
+5. dejo el token fuera del camino normal
 
 ## Paso 3: vincular el repositorio en JSR
 
@@ -67,7 +83,7 @@ El resultado esperado es que JSR reconozca el repositorio y permita trusted publ
 Yo reviso en [release.yml](../../.github/workflows/release.yml) estas piezas:
 
 - el job `publish-jsr` corre en GitHub Actions
-- el job `publish-npm` corre en GitHub Actions sin `NODE_AUTH_TOKEN`
+- el job `publish-npm` corre en GitHub Actions y puede usar OIDC por defecto o `NPM_TOKEN_PUBLICAR_NPM` solo para bootstrap si el paquete todavia no existia
 - el job tiene `permissions.id-token: write` a nivel de workflow
 - el paso final usa `npx jsr publish`
 - el paso de npm usa `npm publish --access public --provenance --tag ...`
