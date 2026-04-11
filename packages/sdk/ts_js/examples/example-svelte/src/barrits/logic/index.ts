@@ -1,0 +1,1 @@
+export { duplicar } from "./duplicar";

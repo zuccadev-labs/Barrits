@@ -1,0 +1,19 @@
+{
+  "name": "example-tauri",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../../../../node_modules/vite/bin/vite.js",
+    "build": "node ../../../../../node_modules/vite/bin/vite.js build",
+    "tauri:dev": "node ../../../../../node_modules/@tauri-apps/cli/tauri.js dev",
+    "tauri:build": "node ../../../../../node_modules/@tauri-apps/cli/tauri.js build"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.8.0",
+    "barrits": "file:../.."
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.8.0",
+    "vite": "^7.0.0"
+  }
+}

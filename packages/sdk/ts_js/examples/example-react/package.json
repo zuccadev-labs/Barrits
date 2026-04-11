@@ -1,0 +1,19 @@
+{
+  "name": "example-react",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../../../../node_modules/vite/bin/vite.js",
+    "build": "node ../../../../../node_modules/vite/bin/vite.js build"
+  },
+  "dependencies": {
+    "barrits": "file:../..",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.9.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.7.0",
+    "vite": "^7.0.0"
+  }
+}

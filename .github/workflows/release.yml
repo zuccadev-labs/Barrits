@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_npm:
+        description: Publish the Node.js package to npm
+        required: true
+        default: true
+        type: boolean
+      publish_jsr:
+        description: Publish the Deno package surface to JSR
+        required: true
+        default: true
+        type: boolean
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-npm:
+    if: github.event_name != 'workflow_dispatch' || inputs.publish_npm
+    runs-on: ubuntu-latest
+    environment: npm
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build SDK
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Publish npm package
+        working-directory: packages/sdk/ts_js
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_PUBLICAR_NPM }}
+
+  publish-jsr:
+    if: github.event_name != 'workflow_dispatch' || inputs.publish_jsr
+    runs-on: ubuntu-latest
+    environment: jsr
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Validate JSR payload
+        run: npm run publish:jsr:dry-run
+
+      - name: Publish JSR package
+        working-directory: packages/sdk/ts_js
+        run: npx jsr publish

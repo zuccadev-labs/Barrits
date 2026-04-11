@@ -1,0 +1,1 @@
+export const duplicar = (value: number) => value * 2;

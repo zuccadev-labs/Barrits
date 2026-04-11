@@ -1,0 +1,17 @@
+{
+  "name": "example-nodejs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node ./scripts/dev-runner.mjs",
+    "build": "node ./scripts/build-runner.mjs",
+    "demo:validation": "node ../../../../../node_modules/tsx/dist/cli.mjs ./scripts/barrits-validation.ts",
+    "dev:snapshot": "node ./scripts/snapshot-consumer.mjs",
+    "showcase": "node ./scripts/showcase.mjs",
+    "benchmark:algorithms": "node ../../../../../node_modules/tsx/dist/cli.mjs ../../benchmarks/algorithms/compare-large-datasets.ts"
+  },
+  "dependencies": {
+    "barrits": "file:../..",
+    "yup": "^1.7.1"
+  }
+}

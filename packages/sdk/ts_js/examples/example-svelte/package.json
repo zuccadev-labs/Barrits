@@ -1,0 +1,17 @@
+{
+  "name": "example-svelte",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../../../../node_modules/vite/bin/vite.js",
+    "build": "node ../../../../../node_modules/vite/bin/vite.js build"
+  },
+  "dependencies": {
+    "barrits": "file:../..",
+    "svelte": "^5.38.7"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
+    "vite": "^7.0.0"
+  }
+}

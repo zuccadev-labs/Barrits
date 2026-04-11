@@ -1,0 +1,126 @@
+{
+  "name": "barrits",
+  "version": "0.1.0",
+  "description": "Package-first functional automation for barrits/ domains, manifests and live watch flows.",
+  "license": "MIT",
+  "author": "David Euclides Zuccarini Barrueta (devzucca / zuccadev)",
+  "homepage": "https://github.com/zuccadev-labs/Barrits/tree/main/packages/sdk/ts_js",
+  "bugs": {
+    "url": "https://github.com/zuccadev-labs/Barrits/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zuccadev-labs/Barrits.git",
+    "directory": "packages/sdk/ts_js"
+  },
+  "keywords": [
+    "sdk",
+    "typescript",
+    "javascript",
+    "deno",
+    "vite",
+    "webpack",
+    "rollup",
+    "esbuild",
+    "automation",
+    "manifests",
+    "contract-first",
+    "tooling"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "type": "module",
+  "bin": {
+    "barrits": "./dist/adapters/node/cli.js",
+    "brt": "./dist/adapters/node/cli.js"
+  },
+  "main": "./dist/src/index.cjs",
+  "module": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js",
+      "require": "./dist/src/index.cjs",
+      "default": "./dist/src/index.js"
+    },
+    "./node": {
+      "types": "./dist/adapters/node/index.d.ts",
+      "import": "./dist/adapters/node/index.js",
+      "require": "./dist/adapters/node/index.cjs",
+      "default": "./dist/adapters/node/index.js"
+    },
+    "./deno": {
+      "types": "./dist/adapters/deno/mod.d.ts",
+      "import": "./dist/adapters/deno/mod.js",
+      "default": "./dist/adapters/deno/mod.js"
+    },
+    "./vite": {
+      "types": "./dist/src/barrits/plugins/vite.d.ts",
+      "import": "./dist/src/barrits/plugins/vite.js",
+      "require": "./dist/src/barrits/plugins/vite.cjs",
+      "default": "./dist/src/barrits/plugins/vite.js"
+    },
+    "./esbuild": {
+      "types": "./dist/src/barrits/plugins/esbuild.d.ts",
+      "import": "./dist/src/barrits/plugins/esbuild.js",
+      "require": "./dist/src/barrits/plugins/esbuild.cjs",
+      "default": "./dist/src/barrits/plugins/esbuild.js"
+    },
+    "./rollup": {
+      "types": "./dist/src/barrits/plugins/rollup.d.ts",
+      "import": "./dist/src/barrits/plugins/rollup.js",
+      "require": "./dist/src/barrits/plugins/rollup.cjs",
+      "default": "./dist/src/barrits/plugins/rollup.js"
+    },
+    "./webpack": {
+      "types": "./dist/src/barrits/plugins/webpack.d.ts",
+      "import": "./dist/src/barrits/plugins/webpack.js",
+      "require": "./dist/src/barrits/plugins/webpack.cjs",
+      "default": "./dist/src/barrits/plugins/webpack.js"
+    },
+    "./consume": {
+      "types": "./dist/src/barrits/consume.d.ts",
+      "import": "./dist/src/barrits/consume.js",
+      "require": "./dist/src/barrits/consume.cjs",
+      "default": "./dist/src/barrits/consume.js"
+    },
+    "./node/cli": {
+      "import": "./dist/adapters/node/cli.js",
+      "require": "./dist/adapters/node/cli.cjs",
+      "default": "./dist/adapters/node/cli.js"
+    },
+    "./deno/cli": {
+      "import": "./dist/adapters/deno/cli.js",
+      "default": "./dist/adapters/deno/cli.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "dev": "node ../../../node_modules/tsx/dist/cli.mjs watch src/index.ts",
+    "build": "node ../../../node_modules/tsup/dist/cli-default.js",
+    "benchmark:algorithms": "node ../../../node_modules/tsx/dist/cli.mjs benchmarks/algorithms/compare-large-datasets.ts",
+    "test": "node ../../../node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts",
+    "typecheck": "node ../../../node_modules/typescript/lib/tsc.js --noEmit",
+    "publish:jsr:dry-run": "deno publish --dry-run --allow-dirty --config jsr.json",
+    "barrits:dev": "node ../../../node_modules/tsx/dist/cli.mjs adapters/node/cli.ts dev -- node -e \"console.log('barrits dev session')\"",
+    "barrits:build": "node ../../../node_modules/tsx/dist/cli.mjs adapters/node/cli.ts build -- node -e \"console.log(process.env.BARRITS_BUILD_MANIFEST || '')\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2"
+  }
+}

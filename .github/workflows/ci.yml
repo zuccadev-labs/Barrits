@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: quality (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build SDK
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Validate JSR surface
+        run: npm run publish:jsr:dry-run
+
+      - name: Build Node.js example
+        run: npm run build --workspace example-nodejs
+
+      - name: Build React example
+        run: npm run build --workspace example-react
+
+      - name: Build Vue example
+        run: npm run build --workspace example-vue
+
+      - name: Build Solid example
+        run: npm run build --workspace example-solid
+
+      - name: Build Svelte example
+        run: npm run build --workspace example-svelte
+
+      - name: Build bundlers example
+        run: npm run build:all --workspace examples-bundlers
+
+      - name: Validate Deno example
+        run: |
+          Push-Location './packages/sdk/ts_js/examples/example-deno'
+          deno task build
+          deno task inspect
+          Pop-Location
+
+      - name: Build Tauri frontend shell
+        run: npm run build --workspace example-tauri

@@ -1,0 +1,17 @@
+{
+  "name": "example-solid",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node ../../../../../node_modules/vite/bin/vite.js",
+    "build": "node ../../../../../node_modules/vite/bin/vite.js build"
+  },
+  "dependencies": {
+    "barrits": "file:../..",
+    "solid-js": "^1.9.9"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0",
+    "vite-plugin-solid": "^2.11.8"
+  }
+}
