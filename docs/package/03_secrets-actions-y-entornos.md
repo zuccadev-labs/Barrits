@@ -22,9 +22,9 @@ Regla importante de GitHub:
 - GitHub no permite secrets cuyo nombre empiece por `GITHUB_`
 - si quiero recordar esos nombres en local, los guardo como variables de referencia en `.env`, agrupadas por environment y con comentarios
 
-Secrets que yo recomiendo configurar en GitHub:
+Secrets opcionales o de compatibilidad en GitHub:
 
-- `NPM_TOKEN_PUBLICAR_NPM`: no es necesario en el flujo recomendado porque npm debe publicar con trusted publishing y OIDC
+- `NPM_TOKEN_PUBLICAR_NPM`: no es necesario en el flujo recomendado porque npm debe publicar con trusted publishing y OIDC; solo lo mantengo documentado como referencia de compatibilidad si en algun momento se usa un flujo manual o temporal fuera del camino recomendado
 
 Requisito adicional para JSR:
 

@@ -70,7 +70,7 @@ Yo reviso en [release.yml](../../.github/workflows/release.yml) estas piezas:
 - el job `publish-npm` corre en GitHub Actions sin `NODE_AUTH_TOKEN`
 - el job tiene `permissions.id-token: write` a nivel de workflow
 - el paso final usa `npx jsr publish`
-- el paso de npm usa `npm publish --access public --tag ...`
+- el paso de npm usa `npm publish --access public --provenance --tag ...`
 - antes corre `npm run publish:jsr:dry-run`
 
 ## Paso 5: validar antes de publicar
