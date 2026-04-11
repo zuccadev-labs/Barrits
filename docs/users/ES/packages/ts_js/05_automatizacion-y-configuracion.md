@@ -14,7 +14,7 @@ Si yo quiero defaults estables, creo uno de estos archivos en la raiz del consum
 Mi forma recomendada es esta:
 
 ```ts
-import { defineBarritsConfig } from "barrits";
+import { defineBarritsConfig } from "@zuccadev-labs/barrits";
 
 export default defineBarritsConfig({
   runtime: "react",

@@ -11,7 +11,7 @@
     "benchmark:algorithms": "node ../../../../../node_modules/tsx/dist/cli.mjs ../../benchmarks/algorithms/compare-large-datasets.ts"
   },
   "dependencies": {
-    "barrits": "file:../..",
+    "@zuccadev-labs/barrits": "file:../..",
     "yup": "^1.7.1"
   }
 }

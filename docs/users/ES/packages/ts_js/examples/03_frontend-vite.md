@@ -6,9 +6,9 @@ Yo trato `example-react/`, `example-vue/`, `example-solid/` y `example-svelte/` 
 
 En los cuatro casos yo valido lo mismo:
 
-- instalacion del paquete `barrits`
+- instalacion del paquete `@zuccadev-labs/barrits`
 - definicion del paquete consumidor con `defineBarritsPackage()`
-- uso de `barrits/vite`
+- uso de `@zuccadev-labs/barrits/vite`
 - generacion automatica del manifest virtual sin pedir comandos manuales del motor
 
 ## Diferencias utiles

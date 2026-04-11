@@ -24,7 +24,7 @@ Regla importante de GitHub:
 
 Secrets opcionales o de compatibilidad en GitHub:
 
-- `NPM_TOKEN_PUBLICAR_NPM`: no es necesario en el flujo recomendado porque npm debe publicar con trusted publishing y OIDC; solo lo mantengo documentado como referencia de compatibilidad si en algun momento se usa un flujo manual o temporal fuera del camino recomendado
+- `NPM_TOKEN_PUBLICAR_NPM`: no es necesario en el estado final recomendado porque npm debe publicar con trusted publishing y OIDC; pero si el paquete scoped en npm todavia no existe y npm no permite configurar trusted publishing sin seleccionar antes el paquete, este secret sirve para el primer publish de bootstrap. Despues de ese publish inicial, yo configuro trusted publishing sobre el paquete ya creado y retiro el token del camino normal
 
 Requisito adicional para JSR:
 

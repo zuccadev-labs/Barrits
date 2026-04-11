@@ -1,7 +1,7 @@
 import { render } from "solid-js/web";
 import manifest from "virtual:barrits/manifest";
 
-import { createBuildManifestSummary, sumar } from "barrits";
+import { createBuildManifestSummary, sumar } from "@zuccadev-labs/barrits";
 
 const manifestSummary = createBuildManifestSummary(manifest);
 

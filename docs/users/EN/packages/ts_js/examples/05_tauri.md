@@ -6,7 +6,7 @@ Example goal:
 
 - keep artifact reads out of the renderer
 - validate allowed paths in the Tauri backend
-- reuse `barrits/consume` to summarize manifests and snapshots
+- reuse `@zuccadev-labs/barrits/consume` to summarize manifests and snapshots
 - deliver UI-safe payloads to the frontend
 
 Available commands:

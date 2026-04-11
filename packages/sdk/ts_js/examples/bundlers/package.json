@@ -10,7 +10,7 @@
     "build:all": "npm run build:vite && npm run build:esbuild && npm run build:rollup && npm run build:webpack"
   },
   "dependencies": {
-    "barrits": "file:../.."
+    "@zuccadev-labs/barrits": "file:../.."
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^16.0.3",

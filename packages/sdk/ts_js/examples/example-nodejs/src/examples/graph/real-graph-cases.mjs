@@ -1,4 +1,4 @@
-import { breadthFirstSearch, dijkstraShortestPath, topologicalSort } from "barrits";
+import { breadthFirstSearch, dijkstraShortestPath, topologicalSort } from "@zuccadev-labs/barrits";
 
 const serviceDependencies = [
   { from: "edge", to: "api", weight: 2 },

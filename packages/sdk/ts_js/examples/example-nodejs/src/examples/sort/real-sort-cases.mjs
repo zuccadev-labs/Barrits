@@ -1,4 +1,4 @@
-import { insertSorted, orderBy, quickSort, stableSortBy } from "barrits";
+import { insertSorted, orderBy, quickSort, stableSortBy } from "@zuccadev-labs/barrits";
 
 import { incidents, packageWeights, releaseCandidates } from "../data/operational-data.mjs";
 

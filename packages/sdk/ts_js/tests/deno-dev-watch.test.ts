@@ -93,7 +93,7 @@ test("deno dev flow runs a child consumer with manifest and snapshot outputs", {
   assert.deepEqual(payload.buildDomains, ["logic"]);
   assert.equal(payload.snapshotMode, "dev");
   assert.deepEqual(payload.snapshotDomains, ["logic"]);
-  assert.ok(payload.importStatements.includes('import { duplicar } from "barrits";'));
+  assert.ok(payload.importStatements.includes('import { duplicar } from "@zuccadev-labs/barrits";'));
 
   const buildManifestSource = await readFile(join(projectRoot, ".cache", "barrits", "build-manifest.json"), "utf8");
   const snapshotSource = await readFile(join(projectRoot, ".cache", "barrits", "watch-snapshot.json"), "utf8");

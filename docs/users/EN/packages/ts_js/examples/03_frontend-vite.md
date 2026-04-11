@@ -4,9 +4,9 @@ I treat `example-react/`, `example-vue/`, `example-solid/`, and `example-svelte/
 
 Shared goal:
 
-- install `barrits`
+- install `@zuccadev-labs/barrits`
 - define the consumer package with `defineBarritsPackage()`
-- use `barrits/vite`
+- use `@zuccadev-labs/barrits/vite`
 - let the virtual manifest be generated automatically instead of running manual engine commands
 
 Useful differences:
