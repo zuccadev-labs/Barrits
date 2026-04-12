@@ -1,15 +1,10 @@
 # Agent Skills for Barrits
 
-This folder documents the skill strategy for Barrits. The Copilot-native files that agents load automatically are now under `.github/skills` and `.github/agents`.
-
-## Effective Copilot Locations
-
-- Skills: `.github/skills/<skill-name>/SKILL.md`
-- Agents: `.github/agents/<agent-name>.agent.md`
+This folder documents the agent skill strategy for Barrits and keeps reusable skill content in versioned documentation.
 
 ## Skill Model Split
 
-The repository now separates skills by audience:
+The skill strategy is separated by audience:
 
 ### 1) Barrits project maintainers (inside this repo)
 
@@ -24,16 +19,17 @@ The repository now separates skills by audience:
 
 ## Specialist Agent Team
 
-Defined in `.github/agents`:
+Recommended specialist roles for enterprise workflows:
 
 - `barrits-platform-architect`
 - `barrits-runtime-quality`
 - `barrits-release-manager`
 - `barrits-incident-commander`
 
-## Legacy Skill Docs
+## Current Source Of Truth
 
-The skills under `docs/agents/skills` are kept as narrative references. For active Copilot discovery and invocation, prefer `.github/skills`.
+- Narrative and workflow guidance stays under `docs/agents/skills`.
+- Teams can copy these skills into project-level Copilot customization folders when needed.
 
 ## Operational Notes
 
