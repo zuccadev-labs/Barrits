@@ -1,1 +1,1 @@
-export { duplicar, triplicar } from "./logic";
+export {};

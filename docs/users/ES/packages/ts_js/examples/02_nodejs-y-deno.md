@@ -18,6 +18,12 @@ Este ejemplo me sirve para revisar tres cosas a la vez:
 - que el paquete soporta automatizacion local y snapshots
 - que los algoritmos de ejemplo siguen siendo utilizables desde scripts reales
 
+Patron recomendado en esta etapa:
+
+- yo reduzco re-exports en `barrits/index.ts` y `barrits/<dominio>/index.ts` cuando no aportan valor funcional
+- Barrits detecta metodos publicos desde el arbol de archivos y mantiene acciones de import si los nombres son unicos
+- si un metodo debe quedar privado/interno, lo marco en `barrits.config.ts` con `contracts.exports`
+
 ## Deno
 
 Yo abro `packages/sdk/ts_js/examples/example-deno/` cuando quiero validar:
@@ -27,6 +33,8 @@ Yo abro `packages/sdk/ts_js/examples/example-deno/` cuando quiero validar:
 - `deno task inspect`: inspeccion de la estructura del proyecto con el adapter Deno
 
 Este ejemplo me confirma que el contrato package-first no depende de Node.js y que la superficie Deno-safe del paquete sigue siendo consumible desde el propio runtime.
+
+Para simplificar mantenimiento, tambien aplico el mismo criterio de Node.js: menos barrels manuales y visibilidad privada centralizada en `barrits.config.ts`.
 
 ## Bun
 

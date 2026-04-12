@@ -1,10 +1,10 @@
 # 08 Traits y composicion de ts_js
 
-Yo uso traits declarativos cuando necesito composicion de dominio con contratos explicitos y menos drift entre implementacion, metadata y tooling.
+Los traits declarativos se usan cuando se necesita composicion de dominio con contratos explicitos y menos drift entre implementacion, metadata y tooling.
 
 ## Que contrato uso
 
-Mi base es `createTraitDescriptor()` con estas piezas:
+La base es `createTraitDescriptor()` con estas piezas:
 
 - `name`
 - `requires`
@@ -15,7 +15,7 @@ Mi base es `createTraitDescriptor()` con estas piezas:
 
 ## Cuando uso JSDoc declarativo
 
-Si yo quiero bajar friccion sin perder contrato, describo metadata con:
+Cuando se busca bajar friccion sin perder contrato, la metadata declarativa usa:
 
 - `@barrits-trait`
 - `@barrits-summary`
@@ -26,10 +26,12 @@ Si yo quiero bajar friccion sin perder contrato, describo metadata con:
 - `@barrits-provides`
 - `@barrits-tags`
 - `@barrits-runtime`
+- `@barrits-version`
+- `@barrits-stability`
 
 ## Que gano con ese modelo
 
-Yo gano cuatro cosas concretas:
+Este modelo aporta cuatro beneficios concretos:
 
 1. el orden deja de depender de mezcla manual de objetos
 2. las dependencias faltantes fallan antes de ejecutar logica opaca
@@ -38,4 +40,4 @@ Yo gano cuatro cosas concretas:
 
 ## Cuando me conviene realmente
 
-Yo uso esta capa cuando estoy componiendo capacidades de dominio y no cuando solo necesito un helper pequeno aislado. Si solo busco una mezcla trivial, puedo seguir usando helpers pequenos como `mergeTraits`, pero para contratos mas serios prefiero descriptor declarativo primero.
+Esta capa conviene cuando se estan componiendo capacidades de dominio y no cuando solo se necesita un helper pequeno aislado. Para una mezcla trivial puede usarse `mergeTraits`, pero para contratos serios el descriptor declarativo debe ser la primera opcion.

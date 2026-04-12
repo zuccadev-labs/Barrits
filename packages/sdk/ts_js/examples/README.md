@@ -26,5 +26,6 @@ Yo uso este `README` como mapa rapido de la carpeta. La documentacion oficial de
 ## Regla arquitectonica
 
 - los consumidores muestran `barrits/` o `src/barrits/` como capa visible
+- cada ejemplo incluye `barrits.config.ts` para defaults de runtime/watch y contratos low-config
 - cada demo explica el recorrido local, no reescribe toda la API del paquete
 - la referencia completa de metodos vive en `docs/users/ES/packages/ts_js/09_referencia-de-api.md`

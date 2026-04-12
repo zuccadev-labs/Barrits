@@ -12,6 +12,8 @@ Yo uso este ejemplo cuando quiero responder una pregunta concreta: como se ve `@
 
 - `src/main.ts`: arranque minimo del ejemplo
 - `src/examples/`: catalogo real por familia de algoritmos
+- `barrits.config.ts`: contrato centralizado de runtime y traits
+- `barrits/traits/index.ts`: trait declarativo del runtime Node para inspeccion y contratos
 - `scripts/showcase.mjs`: recorrido visible para inspeccionar resultados
 - `scripts/build-runner.mjs`: ejemplo de lectura resumida del manifest desde Node
 - `scripts/snapshot-consumer.mjs`: lectura de snapshots con el subpath Node
