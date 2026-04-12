@@ -109,12 +109,19 @@ const filterCollisions = (
 const collectVisibleTraitDescriptorFiles = (
   rootFiles: readonly BarritsFileIntegration[],
   domains: readonly BarritsDomainIntegration[],
+  descriptors: readonly BarritsConsumedTraitDescriptor[],
 ): Set<string> => {
-  return new Set(
+  const visibleFiles = new Set(
     [...rootFiles, ...domains.flatMap((domain) => domain.files)]
       .filter((file) => file.traitDescriptors.length > 0)
       .map((file) => file.path),
   );
+
+  for (const descriptor of descriptors) {
+    visibleFiles.add(descriptor.sourceFile);
+  }
+
+  return visibleFiles;
 };
 
 const filterTraitDescriptors = (
@@ -180,7 +187,7 @@ export const filterIntegrationGraph = (
     }];
   });
   const metrics = collectGraphMetrics(rootFiles, domains);
-  const visibleTraitFiles = collectVisibleTraitDescriptorFiles(rootFiles, domains);
+  const visibleTraitFiles = collectVisibleTraitDescriptorFiles(rootFiles, domains, graph.traitDescriptors);
   const importActionFilters: BarritsImportFilters = {
     domains: filters.domains,
     exports: filters.exports,

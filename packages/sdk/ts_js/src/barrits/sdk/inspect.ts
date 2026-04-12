@@ -1,4 +1,5 @@
 import type {
+  BarritsExportVisibility,
   BarritsDiscovery,
   BarritsDomainIntegration,
   BarritsExportCollision,
@@ -15,6 +16,7 @@ import type {
 } from "./contracts";
 import ts from "typescript";
 import { joinPath, normalizePath } from "./path";
+import { loadBarritsConfig, type BarritsExportContractConfig, type BarritsTraitContractConfig } from "../config";
 import { parseTraitDescriptorJsDoc } from "../traits/descriptor";
 
 const IGNORED_DIRECTORIES = new Set([".git", "node_modules", "dist", "build", ".next", ".turbo"]);
@@ -42,6 +44,18 @@ const toRelativeFilePath = (barritsDirectory: string, filePath: string): string 
   return relativeFromBase(barritsDirectory, filePath);
 };
 
+const toConfigProjectRoots = (discovery: BarritsDiscovery): string[] => {
+  const normalizedProjectRoot = normalizePath(discovery.projectRoot);
+  const normalizedBarritsDirectory = normalizePath(discovery.barritsDirectory);
+  const candidateRoots = new Set<string>([normalizedProjectRoot]);
+
+  if (normalizedBarritsDirectory.endsWith("/barrits")) {
+    candidateRoots.add(normalizedBarritsDirectory.slice(0, -"/barrits".length));
+  }
+
+  return Array.from(candidateRoots).filter(Boolean);
+};
+
 const isInternalPath = (relativePath: string): boolean => {
   return relativePath === "internal.ts" || relativePath.includes("/internal/") || relativePath.endsWith("/internal.ts") || relativePath.startsWith("internal/");
 };
@@ -51,16 +65,16 @@ const classifyFileKind = (relativePath: string): BarritsFileKind => {
     return "root";
   }
 
+  if (relativePath.startsWith("traits/")) {
+    return "trait";
+  }
+
   if (relativePath.endsWith("/index.ts")) {
     return "barrel";
   }
 
   if (isInternalPath(relativePath)) {
     return "internal";
-  }
-
-  if (relativePath.startsWith("traits/")) {
-    return "trait";
   }
 
   if (relativePath.startsWith("shared/")) {
@@ -918,6 +932,144 @@ const collectTraitDescriptors = (files: readonly BarritsFileIntegration[]): Barr
     });
 };
 
+const normalizeContractStringArray = (values: readonly string[] | undefined): string[] => {
+  if (!values?.length) {
+    return [];
+  }
+
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean))).sort((left, right) => {
+    return left.localeCompare(right);
+  });
+};
+
+const toTraitContractDescriptor = (contract: BarritsTraitContractConfig): BarritsTraitDescriptorInspection | null => {
+  const sourceFile = normalizePath(contract.sourceFile).replace(/^\.\//u, "");
+  const name = contract.name.trim();
+  const bindingName = contract.bindingName.trim();
+
+  if (!sourceFile || !name || !bindingName) {
+    return null;
+  }
+
+  return {
+    name,
+    sourceFile,
+    bindingName,
+    bindingKind: contract.bindingKind ?? "const",
+    factory: contract.factory,
+    summary: contract.summary?.trim() || undefined,
+    requires: normalizeContractStringArray(contract.requires),
+    conflicts: normalizeContractStringArray(contract.conflicts),
+    state: normalizeContractStringArray(contract.state),
+    consumes: normalizeContractStringArray(contract.consumes),
+    provides: normalizeContractStringArray(contract.provides),
+    tags: normalizeContractStringArray(contract.tags),
+    runtimes: normalizeContractStringArray(contract.runtimes),
+  };
+};
+
+const mergeTraitDescriptors = (
+  discoveredDescriptors: readonly BarritsTraitDescriptorInspection[],
+  contractDescriptors: readonly BarritsTraitDescriptorInspection[],
+): BarritsTraitDescriptorInspection[] => {
+  const merged = new Map<string, BarritsTraitDescriptorInspection>();
+
+  for (const descriptor of [...discoveredDescriptors, ...contractDescriptors]) {
+    const key = `${descriptor.sourceFile}::${descriptor.bindingName}`;
+    const existingDescriptor = merged.get(key);
+
+    if (!existingDescriptor) {
+      merged.set(key, descriptor);
+      continue;
+    }
+
+    merged.set(key, {
+      ...existingDescriptor,
+      ...descriptor,
+      bindingKind: descriptor.bindingKind ?? existingDescriptor.bindingKind,
+      factory: descriptor.factory ?? existingDescriptor.factory,
+      summary: descriptor.summary ?? existingDescriptor.summary,
+    });
+  }
+
+  return Array.from(merged.values()).sort((left, right) => {
+    if (left.name === right.name) {
+      return left.sourceFile.localeCompare(right.sourceFile);
+    }
+
+    return left.name.localeCompare(right.name);
+  });
+};
+
+type ExportVisibilityOverride = {
+  readonly sourceFile: string;
+  readonly exportName?: string;
+  readonly accessPath?: string;
+  readonly visibility: BarritsExportVisibility;
+};
+
+const normalizeExportVisibilityOverride = (contract: BarritsExportContractConfig): ExportVisibilityOverride | null => {
+  const sourceFile = normalizePath(contract.sourceFile).replace(/^\.\//u, "").trim();
+  const exportName = contract.exportName?.trim();
+  const accessPath = contract.accessPath?.trim();
+
+  if (!sourceFile || (!exportName && !accessPath)) {
+    return null;
+  }
+
+  return {
+    sourceFile,
+    exportName,
+    accessPath,
+    visibility: contract.visibility ?? "internal",
+  };
+};
+
+const applyExportVisibilityOverrides = (
+  files: readonly BarritsFileIntegration[],
+  overrides: readonly ExportVisibilityOverride[],
+): BarritsFileIntegration[] => {
+  if (overrides.length === 0) {
+    return [...files];
+  }
+
+  const byName = new Map<string, BarritsExportVisibility>();
+  const byAccessPath = new Map<string, BarritsExportVisibility>();
+
+  for (const override of overrides) {
+    if (override.exportName) {
+      byName.set(`${override.sourceFile}:${override.exportName}`, override.visibility);
+    }
+
+    if (override.accessPath) {
+      byAccessPath.set(`${override.sourceFile}:${override.accessPath}`, override.visibility);
+    }
+  }
+
+  return files.map((file) => {
+    const normalizedPath = normalizePath(file.path);
+    const nextExports = file.exports.map((entry) => {
+      const visibility = byName.get(`${normalizedPath}:${entry.name}`)
+        ?? byAccessPath.get(`${normalizedPath}:${entry.accessPath}`)
+        ?? entry.visibility;
+
+      if (visibility === entry.visibility) {
+        return entry;
+      }
+
+      return {
+        ...entry,
+        visibility,
+      };
+    });
+
+    return {
+      ...file,
+      exports: nextExports,
+    };
+  });
+};
+
 const collectTraitDiagnostics = (
   descriptors: readonly BarritsTraitDescriptorInspection[],
   bindingsBySourceFile: ReadonlyMap<string, readonly ExportedTraitBinding[]>,
@@ -1218,6 +1370,89 @@ const planImportActions = (
     }
   }
 
+  const toSourceDomain = (sourceFile: string): string => {
+    const [firstSegment] = sourceFile.split("/").filter(Boolean);
+    return firstSegment ?? "root";
+  };
+
+  const rootNamedImportNames = new Set<string>();
+
+  for (const exportedMember of collectMergedExports(rootFiles, (file) => file.path === "index.ts")) {
+    if (exportedMember.visibility !== "public") {
+      continue;
+    }
+
+    rootNamedImportNames.add(exportedMember.name);
+    pushAction({
+      exportName: exportedMember.name,
+      domain: "root",
+      sourceFile: "index.ts",
+      kind: "named-import",
+      statement: `import { ${exportedMember.name} } from "@zuccadev-labs/barrits";`,
+    });
+  }
+
+  const namedImportNameCounts = new Map<string, number>();
+  const firstNamedImportSourceByName = new Map<string, string>();
+
+  const pushNamedImportCandidate = (sourceFile: string, exportedMember: BarritsFileExport): void => {
+    if (exportedMember.visibility !== "public") {
+      return;
+    }
+
+    if (rootNamedImportNames.has(exportedMember.name)) {
+      return;
+    }
+
+    if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/u.test(exportedMember.name)) {
+      return;
+    }
+
+    namedImportNameCounts.set(exportedMember.name, (namedImportNameCounts.get(exportedMember.name) ?? 0) + 1);
+
+    if (!firstNamedImportSourceByName.has(exportedMember.name)) {
+      firstNamedImportSourceByName.set(exportedMember.name, sourceFile);
+    }
+  };
+
+  for (const domain of domains) {
+    if (domain.name === "api") {
+      continue;
+    }
+
+    for (const file of domain.files) {
+      if (file.kind === "internal") {
+        continue;
+      }
+
+      for (const exportedMember of file.exports) {
+        pushNamedImportCandidate(file.path, exportedMember);
+      }
+    }
+  }
+
+  for (const [exportName, count] of Array.from(namedImportNameCounts.entries()).sort((left, right) => {
+    return left[0].localeCompare(right[0]);
+  })) {
+    if (count !== 1) {
+      continue;
+    }
+
+    const sourceFile = firstNamedImportSourceByName.get(exportName);
+
+    if (!sourceFile) {
+      continue;
+    }
+
+    pushAction({
+      exportName,
+      domain: toSourceDomain(sourceFile),
+      sourceFile,
+      kind: "named-import",
+      statement: `import { ${exportName} } from "@zuccadev-labs/barrits";`,
+    });
+  }
+
   for (const domain of domains) {
     if (domain.name === "api") {
       continue;
@@ -1269,16 +1504,6 @@ const planImportActions = (
     }
   }
 
-  for (const exportedMember of collectMergedExports(rootFiles, (file) => file.path === "index.ts")) {
-    pushAction({
-      exportName: exportedMember.name,
-      domain: "root",
-      sourceFile: "index.ts",
-      kind: "named-import",
-      statement: `import { ${exportedMember.name} } from "@zuccadev-labs/barrits";`,
-    });
-  }
-
   return Array.from(actions.values()).sort((left, right) => {
     if (left.exportName === right.exportName) {
       return left.kind.localeCompare(right.kind);
@@ -1293,9 +1518,37 @@ export const inspectBarritsIntegrations = async (
   discovery: BarritsDiscovery,
 ): Promise<BarritsIntegrationGraph> => {
   const projectLayer = await inspectLayer(adapter, discovery.barritsDirectory, "barrits");
-  const rootFiles = mergeRootFiles(projectLayer.rootFiles, []);
-  const domains = mergeDomains(projectLayer.domains, []);
-  const inspectedFiles = [...projectLayer.files];
+  let inspectedFiles = [...projectLayer.files];
+  let loadedConfig = null;
+
+  for (const configProjectRoot of toConfigProjectRoots(discovery)) {
+    loadedConfig = await loadBarritsConfig(configProjectRoot);
+
+    if (loadedConfig) {
+      break;
+    }
+  }
+
+  const contractTraitDescriptors = (loadedConfig?.contracts?.traits ?? [])
+    .map((contract) => toTraitContractDescriptor(contract))
+    .filter((descriptor): descriptor is BarritsTraitDescriptorInspection => descriptor !== null);
+  const exportVisibilityOverrides = (loadedConfig?.contracts?.exports ?? [])
+    .map((contract) => normalizeExportVisibilityOverride(contract))
+    .filter((override): override is ExportVisibilityOverride => override !== null);
+
+  inspectedFiles = applyExportVisibilityOverrides(inspectedFiles, exportVisibilityOverrides);
+
+  const rootFiles = mergeRootFiles(
+    inspectedFiles.filter((file) => file.path === "index.ts"),
+    [],
+  );
+  const domains = mergeDomains(
+    projectLayer.domains.map((domain) => ({
+      ...domain,
+      files: inspectedFiles.filter((file) => file.path.startsWith(`${domain.name}/`)),
+    })),
+    [],
+  );
   const exportsCount = inspectedFiles.reduce((count, file) => count + file.exports.length, 0);
   const publicExportsCount = inspectedFiles.reduce(
     (count, file) => count + file.exports.filter((entry) => entry.visibility === "public").length,
@@ -1303,7 +1556,8 @@ export const inspectBarritsIntegrations = async (
   );
   const internalExportsCount = exportsCount - publicExportsCount;
   const barrelsCount = inspectedFiles.filter((file) => file.kind === "barrel" || file.kind === "root").length;
-  const traitDescriptors = collectTraitDescriptors(inspectedFiles);
+  const discoveredTraitDescriptors = collectTraitDescriptors(inspectedFiles);
+  const traitDescriptors = mergeTraitDescriptors(discoveredTraitDescriptors, contractTraitDescriptors);
   const bindingsBySourceFile = new Map<string, readonly ExportedTraitBinding[]>();
 
   for (const file of inspectedFiles) {

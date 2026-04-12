@@ -592,3 +592,126 @@ test("automation inspection warns when a consumed capability is missing from the
   assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-missing-consumed-capability" && diagnostic.severity === "warning"));
   assert.ok(graph.traitDiagnostics.every((diagnostic) => diagnostic.code !== "trait-missing-required-trait"));
 });
+
+test("automation inspection loads trait contracts from barrits.config.mjs when JSDoc trait headers are omitted", async () => {
+  const projectRoot = await mkdtemp(join(tmpdir(), "barrits-traits-config-contracts-"));
+  const barritsRoot = join(projectRoot, "barrits");
+
+  await mkdir(join(barritsRoot, "traits"), { recursive: true });
+  await writeFile(join(barritsRoot, "index.ts"), 'export {} from "./traits/runtime";\n', "utf8");
+  await writeFile(
+    join(barritsRoot, "traits", "runtime.ts"),
+    [
+      "export const nodeRuntimeTrait = createTraitDescriptor({",
+      '  name: "runtime-node",',
+      '  provides: ["runtime:node"],',
+      "  create: () => ({",
+      '    getRuntimeName() { return "node"; },',
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  await writeFile(
+    join(projectRoot, "barrits.config.mjs"),
+    [
+      "export default {",
+      "  contracts: {",
+      "    traits: [",
+      "      {",
+      '        name: "runtime-node",',
+      '        sourceFile: "traits/runtime.ts",',
+      '        bindingName: "nodeRuntimeTrait",',
+      '        provides: ["runtime:node"],',
+      "      },",
+      "    ],",
+      "  },",
+      "};",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+
+  const adapter = createNodeFileSystemAdapter();
+  const discovery = await findBarritsDirectory(adapter, { startDirectory: projectRoot });
+
+  assert.ok(discovery);
+
+  const graph = await inspectBarritsIntegrations(adapter, discovery);
+  const runtimeDescriptor = graph.traitDescriptors.find((descriptor) => descriptor.name === "runtime-node");
+
+  assert.ok(runtimeDescriptor);
+  assert.equal(runtimeDescriptor?.sourceFile, "traits/runtime.ts");
+  assert.deepEqual(runtimeDescriptor?.provides, ["runtime:node"]);
+});
+
+test("automation infers named imports without root re-exports and allows private export overrides from barrits.config.mjs", async () => {
+  const projectRoot = await mkdtemp(join(tmpdir(), "barrits-config-private-exports-"));
+  const barritsRoot = join(projectRoot, "barrits");
+
+  await mkdir(join(barritsRoot, "logic", "math"), { recursive: true });
+  await writeFile(join(barritsRoot, "index.ts"), "\n", "utf8");
+  await writeFile(
+    join(barritsRoot, "logic", "math", "operations.ts"),
+    [
+      "export const duplicar = (value: number) => value * 2;",
+      "export const triplicar = (value: number) => value * 3;",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  await writeFile(
+    join(barritsRoot, "logic", "path.ts"),
+    [
+      "export const buildOperationalPath = (segment: string) => `/ops/${segment}`;",
+      "export const buildSecretPath = (segment: string) => `/secret/${segment}`;",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  await writeFile(
+    join(projectRoot, "barrits.config.mjs"),
+    [
+      "export default {",
+      "  contracts: {",
+      "    exports: [",
+      "      {",
+      "        sourceFile: 'logic/path.ts',",
+      "        exportName: 'buildSecretPath',",
+      "        visibility: 'internal'",
+      "      }",
+      "    ]",
+      "  }",
+      "};",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+
+  const adapter = createNodeFileSystemAdapter();
+  const discovery = await findBarritsDirectory(adapter, { startDirectory: projectRoot });
+
+  assert.ok(discovery);
+
+  const graph = await inspectBarritsIntegrations(adapter, discovery);
+  const statements = graph.importActions.map((action) => action.statement);
+  const logicPathFile = graph.domains
+    .find((domain) => domain.name === "logic")
+    ?.files.find((file) => file.path === "logic/path.ts");
+
+  assert.ok(statements.includes('import { duplicar } from "@zuccadev-labs/barrits";'));
+  assert.ok(statements.includes('import { triplicar } from "@zuccadev-labs/barrits";'));
+  assert.ok(statements.includes('import { buildOperationalPath } from "@zuccadev-labs/barrits";'));
+  assert.ok(!statements.includes('import { buildSecretPath } from "@zuccadev-labs/barrits";'));
+  assert.ok(statements.includes("barrits.logic.path.buildOperationalPath"));
+  assert.ok(!statements.includes("barrits.logic.path.buildSecretPath"));
+  assert.ok(logicPathFile);
+  assert.deepEqual(
+    logicPathFile.exports.map((entry) => ({ name: entry.name, visibility: entry.visibility })),
+    [
+      { name: "buildOperationalPath", visibility: "public" },
+      { name: "buildSecretPath", visibility: "internal" },
+    ],
+  );
+});

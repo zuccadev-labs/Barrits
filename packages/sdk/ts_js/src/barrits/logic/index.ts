@@ -112,6 +112,12 @@ export {
   upperBound,
 };
 
+/**
+ * Core logic namespace exposed under `barrits.logic`.
+ *
+ * Includes arithmetic helpers and the full algorithm catalog reused by
+ * runtime examples and tooling integrations.
+ */
 export const logic = {
   aggregateAlgorithms,
   algorithms,
