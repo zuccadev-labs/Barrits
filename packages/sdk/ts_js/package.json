@@ -106,7 +106,7 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   },
   "scripts": {
     "dev": "node ../../../node_modules/tsx/dist/cli.mjs watch src/index.ts",
