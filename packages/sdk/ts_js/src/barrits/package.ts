@@ -1,8 +1,6 @@
 import type { BarritsPackageAutomationOptions } from "./plugins/shared";
 import {
   DEFAULT_AUTOMATION_DIRECTORY,
-  defineBarritsConfig,
-  loadBarritsConfig,
   type BarritsRootConfig,
   type BarritsRuntimeKind,
   type BarritsWatchMode,
@@ -12,6 +10,7 @@ import { getCurrentWorkingDirectory } from "./internal/runtime";
 export type { BarritsRootConfig, BarritsRuntimeKind, BarritsWatchMode } from "./config";
 export { BARRITS_CONFIG_FILENAMES, DEFAULT_AUTOMATION_DIRECTORY, defineBarritsConfig, findBarritsConfigFile, loadBarritsConfig, resolveBarritsConfig } from "./config";
 
+/** Public alias for package-first root configuration accepted by Barrits. */
 export type BarritsPackageOptions = BarritsRootConfig;
 
 type ResolvedBarritsPackageOptions = {
@@ -24,6 +23,12 @@ type ResolvedBarritsPackageOptions = {
   automationDirectory: string;
 };
 
+/**
+ * Normalizes package-first configuration into a deterministic runtime contract.
+ *
+ * @param options Optional root configuration passed by the consumer project.
+ * @returns Normalized package options consumed by Barrits automation and adapters.
+ */
 export const defineBarritsPackage = (
   options: BarritsPackageOptions = {},
 ): ResolvedBarritsPackageOptions => {
@@ -38,6 +43,12 @@ export const defineBarritsPackage = (
   };
 };
 
+/**
+ * Converts package-level configuration into automation options for plugins/adapters.
+ *
+ * @param options Optional root package options.
+ * @returns Automation options with watch-aware manifest behavior.
+ */
 export const toBarritsAutomationOptions = (
   options: BarritsPackageOptions = {},
 ): BarritsPackageAutomationOptions => {

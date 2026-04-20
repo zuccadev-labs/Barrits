@@ -14,6 +14,9 @@ export type {
   TraitDescriptorMetadata,
 } from "./descriptor";
 
+/**
+ * Trait descriptor and composition helpers exposed under `barrits.traits`.
+ */
 export const traits = {
   compose,
   composePipeline,

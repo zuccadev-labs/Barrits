@@ -1,3 +1,8 @@
+/**
+ * @module
+ * Deno CLI for Barrits discovery, inspection, imports, watch, and build automation.
+ */
+
 import { applyManagedImports, createBuildManifest, createImportsModuleSource, createProjectedGraph, filterImportActions, filterIntegrationGraph, findBarritsDirectory, inspectBarritsIntegrations, isBarritsExportVisibility, isBarritsFileKind, resolveProjectFilePath, stringifyBuildManifest, stringifyWatchSnapshot, type BarritsFileKind, type BarritsSelectionFilters } from "../../src/barrits/sdk";
 import { formatTraitDiagnosticDetailLines, formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
 import { resolveBarritsConfig } from "../../src/barrits/package";
@@ -464,6 +469,12 @@ const parseArguments = (argumentsList: string[]) => {
   return { command, json, write, writeSnapshot, mode, domains, exports, kinds, fileKinds, visibilities, startDirectory, snapshotFile, targetFile, childArgs };
 };
 
+/**
+ * Runs the Barrits CLI command pipeline inside Deno.
+ *
+ * @param argumentsList Optional CLI arguments. Defaults to runtime args.
+ * @returns Process exit code compatible with shell tooling.
+ */
 export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args): Promise<number> => {
   const options = parseArguments(argumentsList);
   const adapter = createDenoFileSystemAdapter();

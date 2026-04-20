@@ -1,15 +1,15 @@
 # 05 Descubrimiento, inspeccion y contratos de ts_js
 
-Yo mantengo discovery, inspection, manifest y snapshot como un solo sistema coherente. No quiero que cada adapter o bundler reinterprete la estructura del consumidor por su cuenta.
+Discovery, inspection, manifest y snapshot se mantienen como un solo sistema coherente. Cada adapter o bundler debe consumir el mismo contrato operativo, sin reinterpretar la estructura del consumidor.
 
 ## Como pienso discovery
 
-Yo localizo `barrits/` con un orden estable:
+La localizacion de `barrits/` sigue un orden estable:
 
-1. si la ruta actual ya es `barrits/`, yo la uso
-2. si el directorio actual contiene `barrits/`, yo lo uso
-3. si un ancestro contiene `barrits/`, yo lo uso
-4. si no, yo busco en descendencia con profundidad limitada
+1. si la ruta actual ya es `barrits/`, se usa
+2. si el directorio actual contiene `barrits/`, se usa
+3. si un ancestro contiene `barrits/`, se usa
+4. si no existe coincidencia, se busca en descendencia con profundidad limitada
 
 ## Como pienso inspection
 
@@ -22,11 +22,11 @@ Yo localizo `barrits/` con un orden estable:
 - actions de import
 - traits declarativos y `traitDiagnostics`
 
-Yo tambien mantengo filtros repetibles para inspeccion puntual, por ejemplo por dominio, export, kind de archivo o visibilidad. Con eso puedo proyectar el mismo grafo sobre un subconjunto sin cambiar el motor base.
+Tambien se mantienen filtros repetibles para inspeccion puntual, por ejemplo por dominio, export, kind de archivo o visibilidad. Esto permite proyectar el mismo grafo sobre un subconjunto sin cambiar el motor base.
 
 ## Como trato traits y diagnosticos
 
-Cuando la inspeccion detecta metadata declarativa de traits, yo proyecto esa informacion tanto a salida humana como a contratos JSON.
+Cuando la inspeccion detecta metadata declarativa de traits, esa informacion se proyecta tanto a salida humana como a contratos JSON.
 
 Eso incluye:
 
@@ -35,9 +35,34 @@ Eso incluye:
 - categorias como `drift`, `impossible` y `non-verifiable`
 - agregados que luego puede consumir `@zuccadev-labs/barrits/consume`
 
+## Contratos JSDoc para traits y API publica
+
+Las funciones publicas y contratos de traits se documentan con JSDoc para mantener semantica estable y verificable.
+
+Reglas operativas:
+
+- funciones exportadas deben declarar proposito, parametros y retorno
+- funciones con errores de contrato deben declarar `@throws`
+- los descriptors declarativos de traits usan tags `@barrits-*`
+- la metadata JSDoc se normaliza con orden estable para evitar drift por formato
+
+Tags declarativos usados hoy:
+
+- `@barrits-trait`
+- `@barrits-summary`
+- `@barrits-requires`
+- `@barrits-conflicts`
+- `@barrits-state`
+- `@barrits-consumes`
+- `@barrits-provides`
+- `@barrits-tags`
+- `@barrits-runtime`
+- `@barrits-version`
+- `@barrits-stability`
+
 ## Como pienso los contratos operativos
 
-Yo mantengo dos contratos principales:
+Se mantienen dos contratos principales:
 
 - `build-manifest.json` para pipelines de compilacion
 - `watch-snapshot.json` para tooling o procesos vivos de desarrollo
@@ -48,4 +73,4 @@ La idea es siempre la misma:
 2. el manifest o snapshot es una proyeccion serializada de ese grafo
 3. el tooling externo consume la proyeccion y no la logica interna del watcher
 
-Cuando un proceso hijo participa del flujo, yo expongo rutas operativas mediante variables como `BARRITS_BUILD_MANIFEST` y `BARRITS_WATCH_SNAPSHOT` para no obligar al host a redescubrir artefactos.
+Cuando un proceso hijo participa del flujo, se exponen rutas operativas mediante variables como `BARRITS_BUILD_MANIFEST` y `BARRITS_WATCH_SNAPSHOT` para no obligar al host a redescubrir artefactos.

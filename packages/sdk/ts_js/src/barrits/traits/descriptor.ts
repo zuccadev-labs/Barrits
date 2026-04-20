@@ -4,8 +4,10 @@ type UnionToIntersection<TValue> = (
 
 type AnyTraitDescriptor = TraitDescriptor<string, any, any>;
 
+/** Collision strategy for capability keys during trait composition. */
 export type TraitConflictStrategy = "throw" | "left" | "right";
 
+/** Context object passed to each trait factory during composition. */
 export type TraitDescriptorContext<
   TState extends object,
   TResolvedTraits extends object,
@@ -17,6 +19,7 @@ export type TraitDescriptorContext<
   readonly traits: Partial<TResolvedTraits>;
 };
 
+/** Normalized trait descriptor contract used by composition/runtime inspection. */
 export type TraitDescriptor<
   TName extends string = string,
   TState extends object = Record<string, never>,
@@ -34,6 +37,7 @@ export type TraitDescriptor<
   readonly create: (context: TraitDescriptorContext<TState, TProvides, TName>) => TProvides;
 };
 
+/** Authoring input accepted by `createTraitDescriptor`. */
 export type TraitDescriptorInput<
   TName extends string,
   TState extends object,
@@ -51,6 +55,7 @@ export type TraitDescriptorInput<
   readonly create: (context: TraitDescriptorContext<TState, TProvides, TName>) => TProvides;
 };
 
+/** Metadata projection parsed from declarative JSDoc `@barrits-*` tags. */
 export type TraitDescriptorJsDocMetadata = {
   readonly name?: string;
   readonly summary?: string;
@@ -63,6 +68,7 @@ export type TraitDescriptorJsDocMetadata = {
   readonly runtimes: readonly string[];
 };
 
+/** Mixed input for JSDoc-derived trait descriptors with explicit override fields. */
 export type TraitDescriptorFromJsDocInput<
   TName extends string,
   TState extends object,
@@ -80,6 +86,7 @@ export type TraitDescriptorFromJsDocInput<
   readonly create: (context: TraitDescriptorContext<TState, TProvides, TName>) => TProvides;
 };
 
+/** Stable metadata recorded for each trait in composition results and diagnostics. */
 export type TraitDescriptorMetadata = {
   readonly summary?: string;
   readonly requires: readonly string[];
@@ -91,6 +98,7 @@ export type TraitDescriptorMetadata = {
   readonly runtimes: readonly string[];
 };
 
+/** Optional composition controls for state initialization and collision handling. */
 export type ComposeTraitDescriptorsOptions<TState extends object> = {
   readonly state?: TState;
   readonly onConflict?: TraitConflictStrategy;
@@ -103,6 +111,7 @@ export type ComposeTraitDescriptorsOptions<TState extends object> = {
   ) => unknown;
 };
 
+/** Deterministic trait composition result consumed by runtime tooling and diagnostics. */
 export type ComposedTraitDescriptorsResult<TState extends object, TTraits extends object> = {
   readonly order: readonly string[];
   readonly state: TState;
@@ -121,14 +130,16 @@ type MergeTraitProvides<TDescriptors extends readonly AnyTraitDescriptor[]> = Un
   TraitProvides<TDescriptors[number]>
 > extends object ? UnionToIntersection<TraitProvides<TDescriptors[number]>> : Record<string, never>;
 
+const compareLexically = (left: string, right: string): number => {
+  return left.localeCompare(right);
+};
+
 const normalizeUniqueStrings = (values: readonly string[] | undefined): string[] => {
   if (!values?.length) {
     return [];
   }
 
-  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean))).sort((left, right) => {
-    return left.localeCompare(right);
-  });
+  return Array.from(new Set(values.map((value) => value.trim()).filter(Boolean))).sort(compareLexically);
 };
 
 const normalizeJsDocBlock = (value: string): string => {
@@ -166,6 +177,15 @@ const normalizeOptionalString = (value: string | undefined): string | undefined 
   return normalizedValue || undefined;
 };
 
+/**
+ * Parses trait descriptor metadata from a JSDoc block using `@barrits-*` tags.
+ *
+ * Supported tags: trait name, summary, requires, conflicts, state, consumes,
+ * provides, tags, and runtime targets.
+ *
+ * @param jsDoc Raw JSDoc string.
+ * @returns Normalized metadata with unique and sorted string arrays.
+ */
 export const parseTraitDescriptorJsDoc = (jsDoc: string): TraitDescriptorJsDocMetadata => {
   const normalizedBlock = normalizeJsDocBlock(jsDoc);
 
@@ -182,6 +202,12 @@ export const parseTraitDescriptorJsDoc = (jsDoc: string): TraitDescriptorJsDocMe
   };
 };
 
+/**
+ * Creates a trait descriptor with normalized metadata arrays and stable ordering.
+ *
+ * @param descriptor Trait declaration input authored in code.
+ * @returns Normalized trait descriptor ready for composition.
+ */
 export const createTraitDescriptor = <
   const TName extends string,
   TState extends object,
@@ -203,6 +229,16 @@ export const createTraitDescriptor = <
   };
 };
 
+/**
+ * Creates a trait descriptor from JSDoc metadata plus explicit runtime factory logic.
+ *
+ * Explicit descriptor fields override metadata parsed from the JSDoc block.
+ *
+ * @param jsDoc Raw JSDoc block containing `@barrits-*` tags.
+ * @param descriptor Trait factory configuration and optional override metadata.
+ * @returns Normalized trait descriptor built from metadata and explicit overrides.
+ * @throws Error when no descriptor name is available from metadata or explicit options.
+ */
 export const createTraitDescriptorFromJsDoc = <
   const TName extends string = string,
   TState extends object = Record<string, never>,
@@ -286,7 +322,7 @@ const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): stri
   const pending = Array.from(dependencyCounts.entries())
     .filter(([, count]) => count === 0)
     .map(([name]) => name)
-    .sort((left, right) => left.localeCompare(right));
+    .sort(compareLexically);
   const ordered: string[] = [];
 
   while (pending.length > 0) {
@@ -298,13 +334,13 @@ const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): stri
 
     ordered.push(currentName);
 
-    for (const dependentName of (dependents.get(currentName) ?? []).sort((left, right) => left.localeCompare(right))) {
+    for (const dependentName of (dependents.get(currentName) ?? []).sort(compareLexically)) {
       const nextCount = (dependencyCounts.get(dependentName) ?? 0) - 1;
       dependencyCounts.set(dependentName, nextCount);
 
       if (nextCount === 0) {
         pending.push(dependentName);
-        pending.sort((left, right) => left.localeCompare(right));
+        pending.sort(compareLexically);
       }
     }
   }
@@ -367,13 +403,13 @@ const assertStateOwnership = (descriptors: readonly AnyTraitDescriptor[]): Recor
 };
 
 const resolveProvidedKeys = (descriptor: AnyTraitDescriptor, traitValue: Record<string, unknown>): string[] => {
-  const actualKeys = Object.keys(traitValue).sort((left, right) => left.localeCompare(right));
+  const actualKeys = Object.keys(traitValue).sort(compareLexically);
 
   if (descriptor.provides.length === 0) {
     return actualKeys;
   }
 
-  const declaredKeys = [...descriptor.provides].sort((left, right) => left.localeCompare(right));
+  const declaredKeys = [...descriptor.provides].sort(compareLexically);
 
   if (declaredKeys.length !== actualKeys.length || declaredKeys.some((key, index) => key !== actualKeys[index])) {
     throw new Error(
@@ -384,6 +420,17 @@ const resolveProvidedKeys = (descriptor: AnyTraitDescriptor, traitValue: Record<
   return declaredKeys;
 };
 
+/**
+ * Composes trait descriptors into a deterministic runtime result.
+ *
+ * The composition performs dependency ordering, conflict checks, state ownership
+ * validation, capability collision handling, and consumed-capability checks.
+ *
+ * @param descriptors Trait descriptors to compose.
+ * @param options Optional state and conflict-resolution settings.
+ * @returns Ordered descriptors, composed trait functions, metadata, and ownership maps.
+ * @throws Error when descriptors are invalid, cyclic, conflicting, or produce missing capabilities.
+ */
 export const composeTraitDescriptors = <
   TState extends object = Record<string, never>,
   const TDescriptors extends readonly AnyTraitDescriptor[] = readonly AnyTraitDescriptor[],
