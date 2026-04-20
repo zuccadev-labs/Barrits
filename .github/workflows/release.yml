@@ -99,16 +99,29 @@ jobs:
             throw "Stable release tags must not include prerelease suffixes."
           }
 
-          $packageVersion = node -p "require('./packages/sdk/ts_js/package.json').version"
-          $jsrVersion = node -p "require('./packages/sdk/ts_js/jsr.json').version"
+$packageVersion = node -p "require('./packages/sdk/ts_js/package.json').version"
+           $jsrVersion = node -p "require('./packages/sdk/ts_js/jsr.json').version"
+           $monorepoVersion = node -p "require('./package.json').version"
 
-          if ($packageVersion -ne $version) {
-            throw "package.json version '$packageVersion' does not match tag version '$version'."
-          }
+           # For pre-release tags (0.1.0-rc.N), allow monorepo to be either stable (0.1.0) or matching prerelease
+           if ($channel -eq "prerelease") {
+             # Accept matching prerelease or stable 0.1.0 for monorepo
+             if ($monorepoVersion -ne $version -and $monorepoVersion -ne "0.1.0") {
+               throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version' or stable '0.1.0'."
+             }
+           } else {
+             if ($monorepoVersion -ne $version) {
+               throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version'."
+             }
+           }
 
-          if ($jsrVersion -ne $version) {
-            throw "jsr.json version '$jsrVersion' does not match tag version '$version'."
-          }
+           if ($packageVersion -ne $version) {
+             throw "package.json version '$packageVersion' does not match tag version '$version'."
+           }
+
+           if ($jsrVersion -ne $version) {
+             throw "jsr.json version '$jsrVersion' does not match tag version '$version'."
+           }
 
           $releaseSha = git rev-list -n 1 $tag
           if (-not $releaseSha) {
