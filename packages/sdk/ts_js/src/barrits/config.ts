@@ -65,6 +65,8 @@ export type BarritsRootConfig = {
   autoManifest?: boolean;
   automationDirectory?: string;
   contracts?: BarritsContractsConfig;
+  /** Optional main method to override the default bootstrap behavior */
+  main?: () => Promise<void> | void;
 };
 
 /** Fully resolved runtime configuration consumed internally by Barrits. */
@@ -78,6 +80,8 @@ export type ResolvedBarritsConfig = {
   automationDirectory: string;
   contracts?: BarritsContractsConfig;
   configFilePath?: string;
+  /** Resolved main method from configuration */
+  main?: () => Promise<void> | void;
 };
 
 type RuntimeGlobals = typeof globalThis & {
@@ -219,26 +223,27 @@ export const loadBarritsConfig = async (
  * @returns Fully resolved config used by automation and adapters.
  */
 export const resolveBarritsConfig = async (
-  options: BarritsRootConfig = {},
-  fallbackProjectRoot: string = getCurrentWorkingDirectory(),
-): Promise<ResolvedBarritsConfig> => {
-  const initialProjectRoot = options.projectRoot ?? fallbackProjectRoot;
-  const loadedConfig = await loadBarritsConfig(initialProjectRoot);
-  const mergedConfig = {
-    ...(loadedConfig ?? {}),
-    ...options,
-  } satisfies BarritsRootConfig;
-  const projectRoot = mergedConfig.projectRoot ?? initialProjectRoot;
+   options: BarritsRootConfig = {},
+   fallbackProjectRoot: string = getCurrentWorkingDirectory(),
+ ): Promise<ResolvedBarritsConfig> => {
+   const initialProjectRoot = options.projectRoot ?? fallbackProjectRoot;
+   const loadedConfig = await loadBarritsConfig(initialProjectRoot);
+   const mergedConfig = {
+     ...(loadedConfig ?? {}),
+     ...options,
+   } satisfies BarritsRootConfig;
+   const projectRoot = mergedConfig.projectRoot ?? initialProjectRoot;
 
-  return {
-    runtime: mergedConfig.runtime ?? "other",
-    watch: mergedConfig.watch ?? "auto",
-    debugCommands: mergedConfig.debugCommands ?? false,
-    projectRoot,
-    manifestPath: mergedConfig.manifestPath,
-    autoManifest: mergedConfig.autoManifest ?? true,
-    automationDirectory: normalizeAutomationDirectory(mergedConfig.automationDirectory),
-    contracts: mergedConfig.contracts,
-    configFilePath: loadedConfig?.configFilePath,
-  };
-};
+   return {
+     runtime: mergedConfig.runtime ?? "other",
+     watch: mergedConfig.watch ?? "auto",
+     debugCommands: mergedConfig.debugCommands ?? false,
+     projectRoot,
+     manifestPath: mergedConfig.manifestPath,
+     autoManifest: mergedConfig.autoManifest ?? true,
+     automationDirectory: normalizeAutomationDirectory(mergedConfig.automationDirectory),
+     contracts: mergedConfig.contracts,
+     configFilePath: loadedConfig?.configFilePath,
+     main: mergedConfig.main,
+   };
+ };

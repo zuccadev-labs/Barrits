@@ -89,3 +89,22 @@ Mi regla practica es esta:
 ## Cuando me conviene mover artefactos
 
 Si yo no quiero mezclar artefactos operativos con el dominio visible del proyecto, cambio `automationDirectory` y saco manifests, snapshots e imports generados fuera de `.barrits`.
+
+## Configurar un método main personalizado
+
+Puedo definir un método main personalizado en mi configuración para controlar el comportamiento de arranque de mi aplicación:
+
+```ts
+import { defineBarritsConfig } from "@zuccadev-labs/barrits";
+
+export default defineBarritsConfig({
+  runtime: "node",
+  main: async () => {
+    // Mi lógica de arranque personalizada aquí
+    console.log("Aplicación iniciando con configuración personalizada");
+    // Retornar una promesa o valor void según necesite
+  }
+});
+```
+
+Este método main será resuelto y puede ser utilizado por el SDK o por herramientas que integren con barrits para ejecutar lógica de arranque personalizada en lugar de depender únicamente de los scripts de los ejemplos.

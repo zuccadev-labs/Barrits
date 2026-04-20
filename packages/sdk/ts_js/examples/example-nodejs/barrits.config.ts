@@ -1,10 +1,12 @@
 import { defineBarritsConfig } from "@zuccadev-labs/barrits";
+import { boot } from "./src/main";
 
 export default defineBarritsConfig({
   runtime: "node",
   watch: "auto",
   autoManifest: true,
   automationDirectory: ".barrits",
+  main: boot,
   contracts: {
     traits: [
       {
