@@ -10,7 +10,7 @@
     "@zuccadev-labs/barrits": "file:../..",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-router-dom": "^7.14.0"
+    "react-router-dom": "^7.14.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.1",

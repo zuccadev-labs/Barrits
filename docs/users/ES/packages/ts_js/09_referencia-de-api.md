@@ -75,10 +75,14 @@ Este documento actua como referencia central de la superficie publica de `@zucca
   Donde se usa: scripts o tooling interno que necesitan una representacion breve.
 
 - `barrits` y `brt`
-  Que hace: agrupan la API por dominios (`logic`, `routes`, `traits`).
+  Que hace: agrupan la API por dominios (`logic`, `routes`, `traits` y otros).
   Para que sirve: acceso namespaced cuando prefiero navegar por familias en vez de imports flat.
-  Como se usa: `barrits.logic.orderBy(...)`, `barrits.routes.buildPath(...)` o `barrits.traits.composePipeline(...)`.
-  Donde se usa: consumo avanzado o shells exploratorios.
+  Como se usa: 
+    - Acceso por dominio: `barrits.logic.orderBy(...)`, `barrits.routes.buildPath(...)`
+    - Acceso por submódulo: `barrits.logic.searchAlgorithms.binarySearch(...)`
+    - Acceso por función específica: `barrits.traits.composePipeline(...)`
+    - Acceso corto: `brt.logic.orderBy(...)` (alias de barrits)
+  Donde se usa: consumo avanzado, shells exploratorios y cuando se quiere evitar imports múltiples.
 
 ### Consumo resumido de manifests y snapshots
 
