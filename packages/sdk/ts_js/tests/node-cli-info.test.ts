@@ -174,6 +174,38 @@ test("node build prints structural trait drift summary in human-readable output"
   assert.doesNotMatch(result.stdout, /trait-provides-mismatch:/);
 });
 
+test("node info detects trait descriptors declared in barrits/traits/index.ts", async () => {
+  const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-traits-index-"));
+  await createAutomationProjectFixture(projectRoot);
+
+  await writeProjectFile(projectRoot, "barrits/traits/index.ts", [
+    "/**",
+    " * @barrits-trait runtime-node",
+    " * @barrits-provides getRuntimeName",
+    " */",
+    "export const nodeRuntimeTrait = createTraitDescriptor({",
+    '  name: "runtime-node",',
+    '  provides: ["getRuntimeName"],',
+    "  create: () => ({",
+    '    getRuntimeName() { return "node"; },',
+    "  }),",
+    "});",
+    "",
+  ].join("\n"));
+
+  const result = await runCommand(
+    process.execPath,
+    [tsxCliPath, nodeCliPath, "info", projectRoot],
+    repositoryRoot,
+    process.env,
+  );
+
+  assert.equal(result.exitCode, 0);
+  assert.match(result.stdout, /traits: 1/);
+  assert.match(result.stdout, /domains:\s*[\s\S]*- traits\s*[\s\S]*traits\/index\.ts \[trait\]/);
+  assert.match(result.stdout, /barrits\.traits\.nodeRuntimeTrait/);
+});
+
 test("node info prints dependency, state, and conflicts drift diagnostics in human-readable output", async () => {
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-dependency-drift-info-"));
   await createAutomationProjectFixture(projectRoot);

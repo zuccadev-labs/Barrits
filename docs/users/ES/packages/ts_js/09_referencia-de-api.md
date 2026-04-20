@@ -1,11 +1,11 @@
 # 09 Referencia de API
 
-Yo uso este documento como referencia central de la superficie publica de `@zuccadev-labs/barrits`. La idea es responder cuatro preguntas para cada metodo o familia: que hace, para que sirve, como se usa y donde aparece en los recorridos reales del repo.
+Este documento actua como referencia central de la superficie publica de `@zuccadev-labs/barrits`. La meta es responder cuatro preguntas para cada metodo o familia: que hace, para que sirve, como se usa y donde aparece en los recorridos reales del repo.
 
 ## Como leer esta referencia
 
 - si necesito arrancar rapido, primero leo `packages/sdk/ts_js/README.md`
-- si ya se que ejemplo me interesa, entro a `examples/00_indice.md` y despues al README local de la demo
+- si ya se que ejemplo me interesa, entro a `examples/00_indice.md`, que documenta la carpeta canonica `packages/sdk/ts_js/examples/`, y despues al README local de la demo
 - si quiero detalle exacto de una funcion, vuelvo aqui
 
 ## Entrada principal `@zuccadev-labs/barrits`
@@ -75,10 +75,14 @@ Yo uso este documento como referencia central de la superficie publica de `@zucc
   Donde se usa: scripts o tooling interno que necesitan una representacion breve.
 
 - `barrits` y `brt`
-  Que hace: agrupan la API por dominios (`logic`, `routes`, `traits`).
+  Que hace: agrupan la API por dominios (`logic`, `routes`, `traits` y otros).
   Para que sirve: acceso namespaced cuando prefiero navegar por familias en vez de imports flat.
-  Como se usa: `barrits.logic.orderBy(...)`, `barrits.routes.buildPath(...)` o `barrits.traits.composePipeline(...)`.
-  Donde se usa: consumo avanzado o shells exploratorios.
+  Como se usa: 
+    - Acceso por dominio: `barrits.logic.orderBy(...)`, `barrits.routes.buildPath(...)`
+    - Acceso por submódulo: `barrits.logic.searchAlgorithms.binarySearch(...)`
+    - Acceso por función específica: `barrits.traits.composePipeline(...)`
+    - Acceso corto: `brt.logic.orderBy(...)` (alias de barrits)
+  Donde se usa: consumo avanzado, shells exploratorios y cuando se quiere evitar imports múltiples.
 
 ### Consumo resumido de manifests y snapshots
 
@@ -114,10 +118,10 @@ Yo uso este documento como referencia central de la superficie publica de `@zucc
 
 ### Traits y composicion declarativa
 
-- `composePipeline(...steps)`
+- `composePipeline(initialValue, ...steps)`
   Que hace: compone una tuberia de transformaciones.
   Para que sirve: declarar flujos de procesamiento encadenados de forma clara.
-  Como se usa: cada paso recibe el resultado del anterior.
+  Como se usa: recibe un valor inicial y luego una secuencia de pasos; cada paso recibe el resultado del anterior.
   Donde se usa: `08_traits-y-composicion.md`.
 
 - `composeTraitDescriptors(input)`
@@ -132,10 +136,10 @@ Yo uso este documento como referencia central de la superficie publica de `@zucc
   Como se usa: se define el nombre, metadata y comportamiento esperado.
   Donde se usa: `08_traits-y-composicion.md`.
 
-- `createTraitDescriptorFromJsDoc(input)`
+- `createTraitDescriptorFromJsDoc(jsDoc, descriptor)`
   Que hace: crea un descriptor a partir de JSDoc.
   Para que sirve: derivar metadata desde comentarios ya existentes.
-  Como se usa: se le pasa el bloque JSDoc o su metadata parseada.
+  Como se usa: se le pasa el bloque JSDoc y un descriptor con la funcion `create` y overrides opcionales.
   Donde se usa: pipelines de introspeccion y documentacion automatizada.
 
 - `parseTraitDescriptorJsDoc(value)`
@@ -143,6 +147,20 @@ Yo uso este documento como referencia central de la superficie publica de `@zucc
   Para que sirve: convertir comentarios en metadata estructurada.
   Como se usa: se aplica antes de `createTraitDescriptorFromJsDoc()`.
   Donde se usa: tooling y contratos declarativos.
+
+Tags declarativos reconocidos por este flujo:
+
+- `@barrits-trait`
+- `@barrits-summary`
+- `@barrits-requires`
+- `@barrits-conflicts`
+- `@barrits-state`
+- `@barrits-consumes`
+- `@barrits-provides`
+- `@barrits-tags`
+- `@barrits-runtime`
+- `@barrits-version`
+- `@barrits-stability`
 
 - `mergeTraits(...traits)`
   Que hace: fusiona traits.

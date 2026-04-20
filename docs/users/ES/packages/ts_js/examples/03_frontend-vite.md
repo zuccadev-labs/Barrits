@@ -11,6 +11,12 @@ En los cuatro casos yo valido lo mismo:
 - uso de `@zuccadev-labs/barrits/vite`
 - generacion automatica del manifest virtual sin pedir comandos manuales del motor
 
+Patron de simplificacion aplicado:
+
+- reduzco re-exports manuales en `src/barrits/index.ts` y barrels intermedios cuando son redundantes
+- Barrits detecta los metodos publicos desde el arbol de archivos del consumidor
+- si necesito un metodo privado, lo marco en `barrits.config.ts` con `contracts.exports`
+
 ## Diferencias utiles
 
 - `example-react/`: recorrido base del plugin Vite con React.

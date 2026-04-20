@@ -39,3 +39,7 @@ Thumbs.db
 .idea/
 .vscode-test/
 .vs/
+
+# Local Copilot customizations (kept in workspace, excluded from repo commits)
+.github/skills/
+.github/agents/

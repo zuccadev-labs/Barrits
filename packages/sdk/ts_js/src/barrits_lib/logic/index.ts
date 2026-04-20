@@ -1,6 +1,8 @@
 import { algorithms } from "./algorithms";
+import { stringAlgorithms } from "./strings";
 
 export { algorithms } from "./algorithms";
+export { accentInsensitiveRegex, capitalize, capitalizeWords, slugify, stringAlgorithms, truncate } from "./strings";
 export {
   aggregateAlgorithms,
   averageBy,
@@ -79,4 +81,5 @@ export type {
 
 export const logic = {
   algorithms,
+  strings: stringAlgorithms,
 };
