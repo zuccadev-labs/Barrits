@@ -99,29 +99,33 @@ jobs:
             throw "Stable release tags must not include prerelease suffixes."
           }
 
-           $packageVersion = node -p "require('./packages/sdk/ts_js/package.json').version"
-           $jsrVersion = node -p "require('./packages/sdk/ts_js/jsr.json').version"
-           $monorepoVersion = node -p "require('./package.json').version"
+          $packageVersion = node -p "require('./packages/sdk/ts_js/package.json').version"
+          $jsrVersion = node -p "require('./packages/sdk/ts_js/jsr.json').version"
+          $monorepoVersion = node -p "require('./package.json').version"
 
-           # For pre-release tags (0.1.0-rc.N), allow monorepo to be either stable (0.1.0) or matching prerelease
-           if ($channel -eq "prerelease") {
-             # Accept matching prerelease or stable 0.1.0 for monorepo
-             if ($monorepoVersion -ne $version -and $monorepoVersion -ne "0.1.0" -and -not $version.StartsWith($monorepoVersion)) {
-               throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version' (or its stable prefix)."
-             }
-           } else {
-             if ($monorepoVersion -ne $version) {
-               throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version'."
-             }
-           }
-
-           if ($packageVersion -ne $version) {
-             throw "package.json version '$packageVersion' does not match tag version '$version'."
-           }
-
-           if ($jsrVersion -ne $version) {
-             throw "jsr.json version '$jsrVersion' does not match tag version '$version'."
-           }
+          # Version validation
+          if ($channel -eq "prerelease") {
+            # Accept matching prerelease or stable prefix for prerelease tags
+            if ($monorepoVersion -ne $version -and $monorepoVersion -ne "0.1.0" -and -not $version.StartsWith($monorepoVersion)) {
+              throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version' (or its stable prefix)."
+            }
+            if ($packageVersion -ne $version -and -not $version.StartsWith($packageVersion)) {
+              throw "package.json version '$packageVersion' does not match tag version '$version' (or its stable prefix)."
+            }
+            if ($jsrVersion -ne $version -and -not $version.StartsWith($jsrVersion)) {
+              throw "jsr.json version '$jsrVersion' does not match tag version '$version' (or its stable prefix)."
+            }
+          } else {
+            if ($monorepoVersion -ne $version) {
+              throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version'."
+            }
+            if ($packageVersion -ne $version) {
+              throw "package.json version '$packageVersion' does not match tag version '$version'."
+            }
+            if ($jsrVersion -ne $version) {
+              throw "jsr.json version '$jsrVersion' does not match tag version '$version'."
+            }
+          }
 
           $releaseSha = git rev-list -n 1 $tag
           if (-not $releaseSha) {
@@ -140,6 +144,7 @@ jobs:
           "release_sha=$releaseSha" >> $env:GITHUB_OUTPUT
           "npm_dist_tag=$npmTag" >> $env:GITHUB_OUTPUT
           "is_prerelease=$isPrerelease" >> $env:GITHUB_OUTPUT
+          "release_tag=$tag" >> $env:GITHUB_OUTPUT # redundant but safe
           "release_name=$releaseName" >> $env:GITHUB_OUTPUT
 
   publish-npm:
@@ -235,7 +240,7 @@ jobs:
       - prepare
       - publish-npm
       - publish-jsr
-    if: always() && needs.prepare.result == 'success' && (needs['publish-npm'].result != 'failure' || needs['publish-jsr'].result != 'failure' || true) # Permit release creation even on partial registry failures
+    if: always() && needs.prepare.result == 'success' && (needs['publish-npm'].result != 'failure' || needs['publish-jsr'].result != 'failure' || true)
     runs-on: ubuntu-latest
 
     steps:
