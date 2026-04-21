@@ -180,8 +180,7 @@ jobs:
           $alreadyPublished = $existingVersions -contains $version
 
           if ($alreadyPublished) {
-            Write-Host "::notice::Version $version already exists on npm. Promoting dist-tag to '$distTag'."
-            npm dist-tag add "${packageName}@${version}" $distTag
+            Write-Host "::warning::Version $version already exists on npm (likely published by a prerelease). GitHub Actions provenance cannot promote dist-tags automatically. Please run manually locally: npm dist-tag add ${packageName}@${version} ${distTag}"
           } else {
             Write-Host "Publishing $packageName@$version with dist-tag '$distTag'."
             npm publish --access public --provenance --tag $distTag
