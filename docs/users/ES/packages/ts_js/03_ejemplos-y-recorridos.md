@@ -1,143 +1,59 @@
-# 03 Ejemplos y recorridos de ts_js
+# Ecosistema y Recorridos (Paso a Paso)
 
-Yo uso los ejemplos reales del repo como referencia de consumo. No los trato como carpetas decorativas; los uso para validar flujos concretos.
+Este documento instruye de forma minuciosa y orientada al consumidor final cómo aprovechar el potencial arquitectónico del orquestador Barrits como motor de descubrimiento y orquestación de módulos.
 
-Si yo necesito la guia oficial detallada de la carpeta `examples/`, sigo este indice complementario:
+## Pre-requisitos del Consumidor
 
-- `examples/00_indice.md`
-- `examples/01_mapa-general.md`
-- `examples/02_nodejs-y-deno.md`
-- `examples/03_frontend-vite.md`
-- `examples/04_bundlers.md`
-- `examples/05_tauri.md`
-- `examples/06_bun.md`
+Barrits asume que el proyecto consumidor delega al SDK la resolución del árbol AST, la recolección de exports y la determinación de visibilidad de módulos internos, eliminando implementaciones manuales propensas a error.
 
-## Si yo quiero Node.js
+## Paso 1: Configurar el Directorio de Integración
 
-Yo miro `packages/sdk/ts_js/examples/example-nodejs/` cuando necesito:
+Barrits opera leyendo y consumiendo una carpeta dedicada. El proyecto debe crear una carpeta con nombre `.barrits` o `barrits/` en su directorio de ejecución, o configurar una ruta personalizada en `barrits.config.ts`.
 
-- build local con manifest
-- showcase de algoritmos
-- consumo de snapshots y scripts operativos
+1. Crear la carpeta en el proyecto: `mkdir barrits`
+2. El SDK detecta esta convención y aplica lectura *Differential Caching* en 0ms. Todo archivo ubicado en esta ruta o declarado en la configuración queda bajo orquestación determinística.
 
-README local a revisar:
+## Paso 2: Declarar Componentes Mediante Traits (Godoc-style)
 
-- `packages/sdk/ts_js/examples/example-nodejs/README.md`
+Los Traits son contratos semánticos que Barrits resuelve estáticamente sobre el AST, proveyendo trazabilidad estructural sin procesado de expresiones regulares.
 
-APIs que conviene conocer antes de abrir el codigo:
+Crear el archivo base del módulo en `barrits/index.ts`:
 
-- `binarySearch`, `findSortedRange`, `lowerBound`, `upperBound`
-- `chunk`, `groupBy`, `indexBy`, `uniqueBy`
-- `orderBy`, `quickSort`, `stableSortBy`, `insertSorted`
-- `averageBy`, `bucketByInterval`, `detectTimeSeriesGaps`, `differenceSeries`, `movingAverageSeries`, `resampleSeries`
-- `movingAverage`, `rollingSum`, `slidingWindow`, `windowDelta`
-- `paginate`, `partitionBy`, `rankBy`, `topK`
-- `breadthFirstSearch`, `dijkstraShortestPath`, `topologicalSort`
+```typescript
+import { createTraitDescriptor } from "@zuccadev-labs/barrits";
 
-## Si yo quiero Deno
+/**
+ * @barrits-trait
+ *
+ * Descriptor de dominio de autenticación backend.
+ * Define los contratos de provisión y los recursos en conflicto potencial.
+ */
+export const authBackendTrait = createTraitDescriptor({
+  name: "AuthBackendDomain",
+  provides: ["database-adapter", "auth-session"],
+  conflicts: ["legacy-adapter"]
+});
+```
 
-Yo miro `packages/sdk/ts_js/examples/example-deno/` cuando necesito:
+A diferencia de herramientas basadas en análisis de expresiones regulares o linters de importaciones, esta declaración es procesada mediante análisis estático AST nativo, integrándose en el grafo de descubrimiento sin latencia adicional en el pipeline de compilado.
 
-- tareas `deno task`
-- consumo de `barrits` desde Deno
-- inspeccion con el adapter Deno
+## Paso 3: Consumo del Orquestador
 
-README local a revisar:
+Los adaptadores expuestos por Barrits automatizan la resolución conectándose con el ecosistema del bundler o runtime configurado. Ejemplo en Deno:
 
-- `packages/sdk/ts_js/examples/example-deno/README.md`
+```typescript
+import { barrits } from "@zuccadev-labs/barrits";
 
-APIs centrales de este recorrido:
+const manifest = await barrits.inspect();
+console.log(manifest.traitDescriptors); // Lista de contratos declarados y resueltos
+```
 
-- `defineBarritsPackage`
-- `averageBy`
-- `movingAverage`
-- `topK`
+Al ejecutar el CLI, el orquestador genera un *Manifest Determinístico* bloqueado mediante `checksum`. Esta firma criptográfica garantiza que entre compilaciones consecutivas ningún componente externo haya alterado la resolución del grafo.
 
-## Si yo quiero Bun
+## Paso 4: Prevención de Colisiones de Namespace
 
-Yo miro `packages/sdk/ts_js/examples/example-bun/` cuando necesito:
+En monorepos de alta escala, la colisión de exports entre librerías produce fallos silenciosos difíciles de trazar. Al ejecutar la orquestación, Barrits evalúa los dominios declarados bajo el principio de Responsabilidad Única. Cualquier export que colisione semánticamente genera un diagnóstico explícito indicando el origen exacto de la colisión, sin romper silenciosamente la aplicación.
 
-- scripts `bun run` sobre una integracion package-first
-- validacion de utilidades funcionales en runtime Bun
-- ruta operativa visible basada en `buildPath` y `parsePath`
+## Conclusión
 
-README local a revisar:
-
-- `packages/sdk/ts_js/examples/example-bun/README.md`
-
-APIs centrales de este recorrido:
-
-- `defineBarritsPackage`
-- `orderBy`
-- `movingAverage`
-- `averageBy`
-- `topK`
-- `buildPath`
-- `parsePath`
-
-## Si yo quiero frontend package-first
-
-Yo miro estos ejemplos segun mi stack:
-
-- `packages/sdk/ts_js/examples/example-react/`
-- `packages/sdk/ts_js/examples/example-vue/`
-- `packages/sdk/ts_js/examples/example-solid/`
-- `packages/sdk/ts_js/examples/example-svelte/`
-
-READMEs locales a revisar:
-
-- `packages/sdk/ts_js/examples/example-react/README.md`
-- `packages/sdk/ts_js/examples/example-vue/README.md`
-- `packages/sdk/ts_js/examples/example-solid/README.md`
-- `packages/sdk/ts_js/examples/example-svelte/README.md`
-
-APIs comunes de esta familia:
-
-- `defineBarritsPackage`
-- `toBarritsAutomationOptions`
-- `barritsVitePlugin`
-- `createBuildManifestSummary`
-
-APIs de UI o analitica que cambian por framework:
-
-- React y Vue: `orderBy`, `movingAverageSeries`, `maxDrawdown`
-- Solid y Svelte: `sumar`
-- Svelte: `movingAverageSeries`
-
-## Si yo quiero bundlers directos
-
-Yo miro `packages/sdk/ts_js/examples/bundlers/` cuando necesito integrar:
-
-- Vite
-- esbuild
-- Rollup
-- Webpack
-
-README local a revisar:
-
-- `packages/sdk/ts_js/examples/bundlers/README.md`
-
-APIs centrales:
-
-- `defineBarritsPackage`
-- `toBarritsAutomationOptions`
-- `barritsVitePlugin`
-- `barritsEsbuildPlugin`
-- `barritsRollupPlugin`
-- `barritsWebpackPlugin`
-- `createBuildManifestSummary`
-
-## Si yo quiero desktop seguro
-
-Yo miro `packages/sdk/ts_js/examples/example-tauri/` cuando necesito leer manifests o snapshots desde backend controlado y entregar al frontend solo payloads resumidos.
-
-README local a revisar:
-
-- `packages/sdk/ts_js/examples/example-tauri/README.md`
-
-APIs centrales:
-
-- `readBuildManifestSummary`
-- `readLanguageToolSnapshot`
-
-Si necesito la descripcion detallada de cualquiera de esas funciones, entro a `09_referencia-de-api.md`. La idea es que los ejemplos expliquen el recorrido de uso y que la referencia central explique la API completa sin duplicacion.
+La adopción de Barrits no implica reconstruir la capa frontal del proyecto. Permite desacoplar la inteligencia estructural pesada hacia un motor de descubrimiento pre-optimizado y transaccional, habilitando máxima agilidad y trazabilidad organizacional a escala.

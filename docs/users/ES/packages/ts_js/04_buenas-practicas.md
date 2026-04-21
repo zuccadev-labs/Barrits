@@ -1,47 +1,47 @@
-# 04 Buenas practicas de ts_js
+# 04 Buenas prácticas de ts_js
 
-Yo sigo estas practicas para que `barrits` me ayude y no se convierta en otra fuente de drift.
+Estas prácticas mantienen el contrato package-first y previenen el drift de integración más frecuente.
 
-## Practicas que sigo siempre
+## Convenciones fundamentales
 
-1. yo mantengo visible solo la carpeta `barrits/` en el consumidor
-2. yo no expongo `barrits_lib` como contrato publico del proyecto consumidor
-3. yo prefiero configurar el paquete antes que encadenar comandos manuales
-4. yo uso los ejemplos del repo como referencia de implementacion real por runtime
-5. yo valido mis cambios con el ejemplo que cubre la superficie que toque
+1. Mantener visible únicamente la carpeta `barrits/` en el proyecto consumidor como límite de dominio declarado.
+2. No exponer `barrits_lib` como contrato público del proyecto consumidor — es la librería base interna del SDK.
+3. Preferir la declaración de configuración antes que encadenar comandos manuales.
+4. Usar los ejemplos del repositorio como referencia autoritativa de integración por runtime.
+5. Validar los cambios contra el ejemplo que cubre la superficie afectada.
 
-## Como trato dependencias externas
+## Dependencias externas
 
-Yo no uso una lista blanca artificial de dependencias “permitidas”. Yo decido segun runtime:
+El criterio de decisión es la capa del runtime, no preferencias de estilo:
 
-- si el modulo es de Node, acepto dependencias de Node
-- si el modulo es de Deno, acepto dependencias compatibles con Deno
-- si el modulo es frontend, acepto dependencias del browser o del framework
+- Si el módulo es específico de Node, las dependencias de Node son aceptables.
+- Si el módulo es específico de Deno, las dependencias compatibles con Deno son aceptables.
+- Si el módulo es frontend, las dependencias del browser o del framework son aceptables.
 
-Mi restriccion real no es moral ni estetica; es arquitectonica. Si una dependencia es especifica de runtime, la dejo en la capa de ese runtime y no la trato como codigo universal.
+Las dependencias específicas de runtime pertenecen a la capa del adapter de runtime, no al código compartido o universal.
 
-## Como pienso las importaciones
+## Importaciones
 
-Si el proyecto tiene resuelta la dependencia, yo puedo importar `barrits` desde cualquier archivo del arbol del proyecto. No dependo de una carpeta “magica”; dependo de la resolucion normal de modulos del proyecto o workspace.
+Barrits resuelve desde la raíz del proyecto consumidor. No se requiere ninguna "carpeta mágica" — aplica la resolución estándar de módulos del proyecto o workspace. Importar desde el subpath público correcto es suficiente.
 
-## Practicas que evito
+## Patrones a evitar
 
-Yo evito estas decisiones porque me rompen la experiencia package-first:
+Las siguientes decisiones rompen la experiencia package-first:
 
-- esconder la configuracion en scripts ad hoc sin `defineBarritsPackage()` ni `defineBarritsConfig()`
-- mezclar runtime-specific code dentro de la parte reusable del paquete
-- tomar un ejemplo de frontend y usarlo como si fuera referencia para Node o Deno
-- depender de rutas temporales de `dist/` cuando existe un subpath publico del paquete
+- Ocultar la configuración detrás de scripts ad-hoc sin `defineBarritsPackage()` ni `defineBarritsConfig()`.
+- Mezclar código específico de runtime dentro de la capa de paquete reutilizable.
+- Usar un ejemplo de frontend como referencia para integraciones Node o Deno.
+- Importar desde rutas `dist/` directamente cuando existe un subpath público disponible.
 
-## Como pienso los ejemplos
+## Uso de ejemplos
 
-Yo no copio un ejemplo completo por reflejo. Yo primero identifico la experiencia que quiero y luego tomo solo el ejemplo que cubre esa superficie.
+Se debe identificar la experiencia necesaria primero y luego seleccionar únicamente el ejemplo que cubre esa superficie específica. Copiar ejemplos completos sin adaptarlos al runtime y a la forma real del proyecto introduce acoplamiento difícil de mantener.
 
-## Como mantengo la claridad
+## Documentar nuevas capacidades
 
-Cuando yo agrego una capacidad nueva, tambien documento:
+Al agregar una nueva capacidad, se debe documentar:
 
-- que runtime cubre
-- que ejemplo la demuestra
-- que subpath o API publica la expone
-- que validacion minima necesito para confiar en ella
+- Qué runtime cubre.
+- Qué ejemplo la demuestra.
+- Qué subpath o función de API pública la expone.
+- Qué validación mínima se requiere para confiar en ella.

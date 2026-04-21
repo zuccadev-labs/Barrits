@@ -1,51 +1,49 @@
 # 02 Flujos operativos de ts_js
 
-Yo mantengo `barrits` como paquete con motor integrado de automatizacion. Eso significa que no pienso el producto solo como una libreria de imports ni solo como una CLI.
+`barrits` se diseña como una solución integral que incorpora un motor de automatización nativo. El ecosistema del SDK trasciende el concepto de una librería tradicional de importaciones, actuando como un orquestador de flujos de trabajo.
 
-## Flujo de discovery
+## Flujo de Descubrimiento (Discovery)
 
-Yo uso el core para localizar la carpeta `barrits/` del proyecto consumidor y construir un grafo actual de dominios, archivos y exports.
+El núcleo (core) localiza la estructura del proyecto consumidor para construir un grafo dinámico de dominios, archivos y exportaciones.
 
-Mi flujo base es este:
+El proceso se ejecuta en la siguiente secuencia:
 
-1. yo detecto el runtime y el directorio de trabajo
-2. yo localizo la carpeta visible `barrits/` del consumidor
-3. yo inspecciono dominios, barrels, exports y traits
-4. yo proyecto esa informacion a manifests, snapshots o salidas de tooling
+1.  Detección del runtime activo y del directorio de trabajo actual.
+2.  Localización de la carpeta de dominio visible del consumidor.
+3.  Inspección exhaustiva de dominios, barrels, exportaciones y traits.
+4.  Proyección de resultados hacia artefactos técnicos (manifests y snapshots).
 
-## Flujo de build
+## Flujo de Construcción (Build)
 
-Cuando yo ejecuto build, mi expectativa es esta:
+Durante el proceso de compilación, el sistema garantiza la integridad de los artefactos:
 
-1. yo compilo el SDK desde `packages/sdk/ts_js`
-2. yo genero `dist/` solo para el paquete publicable
-3. yo dejo que los ejemplos consuman el paquete ya resuelto desde el workspace
-4. yo valido que manifests y helpers de consumo sigan consistentes
+1.  Compilación del SDK desde el directorio raíz del paquete (`packages/sdk/ts_js`).
+2.  Generación del directorio de distribución (`dist/`) exclusivo para el paquete publicable.
+3.  Resolución de dependencias locales para asegurar que los ejemplos consuman la versión más reciente del código.
+4.  Validación de consistencia de los manifests y asistentes de consumo.
 
-## Flujo de watch y dev
+## Flujos de Desarrollo y Monitoreo (Watch/Dev)
 
-Yo no trato el watch como daemon del sistema. Yo lo ato a una sesion viva de desarrollo.
+La funcionalidad de monitoreo no opera como un servicio persistente del sistema, sino que se vincula estrictamente a las sesiones activas de desarrollo:
 
-Mi regla es esta:
+- El proceso de monitoreo automático no se inicia durante la instalación del paquete.
+- El sistema de watch se activa solo cuando la sesión de desarrollo actual lo requiere específicamente.
+- El proceso finaliza automáticamente al concluir la sesión de trabajo principal.
 
-- yo no inicio watchers al instalar el paquete
-- yo inicio watch cuando una sesion `dev` realmente lo necesita
-- yo cierro watch cuando termina la sesion de trabajo
+## Estrategia de Consumo de la API
 
-## Flujo de consumo
+Se mantienen tres superficies de interacción complementarias para el usuario:
 
-Yo mantengo tres superficies de consumo complementarias:
+- **Estructural**: Importaciones directas para acceso a funciones y namespaces.
+- **Infraestructura**: Subpaths especializados para plugins de bundler y adaptadores de runtime.
+- **Operacional**: Comandos de CLI disponibles para diagnóstico y tareas puntuales.
 
-- imports del paquete raiz para funciones y namespaces
-- subpaths puros para plugins, adapters y helpers de consumo
-- comandos como fallback operativo y diagnostico
+## Entornos de Integración (Ejemplos)
 
-## Flujo de ejemplos
+El directorio `packages/sdk/ts_js/examples/` actúa como el banco oficial de validación de escenarios de uso:
 
-Yo uso `packages/sdk/ts_js/examples/` como banco de integracion real. Cada ejemplo me sirve para una experiencia distinta:
-
-- Node.js para scripts, build y consumo local
-- Deno para runtime alternativo y publicacion JSR
-- React, Vue, Solid y Svelte para package-first con Vite
-- Tauri para lectura segura de manifests y snapshots desde backend
-- bundlers para integraciones tecnicas separadas
+- **Node.js**: Scripts de servidor y consumo de lógica de negocio.
+- **Deno**: Validación de portabilidad y publicación en JSR.
+- **Frontend (Vite)**: Integración nativa con React, Vue, Solid y Svelte.
+- **Escritorio (Tauri)**: Lectura segura de estados desde backends locales.
+- **Bundling**: Pruebas técnicas específicas de integración de herramientas de construcción.

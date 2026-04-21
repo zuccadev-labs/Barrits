@@ -217,6 +217,7 @@ export type BarritsImportAction = {
 
 export type BarritsBuildManifest = {
   readonly generatedAt: string;
+  readonly checksum: string;
   readonly projectRoot: string;
   readonly barritsDirectory: string;
   readonly barritsLibDirectory?: string;

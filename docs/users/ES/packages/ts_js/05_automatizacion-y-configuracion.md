@@ -1,17 +1,15 @@
-# 05 Automatizacion y configuracion de ts_js
+# 05 Automatización y configuración de ts_js
 
-Yo trato `barrits` como paquete con motor integrado de automatizacion. Eso significa que configuro defaults del proyecto y dejo que el SDK derive discovery, manifests y watch cuando realmente hace falta.
+Barrits actúa como un paquete con motor integrado de automatización. La configuración del proyecto se declara una sola vez y el SDK deriva el discovery, la generación de manifests y el comportamiento de watch a partir de esa declaración.
 
-## Como configuro el proyecto
+## Configurar el proyecto
 
-Si yo quiero defaults estables, creo uno de estos archivos en la raiz del consumidor:
+Para establecer defaults estables del proyecto, se crea uno de los siguientes archivos en la raíz del consumidor:
 
 - `barrits.config.ts`
 - `barrits.config.mts`
 - `barrits.config.js`
 - `barrits.config.mjs`
-
-Mi forma recomendada es esta:
 
 ```ts
 import { defineBarritsConfig } from "@zuccadev-labs/barrits";
@@ -21,12 +19,15 @@ export default defineBarritsConfig({
   watch: "auto",
   autoManifest: true,
   automationDirectory: ".cache/barrits",
+  namespace: "miApp", // opcional: cambia el namespace dinámico inyectado en createBarrits()
 });
 ```
 
+Cuando se provee un `namespace`, el diseño de auto-descubrimiento en Vite, Node y otras integraciones lo respeta manteniendo limpio el tipado mediante la función asíncrona `createBarrits()`.
+
 ## Contratos low-config desde `barrits.config.*`
 
-Si no quiero repetir encabezados JSDoc por cada trait, puedo declarar contratos manuales en configuracion:
+Para reducir la dependencia de encabezados JSDoc, los contratos manuales pueden declararse directamente en la configuración:
 
 ```ts
 import { defineBarritsConfig } from "@zuccadev-labs/barrits";
@@ -52,47 +53,42 @@ export default defineBarritsConfig({
 });
 ```
 
-Regla UX recomendada:
+**Regla de decisión recomendada:**
 
-- si el proyecto ya usa JSDoc `@barrits-*`, mantengo JSDoc como fuente de verdad
-- si necesito menor costo de configuracion, centralizo contratos en `barrits.config.*`
-- Barrits mezcla contratos detectados + contratos manuales y prioriza la entrada manual cuando coincide `sourceFile + bindingName`
-- para exports: yo dejo todo publico por defecto y solo marco privados con `contracts.exports`
+- Si el proyecto ya usa JSDoc `@barrits-*`, se mantiene JSDoc como fuente de verdad.
+- Si se prefiere menor costo de configuración, se centralizan contratos en `barrits.config.*`.
+- Barrits mezcla contratos detectados con contratos manuales y prioriza la entrada manual cuando coincide `sourceFile + bindingName`.
 
-## Menos re-exports, misma deteccion
+## Reducir re-exports
 
-Yo puedo reducir barrels/re-exports en `barrits/` porque Barrits detecta exports desde el arbol y genera named-imports automaticamente cuando el nombre es unico.
+Barrits detecta exports desde el árbol de archivos y genera named-imports automáticamente cuando el nombre es único en el grafo. Esto significa que los barrels en `barrits/index.ts` pueden simplificarse o eliminarse.
 
-Regla practica:
+- Los métodos que forman parte de la API normal no necesitan re-exportarse en cada `index.ts`.
+- Los métodos que deben quedar fuera de la API visible se marcan en `contracts.exports` con `visibility: "internal"`.
 
-- si un metodo es parte de la API normal, no necesito re-exportarlo en cada `index.ts`
-- si un metodo debe quedar fuera de la API visible, lo marco en `contracts.exports` con `visibility: "internal"`
+## Prioridad de configuración
 
-## Como interpreto la prioridad
+- El archivo de configuración raíz define los defaults del proyecto.
+- Las opciones inline del paquete o del adapter siempre tienen prioridad.
+- Si `automationDirectory` no se especifica, el valor por defecto es `.barrits`.
 
-Yo sigo esta regla:
+## Ciclo de vida de la automatización
 
-- la configuracion raiz define defaults del proyecto
-- las opciones inline del package o del adapter siguen teniendo prioridad
-- si yo no indico `automationDirectory`, el valor por defecto sigue siendo `.barrits`
+La automatización no es un daemon permanente del sistema.
 
-## Como pienso el ciclo de vida
+Regla práctica estándar:
 
-Yo no trato la automatizacion como daemon permanente del sistema.
+1. Watch no arranca al instalar el paquete.
+2. Watch arranca cuando una sesión `dev` o `watch` lo requiere.
+3. El proceso se cierra cuando termina la sesión padre.
 
-Mi regla practica es esta:
+## Mover artefactos
 
-1. yo no arranco watch al instalar el paquete
-2. yo arranco watch cuando una sesion `dev` o `watch` lo necesita
-3. yo cierro el proceso cuando termina la sesion padre
+Para separar artefactos de automatización del dominio visible del proyecto, se configura un `automationDirectory` personalizado. Esto mueve manifests, snapshots e imports generados fuera de `.barrits` hacia la ruta configurada.
 
-## Cuando me conviene mover artefactos
+## Método main personalizado
 
-Si yo no quiero mezclar artefactos operativos con el dominio visible del proyecto, cambio `automationDirectory` y saco manifests, snapshots e imports generados fuera de `.barrits`.
-
-## Configurar un método main personalizado
-
-Puedo definir un método main personalizado en mi configuración para controlar el comportamiento de arranque de mi aplicación:
+Se puede declarar un método main personalizado en la configuración para controlar el comportamiento de arranque:
 
 ```ts
 import { defineBarritsConfig } from "@zuccadev-labs/barrits";
@@ -100,11 +96,86 @@ import { defineBarritsConfig } from "@zuccadev-labs/barrits";
 export default defineBarritsConfig({
   runtime: "node",
   main: async () => {
-    // Mi lógica de arranque personalizada aquí
     console.log("Aplicación iniciando con configuración personalizada");
-    // Retornar una promesa o valor void según necesite
-  }
+  },
 });
 ```
 
-Este método main será resuelto y puede ser utilizado por el SDK o por herramientas que integren con barrits para ejecutar lógica de arranque personalizada en lugar de depender únicamente de los scripts de los ejemplos.
+## Instanciación segura con patrón Factory
+
+Cuando se configura el campo `namespace`, `createBarrits()` devuelve un objeto tipado y aislado sin contaminar el scope global:
+
+```ts
+import { createBarrits } from "@zuccadev-labs/barrits";
+
+const boot = async () => {
+  const system = await createBarrits();
+  // El autocompletado en el IDE está 100% garantizado bajo el namespace configurado
+  system.miApp.logic.orderBy(items, criteria);
+};
+```
+
+## Patrones de Integración Experta (Nivel Corporativo)
+
+Para implementaciones de alta demanda en ecosistemas de gran escala, se recomienda observar los siguientes patrones de arquitectura:
+
+### 1. Aislamiento de Entornos (Monorepos)
+
+En estructuras de monorepo (NX, Turborepo), la configuración de Barrits debe residir preferiblemente en el paquete raíz del SDK o en cada aplicación consumidora de forma independiente. Para evitar la contaminación de artefactos entre aplicaciones, se recomienda el uso de un `automationDirectory` segregado por proyecto:
+
+```ts
+// apps/api-gateway/barrits.config.ts
+export default defineBarritsConfig({
+  automationDirectory: "../../.cache/barrits/api-gateway",
+  namespace: "gateway",
+});
+```
+
+### 2. Inyección de Dependencias y Estado
+
+Un ingeniero experto evita la dependencia directa del singleton `barrits` en favor de la instanciación controlada. El uso de `createBarrits()` permite inyectar el sistema en contenedores de IoC (Inversion of Control) garantizando la testabilidad:
+
+```ts
+import { createBarrits } from "@zuccadev-labs/barrits";
+
+export class ApplicationService {
+  constructor(private readonly barrits: Awaited<ReturnType<typeof createBarrits>>) {}
+
+  public async execute() {
+    return this.barrits.miApp.logic.executeWorkflow();
+  }
+}
+```
+
+### 3. Seguridad y Restricciones de Visibilidad
+
+En entornos corporativos, la protección de la superficie de API es crítica. Se prescribe el uso de `contracts.exports` para ocultar utilidades de infraestructura que no deben ser consumidas por la lógica de negocio:
+
+```ts
+export default defineBarritsConfig({
+  contracts: {
+    exports: [
+      {
+        sourceFile: "internal/db-connection.ts",
+        visibility: "internal", // Impide la exportación automática en el discovery manifest
+      },
+    ],
+  },
+});
+```
+
+### 4. Gobernanza de Watch en CI/CD
+
+Se advierte que la propiedad `watch: "auto"` debe ser evaluada cuidadosamente en entornos de integración continua. Aunque Barrits detecta el entorno, la recomendación experta consiste en forzar `watch: "off"` en los pipelines de build para garantizar resultados deterministas:
+
+```ts
+const isCI = !!process.env.CI;
+export default defineBarritsPackage({
+  runtime: "node",
+  watch: isCI ? "off" : "auto",
+});
+```
+
+---
+
+[← Buenas Prácticas](04_buenas_practicas.md) | [Comandos y Runtimes →](06_comandos_y_runtimes.md)
