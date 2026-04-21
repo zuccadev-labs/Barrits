@@ -1,34 +1,43 @@
-# example-solid
+# example-solid — SolidJS Framework Validation
 
-Yo uso este ejemplo para comprobar que el contrato package-first y el plugin de Vite siguen siendo validos en Solid sin depender del ecosistema React o Vue.
+## Purpose
 
-## Para que sirve
+This example confirms that the Barrits package-first contract and Vite
+plugin operate correctly in a SolidJS application without requiring
+framework-specific adaptation.
 
-- valida compatibilidad de la integracion con otro framework Vite
-- mantiene el mismo modelo de consumidor visible en `src/barrits/`
-- usa una muestra pequena de APIs del paquete para que la lectura sea rapida
+## Key Files
 
-## Que archivos mirar primero
+| File | Description |
+|---|---|
+| `vite.config.ts` | Package-first contract and Vite plugin integration |
+| `src/main.tsx` | Manifest consumption with `createBuildManifestSummary` and `sumar` |
+| `src/barrits/` | Consumer-visible orchestration layer |
 
-- `vite.config.ts`: contrato package-first y plugin Vite
-- `src/main.tsx`: consumo de `createBuildManifestSummary` y `sumar`
-- `src/barrits/`: capa visible del consumidor
+## API Functions Demonstrated
 
-## APIs que este ejemplo usa
+| Function | Purpose |
+|---|---|
+| `defineBarritsPackage` | Consumer identity declaration |
+| `toBarritsAutomationOptions` | Plugin configuration adapter |
+| `barritsVitePlugin` | Vite integration |
+| `createBuildManifestSummary` | Virtual manifest summarization |
+| `sumar` | Arithmetic utility demonstration |
 
-- `defineBarritsPackage`
-- `toBarritsAutomationOptions`
-- `barritsVitePlugin`
-- `createBuildManifestSummary`
-- `sumar`
+## Design Note
 
-## Como leerlo
+This example intentionally exercises a minimal API surface. Its value lies
+in demonstrating that the package-first contract remains stable across
+frameworks, not in covering the full algorithm catalogue.
 
-Este ejemplo no intenta cubrir toda la API. Su valor esta en demostrar que el mismo contrato funciona en otro framework y que tambien puedo mezclar una utilidad funcional simple como `sumar` dentro de la UI.
+## Execution
 
-Para la descripcion completa de las funciones, voy a [../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md](../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md).
+```bash
+npm run dev    # Start the SolidJS development server
+npm run build  # Generate the production build
+```
 
-## Comandos utiles
+## Reference
 
-- `npm run dev`
-- `npm run build`
+For the complete API specification, consult
+`docs/users/ES/packages/ts_js/09_referencia-de-api.md`.

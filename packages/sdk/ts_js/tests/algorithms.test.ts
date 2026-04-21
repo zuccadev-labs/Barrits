@@ -52,7 +52,7 @@ test("selection and collection algorithms produce reusable operational views", (
   ]);
   const topIncidents = topK(incidents, 2, (left, right) => {
     return ((left.severity * 1000) + left.affected) - ((right.severity * 1000) + right.affected);
-  });
+  }, "desc");
   const paginated = paginate(orderedIncidents, { page: 1, pageSize: 2 });
   const partitioned = partitionBy(incidents, (incident) => incident.severity >= 4);
   const grouped = groupBy(incidents, (incident) => incident.squad);

@@ -1,36 +1,51 @@
-# example-tauri
+# example-tauri — Secure Desktop Consumption
 
-Yo uso este ejemplo cuando necesito mostrar una politica de consumo segura: el renderer no toca el filesystem directo, el backend controla las rutas permitidas y solo devuelve payloads resumidos a la UI.
+## Purpose
 
-## Para que sirve
+This example demonstrates a secure consumption pattern for Tauri desktop
+applications. The renderer process never accesses the filesystem directly;
+all artifact reads are mediated by the Tauri backend, which controls
+permitted paths and returns only summarized payloads to the UI.
 
-- demuestra un patron seguro para desktop
-- enseña cuando conviene usar `@zuccadev-labs/barrits/consume` en vez de inyectar manifests virtuales al frontend
-- separa claramente renderer, backend y artifacts del proyecto
+## Key Files
 
-## Que archivos mirar primero
+| File | Description |
+|---|---|
+| `src/main.ts` | UI layer that invokes backend commands and renders summaries |
+| `src-tauri/src/main.rs` | Rust backend that controls filesystem access |
+| `src/barrits/` | Consumer-visible orchestration layer |
 
-- `src/main.ts`: UI que invoca al backend y muestra summaries
-- `src-tauri/src/main.rs`: backend Tauri que controla la lectura de archivos
-- `src/barrits/` o artifacts del proyecto: origen de los datos resumidos
+## API Functions Demonstrated
 
-## APIs que este ejemplo usa
+| Function | Purpose |
+|---|---|
+| `readBuildManifestSummary` | Reads and summarizes the manifest without exposing the raw file to the renderer |
+| `readLanguageToolSnapshot` | Reads the language tool snapshot through controlled backend access |
 
-- `readBuildManifestSummary`: lee y resume el manifest sin exponer el archivo crudo al renderer
-- `readLanguageToolSnapshot`: lee el snapshot de tooling de lenguaje de forma controlada
-- tipos `BarritsConsumedStateSummary` y `BarritsLanguageToolSnapshot`: tipan el payload que llega a la UI
+## Type Contracts
 
-## Como leerlo
+| Type | Purpose |
+|---|---|
+| `BarritsConsumedStateSummary` | Types the manifest summary payload delivered to the UI |
+| `BarritsLanguageToolSnapshot` | Types the language tool snapshot payload |
 
-Primero miro `src/main.ts` para entender el contrato entre UI y backend.
+## Architecture Notes
 
-Despues reviso `src-tauri/src/main.rs` para ver como se restringe el acceso al filesystem.
+The security boundary is defined by the Tauri IPC bridge. The backend reads
+artifacts from the filesystem using the `@zuccadev-labs/barrits/consume`
+subpath, validates them, and returns typed summaries to the renderer. This
+pattern prevents direct filesystem exposure in desktop applications.
 
-La semantica exacta de los readers vive en [../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md](../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md).
+## Execution
 
-## Comandos utiles
+```bash
+npm run dev         # Start the web development server
+npm run build       # Generate the web production build
+npm run tauri:dev   # Launch the desktop application in development mode
+npm run tauri:build # Generate the desktop production build
+```
 
-- `npm run dev`: entorno web del ejemplo
-- `npm run build`: build web del ejemplo
-- `npm run tauri:dev`: app desktop en desarrollo
-- `npm run tauri:build`: build desktop final
+## Reference
+
+For the complete API specification, consult
+`docs/users/ES/packages/ts_js/09_referencia-de-api.md`.

@@ -48,6 +48,7 @@ export const collectTraitDiagnostics = (
       case "trait-self-requires":
         return { ...diagnostic, category: "impossible" };
       case "trait-duplicate-provides":
+      case "trait-required-conflicts":
       case "trait-missing-consumed-capability":
       case "trait-missing-required-trait":
       case "trait-unsupported-factory":
@@ -89,6 +90,26 @@ export const collectTraitDiagnostics = (
         descriptorName: descriptor.name,
         bindingName: descriptor.bindingName,
       }));
+    }
+
+    for (let i = 0; i < descriptor.requires.length; i++) {
+      const traitA = descriptor.requires[i];
+      const descriptorA = descriptorsByName.get(traitA)?.[0];
+      if (!descriptorA) continue;
+
+      for (let j = i + 1; j < descriptor.requires.length; j++) {
+        const traitB = descriptor.requires[j];
+        if (descriptorA.conflicts.includes(traitB)) {
+          diagnostics.push(createTraitDiagnostic({
+            code: "trait-required-conflicts",
+            severity: "error",
+            message: `Trait descriptor "${descriptor.name}" requires both "${traitA}" and "${traitB}" in ${descriptor.sourceFile}, but "${traitA}" declares a conflict with "${traitB}". This composition is impossible to satisfy.`,
+            sourceFile: descriptor.sourceFile,
+            descriptorName: descriptor.name,
+            bindingName: descriptor.bindingName,
+          }));
+        }
+      }
     }
 
     const missingRequiredTraits = descriptor.requires.filter((requiredName) => !descriptorsByName.has(requiredName));

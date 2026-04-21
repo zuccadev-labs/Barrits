@@ -75,6 +75,7 @@ export {
 
 /** Package-level configuration helpers used by runtimes and plugins. */
 export {
+	defineBarritsConfig,
 	defineBarritsPackage,
 	toBarritsAutomationOptions,
 } from "../../src/barrits/package";

@@ -1,36 +1,39 @@
-# example-vue
+# example-vue — Vue.js Frontend Integration
 
-Yo uso este ejemplo cuando quiero mostrar el mismo contrato package-first de React, pero sobre Vue y con discovery visible bajo `src/barrits/`.
+## Purpose
 
-## Para que sirve
+This example validates that the Barrits package-first contract and Vite
+plugin integration operate identically in a Vue.js application, confirming
+framework-agnostic portability.
 
-- prueba que la integracion no depende de React
-- muestra el mismo flujo de Vite con una estructura de consumidor distinta
-- reutiliza el manifest virtual y analitica de UI sobre Vue
+## Key Files
 
-## Que archivos mirar primero
+| File | Description |
+|---|---|
+| `vite.config.ts` | Plugin integration with `defineBarritsPackage` and `barritsVitePlugin` |
+| `src/App.vue` | Manifest consumption and analytics (`orderBy`, `movingAverageSeries`, `maxDrawdown`) |
+| `src/barrits/` | Consumer-visible orchestration layer |
 
-- `vite.config.ts`: integracion con `defineBarritsPackage`, `toBarritsAutomationOptions` y `barritsVitePlugin`
-- `src/App.vue`: consumo de `createBuildManifestSummary`, `orderBy`, `movingAverageSeries` y `maxDrawdown`
-- `src/barrits/`: capa visible del consumidor
+## API Functions Demonstrated
 
-## APIs que este ejemplo usa
+| Function | Purpose |
+|---|---|
+| `defineBarritsPackage` | Consumer identity declaration |
+| `toBarritsAutomationOptions` | Plugin configuration adapter |
+| `barritsVitePlugin` | Vite integration |
+| `createBuildManifestSummary` | Virtual manifest summarization |
+| `orderBy` | Domain ordering |
+| `movingAverageSeries` | Time-series smoothing |
+| `maxDrawdown` | Maximum drawdown computation |
 
-- `defineBarritsPackage`
-- `toBarritsAutomationOptions`
-- `barritsVitePlugin`
-- `createBuildManifestSummary`
-- `orderBy`
-- `movingAverageSeries`
-- `maxDrawdown`
+## Execution
 
-## Como leerlo
+```bash
+npm run dev    # Start the Vue development server
+npm run build  # Generate the production build
+```
 
-Si yo vengo del caso React, aca comparo dos cosas: el plugin casi no cambia y la capa `src/barrits/` sigue siendo la frontera visible del consumidor.
+## Reference
 
-Si necesito la descripcion completa de esas funciones, vuelvo a [../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md](../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md).
-
-## Comandos utiles
-
-- `npm run dev`
-- `npm run build`
+For the complete API specification, consult
+`docs/users/ES/packages/ts_js/09_referencia-de-api.md`.
