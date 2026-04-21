@@ -174,7 +174,7 @@ jobs:
         working-directory: packages/sdk/ts_js
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_PUBLICAR_NPM }}
-        run: npm publish --access public --provenance  --tag ${{ needs.prepare.outputs.npm_dist_tag }}
+        run: npm publish --access public --provenance --tag ${{ needs.prepare.outputs.npm_dist_tag }}
 
   publish-jsr:
     needs: prepare
