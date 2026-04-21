@@ -73,13 +73,28 @@ jobs:
             throw "A release tag is required. Use vX.Y.Z for stable releases or pre-vX.Y.Z-rc.N for prereleases."
           }
 
+          $releaseSha = git rev-list -n 1 $tag
+          if (-not $releaseSha) {
+            throw "Unable to resolve commit SHA for tag '$tag'."
+          }
+
+          $remoteBranches = git branch -r --contains $releaseSha | Out-String
+
           if ($tag.StartsWith("pre-v")) {
             $channel = "prerelease"
             $version = $tag.Substring(5)
-            $targetBranch = "dev"
             $npmTag = "next"
             $isPrerelease = "true"
             $releaseName = "Barrits prerelease $version"
+            
+            # Prerelease can be on dev (normal) or main (final stabilization)
+            if ($remoteBranches -match "origin/dev") {
+              $targetBranch = "dev"
+            } elseif ($remoteBranches -match "origin/main") {
+              $targetBranch = "main"
+            } else {
+              throw "Commit $releaseSha for prerelease tag $tag is not in origin/dev or origin/main."
+            }
           } elseif ($tag.StartsWith("v")) {
             $channel = "release"
             $version = $tag.Substring(1)
@@ -87,6 +102,10 @@ jobs:
             $npmTag = "latest"
             $isPrerelease = "false"
             $releaseName = "Barrits $version"
+
+            if ($remoteBranches -notmatch "origin/main") {
+              throw "Stable release tag $tag must be in origin/main."
+            }
           } else {
             throw "Unsupported tag format '$tag'. Expected vX.Y.Z or pre-vX.Y.Z-rc.N."
           }
@@ -127,16 +146,6 @@ jobs:
             }
           }
 
-          $releaseSha = git rev-list -n 1 $tag
-          if (-not $releaseSha) {
-            throw "Unable to resolve commit SHA for tag '$tag'."
-          }
-
-          $remoteBranches = git branch -r --contains $releaseSha | Out-String
-          if ($remoteBranches -notmatch "origin/$targetBranch") {
-            throw "Commit $releaseSha is not contained in origin/$targetBranch."
-          }
-
           "release_tag=$tag" >> $env:GITHUB_OUTPUT
           "release_version=$version" >> $env:GITHUB_OUTPUT
           "release_channel=$channel" >> $env:GITHUB_OUTPUT
@@ -144,7 +153,6 @@ jobs:
           "release_sha=$releaseSha" >> $env:GITHUB_OUTPUT
           "npm_dist_tag=$npmTag" >> $env:GITHUB_OUTPUT
           "is_prerelease=$isPrerelease" >> $env:GITHUB_OUTPUT
-          "release_tag=$tag" >> $env:GITHUB_OUTPUT # redundant but safe
           "release_name=$releaseName" >> $env:GITHUB_OUTPUT
 
   publish-npm:
