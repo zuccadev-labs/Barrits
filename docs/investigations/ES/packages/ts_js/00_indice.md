@@ -1,16 +1,17 @@
-# 00 Indice de investigacion de ts_js
+# 00 Índice de investigación de ts_js
 
-Yo uso esta carpeta para registrar por que llegue a la arquitectura actual de `barrits`, que problemas estaba intentando resolver y que conclusiones quedaron vigentes despues de iterar el diseño.
+Este directorio centraliza el registro histórico y técnico de la evolución arquitectónica de `barrits`. Documenta los problemas de diseño abordados, las decisiones estratégicas adoptadas y las conclusiones derivadas de los procesos de iteración.
 
-Orden de lectura:
+## Orden de lectura recomendado
 
-1. `01_proposito-y-problema.md`: yo explico que problema de diseño queria resolver.
-2. `02_decisiones-de-arquitectura.md`: yo documento las decisiones que sobrevivieron a la investigacion.
-3. `03_camino-hacia-el-monorepo.md`: yo dejo constancia de como pasé del paquete raiz al monorepo por SDK.
-4. `04_conclusiones-y-limites.md`: yo cierro que mantengo, que descarte y que sigo posponiendo.
+1.  **[01_proposito-y-problema.md](01_proposito-y-problema.md)**: Análisis de la problemática inicial y los objetivos de diseño del SDK.
+2.  **[02_decisiones-de-arquitectura.md](02_decisiones-de-arquitectura.md)**: Registro de las decisiones estructurales que definen la arquitectura vigente.
+3.  **[03_camino-hacia-el-monorepo.md](03_camino-hacia-el-monorepo.md)**: Crónica de la migración desde un paquete raíz hacia la estructura de monorepo por SDK.
+4.  **[04_arquitectura-microservicios-y-orquestacion.md](04_arquitectura-microservicios-y-orquestacion.md)**: Detalle técnico sobre la fragmentación del núcleo en micro-servicios SRP.
+5.  **[05_conclusiones-y-limites.md](05_conclusiones-y-limites.md)**: Resumen de conceptos mantenidos, descartados y el mapa de ruta posterior.
 
-Regla editorial:
+## Estándares Editoriales Corporativos
 
-- yo uso investigacion para dejar rastro del criterio, no para repetir instrucciones de uso
-- yo separo esta carpeta de `development` porque aqui hablo de motivos, tradeoffs y recorrido historico
-- yo escribo en primera persona para dejar claro que estas decisiones salieron de mi proceso de diseño
+- Estos documentos preservan el criterio técnico y el razonamiento arquitectónico (tradeoffs), diferenciándose de las guías operativas de desarrollo.
+- Se mantiene una narrativa objetiva en tercera persona para representar la gobernanza del proyecto de forma profesional.
+- La segregación respecto a la carpeta `development` permite aislar el contexto histórico del manual de procedimientos actual.

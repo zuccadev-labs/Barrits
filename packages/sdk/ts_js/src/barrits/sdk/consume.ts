@@ -397,6 +397,7 @@ const parseBuildManifestPayload = (source: string): BarritsBuildManifest => {
     collisions: expectOptionalArray(record.collisions, "barrits build manifest", "collisions", (entry, index) =>
       expectExportCollision(entry, "barrits build manifest", `collisions[${index}]`),
     ) ?? [],
+    checksum: expectString(record.checksum ?? "sha256-barrits-000000", "barrits build manifest", "checksum"),
     }, "barritsLibDirectory", expectOptionalString(record.barritsLibDirectory, "barrits build manifest", "barritsLibDirectory")),
     "filters",
     expectSelectionFilters(record.filters, "barrits build manifest", "filters"),

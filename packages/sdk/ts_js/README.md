@@ -1,102 +1,78 @@
-# @zuccadev-labs/barrits
+<div align="center">
 
-`@zuccadev-labs/barrits` es un SDK para TypeScript, JavaScript y Deno orientado a un flujo package-first. Yo describo el proyecto consumidor una vez y despues reutilizo el mismo contrato para automatizacion, manifests, snapshots, plugins de bundlers, consumo seguro de artifacts y un catalogo amplio de utilidades funcionales.
+<img src="https://raw.githubusercontent.com/zuccadev-labs/Barrits/main/docs/assets/logo.png" alt="Barrits Logo" width="96" />
 
-## Que resuelve
+# Barrits
+### Barrels and Traits
 
-Yo uso este paquete cuando necesito una de estas tres capacidades:
+[![npm version](https://img.shields.io/npm/v/%40zuccadev-labs%2Fbarrits?color=%230f0f0f&label=npm)](https://www.npmjs.com/package/@zuccadev-labs/barrits)
+[![JSR](https://jsr.io/badges/@zuccadev-labs/barrits)](https://jsr.io/@zuccadev-labs/barrits)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/zuccadev-labs/Barrits/blob/main/LICENSE)
 
-1. Modelar un consumidor `barrits/` o `src/barrits/` sin pegar el proyecto a comandos manuales.
-2. Generar y consumir manifests o snapshots de build para observabilidad, tooling o interfaces.
-3. Reutilizar algoritmos y helpers funcionales ya empaquetados dentro del mismo SDK.
+**[English](#english)** | [Español](#español)
 
-El modo recomendado es package-first: primero defino el contrato del consumidor y despues conecto runtime, bundler o reader segun el caso. La CLI existe, pero la trato como fallback operativo, diagnostico o automatizacion puntual.
+</div>
 
-## Instalacion
+---
 
-### npm
+<a name="english"></a>
 
+## English
+
+`@zuccadev-labs/barrits` is a deterministic orchestration engine built on the **Single Responsibility Principle (SRP)**. It provides an AST-level discovery graph, predictive module resolution, sealed build manifests (SHA-256), and strongly-typed Domain APIs — fully agnostic of runtime and framework.
+
+### Installation
+
+**npm** (Node.js, Bun, browser bundlers)
 ```bash
 npm install @zuccadev-labs/barrits
 ```
 
-### Deno o JSR
-
+**JSR** (Deno)
 ```ts
 import { defineBarritsPackage } from "jsr:@zuccadev-labs/barrits";
 ```
 
-## Inicio rapido
+or in `deno.json`:
+```json
+{
+  "imports": {
+    "@zuccadev-labs/barrits": "jsr:@zuccadev-labs/barrits@^0.1.0"
+  }
+}
+```
 
-### 1. Definir el paquete consumidor
+### Quick Start
 
+#### 1. Declare the consumer package
 ```ts
 import { defineBarritsPackage } from "@zuccadev-labs/barrits";
 
-export const barritsPackage = defineBarritsPackage({
+export const pkg = defineBarritsPackage({
   runtime: "react",
   watch: "auto",
   autoManifest: true,
 });
 ```
 
-Que hace: normaliza el contrato publico del consumidor.
-
-Para que sirve: evita repetir opciones equivalentes en Vite, esbuild, Rollup, Webpack o scripts propios.
-
-Como se usa: la salida de `defineBarritsPackage()` se pasa a `toBarritsAutomationOptions()` cuando un plugin necesita solo la porcion operativa.
-
-Donde se usa en el repo: `examples/example-react/vite.config.ts`, `examples/example-vue/vite.config.ts`, `examples/example-solid/vite.config.ts`, `examples/example-svelte/vite.config.ts` y `examples/bundlers/*`.
-
-### 2. Declarar defaults del proyecto
-
-```ts
-import { defineBarritsConfig } from "@zuccadev-labs/barrits";
-
-export default defineBarritsConfig({
-  runtime: "react",
-  watch: "auto",
-  autoManifest: true,
-  automationDirectory: ".barrits",
-});
-```
-
-Que hace: declara la configuracion persistente del proyecto.
-
-Para que sirve: centraliza runtime, directorio de automatizacion, estrategias de watch y rutas derivadas.
-
-Como se usa: se coloca en `barrits.config.ts` cuando quiero que el proyecto tenga defaults compartidos y discoverables.
-
-Donde se usa: en la documentacion operativa de `docs/users/ES/packages/ts_js/05_automatizacion-y-configuracion.md`.
-
-### 3. Integrar el bundler sin romper el flujo package-first
-
+#### 2. Connect a bundler (Vite)
 ```ts
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { defineBarritsPackage, toBarritsAutomationOptions } from "@zuccadev-labs/barrits";
 import { barritsVitePlugin } from "@zuccadev-labs/barrits/vite";
 
-const barritsPackage = defineBarritsPackage({
-  runtime: "react",
-  watch: "auto",
-});
+const pkg = defineBarritsPackage({ runtime: "react", watch: "auto" });
 
 export default defineConfig({
-  plugins: [react(), barritsVitePlugin({ package: toBarritsAutomationOptions(barritsPackage) })],
+  plugins: [
+    react(),
+    barritsVitePlugin({ package: toBarritsAutomationOptions(pkg) }),
+  ],
 });
 ```
 
-Que hace: transforma la descripcion del paquete en opciones concretas para el plugin del bundler.
-
-Para que sirve: el plugin sabe donde emitir o consumir artifacts sin que yo duplique rutas o modos de watch.
-
-Como se usa: `defineBarritsPackage()` describe la intencion, `toBarritsAutomationOptions()` la adapta, y el plugin queda acoplado al mismo contrato.
-
-Donde se usa: `examples/example-react/vite.config.ts` y `examples/bundlers/`.
-
-### 4. Consumir un manifest o snapshot
-
+#### 3. Read the build manifest
 ```ts
 import { createBuildManifestSummary } from "@zuccadev-labs/barrits";
 import manifest from "virtual:barrits/manifest";
@@ -105,117 +81,165 @@ const summary = createBuildManifestSummary(manifest);
 console.log(summary.domains);
 ```
 
-Que hace: resume un manifest de build en una estructura orientada a UI, dashboards o tooling.
-
-Para que sirve: evita que una app dependa del JSON completo cuando solo necesita dominios, capas, exports o estado resumido.
-
-Como se usa: en frontend se combina con manifests virtuales; en desktop o backend se puede cambiar por los readers de `@zuccadev-labs/barrits/consume`.
-
-Donde se usa: `examples/example-react/src/main.jsx`, `examples/example-vue/src/App.vue` y `examples/bundlers/*-manifest-entry.mjs`.
-
-### 5. Reutilizar algoritmos del paquete
-
+#### 4. Use built-in algorithms
 ```ts
-import { maxDrawdown, movingAverageSeries, orderBy } from "@zuccadev-labs/barrits";
+import { orderBy, movingAverageSeries, maxDrawdown, binarySearch } from "@zuccadev-labs/barrits";
 
-const ordered = orderBy([{ score: 3 }, { score: 1 }], [{ project: (item) => item.score, direction: "asc" }]);
-const trend = movingAverageSeries([
-  { timestamp: 1, value: 10 },
-  { timestamp: 2, value: 14 },
-  { timestamp: 3, value: 8 },
-], 2);
-const risk = maxDrawdown([
-  { timestamp: 1, value: 120 },
-  { timestamp: 2, value: 140 },
-  { timestamp: 3, value: 90 },
-]);
+const sorted = orderBy(items, [{ project: (i) => i.score, direction: "desc" }]);
+const trend  = movingAverageSeries(priceSeries, 5);
+const risk   = maxDrawdown(priceSeries);
 ```
 
-Que hace: expone algoritmos listos para colecciones, busqueda, seleccion, series temporales, grafos y ventanas.
+#### 5. Declare a trait contract
+```ts
+import { createTraitDescriptor } from "@zuccadev-labs/barrits";
 
-Para que sirve: evita introducir una segunda libreria solo para resolver calculos operativos que ya conviven con el SDK.
+/**
+ * @barrits-trait
+ * @barrits-provides auth-session
+ * @barrits-conflicts legacy-auth
+ */
+export const authTrait = createTraitDescriptor({
+  name: "AuthDomain",
+  provides: ["auth-session"],
+  conflicts: ["legacy-auth"],
+});
+```
 
-Como se usa: se importa directo desde la raiz cuando el consumidor quiere mezclar automatizacion y utilidades funcionales en el mismo paquete.
+### Available Entrypoints
 
-Donde se usa: `examples/example-nodejs/src/examples/`, `examples/example-react/src/main.jsx`, `examples/example-vue/src/App.vue`, `examples/example-solid/src/main.tsx`, `examples/example-svelte/src/App.svelte`, `examples/example-deno/main.ts` y `examples/example-bun/src/main.ts`.
+| Import path | Purpose |
+| :--- | :--- |
+| `@zuccadev-labs/barrits` | Main API: package config, traits, algorithms, paths |
+| `@zuccadev-labs/barrits/consume` | Runtime-agnostic manifest and snapshot readers |
+| `@zuccadev-labs/barrits/node` | Node.js filesystem helpers and CLI wrapper |
+| `@zuccadev-labs/barrits/deno` | Deno filesystem helpers and CLI wrapper |
+| `@zuccadev-labs/barrits/vite` | Vite plugin |
+| `@zuccadev-labs/barrits/esbuild` | esbuild plugin |
+| `@zuccadev-labs/barrits/rollup` | Rollup plugin |
+| `@zuccadev-labs/barrits/webpack` | Webpack plugin |
+| `@zuccadev-labs/barrits/node/cli` | Node.js CLI entry |
+| `@zuccadev-labs/barrits/deno/cli` | Deno CLI entry |
 
-## Entrypoints publicos
+### Key Capabilities
 
-### `@zuccadev-labs/barrits`
+| Capability | Description |
+| :--- | :--- |
+| **AST Differential Cache** | 0ms incremental caching at syntax-tree level |
+| **Supply Chain Integrity** | SHA-256 checksums sealed in every build manifest |
+| **Trait Engine** | Dependency-ordered composition with collision detection |
+| **Agnostic Runtime** | Identical behavior on Node, Deno, Bun, React, Vue, Solid, Svelte, Tauri |
+| **Contract-First** | Manifests and snapshots as first-class contracts |
 
-Entrada principal. Expone la API package-first, traits, rutas, consumo resumido, constantes y algoritmos.
+### Documentation
 
-### `@zuccadev-labs/barrits/consume`
+- [User Guide (EN)](https://github.com/zuccadev-labs/Barrits/tree/main/docs/users/EN/packages/ts_js)
+- [API Reference — Package Config](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/EN/packages/ts_js/09a-api-reference-package-config.md)
+- [API Reference — Algorithms](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/EN/packages/ts_js/09b-api-reference-algorithms.md)
+- [API Reference — Consume & Adapters](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/EN/packages/ts_js/09c-api-reference-consume-and-adapters.md)
+- [Examples](https://github.com/zuccadev-labs/Barrits/tree/main/packages/sdk/ts_js/examples)
 
-Entrada orientada a lectura y parseo de manifests o snapshots. Es la opcion correcta cuando ya tengo artifacts en disco o cuando el renderer no debe acceder directo al filesystem.
+---
 
-### `@zuccadev-labs/barrits/node`
+<a name="español"></a>
 
-Entrada con helpers Node.js, readers listos para filesystem y wrapper del CLI.
+## Español
 
-### `@zuccadev-labs/barrits/deno`
+`@zuccadev-labs/barrits` es un motor de orquestación determinístico construido sobre el **Principio de Responsabilidad Única (SRP)**. Provee un grafo de descubrimiento a nivel de AST, resolución predictiva de módulos, manifests de build sellados (SHA-256) y Domain APIs fuertemente tipadas — completamente agnósticas del runtime y el framework.
 
-Entrada equivalente para Deno y JSR. Mantiene el mismo contrato funcional con APIs compatibles con el runtime.
+### Instalación
 
-### `@zuccadev-labs/barrits/vite`, `@zuccadev-labs/barrits/esbuild`, `@zuccadev-labs/barrits/rollup`, `@zuccadev-labs/barrits/webpack`
+**npm** (Node.js, Bun, bundlers de browser)
+```bash
+npm install @zuccadev-labs/barrits
+```
 
-Entradas de integracion con bundlers. Cada una traduce el contrato package-first a la API del bundler correspondiente.
+**JSR** (Deno)
+```ts
+import { defineBarritsPackage } from "jsr:@zuccadev-labs/barrits";
+```
 
-### `@zuccadev-labs/barrits/node/cli` y `@zuccadev-labs/barrits/deno/cli`
+### Inicio Rápido
 
-Entradas CLI para diagnostico, build puntual, inspeccion o ejecucion operativa fuera del flujo normal del plugin.
+#### 1. Declarar el paquete consumidor
+```ts
+import { defineBarritsPackage } from "@zuccadev-labs/barrits";
 
-## Que APIs mirar primero
+export const pkg = defineBarritsPackage({
+  runtime: "react",
+  watch: "auto",
+  autoManifest: true,
+});
+```
 
-Si yo estoy empezando, este orden cubre casi todos los casos reales:
+#### 2. Conectar un bundler (Vite)
+```ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { defineBarritsPackage, toBarritsAutomationOptions } from "@zuccadev-labs/barrits";
+import { barritsVitePlugin } from "@zuccadev-labs/barrits/vite";
 
-1. `defineBarritsPackage()` para describir el consumidor.
-2. `defineBarritsConfig()` si necesito defaults persistentes.
-3. `toBarritsAutomationOptions()` para conectarlo a bundlers.
-4. `createBuildManifestSummary()` o `readBuildManifestSummary()` para observabilidad y UI.
-5. `composePipeline()` o `createTraitDescriptor()` si el proyecto necesita composicion declarativa.
-6. Algoritmos concretos como `orderBy()`, `movingAverageSeries()` o `binarySearch()` cuando el consumidor quiere utilidades funcionales listas para usar.
+const pkg = defineBarritsPackage({ runtime: "react", watch: "auto" });
 
-La referencia completa de metodos, subpaths y casos de uso vive en `docs/users/ES/packages/ts_js/09_referencia-de-api.md`.
+export default defineConfig({
+  plugins: [
+    react(),
+    barritsVitePlugin({ package: toBarritsAutomationOptions(pkg) }),
+  ],
+});
+```
 
-## Ejemplos reales del repo
+#### 3. Leer el build manifest
+```ts
+import { createBuildManifestSummary } from "@zuccadev-labs/barrits";
+import manifest from "virtual:barrits/manifest";
 
-Uso cada ejemplo para responder una pregunta distinta:
+const summary = createBuildManifestSummary(manifest);
+console.log(summary.domains);
+```
 
-| Carpeta | Que prueba | APIs principales |
-| --- | --- | --- |
-| `examples/example-nodejs/` | scripts, showcase y benchmarking en Node.js | `orderBy`, `binarySearch`, `movingAverageSeries`, `topK`, readers Node |
-| `examples/example-deno/` | contrato package-first en Deno/JSR | `defineBarritsPackage`, `movingAverage`, `averageBy`, `topK` |
-| `examples/example-bun/` | contrato package-first en Bun con scripts de runtime | `defineBarritsPackage`, `orderBy`, `movingAverage`, `averageBy`, `topK` |
-| `examples/example-react/` | caso base frontend con Vite + React | `defineBarritsPackage`, `toBarritsAutomationOptions`, `barritsVitePlugin`, `createBuildManifestSummary` |
-| `examples/example-vue/` | discovery bajo `src/barrits/` en Vue | `barritsVitePlugin`, `createBuildManifestSummary`, `orderBy`, `maxDrawdown` |
-| `examples/example-solid/` | validacion del mismo contrato en Solid | `createBuildManifestSummary`, `sumar`, `barritsVitePlugin` |
-| `examples/example-svelte/` | misma cobertura package-first en Svelte | `createBuildManifestSummary`, `movingAverageSeries`, `sumar` |
-| `examples/example-tauri/` | consumo seguro de artifacts desde desktop | `readBuildManifestSummary`, `readLanguageToolSnapshot` |
-| `examples/bundlers/` | integracion directa por bundler | `barritsVitePlugin`, `barritsEsbuildPlugin`, `barritsRollupPlugin`, `barritsWebpackPlugin` |
+#### 4. Usar algoritmos integrados
+```ts
+import { orderBy, movingAverageSeries, maxDrawdown } from "@zuccadev-labs/barrits";
 
-## Documentacion oficial
+const sorted = orderBy(items, [{ project: (i) => i.score, direction: "desc" }]);
+const trend  = movingAverageSeries(priceSeries, 5);
+```
 
-Si yo quiero usar el SDK:
+#### 5. Declarar un contrato de trait
+```ts
+import { createTraitDescriptor } from "@zuccadev-labs/barrits";
 
-- [../../../docs/users/ES/packages/ts_js/00_indice.md](../../../docs/users/ES/packages/ts_js/00_indice.md)
-- [../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md](../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md)
-- [../../../docs/users/ES/packages/ts_js/examples/00_indice.md](../../../docs/users/ES/packages/ts_js/examples/00_indice.md)
-- [../../../docs/users/ES/packages/ts_js/05_automatizacion-y-configuracion.md](../../../docs/users/ES/packages/ts_js/05_automatizacion-y-configuracion.md)
-- [../../../docs/users/ES/packages/ts_js/06_comandos-y-runtimes.md](../../../docs/users/ES/packages/ts_js/06_comandos-y-runtimes.md)
-- [../../../docs/users/ES/packages/ts_js/07_manifests-bundlers-y-consumo.md](../../../docs/users/ES/packages/ts_js/07_manifests-bundlers-y-consumo.md)
-- [../../../docs/users/ES/packages/ts_js/08_traits-y-composicion.md](../../../docs/users/ES/packages/ts_js/08_traits-y-composicion.md)
+/**
+ * @barrits-trait
+ * @barrits-provides auth-session
+ * @barrits-conflicts legacy-auth
+ */
+export const authTrait = createTraitDescriptor({
+  name: "AuthDomain",
+  provides: ["auth-session"],
+  conflicts: ["legacy-auth"],
+});
+```
 
-Si yo quiero mantener o extender el SDK:
+### Capacidades Principales
 
-- [../../../docs/development/ES/packages/ts_js/00_indice.md](../../../docs/development/ES/packages/ts_js/00_indice.md)
-- [../../../docs/development/ES/packages/ts_js/05_descubrimiento-inspeccion-y-contratos.md](../../../docs/development/ES/packages/ts_js/05_descubrimiento-inspeccion-y-contratos.md)
-- [../../../docs/development/ES/packages/ts_js/06_tooling-publicacion-y-plataformas.md](../../../docs/development/ES/packages/ts_js/06_tooling-publicacion-y-plataformas.md)
+| Capacidad | Descripción |
+| :--- | :--- |
+| **Caché Diferencial AST** | Overhead de 0ms en recálculo de árboles sintácticos |
+| **Integridad de Supply Chain** | Checksums SHA-256 sellados en cada build manifest |
+| **Motor de Traits** | Composición ordenada por dependencias con detección de colisiones |
+| **Runtime Agnóstico** | Comportamiento idéntico en Node, Deno, Bun, React, Vue, Solid, Svelte, Tauri |
+| **Contract-First** | Manifests y snapshots como contratos de primera clase |
 
-Si yo quiero entender la evolucion arquitectonica:
+### Documentación
 
-- [../../../docs/investigations/ES/packages/ts_js/00_indice.md](../../../docs/investigations/ES/packages/ts_js/00_indice.md)
+- [Guía de Usuario (ES)](https://github.com/zuccadev-labs/Barrits/tree/main/docs/users/ES/packages/ts_js)
+- [Referencia de API — Configuración](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/ES/packages/ts_js/09a_referencia-de-api-configuracion.md)
+- [Referencia de API — Algoritmos](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/ES/packages/ts_js/09b_referencia-de-api-algoritmos.md)
+- [Referencia de API — Consume y Adapters](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/ES/packages/ts_js/09c_referencia-de-api-consume-y-adapters.md)
+- [Ejemplos](https://github.com/zuccadev-labs/Barrits/tree/main/packages/sdk/ts_js/examples)
 
-## Posicion de este README
+---
 
-Este `README` es la portada publica que se publica junto al paquete. Por eso cubre que hace el SDK, para que sirve, como se integra y donde verlo funcionando. El detalle normativo, operativo e historico sigue viviendo en `docs/`, separado por uso, desarrollo e investigacion para no duplicar contenido.
+This `README` is the public package page displayed on npm and JSR. Full reference documentation, architecture decisions, and development internals live in [`docs/`](https://github.com/zuccadev-labs/Barrits/tree/main/docs).

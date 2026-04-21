@@ -14,7 +14,7 @@ export default defineConfig({
     "adapters/deno/cli.ts",
   ],
   format: ["esm", "cjs"],
-  dts: true,
+  dts: false,
   sourcemap: true,
   clean: true,
   treeshake: true,

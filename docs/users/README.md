@@ -1,44 +1,36 @@
-# Documentacion de uso
+# Documentación de Usuario
 
-Yo uso esta carpeta para documentar como instalo, configuro y consumo cada SDK del monorepo desde la perspectiva de quien lo usa.
+Este directorio centraliza la documentación relativa a la instalación, configuración, uso y referencia de la interfaz pública de los distintos SDKs del proyecto Barrits. Provee los manuales operativos necesarios para que los desarrolladores integren y orquesten sus proyectos siguiendo la convención Barrits.
 
-## Como leo esta area
+## Guía de Navegación
 
-Mi recorrido recomendado es este:
+El acceso a la documentación de usuario se organiza mediante la siguiente jerarquía:
 
-1. yo elijo idioma
-2. yo elijo familia de artefacto, por ejemplo `packages`
-3. yo entro al SDK concreto
-4. yo sigo el orden `00_`, `01_`, `02_` y asi sucesivamente
+1.  Selección del idioma preferido para la lectura (ej. `ES` o `EN`).
+2.  Selección de la familia de artefactos (ej. `packages`).
+3.  Acceso al directorio del SDK concreto (ej. `ts_js`).
+4.  Seguimiento del orden numérico establecido para una progresión lógica de aprendizaje (`00_`, `01_`, etc.).
 
-## Punto de entrada actual
+## Directorio de Acceso Actual
 
-### ES
+### ES (Español)
 
 #### packages
 
 ##### ts_js
+- **[Índice de Usuario](ES/packages/ts_js/00_indice.md)**
+- **[Guía de Instalación](ES/packages/ts_js/01_instalacion.md)**
+- **[Referencia de API - Completa](ES/packages/ts_js/09_referencia-de-api.md)**
 
-- [ES/packages/ts_js/00_indice.md](ES/packages/ts_js/00_indice.md)
-- [ES/packages/ts_js/01_instalacion.md](ES/packages/ts_js/01_instalacion.md)
-- [ES/packages/ts_js/03_ejemplos-y-recorridos.md](ES/packages/ts_js/03_ejemplos-y-recorridos.md)
-- [ES/packages/ts_js/examples/00_indice.md](ES/packages/ts_js/examples/00_indice.md)
-- [ES/packages/ts_js/05_automatizacion-y-configuracion.md](ES/packages/ts_js/05_automatizacion-y-configuracion.md)
+## Alcance de esta Sección
 
-## Alcance de esta area
+Esta sección documenta:
+- Procedimientos de instalación y pre-requisitos por entorno.
+- Protocolos de configuración inicial y "primeros pasos".
+- Ejemplos detallados de integración por escenario de uso.
+- Colección de buenas prácticas y patrones de diseño recomendados.
+- Referencia técnica exhaustiva de la superficie pública del SDK (API Reference).
 
-Aqui yo documento:
+## Nota sobre Idiomas
 
-- instalacion
-- primeros pasos
-- ejemplos reales de consumo
-
-- buenas practicas
-- automatizacion y configuracion visible al usuario
-- comandos y runtimes como fallback operativo
-- manifests, bundlers y helpers de consumo
-- traits y composicion desde el punto de vista de uso
-
-## Regla editorial
-
-Yo no mezclo aqui decisiones historicas ni detalles internos de mantenimiento. Si necesito eso, salto a `../investigations/README.md` o `../development/README.md`.
+Se mantiene una estructura bilingüe para facilitar la adopción global del SDK. Los contenidos de las carpetas de idioma correspondiente son la fuente oficial para las instrucciones operativas dirigidas a los consumidores finales.

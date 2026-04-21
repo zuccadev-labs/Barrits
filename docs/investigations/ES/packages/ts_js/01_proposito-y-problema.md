@@ -1,25 +1,24 @@
-# 01 Proposito y problema de ts_js
+# 01 Propósito y problema de ts_js
 
-Yo llegue a `barrits` porque queria reducir la friccion de ensamblaje repetitivo y mover mi foco hacia capacidades pequenas, composicion y exposicion semantica.
+El proyecto `barrits` nace de la necesidad de reducir la fricción en el ensamblaje repetitivo de software, desplazando el enfoque del desarrollo hacia la creación de capacidades modulares, la composición y la exposición semántica clara de servicios.
 
-## Lo que yo queria evitar
+## Problemática Abordada
 
-Yo no queria que mi arquitectura dependiera de:
+Se identificaron varios factores de ineficiencia que la arquitectura de `barrits` busca mitigar:
 
-- clases sobredimensionadas
-- jerarquias rigidas
-- ensamblaje manual repetitivo
-- mezclas accidentales entre codigo reusable, runtime y ejemplo
+- **Rigidez Estructural**: Dependencia de jerarquías de clases sobredimensionadas.
+- **Acoplamiento Operativo**: Ensamblaje manual y repetitivo de componentes.
+- **Contaminación de Contextos**: Mezcla accidental de código reusable, detalles de runtime y artefactos de ejemplo dentro del mismo espacio lógico.
 
-## Lo que yo queria conseguir
+## Objetivos de Diseño
 
-Yo buscaba cuatro cosas:
+La investigación técnica se centró en alcanzar cuatro pilares fundamentales:
 
-1. funciones pequenas como unidad minima
-2. dominios como unidad semantica
-3. barrels como frontera publica
-4. composicion como mecanismo de extension
+1.  **Funciones Atómicas**: Adopción de funciones pequeñas como unidad mínima de lógica.
+2.  **Dominios Semánticos**: Agrupación de capacidades bajo unidades de dominio coherentes.
+3.  **Fronteras Públicas**: Uso de barrels para definir superficies de exposición controladas.
+4.  **Composición Dinámica**: Empleo de la composición como el mecanismo principal de extensión y flexibilidad.
 
-## Mi conclusion temprana
+## Tesis Arquitectónica Resultante
 
-Yo entendi que `barrits/` no debia verse como runtime ni como framework. Para mi, `barrits/` es una convencion arquitectonica que luego debo proyectar a runtimes reales como Node, Deno o frontend.
+La conclusión técnica fundamental es que `barrits` no debe ser catalogado como un runtime ni como un framework tradicional. Por el contrario, se define como una **convención arquitectónica** diseñada para ser proyectada en runtimes específicos (Node.js, Deno, Frontend) manteniendo la integridad del modelo de dominio.

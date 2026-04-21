@@ -1,79 +1,52 @@
-# Documentacion de barrits
+# Barrits Documentation System / Sistema Documental de Barrits
 
-Yo uso esta carpeta como landing documental superior del monorepo. Aqui separo la documentacion por area y por SDK para que no se mezcle uso, mantenimiento tecnico y contexto historico.
+This directory serves as the root landing page for the Barrits monorepo documentation. Documentation is strictly separated by technical area and SDK to ensure that usage, maintenance, and historical records remain independent.
 
-## Como esta organizada
+Este directorio funciona como la página de inicio documental del monorepo. La documentación se encuentra estrictamente separada por área técnica y por SDK, garantizando que los contextos de uso, mantenimiento técnico y registro histórico permanezcan independientes.
 
-Las areas actuales son estas:
+---
 
-- `users/`: yo documento instalacion, uso, ejemplos y buenas practicas
-- `development/`: yo documento arquitectura interna, flujos, contratos y validacion tecnica
-- `investigations/`: yo documento por que llegue a la arquitectura actual y que decisiones la explican
-- `package/`: yo documento publicacion, versionado, secrets, variables y gobierno operativo de releases
+## Documentation Categories / Tipología Documental
 
-Las landings intermedias de area viven en:
+Choose the appropriate area based on your technical needs:
+Seleccione el área adecuada según su necesidad técnica:
 
-- [users/README.md](users/README.md)
-- [development/README.md](development/README.md)
-- [investigations/README.md](investigations/README.md)
-- [package/README.md](package/README.md)
+- **[Users / Usuarios](users/README.md)**: Installation, usage guides, dependency integration, and operational best practices.
+- **[Development / Desarrollo](development/README.md)**: Internal architecture, data flows, component contracts, and technical validation.
+- **[Investigations / Investigaciones](investigations/README.md)**: Record of architectural decisions and the historical log of the platform's design.
+- **[Package / Publicación](package/README.md)**: Publication standards, versioning flow (CI/CD), secret management, and release governance.
+- **[Agents / Agentes](agents/README.md)**: Technical skills and M2M integrations for corporate AI copilots.
 
-La estructura objetivo por idioma y SDK es esta:
+---
 
-```txt
-/docs
-  /users
-    /ES
-      /packages
-        /ts_js
-    /EN
-      /packages
-        /ts_js
-  /development
-    /ES
-      /packages
-        /ts_js
-  /investigations
-    /ES
-      /packages
-        /ts_js
-```
+## SDK Entry Points / Puntos de Entrada por SDK
 
-## Punto de entrada por SDK
+### TypeScript / JavaScript (`ts_js`)
 
-### ts_js
+#### English (EN)
+- **Users**: [EN/packages/ts_js/00-index.md](users/EN/packages/ts_js/00-index.md)
+- **Development**: [EN/packages/ts_js/00-index.md](development/EN/packages/ts_js/00-index.md)
+- **Investigations**: [EN/packages/ts_js/00-index.md](investigations/EN/packages/ts_js/00-index.md)
 
-Este SDK corresponde a `barrits` para TypeScript y JavaScript.
+#### Español (ES)
+- **Usuarios**: [ES/packages/ts_js/00_indice.md](users/ES/packages/ts_js/00_indice.md)
+- **Desarrollo**: [ES/packages/ts_js/00_indice.md](development/ES/packages/ts_js/00_indice.md)
+- **Investigaciones**: [ES/packages/ts_js/00_indice.md](investigations/ES/packages/ts_js/00_indice.md)
 
-Si yo quiero usarlo:
+---
 
-- [users/ES/packages/ts_js/00_indice.md](users/ES/packages/ts_js/00_indice.md)
-- [users/ES/packages/ts_js/03_ejemplos-y-recorridos.md](users/ES/packages/ts_js/03_ejemplos-y-recorridos.md)
-- [users/ES/packages/ts_js/examples/00_indice.md](users/ES/packages/ts_js/examples/00_indice.md)
-- [users/ES/packages/ts_js/09_referencia-de-api.md](users/ES/packages/ts_js/09_referencia-de-api.md)
-- [users/ES/packages/ts_js/05_automatizacion-y-configuracion.md](users/ES/packages/ts_js/05_automatizacion-y-configuracion.md)
+## Navigation Rules / Reglas de Navegación
 
-Si yo quiero mantenerlo o extenderlo:
+1.  Start at `docs/README.md`. / Comience en `docs/README.md`.
+2.  Select the technical area (e.g., Users, Development, Package). / Seleccione el área técnica correspondiente.
+3.  Follow the area index (intermediate landing). / Siga el índice del área (página intermedia).
+4.  Proceed to the language and SDK cluster (e.g., `EN/packages/ts_js`). / Proceda al clúster de idioma y SDK pertinente.
+5.  Read sequentially guided by numeric prefixes: `00_`, `01_`, `02_`, etc. / Realice la lectura de forma secuencial guiada por los literales numéricos.
 
-- [development/ES/packages/ts_js/00_indice.md](development/ES/packages/ts_js/00_indice.md)
-- [development/ES/packages/ts_js/05_descubrimiento-inspeccion-y-contratos.md](development/ES/packages/ts_js/05_descubrimiento-inspeccion-y-contratos.md)
-- [development/ES/packages/ts_js/06_tooling-publicacion-y-plataformas.md](development/ES/packages/ts_js/06_tooling-publicacion-y-plataformas.md)
+---
 
-Si yo quiero entender su recorrido arquitectonico:
+## Editorial Standard / Regla Editorial
 
-- [investigations/ES/packages/ts_js/00_indice.md](investigations/ES/packages/ts_js/00_indice.md)
-- [investigations/ES/packages/ts_js/03_camino-hacia-el-monorepo.md](investigations/ES/packages/ts_js/03_camino-hacia-el-monorepo.md)
+This landing page must remain high-level and concise. Duplicating technical metadata in this file or its redirects is prohibited. The sole purpose of this file is to provide canonical paths and a logical map of the documentation mesh.
 
-## Como leo la documentacion
-
-Mi regla de lectura es simple:
-
-1. yo entro por `docs/README.md`
-2. yo elijo area segun mi necesidad
-3. yo entro a la landing intermedia de esa area
-4. yo bajo al idioma y despues al SDK
-5. yo sigo el orden numerado `00_`, `01_`, `02_` y asi sucesivamente
-
-## Regla editorial
-
-Yo mantengo esta landing corta y transversal. No duplico aqui el contenido detallado de cada area; solo dejo rutas claras de entrada y el mapa estable del sistema documental.
+Se requiere mantener esta entrada (Landing) con un diseño transversal y comprimido. Queda estrictamente prohibido duplicar metadatos técnicos en este archivo o en las redirecciones generales; el único objetivo del presente archivo consiste en proporcionar las rutas canónicas del ecosistema y un mapa lógico que oriente al consumidor.

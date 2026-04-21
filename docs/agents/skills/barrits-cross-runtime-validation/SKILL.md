@@ -1,64 +1,51 @@
 ---
 name: barrits-cross-runtime-validation
-description: Use this skill when validating barrits behavior across Node.js, Deno, and Bun in local development and CI. Apply it for runtime parity checks, example verification, and regression prevention for adapters and CLI flows.
+description: Use this skill when validating Barrits behavior across Node.js, Deno, and Bun. Ensure consistency between internal services, adapters, and public API consumption in real-world integration scenarios.
 ---
 
 # Barrits Cross-Runtime Validation
 
-## When To Use
-Use this skill when the user requests:
-- End-to-end runtime validation in Node, Deno, and Bun.
-- Confidence that examples and adapter CLIs behave consistently.
-- CI hardening for multi-runtime verification.
+## Validation Strategy
 
-## Validation Workflow
-1. Confirm dependencies are installed with npm ci at workspace root.
-2. Run SDK typecheck, build, and tests.
-3. Validate Deno example tasks.
-4. Validate Bun example tasks.
-5. Validate representative framework examples where relevant.
-6. Report parity gaps and propose minimal fixes.
+Barrits is a **portable SDK** that relies on specialized runtime adapters. Validation must certify that the core orchestration behaves identically regardless of the execution environment.
 
-## Required Commands
-```bash
-npm ci
-npm run typecheck
-npm run build
-npm test
-```
+## Integration Matrix
 
-```bash
-cd packages/sdk/ts_js/examples/example-deno
-deno task build
-deno task inspect
-```
+| Environment | Entry Point | Target Validation |
+| :--- | :--- | :--- |
+| Node.js | `examples/example-nodejs/` | CLI / Direct Export Consumption |
+| Deno | `examples/example-deno/` | JSR / Deno-native surface |
+| Bun | `examples/example-bun/` | Fast-runtime compatibility |
+| Frameworks | `examples/example-react/`, etc. | Bundler integration (Vite) |
+| Desktop | `examples/example-tauri/` | Security and path restrictions |
+
+## Full Quality Gate Workflow
+
+1. **Core Validation**: Run `typecheck`, `build`, and `test` from the SDK root.
+2. **Discovery Verification**: Ensure the internal normalization service handles current configurations correctly.
+3. **Example Certification**: Build and run representative examples for each runtime.
+4. **Adapter Audit**: Verify that `node` and `deno` specific entrypoints are correctly exported and functional.
+
+## Execution Reference
 
 ```bash
-cd packages/sdk/ts_js/examples/example-bun
-bun run dev
-bun run inspect
+# Build and verify the industrialized core
+npm run build && npm test
+
+# Verify JSR surface in isolation
+npm run publish:jsr:dry-run
+
+# Run cross-runtime example checks
+deno task build # Inside example-deno
+node src/main.js # Inside example-nodejs
 ```
 
-## CI Expectations
-- Include Bun setup in CI jobs that already validate Node and Deno.
-- Keep commands non-interactive and deterministic.
-- Fail fast on runtime-specific errors with actionable logs.
+## Critical Verification Areas
 
-## Gotchas
-- Bun and Node path behavior can diverge if relative roots are implicit.
-- Deno permissions and config can hide failures if not explicit.
-- Example workspace dependency links must match lockfile state.
+- **Path Normalization**: Ensure consistency between Windows (`\`) and POSIX (`/`) separators in discovery manifests.
+- **Incremental Caching**: Validate that `.cache` and `.barrits` artifacts are correctly updated and respected across runs.
+- **Security Boundaries**: Verify that path restrictions in the Tauri environment are strictly enforced.
 
-## Validation Report Format
-```markdown
-## Runtime Matrix
-- Node: pass/fail
-- Deno: pass/fail
-- Bun: pass/fail
+## Reporting Standard
 
-## Regressions
-- List any runtime-specific breakages.
-
-## Follow-up
-- Minimal fixes required before release.
-```
+Validation success is measured by the total pass rate of the 65 unit/integration tests and the successful build of all 10+ integrated examples.

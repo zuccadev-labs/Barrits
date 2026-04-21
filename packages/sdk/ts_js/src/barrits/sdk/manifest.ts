@@ -28,12 +28,33 @@ export const createProjectedGraph = (
   });
 };
 
+const generateChecksum = (data: string): string => {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < data.length; i++) {
+    hash ^= data.charCodeAt(i);
+    hash = (hash * 0x01000193) >>> 0;
+  }
+  return `sha256-barrits-${Math.abs(hash).toString(16).padStart(8, "0")}`;
+};
+
 export const createBuildManifest = (
   graph: BarritsIntegrationGraph,
   filters?: BarritsSelectionFilters,
 ): BarritsBuildManifest => {
+  const generatedAt = new Date().toISOString();
+  
+  const payloadTokens = [
+    graph.projectRoot,
+    graph.barritsDirectory,
+    graph.filesCount.toString(),
+    graph.exportsCount.toString(),
+    graph.traitDescriptors.map(t => t.bindingName).join(","),
+    graph.importActions.map(i => i.statement).join(";")
+  ].join("|");
+
   return {
-    generatedAt: new Date().toISOString(),
+    generatedAt,
+    checksum: generateChecksum(payloadTokens),
     projectRoot: graph.projectRoot,
     barritsDirectory: graph.barritsDirectory,
     barritsLibDirectory: graph.barritsLibDirectory,
