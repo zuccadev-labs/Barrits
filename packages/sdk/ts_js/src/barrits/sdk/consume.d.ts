@@ -1,0 +1,13 @@
+import type { BarritsBuildManifest, BarritsConsumedStateSummary, BarritsLanguageToolSnapshot, BarritsWatchSnapshot } from "./contracts";
+type ReadTextFile = (filePath: string) => Promise<string>;
+export declare const parseBuildManifest: (source: string) => BarritsBuildManifest;
+export declare const parseWatchSnapshot: (source: string) => BarritsWatchSnapshot;
+export declare const readBuildManifest: (filePath: string, readTextFile: ReadTextFile) => Promise<BarritsBuildManifest>;
+export declare const readBuildManifestSummary: (filePath: string, readTextFile: ReadTextFile) => Promise<BarritsConsumedStateSummary>;
+export declare const readWatchSnapshot: (filePath: string, readTextFile: ReadTextFile) => Promise<BarritsWatchSnapshot>;
+export declare const readWatchSnapshotSummary: (filePath: string, readTextFile: ReadTextFile) => Promise<BarritsConsumedStateSummary>;
+export declare const readLanguageToolSnapshot: (filePath: string, readTextFile: ReadTextFile) => Promise<BarritsLanguageToolSnapshot>;
+export declare const createBuildManifestSummary: (manifest: BarritsBuildManifest | null) => BarritsConsumedStateSummary;
+export declare const createWatchSnapshotSummary: (snapshot: BarritsWatchSnapshot | null) => BarritsConsumedStateSummary;
+export declare const createLanguageToolSnapshot: (snapshot: BarritsWatchSnapshot) => BarritsLanguageToolSnapshot;
+export {};
