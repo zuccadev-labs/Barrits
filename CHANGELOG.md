@@ -4,7 +4,7 @@ Todos los cambios relevantes de este repositorio se documentan aqui.
 
 El formato sigue la idea de Keep a Changelog y el versionado esperado del SDK activo sigue SemVer.
 
-## [0.1.2-rc.1] - 2026-04-20
+## [0.1.2] - 2026-04-20
 
 ### Added
 - **Industrialización de Lógica Core**: Delegación de la normalización de configuración a servicios internos (`config_normalization.ts`) bajo SRP.
