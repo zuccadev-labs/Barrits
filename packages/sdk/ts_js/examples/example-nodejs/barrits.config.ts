@@ -4,6 +4,7 @@ import { boot } from "./src/main";
 export default defineBarritsConfig({
   runtime: "node",
   watch: "auto",
+  namespace: "corpAgent",
   autoManifest: true,
   automationDirectory: ".barrits",
   main: boot,

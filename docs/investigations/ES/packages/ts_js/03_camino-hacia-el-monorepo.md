@@ -1,24 +1,24 @@
 # 03 Camino hacia el monorepo de ts_js
 
-Yo no empece con un monorepo limpio. Empece con un paquete publicado desde la raiz y con ejemplos y tooling alrededor. Ese diseño me servia al principio, pero no me escalaba bien para multiples SDKs.
+La arquitectura inicial del proyecto no contemplaba una estructura de monorepo. Originalmente, el SDK se distribuía desde la raíz del repositorio, con ejemplos y herramientas de soporte coexistiendo en el mismo espacio lógico. Este diseño, funcional en etapas tempranas, demostró limitaciones en escalabilidad ante la necesidad de dar soporte a múltiples SDKs.
 
-## Lo que detecte
+## Evaluación de Limitaciones Estructurales
 
-Yo vi tres problemas estructurales:
+Se identificaron tres problemas críticos en el modelo centralizado inicial:
 
-1. la raiz mezclaba orquestacion y publicacion
-2. `examples`, `src`, `tests` y `adapters` convivian como si todo perteneciera al mismo nivel arquitectonico
-3. la ruta de crecimiento hacia otros lenguajes no estaba representada en la estructura
+1.  **Confusión de Roles**: La raíz del repositorio mezclaba responsabilidades de orquestación global con tareas de publicación del paquete TS/JS.
+2.  **Solapamiento de Niveles**: Directorios de ejemplos, código fuente, pruebas y adaptadores convivían en el mismo plano jerárquico, dificultando la navegación técnica.
+3.  **Falta de Ruta de Crecimiento**: La estructura no facilitaba la incorporación futura de SDKs en otros lenguajes (ej. Go o Python) sin generar conflictos de gobernanza.
 
-## La decision de migracion
+## Resolución: Migración y Segmentación
 
-Yo movi el paquete publicable a `packages/sdk/ts_js/` y despues reubique `examples/` dentro del propio SDK para que la experiencia visible perteneciera a la misma familia de package.
+Se ejecutó una migración estratégica moviendo el paquete publicable al subdirectorio `packages/sdk/ts_js/`. Simultáneamente, se reubicaron los ejemplos dentro de la estructura del propio SDK, asegurando que la experiencia de integración estuviera vinculada directamente a la superficie del paquete correspondiente.
 
-## Lo que gane con eso
+## Beneficios de la Nueva Arquitectura
 
-Con esa migracion yo consegui:
+La adopción de la estructura de monorepo ha permitido alcanzar los siguientes hitos operativos:
 
-- una raiz privada que coordina workspaces
-- un paquete publicable claro en `packages/sdk/ts_js`
-- ejemplos del SDK viviendo junto al SDK y no al lado de todos los lenguajes posibles
-- una ruta natural para `packages/sdk/go/` y `packages/sdk/python/`
+- **Gobernanza Centralizada**: Una raíz privada que coordina exclusivamente los espacios de trabajo (workspaces).
+- **Publicación Hermética**: Un paquete con superficie de salida clara y aislada en `packages/sdk/ts_js`.
+- **Coherencia de Contexto**: Los ejemplos de uso residen junto al SDK que los sustenta, respetando la familia de cada lenguaje.
+- **Escalabilidad Multilenguaje**: Se ha establecido un patrón reproducible para la incorporación de nuevos SDKs bajo la jerarquía de `packages/sdk/`.

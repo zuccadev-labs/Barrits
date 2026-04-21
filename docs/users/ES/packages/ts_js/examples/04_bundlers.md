@@ -1,25 +1,34 @@
 # 04 Bundlers
 
-Yo uso `packages/sdk/ts_js/examples/bundlers/` para validar integraciones tecnicas de build sin mezclar esa prueba con el ejemplo runtime de Node.js.
+La carpeta `packages/sdk/ts_js/examples/bundlers/` se utiliza para auditar y validar las integraciones técnicas de build de forma aislada, evitando mezclar estas pruebas con la lógica operativa de los ejemplos de runtime.
 
-Herramientas cubiertas:
+## Herramientas de build cubiertas
 
-- Vite
-- esbuild
-- Rollup
-- Webpack
+El SDK provee soporte oficial y validación para los siguientes bundlers:
 
-Comandos disponibles:
+- **Vite**: Plugin para despliegues modernos y desarrollo rápido.
+- **esbuild**: Integración de alto rendimiento para builds de servidor y CLI.
+- **Rollup**: Configuración optimizada para librerías distributivas.
+- **Webpack**: Soporte para ecosistemas corporativos legados o configuraciones complejas.
 
-- `npm run build:vite`
-- `npm run build:esbuild`
-- `npm run build:rollup`
-- `npm run build:webpack`
-- `npm run build:all`
+## Comandos de validación técnica
 
-Esta carpeta me sirve para verificar dos cosas concretas:
+```bash
+# Validaciones individuales
+npm run build:vite
+npm run build:esbuild
+npm run build:rollup
+npm run build:webpack
 
-- que los plugins de `barrits` siguen autogenerando el manifest donde corresponde
-- que los adaptadores de bundling no contaminan la narrativa del consumidor Node.js puro
+# Validación integral de la suite
+npm run build:all
+```
 
-Si yo quiero una demo visible para producto o experiencia de usuario, abro un ejemplo de runtime o frontend. Si quiero una validacion tecnica de integracion, entro aqui.
+## Propósito arquitectónico
+
+Esta suite de ejemplos permite verificar dos aspectos críticos del sistema:
+
+1. Que los plugins de Barrits autogeneran correctamente el manifest en la ubicación configurada según las reglas de cada bundler.
+2. Que los adaptadores de bundling funcionan de forma hermética, sin contaminar la narrativa ni las dependencias del consumidor de runtime puro (ej. Node.js).
+
+Para demostraciones visuales de producto o recorridos de experiencia de usuario, se recomienda consultar los ejemplos de runtime o frontend. Esta carpeta está reservada exclusivamente para validación técnica de integración de herramientas de build.

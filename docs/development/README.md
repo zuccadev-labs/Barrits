@@ -1,44 +1,39 @@
-# Documentacion de desarrollo
+# Documentación de Desarrollo
 
-Yo uso esta carpeta para explicar como esta construido cada SDK, como fluyen sus contratos internos y como lo valido cuando hago cambios de arquitectura, tooling o publicacion.
+Este directorio centraliza la documentación técnica relativa al diseño interno, la arquitectura y los flujos operativos de los distintos SDKs del proyecto Barrits. Provee los lineamientos necesarios para la evolución del código sin comprometer la integridad de la superficie pública.
 
-## Como leo esta area
+## Guía de Navegación
 
-Mi recorrido recomendado es este:
+Para acceder a la documentación específica de un SDK, se recomienda seguir este flujo:
 
-1. yo elijo idioma
-2. yo elijo familia, por ejemplo `packages`
-3. yo entro al SDK concreto
-4. yo sigo el orden `00_`, `01_`, `02_` y asi sucesivamente
+1.  Selección del idioma preferido (ej. `ES` o `EN`).
+2.  Selección de la familia de componentes (ej. `packages`).
+3.  Acceso al directorio del SDK correspondiente (ej. `ts_js`).
+4.  Seguimiento del orden numérico establecido (`00_`, `01_`, etc.).
 
-## Punto de entrada actual
+## Directorio de Acceso Actual
 
-### ES
+### ES (Español)
 
 #### packages
 
 ##### ts_js
+- **[Índice de Desarrollo](ES/packages/ts_js/00_indice.md)**
+- **[Arquitectura de Carpetas](ES/packages/ts_js/01_arquitectura-de-carpetas.md)**
+- **[Flujos Operativos](ES/packages/ts_js/02_flujos-operativos.md)**
+- **[Dependencias y Superficies](ES/packages/ts_js/03_dependencias-y-superficies.md)**
+- **[Descubrimiento e Inspección](ES/packages/ts_js/05_descubrimiento-inspeccion-y-contratos.md)**
+- **[Tooling y Plataformas](ES/packages/ts_js/06_tooling-publicacion-y-plataformas.md)**
 
-- [ES/packages/ts_js/00_indice.md](ES/packages/ts_js/00_indice.md)
-- [ES/packages/ts_js/01_arquitectura-de-carpetas.md](ES/packages/ts_js/01_arquitectura-de-carpetas.md)
-- [ES/packages/ts_js/05_descubrimiento-inspeccion-y-contratos.md](ES/packages/ts_js/05_descubrimiento-inspeccion-y-contratos.md)
-- [ES/packages/ts_js/06_tooling-publicacion-y-plataformas.md](ES/packages/ts_js/06_tooling-publicacion-y-plataformas.md)
+## Alcance Técnico
 
-## Alcance de esta area
+Esta sección cubre las siguientes áreas de responsabilidad:
+- Definición de la jerarquía de directorios y responsabilidades.
+- Descripción de los procesos de construcción, monitoreo y validación.
+- Documentación de la jerarquía de dependencias y subpaths.
+- Especificación de contratos internos (Manifests y Snapshots).
+- Validación multiplataforma y compatibilidad con herramientas de construcción.
 
-Aqui yo documento:
+## Gestión de Documentación Histórica
 
-- arquitectura de carpetas
-- flujos operativos
-- dependencias y superficies publicas
-- validacion y publicacion
-- discovery, inspection, manifests y snapshots
-- tooling por plataforma, bundlers y restricciones de distribucion
-
-## Compatibilidad con documentos legacy
-
-Los archivos legacy de esta area solo quedan como punteros:
-
-- [monorepo-architecture.md](monorepo-architecture.md)
-
-Yo no los trato como fuente principal de verdad; la fuente vigente es la estructura `ES/packages/<sdk>/`.
+Los archivos de arquitectura previos se mantienen exclusivamente como referencia histórica y no constituyen la fuente de verdad vigente. La documentación oficial y actualizada reside en la estructura de directorios por idioma y paquete.
