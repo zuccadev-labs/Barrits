@@ -164,7 +164,7 @@ jobs:
           deno-version: v2.x
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build SDK
         run: npm run build
@@ -211,14 +211,14 @@ jobs:
           deno-version: v2.x
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Validate JSR payload
         run: npm run publish:jsr:dry-run
 
       - name: Publish JSR package
         working-directory: packages/sdk/ts_js
-        run: npx jsr publish --allow-dirty --allow-dirty
+        run: npx jsr publish --allow-dirty --allow-dirty --allow-dirty
 
   github-release:
     needs:
