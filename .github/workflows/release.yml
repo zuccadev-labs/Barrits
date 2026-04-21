@@ -106,8 +106,8 @@ jobs:
            # For pre-release tags (0.1.0-rc.N), allow monorepo to be either stable (0.1.0) or matching prerelease
            if ($channel -eq "prerelease") {
              # Accept matching prerelease or stable 0.1.0 for monorepo
-             if ($monorepoVersion -ne $version -and $monorepoVersion -ne "0.1.0") {
-               throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version' or stable '0.1.0'."
+             if ($monorepoVersion -ne $version -and $monorepoVersion -ne "0.1.0" -and -not $version.StartsWith($monorepoVersion)) {
+               throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version' (or its stable prefix)."
              }
            } else {
              if ($monorepoVersion -ne $version) {
