@@ -1,6 +1,6 @@
 {
   "name": "@zuccadev-labs/barrits",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Package-first functional automation for barrits domains, manifests, and runtime tooling.",
   "license": "MIT",
   "exports": {
