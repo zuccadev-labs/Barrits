@@ -1,35 +1,38 @@
 /**
- * Computes the SHA-256 hash of a UTF-8 string and returns it as a lowercase
- * hexadecimal digest. Uses the Web Crypto API for cross-runtime portability.
+ * @module
+ * Hashing and integrity verification algorithms.
  *
- * @param input - The UTF-8 string to hash.
- * @returns A promise resolving to a 64-character lowercase hexadecimal string.
+ * This module provides both cryptographic and non-cryptographic hash functions
+ * for use in build manifest sealing, content-addressable caching, and
+ * distributed partition assignment.
+ *
+ * - `sha256Hex` — Cryptographic SHA-256 digest via Web Crypto API.
+ * - `murmurHash3` — High-throughput non-cryptographic 32-bit hash.
+ * - `deterministicStringify` — JSON serialization with lexicographic key ordering.
  */
-export declare const sha256Hex: (input: string) => Promise<string>;
-
 /**
- * Computes a 32-bit MurmurHash3 digest for hash-based partitioning.
- *
- * @param input - The string to hash.
- * @param seed - Optional 32-bit unsigned integer seed. Defaults to 0.
- * @returns A 32-bit unsigned integer hash value.
+ * Cryptographic SHA-256 digest for integrity verification.
  */
-export declare const murmurHash3: (input: string, seed?: number) => number;
-
+export { sha256Hex } from "./sha256-hex";
 /**
- * Produces a deterministic JSON string with recursively sorted object keys.
- *
- * @param value - The value to serialize.
- * @param indent - Optional indentation for human-readable output.
- * @returns A deterministic JSON string.
+ * Non-cryptographic 32-bit hash for partitioning and indexing.
  */
-export declare const deterministicStringify: (value: unknown, indent?: number) => string;
-
+export { murmurHash3 } from "./murmur-hash3";
+/**
+ * Deterministic JSON serializer with recursive key sorting.
+ */
+export { deterministicStringify } from "./deterministic-stringify";
 /**
  * Aggregated hashing and integrity algorithm family.
+ *
+ * Provides a unified namespace for all hash-related operations used
+ * across build pipelines, manifest sealing, and distributed systems.
  */
 export declare const hashingAlgorithms: {
-  readonly sha256Hex: typeof sha256Hex;
-  readonly murmurHash3: typeof murmurHash3;
-  readonly deterministicStringify: typeof deterministicStringify;
+    /** Computes a SHA-256 hex digest of a UTF-8 string. */
+    readonly sha256Hex: (input: string) => Promise<string>;
+    /** Computes a 32-bit MurmurHash3 value for fast partitioning. */
+    readonly murmurHash3: (input: string, seed?: number) => number;
+    /** Serializes a value to a deterministic JSON string. */
+    readonly deterministicStringify: (value: unknown, indent?: number) => string;
 };

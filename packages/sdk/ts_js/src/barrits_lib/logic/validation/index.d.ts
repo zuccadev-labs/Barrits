@@ -1,55 +1,37 @@
 /**
- * Validates RFC 5322 simplified email address format.
- * @param value - The string to validate.
- * @returns `true` if the string represents a valid email address.
+ * @module
+ * Validation and assertion utilities for runtime data integrity.
+ *
+ * This module provides RFC-compliant format validators and typed assertion
+ * guards. These functions are designed for use at service boundaries
+ * (API handlers, message processors, configuration loaders) where
+ * untrusted input must be validated before further processing.
+ *
+ * - `isEmail` — RFC 5322 simplified email format.
+ * - `isUrl` — WHATWG URL Standard with HTTP/HTTPS scheme restriction.
+ * - `isUuid` — RFC 4122 UUID v4 format.
+ * - `isIsoDate` — ISO 8601 date and datetime format.
+ * - `isIpAddress` — IPv4 and IPv6 address format.
+ * - `assertNonNullish` — Typed non-null assertion with traceable error messages.
  */
-export declare const isEmail: (value: string) => boolean;
-
-/**
- * Validates a well-formed URL with HTTP or HTTPS scheme (WHATWG URL Standard).
- * @param value - The string to validate.
- * @returns `true` if the string is a valid HTTP or HTTPS URL.
- */
-export declare const isUrl: (value: string) => boolean;
-
-/**
- * Validates RFC 4122 UUID v4 format.
- * @param value - The string to validate.
- * @returns `true` if the string is a valid UUID v4.
- */
-export declare const isUuid: (value: string) => boolean;
-
-/**
- * Validates ISO 8601 date or datetime format.
- * @param value - The string to validate.
- * @returns `true` if the string is a valid ISO 8601 date or datetime.
- */
-export declare const isIsoDate: (value: string) => boolean;
-
-/**
- * Validates IPv4 or IPv6 address format.
- * @param value - The string to validate.
- * @returns `true` if the string is a valid IP address.
- */
-export declare const isIpAddress: (value: string) => boolean;
-
-/**
- * Asserts that a value is neither `null` nor `undefined`. Throws `TypeError` on failure.
- * @typeParam T - The expected non-nullish type.
- * @param value - The value to assert.
- * @param label - Human-readable label for the error message.
- * @returns The original value narrowed to exclude null and undefined.
- */
-export declare const assertNonNullish: <T>(value: T | null | undefined, label: string) => T;
-
+export { isEmail, isUrl, isUuid, isIsoDate, isIpAddress, assertNonNullish } from "./validators";
 /**
  * Aggregated validation algorithm family.
+ *
+ * Provides a unified namespace for all format validators and assertion
+ * guards used in service-boundary input processing.
  */
 export declare const validationAlgorithms: {
-  readonly isEmail: typeof isEmail;
-  readonly isUrl: typeof isUrl;
-  readonly isUuid: typeof isUuid;
-  readonly isIsoDate: typeof isIsoDate;
-  readonly isIpAddress: typeof isIpAddress;
-  readonly assertNonNullish: typeof assertNonNullish;
+    /** Validates RFC 5322 email format. */
+    readonly isEmail: (value: string) => boolean;
+    /** Validates WHATWG URL with HTTP/HTTPS scheme. */
+    readonly isUrl: (value: string) => boolean;
+    /** Validates RFC 4122 UUID v4 format. */
+    readonly isUuid: (value: string) => boolean;
+    /** Validates ISO 8601 date/datetime format. */
+    readonly isIsoDate: (value: string) => boolean;
+    /** Validates IPv4 or IPv6 address format. */
+    readonly isIpAddress: (value: string) => boolean;
+    /** Asserts a value is neither null nor undefined. */
+    readonly assertNonNullish: <T>(value: T | null | undefined, label: string) => T;
 };
