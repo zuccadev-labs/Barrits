@@ -170,9 +170,21 @@ jobs:
         run: npm test
       - name: Publish npm package
         working-directory: packages/sdk/ts_js
+        run: |
+          $version = "${{ needs.prepare.outputs.release_version }}"
+          $distTag = "${{ needs.prepare.outputs.npm_dist_tag }}"
+          $packageName = node -p "require('./package.json').name"
 
+          # Check if this exact version already exists on npm
+          $existingVersions = npm view "$packageName" versions --json 2>$null | ConvertFrom-Json
+          $alreadyPublished = $existingVersions -contains $version
 
-        run: npm publish --access public --provenance --tag ${{ needs.prepare.outputs.npm_dist_tag }}
+          if ($alreadyPublished) {
+            Write-Host "::warning::Version $version already exists on npm (likely published by a prerelease). GitHub Actions provenance cannot promote dist-tags automatically. Please run manually locally: npm dist-tag add ${packageName}@${version} ${distTag}"
+          } else {
+            Write-Host "Publishing $packageName@$version with dist-tag '$distTag'."
+            npm publish --access public --provenance --tag $distTag
+          }
   publish-jsr:
     needs: prepare
     if: github.event_name != 'workflow_dispatch' || inputs.publish_jsr
@@ -212,7 +224,7 @@ jobs:
       - prepare
       - publish-npm
       - publish-jsr
-    if: always() && needs.prepare.result == 'success' && (needs['publish-npm'].result != 'failure' || needs['publish-jsr'].result != 'failure' || true)
+    if: always() && needs.prepare.result == 'success' && needs['publish-npm'].result == 'success' && needs['publish-jsr'].result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub release
