@@ -1,18 +1,18 @@
 # 00 Indice de desarrollo de ts_js
 
-Yo uso esta carpeta como punto de entrada para entender como esta construido el SDK `ts_js`, como se relacionan sus piezas y que reglas sigo para evolucionarlo sin romper su superficie publica.
+Este documento sirve como punto de entrada para comprender la arquitectura del SDK `ts_js`, la relación entre sus componentes y las normas establecidas para su evolución sin comprometer la superficie pública.
 
-Orden de lectura:
+## Orden de lectura recomendado
 
-1. `01_arquitectura-de-carpetas.md`: yo explico como distribuyo codigo fuente, adapters, ejemplos, tests y artefactos.
-2. `02_flujos-operativos.md`: yo describo como corren discovery, build, watch, consumo y validacion.
-3. `03_dependencias-y-superficies.md`: yo documento que capa depende de cual y que subpaths publico.
-4. `04_validacion-y-publicacion.md`: yo dejo el flujo de build, test, ejemplos y publicacion JSR/npm.
-5. `05_descubrimiento-inspeccion-y-contratos.md`: yo explico discovery, inspection, manifests y snapshots como contratos internos.
-6. `06_tooling-publicacion-y-plataformas.md`: yo documento bundlers, JSR, npm, Windows y validacion por plataforma.
+1.  **[01_arquitectura-de-carpetas.md](01_arquitectura-de-carpetas.md)**: Descripción de la distribución del código fuente, adaptadores, ejemplos, pruebas y artefactos.
+2.  **[02_flujos-operativos.md](02_flujos-operativos.md)**: Detalle de los procesos de descubrimiento (discovery), construcción (build), monitoreo (watch), consumo y validación.
+3.  **[03_dependencias-y-superficies.md](03_dependencias-y-superficies.md)**: Documentación de la jerarquía de dependencias y los subpaths publicados.
+4.  **[04_validacion-y-publicacion.md](04_validacion-y-publicacion.md)**: Guía sobre el flujo de calidad y los procesos de publicación en JSR y npm.
+5.  **[05_descubrimiento-inspeccion-y-contratos.md](05_descubrimiento-inspeccion-y-contratos.md)**: Explicación técnica de los contratos internos (manifests y snapshots).
+6.  **[06_tooling-publicacion-y-plataformas.md](06_tooling-publicacion-y-plataformas.md)**: Documentación sobre compatibilidad con bundlers y validación multiplataforma.
 
-Regla editorial:
+## Estándares Editoriales Corporativos
 
-- yo escribo esta documentacion en primera persona para dejar claro que decisiones tome y que criterio sigo al mantener el paquete
-- yo separo desarrollo, investigacion y uso para no mezclar justificacion historica con operacion tecnica ni con onboarding de consumo
-- yo uso el prefijo `00_`, `01_`, `02_` y asi sucesivamente para que el orden de lectura no dependa del explorador de archivos
+- La documentación se redacta en tercera persona formal para mantener la objetividad técnica.
+- Se mantienen segregadas las áreas de desarrollo, investigación y uso para evitar la mezcla de contextos históricos con guías operativas.
+- Se utiliza una numeración prefijada (`00_`, `01_`, etc.) para garantizar un orden de lectura lógico e independiente del sistema de archivos.

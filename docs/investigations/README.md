@@ -1,43 +1,38 @@
-# Documentacion de investigacion
+# Documentación de Investigación
 
-Yo uso esta carpeta para registrar por que llegue a la arquitectura actual, que problemas estaba resolviendo y que decisiones sobrevivieron al proceso de diseño.
+Este directorio alberga el registro técnico y arquitectónico de la evolución de Barrits. Documenta el razonamiento detrás de la estructura actual, los problemas de diseño resueltos y las decisiones estratégicas que rigen el ecosistema.
 
-## Como leo esta area
+## Guía de Navegación
 
-Mi recorrido recomendado es este:
+Para consultar el registro de investigación de un componente específico, se establece el siguiente flujo operativo:
 
-1. yo elijo idioma
-2. yo elijo familia, por ejemplo `packages`
-3. yo entro al SDK concreto
-4. yo sigo el orden `00_`, `01_`, `02_` y asi sucesivamente
+1.  Selección del idioma de preferencia.
+2.  Selección de la familia de componentes (ej. `packages`).
+3.  Acceso al directorio del SDK correspondiente.
+4.  Seguimiento de la secuencia numérica lógica para comprender el desarrollo del pensamiento arquitectónico.
 
-## Punto de entrada actual
+## Directorio de Acceso Actual
 
-### ES
+### ES (Español)
 
 #### packages
 
 ##### ts_js
+- **[Índice de Investigación](ES/packages/ts_js/00_indice.md)**
+- **[Propósito y Problemática](ES/packages/ts_js/01_proposito-y-problema.md)**
+- **[Decisiones de Arquitectura](ES/packages/ts_js/02_decisiones-de-arquitectura.md)**
+- **[Evolución hacia Monorepo](ES/packages/ts_js/03_camino-hacia-el-monorepo.md)**
+- **[Micro-servicios y Orquestación](ES/packages/ts_js/04_arquitectura-microservicios-y-orquestacion.md)**
+- **[Conclusiones y Límites](ES/packages/ts_js/05_conclusiones-y-limites.md)**
 
-- [ES/packages/ts_js/00_indice.md](ES/packages/ts_js/00_indice.md)
-- [ES/packages/ts_js/01_proposito-y-problema.md](ES/packages/ts_js/01_proposito-y-problema.md)
-- [ES/packages/ts_js/03_camino-hacia-el-monorepo.md](ES/packages/ts_js/03_camino-hacia-el-monorepo.md)
-- [ES/packages/ts_js/04_conclusiones-y-limites.md](ES/packages/ts_js/04_conclusiones-y-limites.md)
+## Alcance del Repositorio de Investigación
 
-## Alcance de esta area
+Esta sección documenta:
+- Los objetivos fundacionales y la visión del proyecto.
+- El análisis de tradeoffs y la justificación de decisiones estructurales.
+- La crónica de la transición arquitectónica hacia modelos escalables.
+- Las conclusiones vigentes y la definición de las fronteras tecnológicas del SDK.
 
-Aqui yo documento:
+## Notas sobre Documentación Heredada
 
-- proposito inicial
-- problema de diseño
-- decisiones de arquitectura
-- recorrido hacia el monorepo
-- conclusiones activas y limites asumidos
-
-## Compatibilidad con documentos legacy
-
-El archivo legacy de esta area solo queda como puntero:
-
-- [2026-04-06-barrits-arquitectura-funcional.md](2026-04-06-barrits-arquitectura-funcional.md)
-
-Yo no lo trato como fuente principal de verdad; la fuente vigente es la estructura `ES/packages/<sdk>/`.
+Los registros históricos y borradores de arquitectura previos se conservan como punteros para trazabilidad, pero la fuente de verdad autoritativa para el diseño actual se encuentra centralizada en la estructura de archivos por idioma y componente.

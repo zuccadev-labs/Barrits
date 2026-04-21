@@ -1,4 +1,5 @@
 import { detectRuntime, getCurrentWorkingDirectory } from "./internal/runtime";
+import { normalizeResolvedConfig } from "./internal/config_normalization";
 
 /** Supported runtime identifiers for package-level configuration. */
 export type BarritsRuntimeKind = "node" | "deno" | "react" | "browser" | "other";
@@ -67,6 +68,8 @@ export type BarritsRootConfig = {
   contracts?: BarritsContractsConfig;
   /** Optional main method to override the default bootstrap behavior */
   main?: () => Promise<void> | void;
+  /** Optional custom namespace injected when creating abstract factories */
+  namespace?: string;
 };
 
 /** Fully resolved runtime configuration consumed internally by Barrits. */
@@ -82,6 +85,8 @@ export type ResolvedBarritsConfig = {
   configFilePath?: string;
   /** Resolved main method from configuration */
   main?: () => Promise<void> | void;
+  /** Resolved custom namespace from configuration */
+  namespace?: string;
 };
 
 type RuntimeGlobals = typeof globalThis & {
@@ -95,10 +100,7 @@ const runtimeImport = <TModule>(specifier: string): Promise<TModule> => {
   return importModule(specifier);
 };
 
-const normalizeAutomationDirectory = (value: string | undefined): string => {
-  const normalizedValue = value?.trim().replace(/[\\/]+$/g, "");
-  return normalizedValue || DEFAULT_AUTOMATION_DIRECTORY;
-};
+// Normalization logic moved to internal/config_normalization.ts
 
 const toRuntimeModuleSpecifier = (filePath: string): string => {
   const normalizedPath = filePath.replace(/\\/g, "/");
@@ -223,27 +225,20 @@ export const loadBarritsConfig = async (
  * @returns Fully resolved config used by automation and adapters.
  */
 export const resolveBarritsConfig = async (
-   options: BarritsRootConfig = {},
-   fallbackProjectRoot: string = getCurrentWorkingDirectory(),
- ): Promise<ResolvedBarritsConfig> => {
-   const initialProjectRoot = options.projectRoot ?? fallbackProjectRoot;
-   const loadedConfig = await loadBarritsConfig(initialProjectRoot);
-   const mergedConfig = {
-     ...(loadedConfig ?? {}),
-     ...options,
-   } satisfies BarritsRootConfig;
-   const projectRoot = mergedConfig.projectRoot ?? initialProjectRoot;
+  options: BarritsRootConfig = {},
+  fallbackProjectRoot: string = getCurrentWorkingDirectory(),
+): Promise<ResolvedBarritsConfig> => {
+  const initialProjectRoot = options.projectRoot ?? fallbackProjectRoot;
+  const loadedConfig = await loadBarritsConfig(initialProjectRoot);
 
-   return {
-     runtime: mergedConfig.runtime ?? "other",
-     watch: mergedConfig.watch ?? "auto",
-     debugCommands: mergedConfig.debugCommands ?? false,
-     projectRoot,
-     manifestPath: mergedConfig.manifestPath,
-     autoManifest: mergedConfig.autoManifest ?? true,
-     automationDirectory: normalizeAutomationDirectory(mergedConfig.automationDirectory),
-     contracts: mergedConfig.contracts,
-     configFilePath: loadedConfig?.configFilePath,
-     main: mergedConfig.main,
-   };
- };
+  const mergedConfig = {
+    ...(loadedConfig ?? {}),
+    ...options,
+  } satisfies BarritsRootConfig;
+
+  return normalizeResolvedConfig(
+    mergedConfig,
+    initialProjectRoot,
+    loadedConfig?.configFilePath,
+  );
+};

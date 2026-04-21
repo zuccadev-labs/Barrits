@@ -1,54 +1,58 @@
 # 07 Manifests, bundlers y consumo de ts_js
 
-Yo uso manifests y snapshots como contratos entre el motor de `barrits` y el tooling externo. Asi evito reimplementar discovery dentro de cada bundler o backend.
+Barrits usa manifests y snapshots como contratos de primera clase entre el motor de descubrimiento y el tooling externo. Esto elimina la necesidad de reimplementar discovery dentro de cada bundler o integración backend.
 
-## Lo que expone `@zuccadev-labs/barrits/consume`
+## La superficie `@zuccadev-labs/barrits/consume`
 
-Yo uso `@zuccadev-labs/barrits/consume` cuando necesito leer manifests o snapshots sin arrastrar plugins ni codigo de runtime no necesario.
+Este subpath provee lectura y parseo de manifests o snapshots sin importar código de plugins ni dependencias de runtime innecesarias.
 
-Superficies utiles:
+Funciones disponibles:
 
-- `parseBuildManifest()`
-- `parseWatchSnapshot()`
-- `readBuildManifestSummary()`
-- `readWatchSnapshotSummary()`
-- `readLanguageToolSnapshot()`
+- `parseBuildManifest()` — valida y parsea datos crudos de manifest
+- `parseWatchSnapshot()` — valida y parsea datos crudos de snapshot
+- `readBuildManifestSummary(path, readTextFile)` — lee y resume un manifest
+- `readWatchSnapshotSummary(path, readTextFile)` — lee y resume un snapshot
+- `readLanguageToolSnapshot(path, readTextFile)` — lee un snapshot de tooling de lenguaje
 
-Si yo necesito delegar el acceso al filesystem, uso las funciones `read*` con un `readTextFile(path)` inyectable y dejo que `@zuccadev-labs/barrits/consume` haga la validacion estructural del payload.
+Cuando el acceso al filesystem necesita delegarse (por ejemplo, al backend de Tauri o a un lector serverless), se pasa una función `readTextFile(path)` inyectable. El subpath consume maneja la validación estructural del payload retornado.
 
-## Como pienso `build` y `watch`
+## Build y watch
 
 - `build` escribe `<automationDirectory>/build-manifest.json`
-- `watch` y `dev` pueden escribir `<automationDirectory>/watch-snapshot.json`
-- el proceso hijo recibe `BARRITS_BUILD_MANIFEST` o `BARRITS_WATCH_SNAPSHOT` cuando aplica
+- `watch` y `dev` escriben `<automationDirectory>/watch-snapshot.json`
+- El proceso hijo recibe `BARRITS_BUILD_MANIFEST` o `BARRITS_WATCH_SNAPSHOT` como variables de entorno cuando aplica
 
-Cuando existen `traitDiagnostics`, yo tambien recibo agregados listos para tooling y analitica sin tener que reconstruirlos a mano.
+Cuando `traitDiagnostics` están presentes en el manifest, los datos pre-agregados están disponibles para tooling y analítica sin reconstrucción manual.
 
-## Como integro bundlers
+## Integración con bundlers
 
-Yo ya tengo subpaths y ejemplos reales para:
+Subpaths disponibles y ejemplos correspondientes:
 
-- `@zuccadev-labs/barrits/vite`
-- `@zuccadev-labs/barrits/esbuild`
-- `@zuccadev-labs/barrits/rollup`
-- `@zuccadev-labs/barrits/webpack`
+| Import path | Ejemplo |
+| :--- | :--- |
+| `@zuccadev-labs/barrits/vite` | `examples/bundlers/vite/` |
+| `@zuccadev-labs/barrits/esbuild` | `examples/bundlers/esbuild/` |
+| `@zuccadev-labs/barrits/rollup` | `examples/bundlers/rollup/` |
+| `@zuccadev-labs/barrits/webpack` | `examples/bundlers/webpack/` |
 
-Mi regla practica es esta: `barrits` genera discovery y manifest; el bundler solo consume ese contrato mediante un adapter pequeno.
+**Regla de diseño**: Barrits genera el discovery y el manifest; el bundler solo consume ese contrato mediante un adapter pequeño.
 
-En webpack yo sigo un matiz adicional: prefiero materializar un modulo intermedio y aliasarlo, en vez de depender de un id con `:` que el runtime pueda interpretar como scheme antes de resolver aliases.
+En Webpack, se prefiere materializar un módulo intermedio y aliasarlo, en lugar de depender de un virtual module ID con `:` que el runtime podría interpretar como scheme antes de resolver aliases.
 
-## Que ejemplo uso segun el caso
+## Elegir el ejemplo correcto
 
-- `packages/sdk/ts_js/examples/bundlers/` para Vite, esbuild, Rollup y Webpack
-- `packages/sdk/ts_js/examples/example-tauri/` para lectura segura de manifests y snapshots desde backend controlado
-- `packages/sdk/ts_js/examples/example-nodejs/` para consumo operativo local de manifests y snapshots
+| Escenario | Ejemplo |
+| :--- | :--- |
+| Vite, esbuild, Rollup, Webpack | `packages/sdk/ts_js/examples/bundlers/` |
+| Lectura segura de manifests desde un desktop backend | `packages/sdk/ts_js/examples/example-tauri/` |
+| Consumo operativo local de manifests y snapshots | `packages/sdk/ts_js/examples/example-nodejs/` |
 
-## Cuando valido JSR
+## Validar la superficie JSR
 
-Si yo toco superficie Deno o publicacion ESM, corro:
+Al tocar la superficie Deno o publicación ESM, ejecutar:
 
 ```bash
 npm run publish:jsr:dry-run
 ```
 
-Con eso yo valido que la publicacion desde `jsr.json` siga limpia y que la superficie exportada para Deno no arrastre problemas nuevos.
+Esto valida que la publicación desde `jsr.json` esté limpia y que la superficie exportada para Deno no arrastre problemas nuevos.

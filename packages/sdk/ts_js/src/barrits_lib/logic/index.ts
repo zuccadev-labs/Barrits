@@ -83,3 +83,5 @@ export const logic = {
   algorithms,
   strings: stringAlgorithms,
 };
+
+export * from "./arithmetic";
