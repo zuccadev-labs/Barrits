@@ -147,16 +147,6 @@ jobs:
             }
           }
 
-          $releaseSha = git rev-list -n 1 $tag
-          if (-not $releaseSha) {
-            throw "Unable to resolve commit SHA for tag '$tag'."
-          }
-
-          $remoteBranches = git branch -r --contains $releaseSha | Out-String
-          if ($remoteBranches -notmatch "origin/$targetBranch") {
-            throw "Commit $releaseSha is not contained in origin/$targetBranch."
-          }
-
           "release_tag=$tag" >> $env:GITHUB_OUTPUT
           "release_version=$version" >> $env:GITHUB_OUTPUT
           "release_channel=$channel" >> $env:GITHUB_OUTPUT
