@@ -52,8 +52,10 @@ import {
   upperBound,
   windowAlgorithms,
   windowDelta,
+  arithmetic,
+  restar,
+  sumar
 } from "../../barrits_lib/logic";
-import { arithmetic, restar, sumar } from "./arithmetic";
 
 export { arithmetic, restar, sumar };
 export {

@@ -1,40 +1,40 @@
 # 03 Frontend Vite
 
-Yo trato `example-react/`, `example-vue/`, `example-solid/` y `example-svelte/` como la misma familia documental porque todos prueban el contrato package-first sobre Vite.
+Los ejemplos `example-react/`, `example-vue/`, `example-solid/` y `example-svelte/` conforman una familia documental unificada, ya que todos validan el contrato **package-first** sobre el ecosistema de Vite.
 
-## Objetivo comun
+## Objetivos de integración comunes
 
-En los cuatro casos yo valido lo mismo:
+En todos estos escenarios se valida la misma superficie funcional:
 
-- instalacion del paquete `@zuccadev-labs/barrits`
-- definicion del paquete consumidor con `defineBarritsPackage()`
-- uso de `@zuccadev-labs/barrits/vite`
-- generacion automatica del manifest virtual sin pedir comandos manuales del motor
+- Instalación y resolución del paquete `@zuccadev-labs/barrits`.
+- Definición del paquete consumidor mediante `defineBarritsPackage()`.
+- Integración del plugin oficial `@zuccadev-labs/barrits/vite`.
+- Generación automática de artefactos (manifests virtuales) sin requerir comandos manuales externos al flujo de desarrollo del bundler.
 
-Patron de simplificacion aplicado:
+## Estrategias de simplificación
 
-- reduzco re-exports manuales en `src/barrits/index.ts` y barrels intermedios cuando son redundantes
-- Barrits detecta los metodos publicos desde el arbol de archivos del consumidor
-- si necesito un metodo privado, lo marco en `barrits.config.ts` con `contracts.exports`
+- Se eliminan los re-exports manuales complejos y barrels redundantes.
+- El motor de Barrits detecta automáticamente los métodos públicos desde el árbol de archivos declarado por el consumidor.
+- Los métodos que deben permanecer como privados se declaran en `barrits.config.ts` bajo el campo `contracts.exports`.
 
-## Diferencias utiles
+## Matices técnicos por ejemplo
 
-- `example-react/`: recorrido base del plugin Vite con React.
-- `example-vue/`: mismo contrato, pero demostrando discovery en `src/barrits/` dentro de Vue.
-- `example-solid/`: misma idea sobre Solid para cerrar otra variante real del ecosistema Vite.
-- `example-svelte/`: misma cobertura visible sobre Svelte.
+- **`example-react/`**: Provee el recorrido base de integración del plugin con el stack de React.
+- **`example-vue/`**: Valida el mismo contrato, enfocándose en la capacidad de discovery bajo la ruta `src/barrits/` común en proyectos Vue.
+- **`example-solid/`**: Extiende la validación al ecosistema Solid para garantizar la neutralidad del contrato.
+- **`example-svelte/`**: Cierra la cobertura de frameworks principales bajo el mismo patrón de consumo.
 
-## Comandos que yo espero
+## Comandos operativos
 
-En estos ejemplos uso los mismos dos comandos base:
+Estos ejemplos operan bajo los comandos estándar del ecosistema:
 
-- `npm run dev`
-- `npm run build`
+- `npm run dev`: Inicia el modo desarrollo con watch automático del motor de orquestación.
+- `npm run build`: Genera el bundle final materializando los manifests de producción.
 
-## Cuando abro cada ejemplo
+## Selección del ejemplo de referencia
 
-- yo abro React si quiero el caso frontend base mas directo
-- yo abro Vue si quiero revisar discovery bajo `src/barrits/`
-- yo abro Solid o Svelte si quiero comprobar que el contrato no esta acoplado a un solo framework
+- Se recomienda consultar el ejemplo de **React** para comprender el caso de uso base más directo.
+- El ejemplo de **Vue** es la referencia adecuada para revisar la flexibilidad del discovery bajo subdirectorios específicos.
+- Los ejemplos de **Solid** o **Svelte** sirven para auditar que el contrato arquitectónico no presenta acoplamiento con una librería de UI específica.
 
-Si lo que necesito es revisar plugins de build fuera del flujo de una app frontend, uso la carpeta `bundlers/`.
+Para la revisión exhaustiva de plugins de build fuera del flujo de una aplicación frontend, se debe consultar la carpeta especializada `bundlers/`.

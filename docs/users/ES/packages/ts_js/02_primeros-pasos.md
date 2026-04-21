@@ -1,10 +1,10 @@
-# 02 Primeros pasos de ts_js
+# 02 Primeros Pasos Operativos de ts_js
 
-Yo empiezo con `barrits` como paquete y no como comando. Mi primer paso es describir el runtime del proyecto consumidor y dejar que el SDK derive la automatizacion a partir de ahi.
+La integración de `barrits` se realiza conceptualmente como un motor de infraestructura en lugar de un simple comando. El primer paso operativo consiste en declarar de forma determinista el *runtime* del proyecto consumidor, permitiendo que el SDK derive la automatización subsecuente mediante introspección estática.
 
-## Configuracion minima
+## Configuración Mínima
 
-Yo puedo empezar con algo asi:
+Un despliegue de infraestructura base requiere la siguiente declaración:
 
 ```ts
 import { defineBarritsPackage } from "@zuccadev-labs/barrits";
@@ -15,9 +15,9 @@ export const barritsPackage = defineBarritsPackage({
 });
 ```
 
-## Configuracion raiz opcional
+## Configuración Global (Recomendada)
 
-Si yo quiero defaults del proyecto, creo `barrits.config.ts` en la raiz:
+Para establecer estándares y comportamiento por defecto a nivel repositorio, se debe aprovisionar el archivo `barrits.config.ts` en la raíz del espacio de trabajo:
 
 ```ts
 import { defineBarritsConfig } from "@zuccadev-labs/barrits";
@@ -26,16 +26,22 @@ export default defineBarritsConfig({
   runtime: "react",
   watch: "auto",
   autoManifest: true,
-  automationDirectory: ".barrits",
+  namespace: "midominio_corp", // <- Inicializa el Factory con un alias corporativo
 });
 ```
 
-## Como pienso el consumo
+## Estandar de Consumo por Factory
 
-Yo puedo consumir el paquete de tres maneras:
+Para consumir el paquete sin contaminar el alcance global y garantizando el autocompletado en los IDEs, la corporación dicta el uso del patrón Factory asíncrono para abstraer el namespace construido en el `barrits.config.ts`:
 
-- funciones planas desde `barrits`
-- namespaces desde `barrits` o `brt`
-- subpaths especializados para tooling o bundlers
+```ts
+import { createBarrits } from "@zuccadev-labs/barrits";
 
-Mi recomendacion practica es empezar por la superficie mas pequena que resuelva mi caso y crecer desde ahi.
+const bootSystem = async () => {
+    // Retorna una instancia fuertemente tipada con tu Namespace
+    const root = await createBarrits();
+    root.midominio_corp.logic.orderBy(...);
+}
+```
+
+Este modelo asegura encapsulación absoluta bajo arquitecturas Domain-Driven Design (DDD).

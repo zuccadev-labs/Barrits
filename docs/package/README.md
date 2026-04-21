@@ -1,22 +1,22 @@
-# Documentacion de publicacion del repositorio
+# Documentación de Publicación de Paquetes
 
-Yo uso esta carpeta para documentar como preparo, versiono y publico `barrits` como producto distribuible.
+Este directorio contiene la gobernanza operativa relativa al versionado, validación y distribución de los paquetes de Barrits en canales públicos y entornos corporativos.
 
-En esta area no documento el uso del SDK ni su arquitectura interna. Aqui concentro el gobierno operativo de publicacion.
+## Guía de Navegación
 
-Modelo vigente de publicacion:
+El acceso a la documentación de publicación se organiza por idioma para garantizar la claridad en los procedimientos de release:
 
-- `npm` publica con trusted publishing y OIDC
-- `JSR` publica desde GitHub Actions con OIDC
-- no uso `JSR_TOKEN` en el flujo actual del repositorio
+- **[ES (Español)](ES/README.md)**: Guía completa de publicación, CI/CD y gestión de secretos en español.
 
-Orden de lectura:
+## Alcance Operativo
 
-1. [00_indice.md](00_indice.md)
-2. [01_publicacion-y-canales.md](01_publicacion-y-canales.md)
-3. [02_versionado-y-releases.md](02_versionado-y-releases.md)
-4. [03_secrets-actions-y-entornos.md](03_secrets-actions-y-entornos.md)
-5. [04_variables-de-entorno.md](04_variables-de-entorno.md)
-6. [05_release-readiness.md](05_release-readiness.md)
-7. [06_configuracion-jsr-y-github-actions.md](06_configuracion-jsr-y-github-actions.md)
-8. [07_primera-publicacion-paso-a-paso.md](07_primera-publicacion-paso-a-paso.md)
+Esta sección define las normativas para:
+- La estrategia de canales de distribución (npm, JSR).
+- El modelo de versionado semántico (SemVer) y la gestión de ramas.
+- La infraestructura de seguridad, OIDC y gestión de secretos en GitHub Actions.
+- El protocolo de preparación de lanzamientos (Release Readiness).
+- El diseño del pipeline de integración y despliegue continuo (CI/CD).
+
+## Fuentes de Verdad
+
+La documentación vigente de publicación reside exclusivamente en las subcarpetas de idioma. Los procedimientos operativos deben seguirse estrictamente para asegurar la integridad de la cadena de suministro y la estabilidad de las releases distribuidas.

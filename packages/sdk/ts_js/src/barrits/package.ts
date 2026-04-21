@@ -6,6 +6,7 @@ import {
   type BarritsWatchMode,
 } from "./config";
 import { getCurrentWorkingDirectory } from "./internal/runtime";
+import { normalizePackageOptions } from "./internal/config_normalization";
 
 export type { BarritsRootConfig, BarritsRuntimeKind, BarritsWatchMode } from "./config";
 export { BARRITS_CONFIG_FILENAMES, DEFAULT_AUTOMATION_DIRECTORY, defineBarritsConfig, findBarritsConfigFile, loadBarritsConfig, resolveBarritsConfig } from "./config";
@@ -32,15 +33,7 @@ type ResolvedBarritsPackageOptions = {
 export const defineBarritsPackage = (
   options: BarritsPackageOptions = {},
 ): ResolvedBarritsPackageOptions => {
-  return {
-    runtime: options.runtime ?? "other",
-    watch: options.watch ?? "auto",
-    debugCommands: options.debugCommands ?? false,
-    projectRoot: options.projectRoot ?? getCurrentWorkingDirectory(),
-    manifestPath: options.manifestPath,
-    autoManifest: options.autoManifest ?? true,
-    automationDirectory: options.automationDirectory ?? DEFAULT_AUTOMATION_DIRECTORY,
-  };
+  return normalizePackageOptions(options);
 };
 
 /**
