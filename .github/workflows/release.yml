@@ -47,6 +47,8 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
+      - name: Setup npm
+        run: npm install --global npm@11.6.2
       - name: Resolve release context
         id: context
         run: |
@@ -151,6 +153,8 @@ jobs:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
           cache: npm
+      - name: Setup npm
+        run: npm install --global npm@11.6.2
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
@@ -185,6 +189,8 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - name: Setup npm
+        run: npm install --global npm@11.6.2
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
