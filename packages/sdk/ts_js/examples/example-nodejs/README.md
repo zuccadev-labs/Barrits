@@ -1,46 +1,79 @@
-# example-nodejs
+# example-nodejs — Monorepo Service Orchestration Reference
 
-Yo uso este ejemplo cuando quiero responder una pregunta concreta: como se ve `@zuccadev-labs/barrits` dentro de un runtime Node.js real, con scripts, showcase, benchmarking y familias completas de algoritmos funcionando juntas.
+## Purpose
 
-## Para que sirve
+This example demonstrates how the Barrits SDK integrates within a Node.js
+service operating as part of a larger monorepo. It validates the package-first
+contract, exercises the complete algorithm catalogue, and demonstrates
+manifest consumption and snapshot processing from the Node.js runtime.
 
-- valida que el contrato package-first convive bien con scripts Node.js
-- muestra el catalogo de algoritmos en recorridos operativos y no solo en pruebas unitarias
-- deja un punto de apoyo para manifests, snapshots y tooling de runtime
+## Architecture
 
-## Que archivos mirar primero
+```
+example-nodejs/
+├── barrits/                   # Visible orchestration layer
+│   └── traits/index.ts        # Declarative trait for Node.js runtime
+├── barrits.config.ts           # Root configuration with contracts
+├── src/
+│   ├── main.ts                 # Primary service entrypoint
+│   └── examples/               # Algorithm family demonstrations
+├── scripts/
+│   ├── showcase.mjs            # Functional walkthrough of all algorithm families
+│   ├── build-runner.mjs        # Build manifest consumption from Node.js
+│   └── snapshot-consumer.mjs   # Watch snapshot processing
+└── package.json                # NPM scripts and dependency declaration
+```
 
-- `src/main.ts`: arranque minimo del ejemplo
-- `src/examples/`: catalogo real por familia de algoritmos
-- `barrits.config.ts`: contrato centralizado de runtime y traits
-- `barrits/traits/index.ts`: trait declarativo del runtime Node para inspeccion y contratos
-- `scripts/showcase.mjs`: recorrido visible para inspeccionar resultados
-- `scripts/build-runner.mjs`: ejemplo de lectura resumida del manifest desde Node
-- `scripts/snapshot-consumer.mjs`: lectura de snapshots con el subpath Node
+## What This Example Demonstrates
 
-## APIs del paquete que este ejemplo pone a prueba
+### 1. Algorithm Catalogue Validation
 
-- busqueda: `binarySearch`, `linearSearch`, `lowerBound`, `upperBound`, `findSortedRange`
-- colecciones: `chunk`, `groupBy`, `indexBy`, `uniqueBy`
-- ordenamiento: `orderBy`, `quickSort`, `stableSortBy`, `insertSorted`
-- seleccion y agregacion: `paginate`, `partitionBy`, `rankBy`, `topK`
-- series temporales: `averageBy`, `bucketByInterval`, `detectTimeSeriesGaps`, `differenceSeries`, `movingAverageSeries`, `resampleSeries`
-- ventanas: `movingAverage`, `rollingSum`, `slidingWindow`, `windowDelta`
-- grafos: `breadthFirstSearch`, `dijkstraShortestPath`, `topologicalSort`
-- runtime Node: `readNodeBuildManifestSummary`, `readNodeLanguageToolSnapshot`
+The `src/examples/` directory contains executable demonstrations for each
+algorithm family, exercising functions in realistic operational contexts
+rather than isolated unit tests:
 
-## Como leer el recorrido
+| Family | Functions |
+|---|---|
+| Search | `binarySearch`, `linearSearch`, `lowerBound`, `upperBound`, `findSortedRange` |
+| Collection | `chunk`, `groupBy`, `indexBy`, `uniqueBy` |
+| Sort | `orderBy`, `quickSort`, `stableSortBy`, `insertSorted` |
+| Selection | `paginate`, `partitionBy`, `rankBy`, `topK` |
+| Time Series | `averageBy`, `bucketByInterval`, `detectTimeSeriesGaps`, `differenceSeries`, `movingAverageSeries`, `resampleSeries` |
+| Window | `movingAverage`, `rollingSum`, `slidingWindow`, `windowDelta` |
+| Graph | `breadthFirstSearch`, `dijkstraShortestPath`, `topologicalSort` |
 
-Si yo quiero entender la parte funcional, entro primero a `src/examples/` y sigo la familia que me interesa.
+### 2. Build Manifest Consumption
 
-Si yo quiero ver integracion operativa, entro a `scripts/` porque ahi es donde el ejemplo cruza manifest, snapshots y runtime local.
+The `scripts/build-runner.mjs` script demonstrates how a Node.js service
+reads and validates the build manifest at startup, verifying the SHA-256
+integrity checksum before proceeding with domain initialization.
 
-Si yo quiero detalle semantico de cada funcion, no lo repito aca: voy a [../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md](../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md).
+### 3. Trait Declaration and Inspection
 
-## Comandos utiles
+The `barrits/traits/index.ts` file declares a Node.js runtime trait using
+the `createTraitDescriptor` factory with JSDoc annotations, enabling the
+SDK to discover and validate the trait composition at build time.
 
-- `npm run dev`: arranque local del consumidor
-- `npm run build`: build del ejemplo
-- `npm run showcase`: recorrido funcional visible
-- `npm run benchmark:algorithms`: benchmark del catalogo de algoritmos
-- `npm run demo:validation`: verificacion operativa adicional
+### 4. Watch Snapshot Processing
+
+The `scripts/snapshot-consumer.mjs` script demonstrates real-time consumption
+of watch snapshots, which is the pattern used by development servers and
+hot-reload systems to respond to file changes in the orchestration layer.
+
+## Execution
+
+```bash
+npm run dev                    # Start the service entrypoint
+npm run showcase               # Execute the full algorithm walkthrough
+npm run benchmark:algorithms   # Run performance benchmarks
+npm run demo:validation        # Execute operational validation checks
+```
+
+## Reading Guide
+
+- For functional algorithm demonstrations, the `src/examples/` directory
+  contains one file per algorithm family with annotated usage scenarios.
+- For operational integration patterns (manifests, snapshots, runtime
+  inspection), the `scripts/` directory provides executable examples.
+- For the complete API reference, consult the documentation at
+  `docs/users/ES/packages/ts_js/09_referencia-de-api.md`.

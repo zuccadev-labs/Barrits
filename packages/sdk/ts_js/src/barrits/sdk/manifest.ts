@@ -43,31 +43,31 @@ export const createBuildManifest = (
 ): BarritsBuildManifest => {
   const generatedAt = new Date().toISOString();
   
+  const sortedTraits = [...graph.traitDescriptors].sort((left, right) => left.name.localeCompare(right.name));
+  const sortedActions = [...graph.importActions].sort((left, right) => left.exportName.localeCompare(right.exportName));
+
   const payloadTokens = [
     graph.projectRoot,
     graph.barritsDirectory,
+    graph.strategy,
+    graph.discoveryRoots.join(","),
     graph.filesCount.toString(),
     graph.exportsCount.toString(),
-    graph.traitDescriptors.map(t => t.bindingName).join(","),
-    graph.importActions.map(i => i.statement).join(";")
+    sortedTraits.map(t => t.name).join(","),
+    sortedActions.map(i => i.exportName).join(";")
   ].join("|");
 
   return {
     generatedAt,
     checksum: generateChecksum(payloadTokens),
-    projectRoot: graph.projectRoot,
-    barritsDirectory: graph.barritsDirectory,
-    barritsLibDirectory: graph.barritsLibDirectory,
-    strategy: graph.strategy,
-    filesCount: graph.filesCount,
-    exportsCount: graph.exportsCount,
-    publicExportsCount: graph.publicExportsCount,
-    internalExportsCount: graph.internalExportsCount,
-    barrelsCount: graph.barrelsCount,
+    ...(() => {
+      const { rootFiles, domains, libraryRootFiles, libraryDomains, ...base } = graph;
+      return base;
+    })(),
     domains: graph.domains.map((domain) => domain.name),
-    traitDescriptors: graph.traitDescriptors,
+    traitDescriptors: sortedTraits,
     traitDiagnostics: graph.traitDiagnostics,
-    importActions: graph.importActions,
+    importActions: sortedActions,
     collisions: graph.collisions,
     ...(hasSelectionFilters(filters) ? { filters } : {}),
   };

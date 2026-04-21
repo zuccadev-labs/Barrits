@@ -139,7 +139,12 @@ export const inspectBarritsIntegrations = async (
   discovery: BarritsDiscovery,
 ): Promise<BarritsIntegrationGraph> => {
   const projectLayer = await inspectLayer(adapter, discovery.barritsDirectory, "barrits");
-  let inspectedFiles = [...projectLayer.files];
+  const extraLayers = await Promise.all(
+    discovery.discoveryRoots.map((root) => inspectLayer(adapter, joinPath(discovery.projectRoot, root), "barrits")),
+  );
+
+  const allLayers = [projectLayer, ...extraLayers];
+  let inspectedFiles = allLayers.flatMap((layer) => layer.files);
   let loadedConfig = null;
 
   for (const configProjectRoot of toConfigProjectRoots(discovery)) {
@@ -158,7 +163,13 @@ export const inspectBarritsIntegrations = async (
   inspectedFiles = applyExportVisibilityOverrides(inspectedFiles, exportVisibilityOverrides);
 
   const rootFiles = mergeRootFiles(inspectedFiles.filter((file) => file.path === "index.ts"), []);
-  const domains = mergeDomains(projectLayer.domains.map((domain) => ({ ...domain, files: inspectedFiles.filter((file) => file.path.startsWith(`${domain.name}/`)) })), []);
+  const domains = mergeDomains(
+    allLayers.flatMap((layer) => layer.domains.map((domain) => ({
+      ...domain,
+      files: inspectedFiles.filter((file) => file.path.startsWith(`${domain.name}/`) && file.sourceLayer === layer.sourceLayer),
+    }))),
+    [],
+  );
   const exportsCount = inspectedFiles.reduce((count, file) => count + file.exports.length, 0);
   const publicExportsCount = inspectedFiles.reduce((count, file) => count + file.exports.filter((entry) => entry.visibility === "public").length, 0);
   const internalExportsCount = exportsCount - publicExportsCount;
@@ -180,9 +191,7 @@ export const inspectBarritsIntegrations = async (
   const importActions = planImportActions(rootFiles, domains);
 
   return {
-    barritsDirectory: discovery.barritsDirectory,
-    projectRoot: discovery.projectRoot,
-    strategy: discovery.strategy,
+    ...discovery,
     rootFiles,
     domains,
     libraryRootFiles: [],
