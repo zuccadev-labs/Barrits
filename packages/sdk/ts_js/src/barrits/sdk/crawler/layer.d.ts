@@ -16,6 +16,7 @@ export declare const collectFiles: (adapter: RuntimeFileSystemAdapter, rootDirec
  */
 export declare const inspectFile: (adapter: RuntimeFileSystemAdapter, barritsDirectory: string, filePath: string, sourceLayer: BarritsSourceLayer) => Promise<BarritsFileIntegration>;
 export type InspectedLayer = {
+    readonly sourceLayer: BarritsSourceLayer;
     readonly rootFiles: readonly BarritsFileIntegration[];
     readonly domains: readonly BarritsDomainIntegration[];
     readonly files: readonly BarritsFileIntegration[];
@@ -23,7 +24,7 @@ export type InspectedLayer = {
 /**
  * Validates, structures and builds the domain layers mapping domains systematically.
  */
-export declare const buildLayer: (directory: string, files: readonly BarritsFileIntegration[]) => InspectedLayer;
+export declare const buildLayer: (directory: string, files: readonly BarritsFileIntegration[], sourceLayer: BarritsSourceLayer) => InspectedLayer;
 /**
  * Discovers explicitly the physical structural logic file mapping targeting abstract integration layer payloads.
  */

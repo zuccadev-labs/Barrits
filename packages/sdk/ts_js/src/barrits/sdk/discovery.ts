@@ -61,6 +61,7 @@ export const findBarritsDirectory = async (
       projectRoot,
       barritsDirectory: startDirectory,
       strategy: "current-directory",
+      discoveryRoots: [],
     };
   }
 
@@ -74,6 +75,7 @@ export const findBarritsDirectory = async (
         projectRoot: cursor,
         barritsDirectory: directChild,
         strategy: cursor === startDirectory ? "direct-child" : "ancestor-child",
+        discoveryRoots: [],
       };
     }
 
@@ -85,6 +87,7 @@ export const findBarritsDirectory = async (
           projectRoot: cursor,
           barritsDirectory: descendant,
           strategy: "recursive-child",
+          discoveryRoots: [],
         };
       }
     }

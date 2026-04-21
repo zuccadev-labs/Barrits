@@ -22,6 +22,8 @@ export declare const normalizePackageOptions: (options?: BarritsRootConfig, fall
     manifestPath?: string;
     autoManifest: boolean;
     automationDirectory: string;
+    discoveryRoots: readonly string[];
+    traitConflictStrategy: "error" | "override" | "merge";
 };
 /**
  * Expert resolution of merged configuration.

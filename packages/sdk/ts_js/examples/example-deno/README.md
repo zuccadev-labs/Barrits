@@ -1,35 +1,78 @@
-# example-deno
+# example-deno — Parse-Server Orchestration Reference
 
-Yo uso este ejemplo cuando quiero validar que el mismo SDK funciona bien en Deno o JSR sin depender del adapter Node.
+## Purpose
 
-## Para que sirve
+This example demonstrates how Barrits serves as the orchestration core
+for a Deno-native service equivalent to a modern Parse-Server. It exercises
+the complete SDK surface: contract discovery, trait composition, manifest
+integrity verification, resilience patterns, and operational algorithms.
 
-- demuestra que el flujo package-first tambien existe fuera de Node.js
-- deja un punto de referencia minimo para `deno task`
-- muestra que el paquete puede mezclar configuracion y algoritmos en el mismo runtime
+## Architecture
 
-## Que archivos mirar primero
+```
+example-deno/
+├── barrits/                 # Visible orchestration layer
+│   └── index.ts             # Domain-scoped operational paths
+├── barrits.config.ts        # Root configuration with discovery roots
+├── deno.json                # Deno task definitions
+├── main.ts                  # Primary orchestration entrypoint
+└── scripts/
+    └── inspect.ts           # Build manifest inspection utility
+```
 
-- `main.ts`: recorrido base del runtime Deno
-- `barrits/`: capa visible del consumidor dentro del ejemplo
-- `scripts/`: tareas auxiliares del ejemplo si necesito revisar automatizacion
-- `deno.json`: comandos oficiales del recorrido
+## What This Example Demonstrates
 
-## APIs que este ejemplo usa de forma explicita
+### 1. Contract Discovery with JSDoc
 
-- `defineBarritsPackage`: describe el consumidor Deno
-- `movingAverage`: calcula una media movil simple sobre throughput
-- `averageBy`: resume el promedio general
-- `topK`: selecciona valores criticos del conjunto
+The `barrits.config.ts` file declares `discoveryRoots` and a `traitConflictStrategy`,
+enabling the SDK to scan additional directories for JSDoc-annotated trait
+contracts without requiring explicit factory invocations.
 
-## Como leerlo
+### 2. Manifest Integrity Verification
 
-Si yo quiero confirmar compatibilidad JSR o Deno, este es el primer ejemplo que abro porque reduce el ruido del frontend y de los bundlers.
+The example generates a build manifest with a SHA-256 checksum, then
+verifies that checksum at service startup. This ensures that the automation
+artifacts have not been modified between build time and deployment.
 
-Si despues necesito lectura de artifacts o integracion CLI, salto a `06_comandos-y-runtimes.md` y a la referencia de [../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md](../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md).
+### 3. Resilience Patterns for Service Dependencies
 
-## Comandos utiles
+The example demonstrates `retryWithBackoff` and `createCircuitBreaker`
+to protect external API calls from transient failures, which is the
+standard pattern for any Parse-Server style backend communicating with
+databases and third-party services.
 
-- `deno task dev`: ejecucion base del recorrido
-- `deno task build`: build del consumidor usando el adapter Deno
-- `deno task inspect`: inspeccion del proyecto desde el runtime
+### 4. Operational Algorithms
+
+Real-world usage of `topK`, `movingAverage`, `averageBy`, and time-series
+functions for processing operational metrics — the type of computation
+a Parse-Server performs when aggregating query statistics or monitoring
+request throughput.
+
+### 5. Validation at Service Boundaries
+
+Input validation using `isEmail`, `isUuid`, and `assertNonNullish` at
+API handler boundaries, demonstrating the zero-dependency validation
+layer that replaces external packages like `zod` or `joi` for simple
+format checks.
+
+## Execution
+
+```bash
+deno task dev       # Execute the orchestration entrypoint
+deno task inspect   # Inspect the build manifest
+```
+
+## API Functions Used
+
+| Function | Module | Purpose |
+|---|---|---|
+| `defineBarritsPackage` | `barrits/config` | Declares the consumer runtime and watch policy |
+| `sha256Hex` | `barrits_lib/logic/hashing` | Computes manifest integrity checksum |
+| `deterministicStringify` | `barrits_lib/logic/hashing` | Produces reproducible JSON for checksumming |
+| `retryWithBackoff` | `barrits_lib/logic/resilience` | Retries transient failures with exponential backoff |
+| `createCircuitBreaker` | `barrits_lib/logic/resilience` | Protects external dependencies from cascading failure |
+| `withTimeout` | `barrits_lib/logic/resilience` | Enforces SLA deadlines on async operations |
+| `isEmail`, `isUuid` | `barrits_lib/logic/validation` | Validates input at service boundaries |
+| `assertNonNullish` | `barrits_lib/logic/validation` | Typed assertion guard for required fields |
+| `toIsoString`, `toRelativeTime` | `barrits_lib/logic/datetime` | Timestamp serialization and formatting |
+| `topK`, `movingAverage`, `averageBy` | `barrits_lib/logic/algorithms` | Operational metric aggregation |

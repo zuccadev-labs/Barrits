@@ -1,39 +1,40 @@
-# example-bun
+# example-bun — Bun Runtime Validation
 
-Yo uso este ejemplo cuando quiero validar que `@zuccadev-labs/barrits` corre bien en Bun sin renunciar al contrato package-first ni a las utilidades funcionales del SDK.
+## Purpose
 
-## Para que sirve
+This example validates the Barrits SDK package-first contract on the Bun
+runtime, confirming that all functional utilities and operational analytics
+operate correctly outside the Node.js and Deno ecosystems.
 
-- demuestra consumo real del paquete con `bun run`
-- valida funciones operativas y de analitica en un runtime Bun
-- mantiene una capa visible del consumidor en `barrits/`
+## Key Files
 
-## Que archivos mirar primero
+| File | Description |
+|---|---|
+| `src/main.ts` | Primary execution entrypoint |
+| `barrits/index.ts` | Consumer-visible orchestration layer with `buildPath` and `parsePath` |
+| `package.json` | Script definitions for `dev`, `build`, `inspect`, and `showcase` |
 
-- `src/main.ts`: recorrido principal del ejemplo
-- `barrits/index.ts`: helper del consumidor usando `buildPath` y `parsePath`
-- `package.json`: scripts `dev`, `build`, `inspect` y `showcase`
+## API Functions Demonstrated
 
-## APIs que este ejemplo usa
+| Function | Purpose |
+|---|---|
+| `defineBarritsPackage` | Declares the consumer runtime identity |
+| `orderBy` | Sorts domain records by score |
+| `movingAverage` | Computes a moving average over throughput data |
+| `averageBy` | Computes the arithmetic mean of a series |
+| `topK` | Selects the highest-throughput values |
+| `buildPath` / `parsePath` | Constructs and inspects operational paths |
 
-- `defineBarritsPackage`: define el contrato del consumidor
-- `orderBy`: ordena registros de dominio por score
-- `movingAverage`: calcula promedio movil de throughput
-- `averageBy`: calcula el promedio general de la serie
-- `topK`: selecciona los valores de mayor throughput
-- `buildPath` y `parsePath`: construyen e inspeccionan rutas operativas
+## Execution
 
-## Como leerlo
+```bash
+bun run dev        # Execute the base orchestration flow
+bun run showcase   # Run the demonstration walkthrough
+bun run build      # Build via the Barrits CLI
+bun run inspect    # Inspect the project manifest
+```
 
-Primero ejecuto `bun run dev` para validar el recorrido base.
+## Reference
 
-Despues reviso el JSON de salida para comprobar contrato de paquete, analitica y parseo de rutas.
-
-Si necesito detalle completo de cada metodo, uso [../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md](../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md).
-
-## Comandos utiles
-
-- `bun run dev`: ejecuta el recorrido base
-- `bun run showcase`: alias de demostracion del ejemplo
-- `bun run build`: ejecuta build via CLI de barrits sobre runtime Bun
-- `bun run inspect`: inspecciona el proyecto con la CLI
+For the complete API specification, consult
+`docs/users/ES/packages/ts_js/09_referencia-de-api.md`.
