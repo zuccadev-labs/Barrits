@@ -50,13 +50,14 @@ jobs:
         with:
           fetch-depth: 0
 
+
+      - name: Setup npm
+        run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
 
-      - name: Setup npm
-        run: npm install --global npm@11.6.2
 
       - name: Resolve release context
         id: context
@@ -146,6 +147,16 @@ jobs:
             }
           }
 
+          $releaseSha = git rev-list -n 1 $tag
+          if (-not $releaseSha) {
+            throw "Unable to resolve commit SHA for tag '$tag'."
+          }
+
+          $remoteBranches = git branch -r --contains $releaseSha | Out-String
+          if ($remoteBranches -notmatch "origin/$targetBranch") {
+            throw "Commit $releaseSha is not contained in origin/$targetBranch."
+          }
+
           "release_tag=$tag" >> $env:GITHUB_OUTPUT
           "release_version=$version" >> $env:GITHUB_OUTPUT
           "release_channel=$channel" >> $env:GITHUB_OUTPUT
@@ -172,15 +183,16 @@ jobs:
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
 
+
+      - name: Setup npm
+        run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           registry-url: 'https://registry.npmjs.org'
           cache: npm
 
-      - name: Setup npm
-        run: npm install --global npm@11.6.2
 
       - name: Setup Deno
         uses: denoland/setup-deno@v2
@@ -188,7 +200,7 @@ jobs:
           deno-version: v2.x
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build SDK
         run: npm run build
@@ -224,14 +236,15 @@ jobs:
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
 
+
+      - name: Setup npm
+        run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
-      - name: Setup npm
-        run: npm install --global npm@11.6.2
 
       - name: Setup Deno
         uses: denoland/setup-deno@v2
@@ -239,14 +252,14 @@ jobs:
           deno-version: v2.x
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Validate JSR payload
         run: npm run publish:jsr:dry-run
 
       - name: Publish JSR package
         working-directory: packages/sdk/ts_js
-        run: npx jsr publish
+        run: npx jsr publish --allow-dirty
 
   github-release:
     needs:
@@ -258,7 +271,7 @@ jobs:
 
     steps:
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.prepare.outputs.release_tag }}
           name: ${{ needs.prepare.outputs.release_name }}
