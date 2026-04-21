@@ -4,6 +4,16 @@ Todos los cambios relevantes de este repositorio se documentan aqui.
 
 El formato sigue la idea de Keep a Changelog y el versionado esperado del SDK activo sigue SemVer.
 
+## [0.1.2-rc.1] - 2026-04-20
+
+### Added
+- **Industrialización de Lógica Core**: Delegación de la normalización de configuración a servicios internos (`config_normalization.ts`) bajo SRP.
+- **Mesh Documental Enterprise**: Unificación bilingüe (ES/EN) en todos los dominios (`users`, `development`, `investigations`, `package`).
+- **Certificación de Tono Corporativo**: Cumplimiento del 100% en tono formal de tercera persona en toda la suite documental.
+- **Esquema de Configuración Experto**: Adición de referencia completa de propiedades y recomendaciones arquitectónicas para `barrits.config.ts`.
+- **Patrones de Integración Avanzada**: Documentación de estrategias de aislamiento en Monorepos, Inyección de Dependencias y gobernanza de CI/CD.
+- **Seguridad e Integridad**: Corrección de `ignoreDeprecations` en `tsconfig.json` y aseguramiento de estructuras de manifiesto preparadas para checksums.
+
 ## [0.1.1] - 2026-04-20
 
 ### Added
