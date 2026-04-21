@@ -52,7 +52,7 @@ export declare const logic: {
             paginate: <Value>(values: readonly Value[], options: import("..").PaginationOptions) => import("..").PaginatedResult<Value>;
             partitionBy: <Value>(values: readonly Value[], predicate: (value: Value, index: number, values: readonly Value[]) => boolean) => import("..").PartitionResult<Value>;
             rankBy: <Value>(values: readonly Value[], criteria: readonly import("..").OrderCriterion<Value>[]) => import("..").RankedValue<Value>[];
-            topK: <Value>(values: readonly Value[], count: number, compare?: import("..").CompareFunction<Value>, direction?: import("..").SortDirection) => Value[];
+            topK: <Value>(values: readonly Value[], k: number, compare?: import("..").CompareFunction<Value>, direction?: import("..").SortDirection) => Value[];
         };
         sort: {
             insertSorted: <Value>(values: readonly Value[], value: Value, compare?: import("..").CompareFunction<Value>) => Value[];
@@ -181,7 +181,7 @@ export declare const logic: {
         paginate: <Value>(values: readonly Value[], options: import("..").PaginationOptions) => import("..").PaginatedResult<Value>;
         partitionBy: <Value>(values: readonly Value[], predicate: (value: Value, index: number, values: readonly Value[]) => boolean) => import("..").PartitionResult<Value>;
         rankBy: <Value>(values: readonly Value[], criteria: readonly import("..").OrderCriterion<Value>[]) => import("..").RankedValue<Value>[];
-        topK: <Value>(values: readonly Value[], count: number, compare?: import("..").CompareFunction<Value>, direction?: import("..").SortDirection) => Value[];
+        topK: <Value>(values: readonly Value[], k: number, compare?: import("..").CompareFunction<Value>, direction?: import("..").SortDirection) => Value[];
     };
     sortAlgorithms: {
         insertSorted: <Value>(values: readonly Value[], value: Value, compare?: import("..").CompareFunction<Value>) => Value[];
@@ -196,7 +196,7 @@ export declare const logic: {
         readonly direction?: import("..").SortDirection;
         readonly compare?: import("..").CompareFunction<Result>;
     }) => Value[];
-    topK: <Value>(values: readonly Value[], count: number, compare?: import("..").CompareFunction<Value>, direction?: import("..").SortDirection) => Value[];
+    topK: <Value>(values: readonly Value[], k: number, compare?: import("..").CompareFunction<Value>, direction?: import("..").SortDirection) => Value[];
     uniqueBy: <Value, Key>(values: readonly Value[], selectKey: (value: Value, index: number, values: readonly Value[]) => Key) => Value[];
     upperBound: <Value>(values: readonly Value[], target: Value, compare?: import("..").CompareFunction<Value>) => number;
 };

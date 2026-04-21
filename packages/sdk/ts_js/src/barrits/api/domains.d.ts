@@ -52,7 +52,7 @@ export declare const barrits: {
                 paginate: <Value>(values: readonly Value[], options: import("./flat").PaginationOptions) => import("./flat").PaginatedResult<Value>;
                 partitionBy: <Value>(values: readonly Value[], predicate: (value: Value, index: number, values: readonly Value[]) => boolean) => import("./flat").PartitionResult<Value>;
                 rankBy: <Value>(values: readonly Value[], criteria: readonly import("./flat").OrderCriterion<Value>[]) => import("./flat").RankedValue<Value>[];
-                topK: <Value>(values: readonly Value[], count: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
+                topK: <Value>(values: readonly Value[], k: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
             };
             sort: {
                 insertSorted: <Value>(values: readonly Value[], value: Value, compare?: import("./flat").CompareFunction<Value>) => Value[];
@@ -181,7 +181,7 @@ export declare const barrits: {
             paginate: <Value>(values: readonly Value[], options: import("./flat").PaginationOptions) => import("./flat").PaginatedResult<Value>;
             partitionBy: <Value>(values: readonly Value[], predicate: (value: Value, index: number, values: readonly Value[]) => boolean) => import("./flat").PartitionResult<Value>;
             rankBy: <Value>(values: readonly Value[], criteria: readonly import("./flat").OrderCriterion<Value>[]) => import("./flat").RankedValue<Value>[];
-            topK: <Value>(values: readonly Value[], count: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
+            topK: <Value>(values: readonly Value[], k: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
         };
         sortAlgorithms: {
             insertSorted: <Value>(values: readonly Value[], value: Value, compare?: import("./flat").CompareFunction<Value>) => Value[];
@@ -196,7 +196,7 @@ export declare const barrits: {
             readonly direction?: import("./flat").SortDirection;
             readonly compare?: import("./flat").CompareFunction<Result>;
         }) => Value[];
-        topK: <Value>(values: readonly Value[], count: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
+        topK: <Value>(values: readonly Value[], k: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
         uniqueBy: <Value, Key>(values: readonly Value[], selectKey: (value: Value, index: number, values: readonly Value[]) => Key) => Value[];
         upperBound: <Value>(values: readonly Value[], target: Value, compare?: import("./flat").CompareFunction<Value>) => number;
     };
@@ -296,7 +296,7 @@ export declare const brt: {
                 paginate: <Value>(values: readonly Value[], options: import("./flat").PaginationOptions) => import("./flat").PaginatedResult<Value>;
                 partitionBy: <Value>(values: readonly Value[], predicate: (value: Value, index: number, values: readonly Value[]) => boolean) => import("./flat").PartitionResult<Value>;
                 rankBy: <Value>(values: readonly Value[], criteria: readonly import("./flat").OrderCriterion<Value>[]) => import("./flat").RankedValue<Value>[];
-                topK: <Value>(values: readonly Value[], count: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
+                topK: <Value>(values: readonly Value[], k: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
             };
             sort: {
                 insertSorted: <Value>(values: readonly Value[], value: Value, compare?: import("./flat").CompareFunction<Value>) => Value[];
@@ -425,7 +425,7 @@ export declare const brt: {
             paginate: <Value>(values: readonly Value[], options: import("./flat").PaginationOptions) => import("./flat").PaginatedResult<Value>;
             partitionBy: <Value>(values: readonly Value[], predicate: (value: Value, index: number, values: readonly Value[]) => boolean) => import("./flat").PartitionResult<Value>;
             rankBy: <Value>(values: readonly Value[], criteria: readonly import("./flat").OrderCriterion<Value>[]) => import("./flat").RankedValue<Value>[];
-            topK: <Value>(values: readonly Value[], count: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
+            topK: <Value>(values: readonly Value[], k: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
         };
         sortAlgorithms: {
             insertSorted: <Value>(values: readonly Value[], value: Value, compare?: import("./flat").CompareFunction<Value>) => Value[];
@@ -440,7 +440,7 @@ export declare const brt: {
             readonly direction?: import("./flat").SortDirection;
             readonly compare?: import("./flat").CompareFunction<Result>;
         }) => Value[];
-        topK: <Value>(values: readonly Value[], count: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
+        topK: <Value>(values: readonly Value[], k: number, compare?: import("./flat").CompareFunction<Value>, direction?: import("./flat").SortDirection) => Value[];
         uniqueBy: <Value, Key>(values: readonly Value[], selectKey: (value: Value, index: number, values: readonly Value[]) => Key) => Value[];
         upperBound: <Value>(values: readonly Value[], target: Value, compare?: import("./flat").CompareFunction<Value>) => number;
     };

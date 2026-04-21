@@ -15,6 +15,10 @@ import { normalizeResolvedConfig } from "./internal/config_normalization";
  */
 export type BarritsRuntimeKind = "node" | "deno" | "react" | "browser" | "other";
 
+/** [EN] Strategy for resolving trait composition conflicts. 
+ *  [ES] Estrategia para resolver conflictos de composición de traits. */
+export type BarritsTraitConflictStrategy = "error" | "override" | "merge";
+
 /** 
  * [EN] Watch policy used by automation and adapter orchestration.
  * [ES] Política de observación (watch) utilizada por la automatización y la orquestación de adaptadores.
@@ -116,6 +120,10 @@ export type BarritsRootConfig = {
   autoManifest?: boolean;
   /** [EN] Override automation storage directory. [ES] Anular el directorio de almacenamiento de automatización. */
   automationDirectory?: string;
+  /** [EN] Optional roots to scan for JSDoc contracts (e.g. ["src"]). [ES] Raíces opcionales para escanear contratos JSDoc. */
+  discoveryRoots?: readonly string[];
+  /** [EN] Strategy for handling trait conflicts (default: "error"). [ES] Estrategia para manejar conflictos de traits. */
+  traitConflictStrategy?: BarritsTraitConflictStrategy;
   /** [EN] Manual contract definitions. [ES] Definiciones manuales de contratos. */
   contracts?: BarritsContractsConfig;
   /** 
@@ -142,6 +150,8 @@ export type ResolvedBarritsConfig = {
   manifestPath?: string;
   autoManifest: boolean;
   automationDirectory: string;
+  discoveryRoots: readonly string[];
+  traitConflictStrategy: BarritsTraitConflictStrategy;
   contracts?: BarritsContractsConfig;
   configFilePath?: string;
   main?: () => Promise<void> | void;

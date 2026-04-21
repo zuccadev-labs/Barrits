@@ -1,35 +1,44 @@
-# example-svelte
+# example-svelte — Svelte Framework Validation
 
-Yo uso este ejemplo cuando quiero cerrar la validacion del flujo package-first sobre Svelte sin cambiar el contrato del paquete.
+## Purpose
 
-## Para que sirve
+This example validates the Barrits package-first contract and Vite plugin
+within a Svelte application, completing the cross-framework compatibility
+matrix alongside React, Vue, and SolidJS.
 
-- confirma que la integracion package-first sigue estable en otro framework Vite
-- muestra que puedo mezclar manifests y utilidades funcionales dentro de la misma UI
-- mantiene `src/barrits/` como frontera visible del consumidor
+## Key Files
 
-## Que archivos mirar primero
+| File | Description |
+|---|---|
+| `vite.config.ts` | Plugin integration with package definition |
+| `src/App.svelte` | Manifest consumption with `movingAverageSeries` and `sumar` |
+| `src/barrits/` | Consumer-visible orchestration layer |
 
-- `vite.config.ts`: integracion del plugin con la definicion del paquete
-- `src/App.svelte`: uso de `createBuildManifestSummary`, `movingAverageSeries` y `sumar`
-- `src/barrits/`: capa visible del consumidor
+## API Functions Demonstrated
 
-## APIs que este ejemplo usa
+| Function | Purpose |
+|---|---|
+| `defineBarritsPackage` | Consumer identity declaration |
+| `toBarritsAutomationOptions` | Plugin configuration adapter |
+| `barritsVitePlugin` | Vite integration |
+| `createBuildManifestSummary` | Virtual manifest summarization |
+| `movingAverageSeries` | Time-series smoothing |
+| `sumar` | Arithmetic utility demonstration |
 
-- `defineBarritsPackage`
-- `toBarritsAutomationOptions`
-- `barritsVitePlugin`
-- `createBuildManifestSummary`
-- `movingAverageSeries`
-- `sumar`
+## Design Note
 
-## Como leerlo
+The Vite plugin contract is identical across all framework examples. Only
+the UI consumption layer changes (`.svelte` vs `.jsx` vs `.vue`), which
+demonstrates that the orchestration boundary is framework-agnostic.
 
-Si ya revise React o Vue, este ejemplo sirve para comprobar que el contrato del plugin se mantiene mientras cambia solo la capa UI.
+## Execution
 
-Si necesito la semantica de cada funcion, voy a [../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md](../../../../../docs/users/ES/packages/ts_js/09_referencia-de-api.md).
+```bash
+npm run dev    # Start the Svelte development server
+npm run build  # Generate the production build
+```
 
-## Comandos utiles
+## Reference
 
-- `npm run dev`
-- `npm run build`
+For the complete API specification, consult
+`docs/users/ES/packages/ts_js/09_referencia-de-api.md`.
