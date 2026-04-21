@@ -52,7 +52,7 @@ jobs:
 
 
       - name: Setup npm
-        run: npm install --global npm@11.6.2
+        run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -149,7 +149,7 @@ jobs:
 
 
       - name: Setup npm
-        run: npm install --global npm@11.6.2
+        run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -197,7 +197,7 @@ jobs:
 
 
       - name: Setup npm
-        run: npm install --global npm@11.6.2
+        run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
