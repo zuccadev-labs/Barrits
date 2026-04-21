@@ -584,6 +584,8 @@ const withOptionalFilters = <T extends object>(
   };
 };
 
+/** [EN] Verifies and parses a JSON source into a validated BarritsBuildManifest.
+ *  [ES] Verifica y parsea una fuente JSON en un BarritsBuildManifest validado. */
 export const parseBuildManifest = (source: string): BarritsBuildManifest => {
   return parseBuildManifestPayload(source);
 };
@@ -592,6 +594,8 @@ export const parseWatchSnapshot = (source: string): BarritsWatchSnapshot => {
   return parseWatchSnapshotPayload(source);
 };
 
+/** [EN] Asynchronously reads and validates a build manifest from the filesystem.
+ *  [ES] Lee y valida asíncronamente un manifiesto de build desde el sistema de archivos. */
 export const readBuildManifest = async (
   filePath: string,
   readTextFile: ReadTextFile,
@@ -599,6 +603,8 @@ export const readBuildManifest = async (
   return parseBuildManifest(await readTextFile(filePath));
 };
 
+/** [EN] Reads a manifest and returns a simplified summary for consumer usage.
+ *  [ES] Lee un manifiesto y retorna un resumen simplificado para uso del consumidor. */
 export const readBuildManifestSummary = async (
   filePath: string,
   readTextFile: ReadTextFile,
@@ -627,6 +633,8 @@ export const readLanguageToolSnapshot = async (
   return createLanguageToolSnapshot(await readWatchSnapshot(filePath, readTextFile));
 };
 
+/** [EN] Transforms a raw manifest into a high-level summary of domains and traits.
+ *  [ES] Transforma un manifiesto crudo en un resumen de alto nivel de dominios y traits. */
 export const createBuildManifestSummary = (
   manifest: BarritsBuildManifest | null,
 ): BarritsConsumedStateSummary => {

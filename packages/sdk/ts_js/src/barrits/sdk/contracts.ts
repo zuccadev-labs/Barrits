@@ -1,10 +1,14 @@
 export type RuntimeFileSystemEntryType = "file" | "directory";
 
+/** [EN] Entry metadata for a runtime filesystem.
+ *  [ES] Metadatos de entrada para un sistema de archivos en runtime. */
 export type RuntimeFileSystemEntry = {
   readonly name: string;
   readonly type: RuntimeFileSystemEntryType;
 };
 
+/** [EN] Deterministic adapter for filesystem operations across different runtimes.
+ *  [ES] Adaptador determinístico para operaciones de archivos en diferentes runtimes. */
 export type RuntimeFileSystemAdapter = {
   cwd: () => string | Promise<string>;
   directoryExists: (path: string) => Promise<boolean>;
@@ -19,6 +23,8 @@ export type BarritsDiscoveryStrategy =
   | "recursive-child"
   | "ancestor-child";
 
+/** [EN] Result of a Barrits discovery process via AST or file-system patterns.
+ *  [ES] Resultado de un proceso de descubrimiento de Barrits mediante patrones del sistema de archivos o AST. */
 export type BarritsDiscovery = {
   readonly projectRoot: string;
   readonly barritsDirectory: string;
@@ -51,6 +57,8 @@ export type BarritsFileExport = {
   readonly visibility: BarritsExportVisibility;
 };
 
+/** [EN] Static inspection data for a Barrits Trait descriptor.
+ *  [ES] Datos de inspección estática para un descriptor de Trait de Barrits. */
 export type BarritsTraitDescriptorInspection = {
   readonly name: string;
   readonly sourceFile: string;
@@ -166,6 +174,8 @@ export type BarritsExportCollision = {
   readonly message: string;
 };
 
+/** [EN] Full integration graph of a Barrits project, including domains, traits and collisions.
+ *  [ES] Grafo de integración completo de un proyecto Barrits, incluyendo dominios, traits y colisiones. */
 export type BarritsIntegrationGraph = {
   readonly barritsDirectory: string;
   readonly barritsLibDirectory?: string;
@@ -215,6 +225,8 @@ export type BarritsImportAction = {
   readonly statement: string;
 };
 
+/** [EN] Sealed manifest representing the state of discovery at a specific point in time.
+ *  [ES] Manifiesto sellado que representa el estado del descubrimiento en un punto específico en el tiempo. */
 export type BarritsBuildManifest = {
   readonly generatedAt: string;
   readonly checksum: string;

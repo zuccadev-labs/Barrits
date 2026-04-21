@@ -1,16 +1,36 @@
 import { detectRuntime, getCurrentWorkingDirectory } from "./internal/runtime";
 import { normalizeResolvedConfig } from "./internal/config_normalization";
 
-/** Supported runtime identifiers for package-level configuration. */
+/**
+ * @module
+ * [EN] Configuration engine for Barrits orchestrations. Handles file discovery, 
+ * normalization, and runtime state resolution.
+ * [ES] Motor de configuración para orquestaciones de Barrits. Maneja el descubrimiento de archivos, 
+ * la normalización y la resolución del estado en tiempo de ejecución.
+ */
+
+/** 
+ * [EN] Supported runtime identifiers for package-level configuration.
+ * [ES] Identificadores de tiempo de ejecución soportados para la configuración a nivel de paquete.
+ */
 export type BarritsRuntimeKind = "node" | "deno" | "react" | "browser" | "other";
 
-/** Watch policy used by automation and adapter orchestration. */
+/** 
+ * [EN] Watch policy used by automation and adapter orchestration.
+ * [ES] Política de observación (watch) utilizada por la automatización y la orquestación de adaptadores.
+ */
 export type BarritsWatchMode = "auto" | "manual" | "off";
 
-/** Default folder where Barrits stores generated automation artifacts. */
+/** 
+ * [EN] Default folder where Barrits stores generated automation artifacts.
+ * [ES] Carpeta predeterminada donde Barrits almacena los artefactos de automatización generados.
+ */
 export const DEFAULT_AUTOMATION_DIRECTORY = ".barrits";
 
-/** Candidate config filenames resolved in project root order. */
+/** 
+ * [EN] Candidate config filenames resolved in project root order.
+ * [ES] Nombres de archivos de configuración candidatos resueltos en orden desde la raíz del proyecto.
+ */
 export const BARRITS_CONFIG_FILENAMES = [
   "barrits.config.ts",
   "barrits.config.mts",
@@ -19,60 +39,101 @@ export const BARRITS_CONFIG_FILENAMES = [
 ] as const;
 
 /**
- * Manual trait contract entry used when declarative JSDoc is not present in the source file.
+ * [EN] Manual trait contract entry used when declarative JSDoc is not present in the source file.
+ * [ES] Entrada manual de contrato de trait utilizada cuando JSDoc declarativo no está presente en el archivo fuente.
  */
 export type BarritsTraitContractConfig = {
+  /** [EN] Unique name for the trait. [ES] Nombre único para el trait. */
   name: string;
+  /** [EN] Source file path relative to project root. [ES] Ruta del archivo fuente relativa a la raíz del proyecto. */
   sourceFile: string;
+  /** [EN] Name of the exported binding. [ES] Nombre del binding exportado. */
   bindingName: string;
+  /** [EN] Kind of binding. [ES] Tipo de binding. */
   bindingKind?: "const" | "function" | "class";
+  /** [EN] Factory method to use for discovery. [ES] Método de factoría a utilizar para el descubrimiento. */
   factory?: "createTraitDescriptor" | "createTraitDescriptorFromJsDoc";
+  /** [EN] Brief summary. [ES] Breve resumen. */
   summary?: string;
+  /** [EN] List of required traits. [ES] Lista de traits requeridos. */
   requires?: readonly string[];
+  /** [EN] List of conflicting traits. [ES] Lista de traits en conflicto. */
   conflicts?: readonly string[];
+  /** [EN] List of state keys provided. [ES] Lista de claves de estado proporcionadas. */
   state?: readonly string[];
+  /** [EN] Traits consumed. [ES] Traits consumidos. */
   consumes?: readonly string[];
+  /** [EN] Traits provided. [ES] Traits proporcionados. */
   provides?: readonly string[];
+  /** [EN] Custom organizational tags. [ES] Etiquetas organizativas personalizadas. */
   tags?: readonly string[];
+  /** [EN] Target runtimes. [ES] Tiempos de ejecución objetivo. */
   runtimes?: readonly string[];
 };
 
 /**
- * Manual export visibility override entry used to keep most methods public by default
- * and mark only selected methods as internal/private.
+ * [EN] Manual export visibility override entry used to manage public/internal visibility.
+ * [ES] Entrada manual de anulación de visibilidad de exportación utilizada para gestionar la visibilidad pública/interna.
  */
 export type BarritsExportContractConfig = {
+  /** [EN] Target source file. [ES] Archivo fuente objetivo. */
   sourceFile: string;
+  /** [EN] Specific export name. [ES] Nombre de exportación específico. */
   exportName?: string;
+  /** [EN] Logical access path in the proxy. [ES] Ruta de acceso lógica en el proxy. */
   accessPath?: string;
+  /** [EN] Visibility level. [ES] Nivel de visibilidad. */
   visibility?: "public" | "internal";
 };
 
 /**
- * Optional contract-level overrides loaded from `barrits.config.*`.
+ * [EN] Optional contract-level overrides loaded from config files.
+ * [ES] Anulaciones opcionales a nivel de contrato cargadas desde archivos de configuración.
  */
 export type BarritsContractsConfig = {
+  /** [EN] Manual trait definitions. [ES] Definiciones de traits manuales. */
   traits?: readonly BarritsTraitContractConfig[];
+  /** [EN] Export visibility overrides. [ES] Anulaciones de visibilidad de exportación. */
   exports?: readonly BarritsExportContractConfig[];
 };
 
-/** Root configuration schema accepted by `barrits.config.*` files. */
+/** 
+ * [EN] Root configuration schema accepted by `barrits.config.*` files.
+ * [ES] Esquema de configuración raíz aceptado por los archivos `barrits.config.*`.
+ */
 export type BarritsRootConfig = {
+  /** [EN] Target runtime kind. [ES] Tipo de tiempo de ejecución objetivo. */
   runtime?: BarritsRuntimeKind;
+  /** [EN] Watch policy for automation. [ES] Política de observación para la automatización. */
   watch?: BarritsWatchMode;
+  /** [EN] Enable debug logs for CLI commands. [ES] Habilitar logs de depuración para comandos CLI. */
   debugCommands?: boolean;
+  /** [EN] Set project root (defaults to CWD). [ES] Establecer la raíz del proyecto (predeterminado a CWD). */
   projectRoot?: string;
+  /** [EN] Explicit path to the build manifest. [ES] Ruta explícita a el manifiesto de build. */
   manifestPath?: string;
+  /** [EN] Enable automatic manifest generation. [ES] Habilitar generación automática de manifiesto. */
   autoManifest?: boolean;
+  /** [EN] Override automation storage directory. [ES] Anular el directorio de almacenamiento de automatización. */
   automationDirectory?: string;
+  /** [EN] Manual contract definitions. [ES] Definiciones manuales de contratos. */
   contracts?: BarritsContractsConfig;
-  /** Optional main method to override the default bootstrap behavior */
+  /** 
+   * [EN] Optional main method to override default bootstrap.
+   * [ES] Método principal opcional para anular el bootstrap predeterminado.
+   */
   main?: () => Promise<void> | void;
-  /** Optional custom namespace injected when creating abstract factories */
+  /** 
+   * [EN] Optional custom namespace injected when creating abstract factories.
+   * [ES] Espacio de nombres personalizado inyectado al crear factorías abstractas.
+   */
   namespace?: string;
 };
 
-/** Fully resolved runtime configuration consumed internally by Barrits. */
+/** 
+ * [EN] Fully resolved runtime configuration consumed internally by Barrits.
+ * [ES] Configuración de tiempo de ejecución completamente resuelta consumida internamente por Barrits.
+ */
 export type ResolvedBarritsConfig = {
   runtime: BarritsRuntimeKind;
   watch: BarritsWatchMode;
@@ -83,9 +144,7 @@ export type ResolvedBarritsConfig = {
   automationDirectory: string;
   contracts?: BarritsContractsConfig;
   configFilePath?: string;
-  /** Resolved main method from configuration */
   main?: () => Promise<void> | void;
-  /** Resolved custom namespace from configuration */
   namespace?: string;
 };
 
@@ -99,8 +158,6 @@ const runtimeImport = <TModule>(specifier: string): Promise<TModule> => {
   const importModule = Function("specifier", "return import(specifier);") as (specifier: string) => Promise<TModule>;
   return importModule(specifier);
 };
-
-// Normalization logic moved to internal/config_normalization.ts
 
 const toRuntimeModuleSpecifier = (filePath: string): string => {
   const normalizedPath = filePath.replace(/\\/g, "/");
@@ -149,20 +206,30 @@ const isObjectRecord = (value: unknown): value is Record<string, unknown> => {
 };
 
 /**
- * Defines a typed Barrits root configuration object.
+ * [EN] Defines a typed Barrits root configuration object.
+ * [ES] Define un objeto de configuración raíz de Barrits tipado.
  *
- * @param config Root config authored by the consumer project.
- * @returns The same config with preserved generic typing.
+ * @example
+ * ```ts
+ * export default defineBarritsConfig({
+ *   runtime: "deno",
+ *   watch: "auto"
+ * });
+ * ```
+ *
+ * @param config - [EN] Root config authored by the consumer project. [ES] Configuración raíz escrita por el proyecto consumidor.
+ * @returns [EN] The same config with preserved generic typing. [ES] La misma configuración con tipado genérico preservado.
  */
 export const defineBarritsConfig = <TConfig extends BarritsRootConfig>(config: TConfig): TConfig => {
   return config;
 };
 
 /**
- * Finds the first matching Barrits config file in the project root.
+ * [EN] Finds the first matching Barrits config file in the project root.
+ * [ES] Encuentra el primer archivo de configuración de Barrits coincidente en la raíz del proyecto.
  *
- * @param projectRoot Root folder to inspect.
- * @returns Absolute config path when found, otherwise undefined.
+ * @param projectRoot - [EN] Root folder to inspect. [ES] Carpeta raíz a inspeccionar.
+ * @returns [EN] Absolute config path when found, otherwise undefined. [ES] Ruta absoluta de configuración cuando se encuentra, de lo contrario undefined.
  */
 export const findBarritsConfigFile = async (
   projectRoot: string = getCurrentWorkingDirectory(),
@@ -187,11 +254,12 @@ export const findBarritsConfigFile = async (
 };
 
 /**
- * Loads and validates the Barrits config object from disk.
+ * [EN] Loads and validates the Barrits config object from disk.
+ * [ES] Carga y valida el objeto de configuración de Barrits desde el disco.
  *
- * @param projectRoot Root folder where config file is expected.
- * @returns Config object plus source path, or null when no config file exists.
- * @throws Error when the loaded module does not export an object config.
+ * @param projectRoot - [EN] Root folder where config file is expected. [ES] Carpeta raíz donde se espera el archivo de configuración.
+ * @returns [EN] Config object plus source path, or null when no config file exists. [ES] Objeto de configuración más ruta de origen, o null cuando no existe el archivo.
+ * @throws Error - [EN] When the loaded module does not export an object config. [ES] Cuando el módulo cargado no exporta un objeto de configuración.
  */
 export const loadBarritsConfig = async (
   projectRoot: string = getCurrentWorkingDirectory(),
@@ -216,13 +284,15 @@ export const loadBarritsConfig = async (
 };
 
 /**
- * Resolves final runtime config by merging file config and explicit options.
+ * [EN] Resolves final runtime config by merging file config and explicit options.
+ * [ES] Resuelve la configuración final de tiempo de ejecución fusionando la configuración de archivo y las opciones explícitas.
  *
- * Explicit `options` values override values loaded from config file.
+ * [EN] Explicit `options` values override values loaded from config file.
+ * [ES] Los valores de `options` explícitos anulan los valores cargados desde el archivo de configuración.
  *
- * @param options Explicit runtime options.
- * @param fallbackProjectRoot Default project root when none is provided.
- * @returns Fully resolved config used by automation and adapters.
+ * @param options - [EN] Explicit runtime options. [ES] Opciones explícitas de tiempo de ejecución.
+ * @param fallbackProjectRoot - [EN] Default project root when none is provided. [ES] Raíz del proyecto por defecto cuando no se proporciona ninguna.
+ * @returns [EN] Fully resolved config used by automation and adapters. [ES] Configuración completamente resuelta utilizada por la automatización y los adaptadores.
  */
 export const resolveBarritsConfig = async (
   options: BarritsRootConfig = {},
