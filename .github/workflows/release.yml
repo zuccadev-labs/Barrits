@@ -50,6 +50,9 @@ jobs:
         with:
           fetch-depth: 0
 
+
+      - name: Setup npm
+        run: npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -144,6 +147,9 @@ jobs:
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
 
+
+      - name: Setup npm
+        run: npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -189,6 +195,9 @@ jobs:
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
 
+
+      - name: Setup npm
+        run: npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
