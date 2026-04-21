@@ -1,41 +1,36 @@
-# 04 Validacion y publicacion de ts_js
+# 04 Validación y publicación de ts_js
 
-Yo considero completa una modificacion de `ts_js` solo cuando pasa por una validacion tecnica minima y coherente con el tipo de cambio.
+El proceso de validación técnica es un requisito indispensable para considerar completa cualquier modificación en el SDK `ts_js`. Los criterios de aceptación se ajustan según el alcance del cambio, garantizando la estabilidad de la superficie pública y de sus flujos operativos.
 
-## Mi baseline de validacion
+## Baseline de Validación Técnica
 
-Cuando toco arquitectura, build, adapters o ejemplos, yo reviso al menos esto:
+Ante cambios en la arquitectura, el sistema de construcción (build), los adaptadores o los ejemplos de integración, se debe ejecutar la siguiente suite de verificación:
 
-1. `npm install`
-2. `npm run build`
-3. `npm test`
-4. ejemplos representativos segun la superficie afectada
-5. `npm run publish:jsr:dry-run` cuando toco compatibilidad Deno o publicacion
+1.  **Sincronización**: `npm install` para validar la integridad de las dependencias.
+2.  **Construcción**: `npm run build` para asegurar la materialización correcta de los artefactos.
+3.  **Pruebas Unitarias e Integración**: `npm test` para certificar el cumplimiento de los contratos lógicos.
+4.  **Cobertura de Escenarios**: Ejecución de ejemplos representativos vinculados a la superficie modificada.
+5.  **Simulación de Publicación**: `npm run publish:jsr:dry-run` ante cambios en la compatibilidad con Deno o en la definición del contrato JSR.
 
-## Como valido ejemplos
+## Estrategia de Validación de Ejemplos
 
-Yo no corro todos los ejemplos por costumbre. Yo selecciono los que cubren la superficie que toque:
+La selección de ejemplos para pruebas de humo se realiza de forma quirúrgica, priorizando los que cubren el dominio impactado:
 
-- Node.js si toco CLI, manifests, tooling o filesystem
-- Deno si toco adapter Deno, `jsr.json` o imports ESM publicados
-- React o Vite si toco package-first frontend
-- bundlers si toco plugins de build
-- Tauri si toco lectura segura de manifests y snapshots
+- **Infraestructura Core**: Se validan mediante `example-nodejs/` (CLI, manifests, tooling, filesystem).
+- **Portabilidad Deno**: Se validan mediante `example-deno/` (adaptador, `jsr.json`, importaciones ESM).
+- **Ecosistema Frontend**: Se validan mediante ejemplos basados en Vite (React, Vue, Solid, Svelte).
+- **Integración de Herramientas**: Se validan mediante la carpeta `bundlers/` (plugins de construcción).
+- **Entornos Controlados**: Se validan mediante `example-tauri/` (seguridad y lectura de artefactos).
 
-## Como publico
+## Gobernanza de Publicación
 
-Yo trato npm y JSR como superficies distintas pero compatibles:
+El SDK mantiene una estrategia de distribución dual, tratando a npm y JSR como plataformas complementarias:
 
-- npm consume la salida `dist/`
-- JSR publica la fuente y valida la compatibilidad Deno desde `jsr.json`
+- **npm**: Distribuye los binarios y artefactos generados en `dist/`.
+- **JSR**: Publica el código fuente y valida la compatibilidad nativa con Deno a través de `jsr.json`.
 
-Antes de una publicacion real, yo quiero tener:
+Antes de proceder con una publicación de release, es imperativo certificar que tanto el build como los tests y los ejemplos relevantes se encuentran en estado óptimo ("verde") y que la simulación de publicación de Deno no arroja advertencias imprevistas.
 
-1. build verde
-2. tests verdes
-3. ejemplos relevantes verdes
-4. `deno publish --dry-run` sin warnings nuevos no entendidos
+## Mantenimiento Documental y de Calidad
 
-## Mi regla de calidad documental
-
-Si yo cambio estructura, rutas, workspaces o flujos, actualizo esta carpeta antes de cerrar la tarea. No dejo que el codigo migre sin arrastrar su documentacion de desarrollo.
+Cualquier cambio estructural en la lógica, rutas de archivos, espacios de trabajo o flujos de orquestación debe reflejarse inmediatamente en esta carpeta de soporte al desarrollo. La documentación técnica debe evolucionar en sincronía con el código fuente para asegurar la transparencia operativa del proyecto.

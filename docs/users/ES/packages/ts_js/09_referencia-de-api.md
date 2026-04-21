@@ -1,12 +1,21 @@
-# 09 Referencia de API
+# 09 Referencia de API — Archivo de respaldo
 
-Este documento actua como referencia central de la superficie publica de `@zuccadev-labs/barrits`. La meta es responder cuatro preguntas para cada metodo o familia: que hace, para que sirve, como se usa y donde aparece en los recorridos reales del repo.
+> **Este documento es el archivo de respaldo histórico.**
+> La referencia activa está dividida en tres documentos especializados:
+>
+> - [09a — Configuración, Traits y Manifests](09a_referencia-de-api-configuracion.md)
+> - [09b — Algoritmos](09b_referencia-de-api-algoritmos.md)
+> - [09c — Consume y Adapters](09c_referencia-de-api-consume-y-adapters.md)
 
-## Como leer esta referencia
+---
 
-- si necesito arrancar rapido, primero leo `packages/sdk/ts_js/README.md`
-- si ya se que ejemplo me interesa, entro a `examples/00_indice.md`, que documenta la carpeta canonica `packages/sdk/ts_js/examples/`, y despues al README local de la demo
-- si quiero detalle exacto de una funcion, vuelvo aqui
+Este archivo actúa como referencia central de respaldo de la superficie pública de `@zuccadev-labs/barrits`. La meta es responder cuatro preguntas para cada método o familia: qué hace, para qué sirve, cómo se usa y dónde aparece en los recorridos reales del repositorio.
+
+## Cómo leer esta referencia
+
+- Para arranque rápido, leer primero `packages/sdk/ts_js/README.md`
+- Para ubicar el ejemplo de interés, entrar a `examples/00_indice.md`, que documenta la carpeta canónica `packages/sdk/ts_js/examples/`, y después al README local de la demo
+- Para detalle exacto de una función, consultar los documentos 09a, 09b y 09c
 
 ## Entrada principal `@zuccadev-labs/barrits`
 
@@ -47,6 +56,12 @@ Este documento actua como referencia central de la superficie publica de `@zucca
   Para que sirve: aplica defaults y devuelve un objeto listo para operar.
   Como se usa: se usa cuando necesito la configuracion final, no solo el archivo fuente.
   Donde se usa: en flujos de automatizacion y CLI.
+
+- `createBarrits(options?)`
+  Que hace: inicia la aplicación construyendo de forma dinámica el contexto del SDK basado en el archivo de configuración.
+  Para que sirve: permitir renombrar la raíz del sistema (namespace dinámico) inyectando los dominios predefinidos (`logic`, `traits`) al objeto local sin romper el IDE ni el Typings Tooling.
+  Como se usa: se invoca asíncronamente en el boot de la aplicación cliente y devuelve una instancia tipada con tu `namespace` personalizado.
+  Donde se usa: en los scripts principales de `examples/example-nodejs` como reemplazo corporativo de las variables globales.
 
 ### Rutas, nombres y dominios
 
@@ -682,4 +697,4 @@ Tags declarativos reconocidos por este flujo:
 
 Ademas de las funciones, la raiz y los subpaths exportan tipos utiles para consumers tipados: rutas (`PathParts`), runtimes (`RuntimeName`, `BarritsRuntimeKind`, `BarritsWatchMode`), estructuras de manifests y snapshots (`BarritsBuildManifest`, `BarritsLanguageToolSnapshot`, `BarritsWatchSnapshot`, `BarritsConsumedStateSummary`) y tipos de algoritmos (`OrderCriterion`, `TimeSeriesPoint`, `PaginatedResult`, `GraphEdge`, entre otros).
 
-Yo recomiendo importar esos tipos solo cuando el consumidor realmente necesita contratos tipados explicitos. Si la integracion ya vive completa dentro de un ejemplo del repo, primero copio el recorrido y despues agrego tipos concretos segun la necesidad.
+Se recomienda importar estos tipos solo cuando el consumidor realmente necesita contratos tipados explícitos. Si la integración ya vive completa dentro de un ejemplo del repositorio, se sugiere seguir el recorrido del ejemplo y agregar tipos concretos según la necesidad del proyecto.

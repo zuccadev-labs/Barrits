@@ -1,26 +1,52 @@
-# 01 Instalacion de ts_js
+# 01 Instalación de ts_js
 
-Yo instalo `barrits` como paquete normal de JavaScript o TypeScript. Mi recomendacion es partir de un proyecto que ya tenga Node.js 18 o superior cuando voy a consumir plugins, adapters o ejemplos frontend.
+`@zuccadev-labs/barrits` se instala como un paquete normal de JavaScript o TypeScript. El punto de partida recomendado es un proyecto que ya tenga Node.js 18 o superior cuando se consumen plugins, adapters o ejemplos frontend.
 
-## Instalacion base
+## Instalación base
 
-Si yo estoy en npm, instalo asi:
+**npm** (Node.js, Bun, bundlers de browser):
 
 ```bash
 npm install @zuccadev-labs/barrits
 ```
 
-Si yo trabajo dentro de este monorepo, el paquete real vive en `packages/sdk/ts_js` y los ejemplos ya lo consumen por workspace local.
+**JSR** (Deno):
 
-## Lo que yo recibo al instalar
+```ts
+import { defineBarritsPackage } from "jsr:@zuccadev-labs/barrits";
+```
 
-Cuando yo instalo el paquete, recibo:
+O como dependencia en `deno.json`:
 
-- la superficie principal `@zuccadev-labs/barrits`
-- subpaths para Node, Deno y plugins de bundler
-- helpers de consumo en `@zuccadev-labs/barrits/consume`
-- una CLI util como fallback operativo
+```json
+{
+  "imports": {
+    "@zuccadev-labs/barrits": "jsr:@zuccadev-labs/barrits@^0.1.0"
+  }
+}
+```
 
-## Cuando yo tambien necesito Deno
+## Qué se recibe al instalar
 
-Si yo voy a validar publicacion JSR o consumo Deno, tambien necesito Deno instalado en mi maquina. Yo no lo trato como requisito universal para todo consumidor, pero si para esa superficie concreta.
+Al instalar el paquete, el consumidor recibe:
+
+- La superficie principal `@zuccadev-labs/barrits`
+- Subpaths para Node, Deno y plugins de bundler
+- Helpers de consumo en `@zuccadev-labs/barrits/consume`
+- Una CLI disponible como fallback operativo (`barrits` y `brt`)
+
+## Requisitos de runtime
+
+| Runtime | Versión mínima |
+| :--- | :--- |
+| Node.js | 18.x o posterior |
+| Deno | 1.40 o posterior |
+| Bun | 1.0 o posterior |
+
+## Cuando también se necesita Deno
+
+Si se va a validar publicación JSR o consumo Deno, se requiere Deno instalado en la máquina. No es un requisito universal para todos los consumidores, sino específico para esa superficie.
+
+---
+
+[← Índice](00_indice.md) | [Primeros Pasos →](02_primeros-pasos.md)

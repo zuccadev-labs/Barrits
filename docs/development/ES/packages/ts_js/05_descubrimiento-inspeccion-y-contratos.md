@@ -1,76 +1,49 @@
-# 05 Descubrimiento, inspeccion y contratos de ts_js
+# 05 Descubrimiento, inspección y contratos de ts_js
 
-Discovery, inspection, manifest y snapshot se mantienen como un solo sistema coherente. Cada adapter o bundler debe consumir el mismo contrato operativo, sin reinterpretar la estructura del consumidor.
+Los subsistemas de descubrimiento (discovery), inspección (inspection), manifests y snapshots operan como un ecosistema unificado. Cada adaptador o plugin de construcción consume el mismo contrato operativo para garantizar la coherencia del comportamiento independientemente del entorno.
 
-## Como pienso discovery
+## Filosofía del Flujo de Descubrimiento
 
-La localizacion de `barrits/` sigue un orden estable:
+La localización del directorio de dominio `barrits/` sigue un orden de resolución determinista para evitar ambigüedades:
 
-1. si la ruta actual ya es `barrits/`, se usa
-2. si el directorio actual contiene `barrits/`, se usa
-3. si un ancestro contiene `barrits/`, se usa
-4. si no existe coincidencia, se busca en descendencia con profundidad limitada
+1.  **Contexto Actual**: Se valida si la ruta de ejecución ya se encuentra dentro de `barrits/`.
+2.  **Contención Inmediata**: Se verifica si el directorio actual contiene una carpeta `barrits/`.
+3.  **Jerarquía Ascendente**: Se inspeccionan los directorios superiores en busca de la carpeta de dominio.
+4.  **Búsqueda Prospectiva**: En ausencia de coincidencias previas, se realiza una búsqueda descendente con profundidad controlada.
 
-## Como pienso inspection
+## Metodología de Inspección y Análisis
 
-`info` e `inspectBarritsIntegrations()` releen el estado real del consumidor y proyectan:
+Las herramientas de análisis (`info` e `inspectBarritsIntegrations()`) consolidan el estado real del proyecto consumidor para proyectar un grafo técnico detallado que incluye:
 
-- dominios
-- barrels
-- exports
-- kinds de archivo
-- actions de import
-- traits declarativos y `traitDiagnostics`
+- Estructura de dominios y archivos.
+- Definición de barrels y exportaciones públicas.
+- Metadatos de visibilidad y tipos de archivos.
+- Acciones de importación gestionadas.
+- Metodología declarativa de **Traits** y sus respectivos diagnósticos técnicos.
 
-Tambien se mantienen filtros repetibles para inspeccion puntual, por ejemplo por dominio, export, kind de archivo o visibilidad. Esto permite proyectar el mismo grafo sobre un subconjunto sin cambiar el motor base.
+El sistema permite aplicar filtros sobre este grafo (por dominio, visibilidad o tipo de exportación) para realizar inspecciones quirúrgicas sin necesidad de modificar el motor central.
 
-## Como trato traits y diagnosticos
+## Gestión de Traits y Diagnósticos de Integridad
 
-Cuando la inspeccion detecta metadata declarativa de traits, esa informacion se proyecta tanto a salida humana como a contratos JSON.
+Cuando la fase de inspección detecta metadatos declarativos de Traits, la información se procesa para su consumo tanto en interfaces humanas como en contratos serializados (JSON). El reporte de integridad incluye:
 
-Eso incluye:
+- Descriptores de Traits detectados.
+- Análisis de desviación (drift) entre la documentación JSDoc y el contrato en tiempo de ejecución.
+- Clasificación de errores en categorías operativas: `drift`, `impossible` y `non-verifiable`.
 
-- descriptors detectados
-- drift entre metadata JSDoc y contrato runtime
-- categorias como `drift`, `impossible` y `non-verifiable`
-- agregados que luego puede consumir `@zuccadev-labs/barrits/consume`
+## Estándares de Documentación y Contratos JSDoc
 
-## Contratos JSDoc para traits y API publica
+La superficie pública y los contratos de Traits se documentan siguiendo estrictas normas de JSDoc para asegurar una semántica estable. Las reglas obligatorias incluyen la declaración de propósito, parámetros, retornos y excepciones mediante `@throws`.
 
-Las funciones publicas y contratos de traits se documentan con JSDoc para mantener semantica estable y verificable.
+### Tags Declarativos de Barrits
 
-Reglas operativas:
+Se emplean etiquetas especializadas para la orquestación, tales como `@barrits-trait`, `@barrits-requires`, `@barrits-provides`, entre otros, asegurando que la normalización de estos metadatos sea resistente a cambios de formato.
 
-- funciones exportadas deben declarar proposito, parametros y retorno
-- funciones con errores de contrato deben declarar `@throws`
-- los descriptors declarativos de traits usan tags `@barrits-*`
-- la metadata JSDoc se normaliza con orden estable para evitar drift por formato
+## Gobernanza de Contratos Operativos
 
-Tags declarativos usados hoy:
+El sistema mantiene dos proyecciones principales para el tooling externo:
 
-- `@barrits-trait`
-- `@barrits-summary`
-- `@barrits-requires`
-- `@barrits-conflicts`
-- `@barrits-state`
-- `@barrits-consumes`
-- `@barrits-provides`
-- `@barrits-tags`
-- `@barrits-runtime`
-- `@barrits-version`
-- `@barrits-stability`
+- **`build-manifest.json`**: Orientado a pipelines de compilación y empaquetado.
+- **`watch-snapshot.json`**: Diseñado para herramientas complementarias en entornos de desarrollo activo.
 
-## Como pienso los contratos operativos
-
-Se mantienen dos contratos principales:
-
-- `build-manifest.json` para pipelines de compilacion
-- `watch-snapshot.json` para tooling o procesos vivos de desarrollo
-
-La idea es siempre la misma:
-
-1. el motor integrado mantiene el grafo real
-2. el manifest o snapshot es una proyeccion serializada de ese grafo
-3. el tooling externo consume la proyeccion y no la logica interna del watcher
-
-Cuando un proceso hijo participa del flujo, se exponen rutas operativas mediante variables como `BARRITS_BUILD_MANIFEST` y `BARRITS_WATCH_SNAPSHOT` para no obligar al host a redescubrir artefactos.
+Esta arquitectura asegura que el motor integrado mantenga la fuente de verdad del grafo, mientras que las herramientas externas consumen proyecciones serializadas, eliminando la necesidad de que los consumidores finales implementen lógica interna de descubrimiento.

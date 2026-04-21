@@ -1,40 +1,40 @@
 # 06 Bun
 
-Yo uso `packages/sdk/ts_js/examples/example-bun/` cuando quiero validar una integracion real de `@zuccadev-labs/barrits` en runtime Bun con scripts operativos y contrato package-first.
+El ejemplo `packages/sdk/ts_js/examples/example-bun/` valida la integración del SDK en el runtime de Bun, aplicando scripts operativos bajo el contrato **package-first**.
 
-## Objetivo del ejemplo
+## Objetivos del escenario de validación
 
-Este ejemplo responde tres preguntas concretas:
+Este ejemplo responde a tres requisitos fundamentales de portabilidad:
 
-- puedo ejecutar el SDK con `bun run` sin depender de Node.js como runtime principal
-- puedo mantener la capa visible del consumidor en `barrits/`
-- puedo mezclar contrato package-first, utilidades funcionales y rutas operativas en el mismo flujo
+1. Ejecución íntegra del SDK mediante `bun run` sin requerir Node.js como motor principal de ejecución.
+2. Mantenimiento de la capa de dominio visible del consumidor bajo el directorio estándar `barrits/`.
+3. Aplicación simultánea del contrato de descubrimiento, utilidades funcionales de alto rendimiento y gestión de rutas operativas en un flujo único.
 
-## APIs que cubre
+## APIs validadas en este entorno
 
-- `defineBarritsPackage`: define el consumidor Bun
-- `orderBy`: ordena registros por score
-- `movingAverage`: calcula promedio movil de la serie
-- `averageBy`: resume el promedio global
-- `topK`: recupera picos de throughput
-- `buildPath` y `parsePath`: construyen e inspeccionan rutas operativas
+- **`defineBarritsPackage`**: Establece la configuración del consumidor nativo de Bun.
+- **`orderBy` / `averageBy`**: Procesamiento de datos y resúmenes estadísticos.
+- **`movingAverage` / `topK`**: Análisis de series temporales y detección de picos operativos.
+- **`buildPath` / `parsePath`**: Construcción y auditoría de rutas de archivos operativas.
 
-## Recorrido recomendado
+## Recorrido de verificación recomendado
 
-1. correr `bun run dev` para validar la salida base
-2. revisar `src/main.ts` para entender el orden del flujo
-3. revisar `barrits/index.ts` para ver la capa visible del consumidor
-4. correr `bun run inspect` para validar inspeccion del proyecto
+1. Ejecutar `bun run dev` para validar la integridad de la salida del sistema.
+2. Inspeccionar `src/main.ts` para comprender la secuencia lógica de ejecución del orquestador.
+3. Revisar `barrits/index.ts` para auditar la configuración de la superficie visible del consumidor.
+4. Ejecutar `bun run inspect` para validar el motor de descubrimiento sobre el proyecto.
 
-## Comandos
+## Comandos disponibles
 
-- `bun run dev`
-- `bun run showcase`
-- `bun run build`
-- `bun run inspect`
+```bash
+bun run dev       # Ejecución de lógica de negocio
+bun run showcase  # Demostración de algoritmos integrados
+bun run build     # Generación de artefactos de producción
+bun run inspect   # Auditoría y discovery del proyecto
+```
 
-## Cuando me conviene este ejemplo
+## Escenarios de uso recomendados
 
-- cuando mi equipo usa Bun como runtime principal
-- cuando quiero una demo corta y funcional sin frontend
-- cuando necesito validar que la API principal del SDK sigue portable entre runtimes
+- Proyectos que han adoptado **Bun** como entorno de ejecución corporativo principal.
+- Implementaciones que requieren demostraciones funcionales rápidas y de alto rendimiento sin capa visual.
+- Auditorías de portabilidad que necesiten confirmar que la lógica del orquestador se mantiene inmutable ante el cambio de runtime.
