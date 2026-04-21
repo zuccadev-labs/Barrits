@@ -196,6 +196,11 @@ jobs:
       - name: Run tests
         run: npm test
 
+      - name: Verify identity
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN_PUBLICAR_NPM }}
+        run: npm whoami
+
       - name: Publish npm package
         working-directory: packages/sdk/ts_js
         env:
