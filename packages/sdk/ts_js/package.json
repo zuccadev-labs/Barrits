@@ -110,7 +110,7 @@
   },
   "scripts": {
     "dev": "node ../../../node_modules/tsx/dist/cli.mjs watch src/index.ts",
-    "build": "node ../../../node_modules/tsup/dist/cli-default.js",
+    "build": "node ../../../node_modules/tsup/dist/cli-default.js && node ../../../node_modules/typescript/lib/tsc.js --emitDeclarationOnly",
     "benchmark:algorithms": "node ../../../node_modules/tsx/dist/cli.mjs benchmarks/algorithms/compare-large-datasets.ts",
     "test": "node ../../../node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts",
     "typecheck": "node ../../../node_modules/typescript/lib/tsc.js --noEmit",
