@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/zuccadev-labs/Barrits/main/docs/assets/logo.png" alt="Barrits Logo" width="96" />
+<img src="https://raw.githubusercontent.com/zuccadev-labs/Barrits/main/assets/img/logo.png" alt="Barrits Logo" width="96" />
 
 # Barrits
 ### Barrels and Traits
