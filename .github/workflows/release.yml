@@ -218,7 +218,7 @@ jobs:
 
       - name: Publish JSR package
         working-directory: packages/sdk/ts_js
-        run: npx jsr publish --allow-dirty --allow-dirty --allow-dirty
+        run: npx jsr publish --allow-dirty
 
   github-release:
     needs:
