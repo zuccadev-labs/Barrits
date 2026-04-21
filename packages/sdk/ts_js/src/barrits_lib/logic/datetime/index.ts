@@ -13,9 +13,9 @@
  * - `toRelativeTime` — Locale-aware relative formatting ("2 hours ago").
  */
 
-export { toIsoString, fromIsoString, diffMs, addMs, toRelativeTime } from "./operations.ts";
+export { toIsoString, fromIsoString, diffMs, addMs, toRelativeTime } from "./operations";
 
-import { toIsoString, fromIsoString, diffMs, addMs, toRelativeTime } from "./operations.ts";
+import { toIsoString, fromIsoString, diffMs, addMs, toRelativeTime } from "./operations";
 
 /**
  * Aggregated datetime algorithm family.

@@ -1,17 +1,17 @@
-import { algorithms } from "./algorithms/index.ts";
-import { stringAlgorithms } from "./strings/index.ts";
-import { hashingAlgorithms } from "./hashing/index.ts";
-import { validationAlgorithms } from "./validation/index.ts";
-import { datetimeAlgorithms } from "./datetime/index.ts";
-import { resilienceAlgorithms } from "./resilience/index.ts";
+import { algorithms } from "./algorithms/index";
+import { stringAlgorithms } from "./strings/index";
+import { hashingAlgorithms } from "./hashing/index";
+import { validationAlgorithms } from "./validation/index";
+import { datetimeAlgorithms } from "./datetime/index";
+import { resilienceAlgorithms } from "./resilience/index";
 
-export { algorithms } from "./algorithms/index.ts";
-export { accentInsensitiveRegex, capitalize, capitalizeWords, slugify, stringAlgorithms, truncate } from "./strings/index.ts";
-export { hashingAlgorithms, sha256Hex, murmurHash3, deterministicStringify } from "./hashing/index.ts";
-export { validationAlgorithms, isEmail, isUrl, isUuid, isIsoDate, isIpAddress, assertNonNullish } from "./validation/index.ts";
-export { datetimeAlgorithms, toIsoString, fromIsoString, diffMs, addMs, toRelativeTime } from "./datetime/index.ts";
-export { resilienceAlgorithms, retryWithBackoff, withTimeout, createCircuitBreaker } from "./resilience/index.ts";
-export type { RetryOptions, CircuitBreakerOptions, CircuitBreaker } from "./resilience/index.ts";
+export { algorithms } from "./algorithms/index";
+export { accentInsensitiveRegex, capitalize, capitalizeWords, slugify, stringAlgorithms, truncate } from "./strings/index";
+export { hashingAlgorithms, sha256Hex, murmurHash3, deterministicStringify } from "./hashing/index";
+export { validationAlgorithms, isEmail, isUrl, isUuid, isIsoDate, isIpAddress, assertNonNullish } from "./validation/index";
+export { datetimeAlgorithms, toIsoString, fromIsoString, diffMs, addMs, toRelativeTime } from "./datetime/index";
+export { resilienceAlgorithms, retryWithBackoff, withTimeout, createCircuitBreaker } from "./resilience/index";
+export type { RetryOptions, CircuitBreakerOptions, CircuitBreaker } from "./resilience/index";
 
 /**
  * Root export object for all logic algorithms and utility services.
@@ -87,7 +87,7 @@ export {
   upperBound,
   windowAlgorithms,
   windowDelta,
-} from "./algorithms/index.ts";
+} from "./algorithms/index";
 export type {
   CompareFunction,
   DrawdownPoint,
@@ -108,7 +108,7 @@ export type {
   TimeBucket,
   TimeGap,
   TimeSeriesPoint,
-} from "./algorithms/index.ts";
+} from "./algorithms/index";
 
 export const logic = {
   algorithms,
@@ -119,4 +119,4 @@ export const logic = {
   resilience: resilienceAlgorithms,
 };
 
-export * from "./arithmetic/index.ts";
+export * from "./arithmetic/index";

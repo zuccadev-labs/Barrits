@@ -12,10 +12,10 @@
  * - `createCircuitBreaker` — Three-state circuit breaker (closed/open/half-open).
  */
 
-export { retryWithBackoff, withTimeout, createCircuitBreaker } from "./patterns.ts";
-export type { RetryOptions, CircuitBreakerOptions, CircuitBreaker } from "./patterns.ts";
+export { retryWithBackoff, withTimeout, createCircuitBreaker } from "./patterns";
+export type { RetryOptions, CircuitBreakerOptions, CircuitBreaker } from "./patterns";
 
-import { retryWithBackoff, withTimeout, createCircuitBreaker } from "./patterns.ts";
+import { retryWithBackoff, withTimeout, createCircuitBreaker } from "./patterns";
 
 /**
  * Aggregated resilience pattern family.

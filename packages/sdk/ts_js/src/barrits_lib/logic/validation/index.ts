@@ -15,9 +15,9 @@
  * - `assertNonNullish` — Typed non-null assertion with traceable error messages.
  */
 
-export { isEmail, isUrl, isUuid, isIsoDate, isIpAddress, assertNonNullish } from "./validators.ts";
+export { isEmail, isUrl, isUuid, isIsoDate, isIpAddress, assertNonNullish } from "./validators";
 
-import { isEmail, isUrl, isUuid, isIsoDate, isIpAddress, assertNonNullish } from "./validators.ts";
+import { isEmail, isUrl, isUuid, isIsoDate, isIpAddress, assertNonNullish } from "./validators";
 
 /**
  * Aggregated validation algorithm family.

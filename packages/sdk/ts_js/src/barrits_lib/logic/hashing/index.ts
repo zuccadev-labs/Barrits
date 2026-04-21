@@ -14,21 +14,21 @@
 /**
  * Cryptographic SHA-256 digest for integrity verification.
  */
-export { sha256Hex } from "./sha256-hex.ts";
+export { sha256Hex } from "./sha256-hex";
 
 /**
  * Non-cryptographic 32-bit hash for partitioning and indexing.
  */
-export { murmurHash3 } from "./murmur-hash3.ts";
+export { murmurHash3 } from "./murmur-hash3";
 
 /**
  * Deterministic JSON serializer with recursive key sorting.
  */
-export { deterministicStringify } from "./deterministic-stringify.ts";
+export { deterministicStringify } from "./deterministic-stringify";
 
-import { sha256Hex } from "./sha256-hex.ts";
-import { murmurHash3 } from "./murmur-hash3.ts";
-import { deterministicStringify } from "./deterministic-stringify.ts";
+import { sha256Hex } from "./sha256-hex";
+import { murmurHash3 } from "./murmur-hash3";
+import { deterministicStringify } from "./deterministic-stringify";
 
 /**
  * Aggregated hashing and integrity algorithm family.
