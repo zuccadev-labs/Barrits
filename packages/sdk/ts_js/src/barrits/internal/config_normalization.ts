@@ -40,6 +40,8 @@ export const normalizePackageOptions = (
   manifestPath?: string;
   autoManifest: boolean;
   automationDirectory: string;
+  discoveryRoots: readonly string[];
+  traitConflictStrategy: "error" | "override" | "merge";
 } => {
   return {
     runtime: options.runtime ?? "other",
@@ -49,6 +51,8 @@ export const normalizePackageOptions = (
     manifestPath: options.manifestPath,
     autoManifest: options.autoManifest ?? true,
     automationDirectory: normalizeAutomationDirectory(options.automationDirectory),
+    discoveryRoots: options.discoveryRoots ?? [],
+    traitConflictStrategy: options.traitConflictStrategy ?? "error",
   };
 };
 

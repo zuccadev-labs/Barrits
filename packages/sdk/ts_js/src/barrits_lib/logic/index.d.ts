@@ -80,4 +80,9 @@ export declare const logic: {
         readonly truncate: (input: string, maxLength: number, ellipsis?: string) => string;
     };
 };
+export { hashingAlgorithms, sha256Hex, murmurHash3, deterministicStringify } from "./hashing";
+export { validationAlgorithms, isEmail, isUrl, isUuid, isIsoDate, isIpAddress, assertNonNullish } from "./validation";
+export { datetimeAlgorithms, toIsoString, fromIsoString, diffMs, addMs, toRelativeTime } from "./datetime";
+export { resilienceAlgorithms, retryWithBackoff, withTimeout, createCircuitBreaker } from "./resilience";
+export type { RetryOptions, CircuitBreakerOptions, CircuitBreaker } from "./resilience";
 export * from "./arithmetic";

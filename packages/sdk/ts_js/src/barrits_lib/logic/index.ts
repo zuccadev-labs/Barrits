@@ -1,8 +1,39 @@
-import { algorithms } from "./algorithms";
-import { stringAlgorithms } from "./strings";
+import { algorithms } from "./algorithms/index.ts";
+import { stringAlgorithms } from "./strings/index.ts";
+import { hashingAlgorithms } from "./hashing/index.ts";
+import { validationAlgorithms } from "./validation/index.ts";
+import { datetimeAlgorithms } from "./datetime/index.ts";
+import { resilienceAlgorithms } from "./resilience/index.ts";
 
-export { algorithms } from "./algorithms";
-export { accentInsensitiveRegex, capitalize, capitalizeWords, slugify, stringAlgorithms, truncate } from "./strings";
+export { algorithms } from "./algorithms/index.ts";
+export { accentInsensitiveRegex, capitalize, capitalizeWords, slugify, stringAlgorithms, truncate } from "./strings/index.ts";
+export { hashingAlgorithms, sha256Hex, murmurHash3, deterministicStringify } from "./hashing/index.ts";
+export { validationAlgorithms, isEmail, isUrl, isUuid, isIsoDate, isIpAddress, assertNonNullish } from "./validation/index.ts";
+export { datetimeAlgorithms, toIsoString, fromIsoString, diffMs, addMs, toRelativeTime } from "./datetime/index.ts";
+export { resilienceAlgorithms, retryWithBackoff, withTimeout, createCircuitBreaker } from "./resilience/index.ts";
+export type { RetryOptions, CircuitBreakerOptions, CircuitBreaker } from "./resilience/index.ts";
+
+/**
+ * Root export object for all logic algorithms and utility services.
+ *
+ * This namespace aggregates every algorithm family in the Barrits standard
+ * library, providing a single entry point for discovery and consumption.
+ */
+export const BarritsLogic = {
+  /** Computational algorithms collection (aggregate, graph, search, sort, timeseries, window). */
+  algorithms,
+  /** String manipulation services (capitalize, slugify, truncate, accent-insensitive). */
+  strings: stringAlgorithms,
+  /** Hashing and integrity services (SHA-256, MurmurHash3, deterministic JSON). */
+  hashing: hashingAlgorithms,
+  /** Validation and assertion guards (email, URL, UUID, ISO date, IP address). */
+  validation: validationAlgorithms,
+  /** Date and time manipulation (ISO 8601 serialize/parse, diff, add, relative). */
+  datetime: datetimeAlgorithms,
+  /** Resilience patterns (retry with backoff, timeout, circuit breaker). */
+  resilience: resilienceAlgorithms,
+};
+
 export {
   aggregateAlgorithms,
   averageBy,
@@ -56,7 +87,7 @@ export {
   upperBound,
   windowAlgorithms,
   windowDelta,
-} from "./algorithms";
+} from "./algorithms/index.ts";
 export type {
   CompareFunction,
   DrawdownPoint,
@@ -77,11 +108,15 @@ export type {
   TimeBucket,
   TimeGap,
   TimeSeriesPoint,
-} from "./algorithms";
+} from "./algorithms/index.ts";
 
 export const logic = {
   algorithms,
   strings: stringAlgorithms,
+  hashing: hashingAlgorithms,
+  validation: validationAlgorithms,
+  datetime: datetimeAlgorithms,
+  resilience: resilienceAlgorithms,
 };
 
-export * from "./arithmetic";
+export * from "./arithmetic/index.ts";

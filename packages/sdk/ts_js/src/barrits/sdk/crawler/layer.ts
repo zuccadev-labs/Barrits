@@ -112,6 +112,7 @@ export const inspectFile = async (
 };
 
 export type InspectedLayer = {
+  readonly sourceLayer: BarritsSourceLayer;
   readonly rootFiles: readonly BarritsFileIntegration[];
   readonly domains: readonly BarritsDomainIntegration[];
   readonly files: readonly BarritsFileIntegration[];
@@ -120,7 +121,11 @@ export type InspectedLayer = {
 /**
  * Validates, structures and builds the domain layers mapping domains systematically.
  */
-export const buildLayer = (directory: string, files: readonly BarritsFileIntegration[]): InspectedLayer => {
+export const buildLayer = (
+  directory: string,
+  files: readonly BarritsFileIntegration[],
+  sourceLayer: BarritsSourceLayer,
+): InspectedLayer => {
   const domainsMap = new Map<string, { path: string; files: BarritsFileIntegration[] }>();
   const rootFiles: BarritsFileIntegration[] = [];
 
@@ -167,6 +172,7 @@ export const buildLayer = (directory: string, files: readonly BarritsFileIntegra
         }),
       })),
     files,
+    sourceLayer,
   };
 };
 
@@ -180,6 +186,7 @@ export const inspectLayer = async (
 ): Promise<InspectedLayer> => {
   if (!directory) {
     return {
+      sourceLayer,
       rootFiles: [],
       domains: [],
       files: [],
@@ -191,5 +198,5 @@ export const inspectLayer = async (
     files.map((filePath) => inspectFile(adapter, directory, filePath, sourceLayer)),
   );
 
-  return buildLayer(directory, inspectedFiles);
+  return buildLayer(directory, inspectedFiles, sourceLayer);
 };

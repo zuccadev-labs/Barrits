@@ -385,6 +385,9 @@ const parseBuildManifestPayload = (source: string): BarritsBuildManifest => {
     internalExportsCount: expectNumber(record.internalExportsCount, "barrits build manifest", "internalExportsCount"),
     barrelsCount: expectNumber(record.barrelsCount, "barrits build manifest", "barrelsCount"),
     domains: expectStringArray(record.domains, "barrits build manifest", "domains"),
+    discoveryRoots: expectOptionalArray(record.discoveryRoots, "barrits build manifest", "discoveryRoots", (entry, index) => 
+      expectString(entry, "barrits build manifest", `discoveryRoots[${index}]`)
+    ) ?? [],
     traitDescriptors: expectOptionalArray(record.traitDescriptors, "barrits build manifest", "traitDescriptors", (entry, index) =>
       expectTraitDescriptor(entry, "barrits build manifest", `traitDescriptors[${index}]`),
     ) ?? [],
@@ -412,6 +415,9 @@ const parseWatchSnapshotPayload = (source: string): BarritsWatchSnapshot => {
     barritsDirectory: expectString(graph.barritsDirectory, "barrits watch snapshot", "graph.barritsDirectory"),
     projectRoot: expectString(graph.projectRoot, "barrits watch snapshot", "graph.projectRoot"),
     strategy: expectEnumValue(graph.strategy, DISCOVERY_STRATEGIES, "barrits watch snapshot", "graph.strategy", "valid BarritsDiscoveryStrategy"),
+    discoveryRoots: expectOptionalArray(graph.discoveryRoots, "barrits watch snapshot", "graph.discoveryRoots", (entry, index) => 
+      expectString(entry, "barrits watch snapshot", `graph.discoveryRoots[${index}]`)
+    ) ?? [],
     rootFiles: expectOptionalArray(graph.rootFiles, "barrits watch snapshot", "graph.rootFiles", (entry, index) =>
       expectFileIntegration(entry, "barrits watch snapshot", `graph.rootFiles[${index}]`),
     ) ?? [],
