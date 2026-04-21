@@ -1,7 +1,7 @@
 {
   "name": "@zuccadev-labs/barrits",
-  "version": "0.1.4",
-  "description": "Package-first functional automation for barrits/ domains, manifests and live watch flows.",
+  "version": "0.1.5",
+  "description": "Industrial-grade plugin orchestration for unified AST and filesystem transformations.",
   "license": "MIT",
   "author": "David Euclides Zuccarini Barrueta (devzucca / zuccadev)",
   "homepage": "https://github.com/zuccadev-labs/Barrits/tree/main/packages/sdk/ts_js",
