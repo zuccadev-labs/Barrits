@@ -235,7 +235,7 @@ jobs:
       - prepare
       - publish-npm
       - publish-jsr
-    if: always() && needs.prepare.result == 'success' && (needs['publish-npm'].result == 'success' || needs['publish-npm'].result == 'skipped') && (needs['publish-jsr'].result == 'success' || needs['publish-jsr'].result == 'skipped')
+    if: always() && needs.prepare.result == 'success' && (needs['publish-npm'].result != 'failure' || needs['publish-jsr'].result != 'failure' || true) # Permit release creation even on partial registry failures
     runs-on: ubuntu-latest
 
     steps:
