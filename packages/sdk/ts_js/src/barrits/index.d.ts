@@ -13,3 +13,9 @@ export * from "./api";
  * [ES] Re-exporta los ayudantes de configuración de paquetes y los tipos de tiempo de ejecución relacionados.
  */
 export * from "./package";
+/**
+ * [EN] Re-exports industrial platform adapters and telemetry services.
+ * [ES] Re-exporta los adaptadores de plataforma industrial y servicios de telemetría.
+ */
+export * from "./sdk/adapters";
+export * from "./sdk/logger";

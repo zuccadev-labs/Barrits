@@ -22,13 +22,25 @@ export type { DrawdownPoint, TimeBucket, TimeGap, TimeSeriesPoint } from "./time
 export { movingAverage, rollingSum, slidingWindow, windowAlgorithms, windowDelta } from "./window";
 export type { SortDirection } from "./internal/compare";
 
+/**
+ * [EN] Unified collection of all logic algorithms available in the Barrits SDK.
+ * [ES] Colección unificada de todos los algoritmos de lógica disponibles en el SDK de Barrits.
+ */
 export const algorithms = {
+  /** [EN] Statistical aggregation. [ES] Agregación estadística. */
   aggregate: aggregateAlgorithms,
+  /** [EN] Functional collection helpers. [ES] Ayudantes de colecciones funcionales. */
   collection: collectionAlgorithms,
+  /** [EN] Graph theory algorithms. [ES] Algoritmos de teoría de grafos. */
   graph: graphAlgorithms,
+  /** [EN] Searching algorithms. [ES] Algoritmos de búsqueda. */
   search: searchAlgorithms,
+  /** [EN] Selection and partitioning. [ES] Selección y partición. */
   selection: selectionAlgorithms,
+  /** [EN] Sorting and ordering. [ES] Ordenamiento y clasificación. */
   sort: sortAlgorithms,
+  /** [EN] Time-series analysis. [ES] Análisis de series temporales. */
   timeseries: timeSeriesAlgorithms,
+  /** [EN] Windowing operations. [ES] Operaciones de ventana. */
   window: windowAlgorithms,
 };
