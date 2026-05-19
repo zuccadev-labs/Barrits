@@ -2,32 +2,17 @@
 
 Todos los cambios relevantes de este repositorio se documentan aqui.
 
-El formato sigue la idea de Keep a Changelog y el versionado esperado del SDK activo sigue SemVer.
-
-## [0.1.2] - 2026-04-20
+## [0.1.5] - 2026-05-19
 
 ### Added
-- **Industrialización de Lógica Core**: Delegación de la normalización de configuración a servicios internos (`config_normalization.ts`) bajo SRP.
-- **Mesh Documental Enterprise**: Unificación bilingüe (ES/EN) en todos los dominios (`users`, `development`, `investigations`, `package`).
-- **Certificación de Tono Corporativo**: Cumplimiento del 100% en tono formal de tercera persona en toda la suite documental.
-- **Esquema de Configuración Experto**: Adición de referencia completa de propiedades y recomendaciones arquitectónicas para `barrits.config.ts`.
-- **Patrones de Integración Avanzada**: Documentación de estrategias de aislamiento en Monorepos, Inyección de Dependencias y gobernanza de CI/CD.
-- **Seguridad e Integridad**: Corrección de `ignoreDeprecations` en `tsconfig.json` y aseguramiento de estructuras de manifiesto preparadas para checksums.
+- context7.json for improved static analysis benchmark
+- Automatic trait discovery documentation added to all example READMEs ("How it works" section) explaining trait discovery, dependency graph, validation, composition, dependency injection, and immutability guarantees.
+- Enterprise-grade code quality tools: husky, lint-staged, prettier, eslint with pre-commit hook.
+- Enhanced security workflow with detailed npm audit reporting, SBOM generation, and basic secret scanning.
+- Comprehensive API reference for traits and composition (09d-api-reference-traits-and-composition.md).
+- CONTRIBUTING.md and CODEOWNERS files for governance.
+- ADR 0001 documenting conventional commits and lint-staged implementation.
 
-## [0.1.1] - 2026-04-20
-
-### Added
-
-- Aprobación al 100% de la versión Release. Evolución estable desde la ruta de pre-releases (rc.4), implementando Orquestación, Clean Code y SRP.
-
-## [0.1.0-rc.4] - 2026-04-20
-
-### Added in 0.1.0-rc.4
-
-- **AST Incremental Caching a 0ms**: Eliminación absoluta del cuello de botella en recolección de metadatos para proyectos en watch/build modes.
-- **Desacoplamiento SRP Estricto**: División del monolito `inspect.ts` en dominios ultra-especializados (`ast/cache`, `ast/extractor`, `ast/traits`, `graph/collisions`).
-- **Data Contract Checksums**: Integración de sellos de seguridad hash transaccionales en `BuildManifest` para repeler degeneración estructural del código.
-- **Auditoría Multi-Lenguaje**: Preparación de librerías utilitarias internas (como lógica y matemáticas) mantenibles bajo un patrón *Core vs Lib*, sirviendo como fundamentos extensibles para nuevos lenguajes y constructos.
 
 ### Changed in 0.1.0-rc.4
 
