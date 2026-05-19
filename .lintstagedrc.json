@@ -1,0 +1,9 @@
+{
+  "*.{js,ts,tsx,json,md}": [
+    "prettier --write",
+    "eslint --fix"
+  ],
+  "package*.json": [
+    "npm test"
+  ]
+}

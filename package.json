@@ -25,10 +25,15 @@
     "benchmark:algorithms": "npm run benchmark:algorithms --workspace @zuccadev-labs/barrits",
     "publish:jsr:dry-run": "npm run publish:jsr:dry-run --workspace @zuccadev-labs/barrits",
     "barrits:dev": "npm run barrits:dev --workspace @zuccadev-labs/barrits",
-    "barrits:build": "npm run barrits:build --workspace @zuccadev-labs/barrits"
+    "barrits:build": "npm run barrits:build --workspace @zuccadev-labs/barrits",
+    "prepare": "husky install"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
-    "@vitejs/plugin-react": "^6.0.1"
+    "@sveltejs/vite-plugin-svelte": "^7.1.2",
+    "@vitejs/plugin-react": "^6.0.2",
+    "eslint": "^10.4.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^17.0.5",
+    "prettier": "^3.8.3"
   }
 }

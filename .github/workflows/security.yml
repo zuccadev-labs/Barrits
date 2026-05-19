@@ -67,7 +67,7 @@ jobs:
 
       - name: Dependency review
         if: needs.dependency-review-support.outputs.supported == 'true'
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
 
   npm-audit:
     runs-on: ubuntu-latest

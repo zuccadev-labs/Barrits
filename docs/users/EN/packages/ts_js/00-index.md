@@ -1,9 +1,8 @@
-# User Guide — @zuccadev-labs/barrits (ts_js)
+# User Guide - @zuccadev-labs/barrits (ts_js)
 
 This index lists all user-facing documentation for the TypeScript and JavaScript SDK in reading order.
 
 ---
-
 ## Reading Order
 
 | # | Document | Purpose |
@@ -16,12 +15,12 @@ This index lists all user-facing documentation for the TypeScript and JavaScript
 | 06 | [Commands and Runtimes](06-commands-and-runtimes.md) | CLI usage for Node.js and Deno |
 | 07 | [Manifests, Bundlers, and Consumption](07-manifests-bundlers-and-consumption.md) | Reading artifacts and integrating with bundlers |
 | 08 | [Traits and Composition](08-traits-and-composition.md) | Declarative trait descriptors and pipeline composition |
-| 09 | [API Reference — Package Config](09a-api-reference-package-config.md) | `defineBarritsPackage`, `defineBarritsConfig`, etc. |
-| 09b | [API Reference — Algorithms](09b-api-reference-algorithms.md) | Collections, search, sort, time series, graphs |
-| 09c | [API Reference — Consume and Adapters](09c-api-reference-consume-and-adapters.md) | Manifest readers, Node/Deno adapters, bundler plugins |
+| 09 | [API Reference - Package Config](09a-api-reference-package-config.md) | `defineBarritsPackage`, `defineBarritsConfig`, etc. |
+| 09b | [API Reference - Algorithms](09b-api-reference-algorithms.md) | Collections, search, sort, time series, graphs |
+| 09c | [API Reference - Consume and Adapters](09c-api-reference-consume-and-adapters.md) | Manifest readers, Node/Deno adapters, bundler plugins |
+| 09d | [API Reference - Traits and Composition](09d-api-reference-traits-and-composition.md) | Trait descriptors, composition, and advanced typing |
 
 ---
-
 ## Examples Index
 
 - [Examples Overview](examples/00-index.md)
