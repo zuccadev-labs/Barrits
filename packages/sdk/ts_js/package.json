@@ -1,6 +1,6 @@
 {
   "name": "@zuccadev-labs/barrits",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Industrial-grade plugin orchestration for unified AST and filesystem transformations.",
   "license": "MIT",
   "author": "David Euclides Zuccarini Barrueta (devzucca / zuccadev)",
