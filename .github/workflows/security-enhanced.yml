@@ -1,0 +1,142 @@
+name: Security Enhanced
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  schedule:
+    - cron: '0 3 * * 0'  # Weekly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # For dependency graph
+  id-token: write
+  attestations: write
+  security-events: write
+
+jobs:
+  # Existing dependency review (kept for compatibility)
+  dependency-review:
+    uses: ./.github/workflows/security.yml
+    
+  # Additional security checks
+  npm-audit-enhanced:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run npm audit with detailed reporting
+        run: npm audit --json > audit-report.json
+        
+      - name: Create audit report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: audit-report.json
+          
+      - name: Fail on high severity vulnerabilities
+        run: |
+          echo "Checking for high severity vulnerabilities..."
+          HIGH_COUNT=$(jq '.metadata.vulnerabilities.high' audit-report.json)
+          if [ "$HIGH_COUNT" -gt 0 ]; then
+            echo "Found $HIGH_COUNT high severity vulnerabilities"
+            exit 1
+          fi
+          echo "No high severity vulnerabilities found"
+          
+  # SBOM generation and verification
+  sbom:
+    runs-on: ubuntu-latest
+    needs: [npm-audit-enhanced]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Generate SBOM
+        run: |
+          npm install -g @cyclonedx/bom
+          cyclonedx-bom -o bom.xml --output-format xml
+          
+      - name: SBOM as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: software-bill-of-materials
+          path: bom.xml
+          
+      - name: Verify SBOM
+        run: |
+          echo "SBOM generated successfully"
+          wc -l bom.xml
+          
+  # Secret scanning (basic implementation)
+  secret-scanning:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v6
+      
+      - name: Install git-secrets
+        run: |
+          # Install git-secrets for secret scanning
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            sudo apt-get update && sudo apt-get install -y git-secrets
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            brew install git-secrets
+          fi
+          
+      - name: Scan for secrets
+        id: secret_scan
+        run: |
+          # Initialize git-secrets with AWS patterns (can be extended)
+          git secrets --register-aws --global
+          # Add custom patterns for common secrets
+          git secrets --add --global --literal "barrits_" 2>/dev/null || true
+          # Scan repository
+          if git secrets --scan-history; then
+            echo "No secrets found in history"
+            echo "secrets_found=false" >> $GITHUB_OUTPUT
+          else
+            echo "Potential secrets detected!"
+            echo "secrets_found=true" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+        continue-on-error: true
+        
+      - name: Fail if secrets found
+        if: steps.secret_scan.outputs.secrets_found == 'true'
+        run: |
+          echo "Secret scanning failed - potential credentials detected"
+          exit 1
+          
+  # Security summary
+  security-summary:
+    needs: [npm-audit-enhanced, sbom, secret-scanning]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Collect security results
+        run: |
+          echo "Security check completed for ${{ github.sha }}"
+          echo "Results available in workflow artifacts"
