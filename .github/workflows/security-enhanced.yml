@@ -133,9 +133,7 @@ jobs:
         run: npm ci
 
       - name: Generate SBOM
-        run: |
-          npm install -g @cyclonedx/bom
-          cyclonedx-bom -o bom.xml --output-format xml
+        run: npx --yes @cyclonedx/cyclonedx-npm --output-format XML --output-file bom.xml
 
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
