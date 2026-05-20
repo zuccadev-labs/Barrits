@@ -110,6 +110,10 @@ export type {
   TimeSeriesPoint,
 } from "./algorithms/index";
 
+/**
+ * [EN] Implementation of Logic.
+ * [ES] Implementación de Logic.
+ */
 export const logic = {
   algorithms,
   strings: stringAlgorithms,

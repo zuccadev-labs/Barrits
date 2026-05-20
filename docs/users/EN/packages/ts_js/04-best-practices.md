@@ -1,3 +1,8 @@
+---
+title: "Best Practices"
+description: "Corporate documentation for Best Practices."
+---
+
 # Best Practices
 
 This document describes patterns and conventions that preserve the package-first contract and prevent common integration drift.

@@ -12,6 +12,8 @@ export default defineConfig({
     "adapters/node/cli.ts",
     "adapters/deno/mod.ts",
     "adapters/deno/cli.ts",
+    "src/barrits/ioc/index.ts",
+    "src/barrits/schema/openapi.ts",
   ],
   format: ["esm", "cjs"],
   dts: false,

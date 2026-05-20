@@ -40,14 +40,14 @@ jobs:
         shell: pwsh
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup npm
         run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 24
       - name: Resolve release context
@@ -144,7 +144,7 @@ jobs:
         shell: pwsh
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
@@ -152,7 +152,7 @@ jobs:
       - name: Setup npm
         run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
@@ -170,9 +170,21 @@ jobs:
         run: npm test
       - name: Publish npm package
         working-directory: packages/sdk/ts_js
+        run: |
+          $version = "${{ needs.prepare.outputs.release_version }}"
+          $distTag = "${{ needs.prepare.outputs.npm_dist_tag }}"
+          $packageName = node -p "require('./package.json').name"
 
+          # Check if this exact version already exists on npm
+          $existingVersions = npm view "$packageName" versions --json 2>$null | ConvertFrom-Json
+          $alreadyPublished = $existingVersions -contains $version
 
-        run: npm publish --access public --provenance --tag ${{ needs.prepare.outputs.npm_dist_tag }}
+          if ($alreadyPublished) {
+            Write-Host "::warning::Version $version already exists on npm (likely published by a prerelease). GitHub Actions provenance cannot promote dist-tags automatically. Please run manually locally: npm dist-tag add ${packageName}@${version} ${distTag}"
+          } else {
+            Write-Host "Publishing $packageName@$version with dist-tag '$distTag'."
+            npm publish --access public --provenance --tag $distTag
+          }
   publish-jsr:
     needs: prepare
     if: github.event_name != 'workflow_dispatch' || inputs.publish_jsr
@@ -183,7 +195,7 @@ jobs:
         shell: pwsh
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
@@ -191,7 +203,7 @@ jobs:
       - name: Setup npm
         run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
@@ -212,7 +224,7 @@ jobs:
       - prepare
       - publish-npm
       - publish-jsr
-    if: always() && needs.prepare.result == 'success' && (needs['publish-npm'].result != 'failure' || needs['publish-jsr'].result != 'failure' || true)
+    if: always() && needs.prepare.result == 'success' && needs['publish-npm'].result == 'success' && needs['publish-jsr'].result == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Create GitHub release

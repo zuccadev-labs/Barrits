@@ -4,6 +4,10 @@ import { dirname } from "node:path";
 import type { BarritsBuildManifest } from "../sdk";
 import { createManifestModuleSource } from "./shared";
 
+/**
+ * [EN] Implementation of Ensure manifest module file.
+ * [ES] Implementación de Ensure manifest module file.
+ */
 export const ensureManifestModuleFile = async (
   filePath: string,
   manifest: BarritsBuildManifest | null,

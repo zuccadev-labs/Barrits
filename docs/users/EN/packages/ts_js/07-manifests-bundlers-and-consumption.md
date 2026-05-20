@@ -1,3 +1,8 @@
+---
+title: "Manifests, Bundlers, and Consumption"
+description: "Corporate documentation for Manifests, Bundlers, and Consumption."
+---
+
 # Manifests, Bundlers, and Consumption
 
 Barrits uses manifests and snapshots as first-class contracts between the discovery engine and external tooling. This eliminates the need to reimplement discovery inside every bundler or backend integration.

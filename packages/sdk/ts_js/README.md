@@ -21,6 +21,9 @@
 
 `@zuccadev-labs/barrits` is a deterministic orchestration engine built on the **Single Responsibility Principle (SRP)**. It provides an AST-level discovery graph, predictive module resolution, sealed build manifests (SHA-256), and strongly-typed Domain APIs — fully agnostic of runtime and framework.
 
+> [!NOTE]
+> **The LLM-Optimized Foundation for Deno BaaS:** Barrits is designed to minimize friction for AI-driven code generation. By leveraging static AST analysis and declarative traits (`@barrits-consumes`, `@barrits-provides`), it allows Large Language Models (LLMs) to understand, orchestrate, and generate complex backend logic, Inversion of Control (IoC), and API Schemas (OpenAPI/GraphQL) without hallucinating implementations.
+
 ### Installation
 
 **npm** (Node.js, Bun, browser bundlers)
@@ -147,6 +150,9 @@ export const authTrait = createTraitDescriptor({
 
 `@zuccadev-labs/barrits` es un motor de orquestación determinístico construido sobre el **Principio de Responsabilidad Única (SRP)**. Provee un grafo de descubrimiento a nivel de AST, resolución predictiva de módulos, manifests de build sellados (SHA-256) y Domain APIs fuertemente tipadas — completamente agnósticas del runtime y el framework.
 
+> [!NOTE]
+> **Fundación Optimizada para LLMs (Deno BaaS):** Barrits está diseñado para simplificar drásticamente la generación de código mediante Inteligencia Artificial. Al utilizar análisis AST estático y Traits declarativos (`@barrits-consumes`, `@barrits-provides`), permite a un LLM entender, orquestar y generar lógica de backend compleja, Inversión de Control (IoC) y Esquemas de API (OpenAPI/GraphQL) minimizando drásticamente las alucinaciones.
+
 ### Instalación
 
 **npm** (Node.js, Bun, bundlers de browser)
@@ -235,9 +241,10 @@ export const authTrait = createTraitDescriptor({
 ### Documentación
 
 - [Guía de Usuario (ES)](https://github.com/zuccadev-labs/Barrits/tree/main/docs/users/ES/packages/ts_js)
-- [Referencia de API — Configuración](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/ES/packages/ts_js/09a_referencia-de-api-configuracion.md)
-- [Referencia de API — Algoritmos](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/ES/packages/ts_js/09b_referencia-de-api-algoritmos.md)
-- [Referencia de API — Consume y Adapters](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/ES/packages/ts_js/09c_referencia-de-api-consume-y-adapters.md)
+- [Referencia de API — Configuración](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/ES/packages/ts_js/09a-referencia-de-api-configuracion.md)
+- [Referencia de API — Algoritmos](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/ES/packages/ts_js/09b-referencia-de-api-algoritmos.md)
+- [Referencia de API — Consume y Adapters](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/ES/packages/ts_js/09c-referencia-de-api-consume-y-adapters.md)
+- [Referencia de API — Traits y Composición](https://github.com/zuccadev-labs/Barrits/blob/main/docs/users/ES/packages/ts_js/09d-referencia-de-api-traits-y-composicion.md)
 - [Ejemplos](https://github.com/zuccadev-labs/Barrits/tree/main/packages/sdk/ts_js/examples)
 
 ---

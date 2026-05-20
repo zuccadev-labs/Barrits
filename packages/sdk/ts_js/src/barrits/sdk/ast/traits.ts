@@ -9,6 +9,10 @@ import type {
 } from "../contracts";
 import type { BarritsTraitContractConfig } from "../../config";
 
+/**
+ * [EN] Type definition for ExportedTraitBinding.
+ * [ES] Definición de tipo para ExportedTraitBinding.
+ */
 export type ExportedTraitBinding = {
   readonly bindingKind: "const" | "function" | "class";
   readonly bindingName: string;
@@ -22,6 +26,10 @@ export type ExportedTraitBinding = {
   readonly runtimeState?: readonly string[];
 };
 
+/**
+ * [EN] Type definition for TraitRuntimeMetadata.
+ * [ES] Definición de tipo para TraitRuntimeMetadata.
+ */
 export type TraitRuntimeMetadata = {
   readonly conflicts?: readonly string[];
   readonly consumes?: readonly string[];
@@ -285,6 +293,10 @@ export const collectTraitDescriptorMetadata = (source: string, relativePath: str
   return descriptors.sort((left, right) => left.name.localeCompare(right.name));
 };
 
+/**
+ * [EN] Implementation of Normalize contract string array.
+ * [ES] Implementación de Normalize contract string array.
+ */
 export const normalizeContractStringArray = (values: readonly string[] | undefined): string[] => {
   if (!values?.length) {
     return [];
@@ -295,6 +307,10 @@ export const normalizeContractStringArray = (values: readonly string[] | undefin
   });
 };
 
+/**
+ * [EN] Implementation of To trait contract descriptor.
+ * [ES] Implementación de To trait contract descriptor.
+ */
 export const toTraitContractDescriptor = (contract: BarritsTraitContractConfig): BarritsTraitDescriptorInspection | null => {
   const sourceFile = normalizePath(contract.sourceFile).replace(/^\.\//u, "");
   const name = contract.name.trim();
@@ -321,6 +337,10 @@ export const toTraitContractDescriptor = (contract: BarritsTraitContractConfig):
   };
 };
 
+/**
+ * [EN] Implementation of Merge trait descriptors.
+ * [ES] Implementación de Merge trait descriptors.
+ */
 export const mergeTraitDescriptors = (
   discoveredDescriptors: readonly BarritsTraitDescriptorInspection[],
   contractDescriptors: readonly BarritsTraitDescriptorInspection[],

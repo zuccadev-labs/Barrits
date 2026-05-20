@@ -4,6 +4,10 @@ import { resolve } from "node:path";
 import { DEFAULT_AUTOMATION_DIRECTORY, resolveBarritsConfig } from "../config";
 import type { BarritsBuildManifest, RuntimeFileSystemAdapter, RuntimeFileSystemEntry } from "../sdk/contracts";
 
+/**
+ * [EN] Type definition for BarritsPackageAutomationOptions.
+ * [ES] Definición de tipo para BarritsPackageAutomationOptions.
+ */
 export type BarritsPackageAutomationOptions = {
   projectRoot?: string;
   manifestPath?: string;
@@ -78,10 +82,18 @@ const ensureAutomaticManifest = async (
   return manifest;
 };
 
+/**
+ * [EN] Implementation of Resolve manifest path.
+ * [ES] Implementación de Resolve manifest path.
+ */
 export const resolveManifestPath = (manifestPath?: string): string | undefined => {
   return manifestPath ?? process.env.BARRITS_BUILD_MANIFEST;
 };
 
+/**
+ * [EN] Implementation of Resolve package automation options.
+ * [ES] Implementación de Resolve package automation options.
+ */
 export const resolvePackageAutomationOptions = async (
   options: BarritsPackageAutomationOptions | undefined,
   fallbackProjectRoot = process.cwd(),
@@ -96,11 +108,19 @@ export const resolvePackageAutomationOptions = async (
   };
 };
 
+/**
+ * [EN] Implementation of Load manifest.
+ * [ES] Implementación de Load manifest.
+ */
 export const loadManifest = async (manifestPath: string): Promise<BarritsBuildManifest> => {
   const content = await readFile(manifestPath, "utf8");
   return JSON.parse(content) as BarritsBuildManifest;
 };
 
+/**
+ * [EN] Implementation of Load manifest or create.
+ * [ES] Implementación de Load manifest or create.
+ */
 export const loadManifestOrCreate = async (
   manifestPath: string | undefined,
   projectRoot = process.cwd(),
@@ -113,6 +133,10 @@ export const loadManifestOrCreate = async (
   return ensureAutomaticManifest(projectRoot, automationDirectory);
 };
 
+/**
+ * [EN] Implementation of Load manifest for package.
+ * [ES] Implementación de Load manifest for package.
+ */
 export const loadManifestForPackage = async (
   options: BarritsPackageAutomationOptions | undefined,
   fallbackProjectRoot = process.cwd(),
@@ -130,6 +154,10 @@ export const loadManifestForPackage = async (
   return ensureAutomaticManifest(resolvedOptions.projectRoot, resolvedOptions.automationDirectory);
 };
 
+/**
+ * [EN] Implementation of Create manifest module source.
+ * [ES] Implementación de Create manifest module source.
+ */
 export const createManifestModuleSource = (
   manifest: BarritsBuildManifest | null,
   banner: string,
@@ -139,4 +167,27 @@ export const createManifestModuleSource = (
   }
 
   return [banner, `export const manifest = ${JSON.stringify(manifest, null, 2)};`, "export default manifest;"].join("\n");
+};
+
+/**
+ * [EN] Helper to normalize base plugin options to reduce duplication.
+ * [ES] Ayudante para normalizar opciones base de plugins para reducir duplicación.
+ */
+export const createPluginBaseOptions = (options: {
+  virtualModuleId?: string;
+  manifestPath?: string;
+  package?: BarritsPackageAutomationOptions;
+  defaultVirtualModuleId: string;
+  resolvedPrefix: string;
+}) => {
+  const virtualModuleId = options.virtualModuleId ?? options.defaultVirtualModuleId;
+  const resolvedVirtualModuleId = `${options.resolvedPrefix}:${virtualModuleId}`;
+  const manifestPath = resolveManifestPath(options.manifestPath ?? options.package?.manifestPath);
+  const packageOptions: BarritsPackageAutomationOptions | undefined = options.package
+    ? { ...options.package, manifestPath }
+    : manifestPath
+      ? { manifestPath }
+      : undefined;
+
+  return { virtualModuleId, resolvedVirtualModuleId, manifestPath, packageOptions };
 };

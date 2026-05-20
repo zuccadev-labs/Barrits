@@ -201,6 +201,10 @@ export const hasExportModifier = (node: ts.Node): boolean => {
   return ts.getModifiers(node)?.some((modifier: ts.Modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword) ?? false;
 };
 
+/**
+ * [EN] Type definition for ParsedExportStatements.
+ * [ES] Definición de tipo para ParsedExportStatements.
+ */
 export type ParsedExportStatements = {
   readonly exportsMap: Map<string, BarritsFileExport>;
   readonly exportAllSpecifiers: readonly string[];
