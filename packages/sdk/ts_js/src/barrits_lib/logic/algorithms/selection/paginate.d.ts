@@ -1,7 +1,15 @@
+/**
+ * [EN] Type definition for PaginationOptions.
+ * [ES] Definición de tipo para PaginationOptions.
+ */
 export type PaginationOptions = {
     readonly page: number;
     readonly pageSize: number;
 };
+/**
+ * [EN] Type definition for PaginatedResult.
+ * [ES] Definición de tipo para PaginatedResult.
+ */
 export type PaginatedResult<Value> = {
     readonly items: Value[];
     readonly page: number;

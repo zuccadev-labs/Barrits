@@ -1,3 +1,8 @@
+---
+title: "Getting Started"
+description: "Corporate documentation for Getting Started."
+---
+
 # Getting Started
 
 This guide covers the first integration of `@zuccadev-labs/barrits` in a consumer project, walking through the four foundational APIs in the order most projects reach for them.

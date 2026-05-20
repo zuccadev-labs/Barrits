@@ -3,6 +3,10 @@ import { defaultCompare } from "../internal/compare";
 import { lowerBound } from "./lower-bound";
 import { upperBound } from "./upper-bound";
 
+/**
+ * [EN] Type definition for SortedRangeMatch.
+ * [ES] Definición de tipo para SortedRangeMatch.
+ */
 export type SortedRangeMatch = {
   readonly found: boolean;
   readonly startIndex: number;

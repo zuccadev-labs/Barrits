@@ -10,6 +10,10 @@ type RuntimeGlobals = typeof globalThis & {
   };
 };
 
+/**
+ * [EN] Implementation of Detect runtime.
+ * [ES] Implementación de Detect runtime.
+ */
 export const detectRuntime = (): RuntimeName => {
   const runtime = globalThis as RuntimeGlobals;
 
@@ -24,6 +28,10 @@ export const detectRuntime = (): RuntimeName => {
   return "unknown";
 };
 
+/**
+ * [EN] Implementation of Get current working directory.
+ * [ES] Implementación de Get current working directory.
+ */
 export const getCurrentWorkingDirectory = (): string => {
   const runtime = globalThis as RuntimeGlobals;
 

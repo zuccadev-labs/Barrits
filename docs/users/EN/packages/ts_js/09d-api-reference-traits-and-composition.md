@@ -1,3 +1,8 @@
+---
+title: "API Reference — Traits and Composition"
+description: "Corporate documentation for API Reference — Traits and Composition."
+---
+
 # API Reference — Traits and Composition
 
 This reference covers the trait-based composition system of `@zuccadev-labs/barrits`. Traits are a core concept in Barrits for defining capabilities, dependencies, and contracts between different parts of your system.

@@ -1,3 +1,7 @@
+/**
+ * [EN] Implementation of Chunk.
+ * [ES] Implementación de Chunk.
+ */
 export const chunk = <Value>(values: readonly Value[], size: number): Value[][] => {
   const chunkSize = Math.max(1, Math.floor(size));
   const chunks: Value[][] = [];

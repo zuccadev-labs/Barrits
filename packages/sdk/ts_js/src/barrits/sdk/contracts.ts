@@ -112,6 +112,10 @@ export type BarritsTraitDiagnosticSeverity = "warning" | "error";
 /** [EN] Categories for architectural diagnostics. [ES] Categorías para diagnósticos arquitectónicos. */
 export type BarritsTraitDiagnosticCategory = "drift" | "impossible" | "non-verifiable";
 
+/**
+ * [EN] Type definition for BarritsTraitDiagnosticCode.
+ * [ES] Definición de tipo para BarritsTraitDiagnosticCode.
+ */
 export type BarritsTraitDiagnosticCode =
   | "trait-duplicate-name"
   | "trait-duplicate-provides"
@@ -157,8 +161,16 @@ export type BarritsTraitDiagnosticCounts = {
   readonly warningCount: number;
 };
 
+/**
+ * [EN] Type definition for BarritsTraitDiagnosticCategoryCounts.
+ * [ES] Definición de tipo para BarritsTraitDiagnosticCategoryCounts.
+ */
 export type BarritsTraitDiagnosticCategoryCounts = Record<BarritsTraitDiagnosticCategory, number>;
 
+/**
+ * [EN] Type definition for BarritsTraitDiagnosticCodeCounts.
+ * [ES] Definición de tipo para BarritsTraitDiagnosticCodeCounts.
+ */
 export type BarritsTraitDiagnosticCodeCounts = Record<BarritsTraitDiagnosticCode, number>;
 
 /** [EN] Aggregated diagnostic metrics for a specific trait descriptor.
@@ -173,6 +185,10 @@ export type BarritsTraitDiagnosticDescriptorAggregate = {
   readonly codes: readonly BarritsTraitDiagnosticCode[];
 };
 
+/**
+ * [EN] Type definition for BarritsTraitDiagnosticAggregate.
+ * [ES] Definición de tipo para BarritsTraitDiagnosticAggregate.
+ */
 export type BarritsTraitDiagnosticAggregate = {
   readonly counts: BarritsTraitDiagnosticCounts;
   readonly byCategory: BarritsTraitDiagnosticCategoryCounts;
@@ -180,6 +196,10 @@ export type BarritsTraitDiagnosticAggregate = {
   readonly byDescriptor: readonly BarritsTraitDiagnosticDescriptorAggregate[];
 };
 
+/**
+ * [EN] Type definition for BarritsConsumedTraitDescriptor.
+ * [ES] Definición de tipo para BarritsConsumedTraitDescriptor.
+ */
 export type BarritsConsumedTraitDescriptor = {
   readonly name: string;
   readonly sourceFile: string;
@@ -196,6 +216,10 @@ export type BarritsConsumedTraitDescriptor = {
   readonly runtimes: readonly string[];
 };
 
+/**
+ * [EN] Type definition for BarritsFileIntegration.
+ * [ES] Definición de tipo para BarritsFileIntegration.
+ */
 export type BarritsFileIntegration = {
   readonly path: string;
   readonly isIndex: boolean;
@@ -253,16 +277,32 @@ export type BarritsIntegrationGraph = BarritsBaseContext & {
   readonly collisions: readonly BarritsExportCollision[];
 };
 
+/**
+ * [EN] Type definition for BarritsImportActionKind.
+ * [ES] Definición de tipo para BarritsImportActionKind.
+ */
 export type BarritsImportActionKind = "named-import" | "namespace-access" | "alias-namespace-access";
 
+/**
+ * [EN] Type definition for BarritsImportWriteMode.
+ * [ES] Definición de tipo para BarritsImportWriteMode.
+ */
 export type BarritsImportWriteMode = BarritsImportActionKind;
 
+/**
+ * [EN] Type definition for BarritsImportFilters.
+ * [ES] Definición de tipo para BarritsImportFilters.
+ */
 export type BarritsImportFilters = {
   readonly domains?: readonly string[];
   readonly exports?: readonly string[];
   readonly kinds?: readonly BarritsImportActionKind[];
 };
 
+/**
+ * [EN] Type definition for BarritsGraphFilters.
+ * [ES] Definición de tipo para BarritsGraphFilters.
+ */
 export type BarritsGraphFilters = {
   readonly domains?: readonly string[];
   readonly exports?: readonly string[];
@@ -270,6 +310,10 @@ export type BarritsGraphFilters = {
   readonly visibilities?: readonly BarritsExportVisibility[];
 };
 
+/**
+ * [EN] Type definition for BarritsSelectionFilters.
+ * [ES] Definición de tipo para BarritsSelectionFilters.
+ */
 export type BarritsSelectionFilters = BarritsGraphFilters & {
   readonly kinds?: readonly BarritsImportActionKind[];
 };
@@ -316,6 +360,10 @@ export type BarritsBuildManifest = {
   readonly filters?: BarritsSelectionFilters;
 };
 
+/**
+ * [EN] Type definition for BarritsWatchSnapshot.
+ * [ES] Definición de tipo para BarritsWatchSnapshot.
+ */
 export type BarritsWatchSnapshot = {
   readonly generatedAt: string;
   readonly mode: "watch" | "dev";
@@ -323,6 +371,10 @@ export type BarritsWatchSnapshot = {
   readonly filters?: BarritsSelectionFilters;
 };
 
+/**
+ * [EN] Type definition for BarritsConsumedStateSummary.
+ * [ES] Definición de tipo para BarritsConsumedStateSummary.
+ */
 export type BarritsConsumedStateSummary = {
   readonly generatedAt: string | null;
   readonly mode?: "watch" | "dev";
@@ -336,12 +388,20 @@ export type BarritsConsumedStateSummary = {
   readonly filters?: BarritsSelectionFilters;
 };
 
+/**
+ * [EN] Type definition for BarritsLanguageToolDomain.
+ * [ES] Definición de tipo para BarritsLanguageToolDomain.
+ */
 export type BarritsLanguageToolDomain = {
   readonly name: string;
   readonly filesCount: number;
   readonly exportNames: readonly string[];
 };
 
+/**
+ * [EN] Type definition for BarritsLanguageToolSnapshot.
+ * [ES] Definición de tipo para BarritsLanguageToolSnapshot.
+ */
 export type BarritsLanguageToolSnapshot = {
   readonly generatedAt: string;
   readonly mode: "watch" | "dev";

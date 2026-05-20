@@ -1,7 +1,7 @@
 import {
   createManifestModuleSource,
   loadManifestForPackage,
-  resolveManifestPath,
+  createPluginBaseOptions,
   type BarritsPackageAutomationOptions,
 } from "./shared";
 
@@ -21,15 +21,16 @@ type BarritsVitePluginOptions = {
 const DEFAULT_VIRTUAL_MODULE_ID = "virtual:barrits/manifest";
 const RESOLVED_VIRTUAL_PREFIX = "\0virtual:barrits/manifest";
 
+/**
+ * [EN] Implementation of Barrits vite plugin.
+ * [ES] Implementación de Barrits vite plugin.
+ */
 export const barritsVitePlugin = (options: BarritsVitePluginOptions = {}): VitePlugin => {
-  const virtualModuleId = options.virtualModuleId ?? DEFAULT_VIRTUAL_MODULE_ID;
-  const resolvedVirtualModuleId = `${RESOLVED_VIRTUAL_PREFIX}:${virtualModuleId}`;
-  const manifestPath = resolveManifestPath(options.manifestPath ?? options.package?.manifestPath);
-  const packageOptions: BarritsPackageAutomationOptions | undefined = options.package
-    ? { ...options.package, manifestPath }
-    : manifestPath
-      ? { manifestPath }
-      : undefined;
+  const { virtualModuleId, resolvedVirtualModuleId, manifestPath, packageOptions } = createPluginBaseOptions({
+    ...options,
+    defaultVirtualModuleId: DEFAULT_VIRTUAL_MODULE_ID,
+    resolvedPrefix: RESOLVED_VIRTUAL_PREFIX,
+  });
 
   return {
     name: "barrits-vite-plugin",

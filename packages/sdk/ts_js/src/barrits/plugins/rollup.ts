@@ -1,7 +1,7 @@
 import {
   createManifestModuleSource,
   loadManifestForPackage,
-  resolveManifestPath,
+  createPluginBaseOptions,
   type BarritsPackageAutomationOptions,
 } from "./shared";
 
@@ -18,16 +18,18 @@ type BarritsRollupPluginOptions = {
 };
 
 const DEFAULT_VIRTUAL_MODULE_ID = "barrits:manifest";
+const RESOLVED_VIRTUAL_PREFIX = "\0";
 
+/**
+ * [EN] Implementation of Barrits rollup plugin.
+ * [ES] Implementación de Barrits rollup plugin.
+ */
 export const barritsRollupPlugin = (options: BarritsRollupPluginOptions = {}): RollupPlugin => {
-  const virtualModuleId = options.virtualModuleId ?? DEFAULT_VIRTUAL_MODULE_ID;
-  const resolvedVirtualModuleId = `\0${virtualModuleId}`;
-  const manifestPath = resolveManifestPath(options.manifestPath ?? options.package?.manifestPath);
-  const packageOptions: BarritsPackageAutomationOptions | undefined = options.package
-    ? { ...options.package, manifestPath }
-    : manifestPath
-      ? { manifestPath }
-      : undefined;
+  const { virtualModuleId, resolvedVirtualModuleId, packageOptions } = createPluginBaseOptions({
+    ...options,
+    defaultVirtualModuleId: DEFAULT_VIRTUAL_MODULE_ID,
+    resolvedPrefix: RESOLVED_VIRTUAL_PREFIX,
+  });
 
   return {
     name: "barrits-rollup-plugin",

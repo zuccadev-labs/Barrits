@@ -5,7 +5,15 @@
  * Devuelve < 0 si left < right, 0 si son iguales, y > 0 si left > right.
  */
 export type CompareFunction<Value> = (left: Value, right: Value) => number;
+/**
+ * [EN] Type definition for SortDirection.
+ * [ES] Definición de tipo para SortDirection.
+ */
 export type SortDirection = "asc" | "desc";
+/**
+ * [EN] Type definition for Projection.
+ * [ES] Definición de tipo para Projection.
+ */
 export type Projection<Value, Result> = (value: Value) => Result;
 /**
  * [EN] The default comparison algorithm. Uses standard operators and Object.is for identity.

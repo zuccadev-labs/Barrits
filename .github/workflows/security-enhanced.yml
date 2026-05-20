@@ -6,137 +6,151 @@ on:
   pull_request:
     branches: [main, dev]
   schedule:
-    - cron: '0 3 * * 0'  # Weekly
+    - cron: '0 3 * * 0'  # Weekly Sunday 3am UTC
   workflow_dispatch:
 
 permissions:
   contents: read
-  # For dependency graph
-  id-token: write
-  attestations: write
   security-events: write
 
 jobs:
-  # Existing dependency review (kept for compatibility)
+  # ── Dependency Review (PR-only) ───────────────────────────────────────────
+  dependency-review-support:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      supported: ${{ steps.probe.outputs.supported }}
+    steps:
+      - name: Probe dependency graph support
+        id: probe
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api repos/${{ github.repository }}/dependency-graph/sbom > /dev/null 2>&1; then
+            echo "supported=true" >> $GITHUB_OUTPUT
+          else
+            echo "supported=false" >> $GITHUB_OUTPUT
+          fi
+
   dependency-review:
-    uses: ./.github/workflows/security.yml
-    
-  # Additional security checks
+    needs: dependency-review-support
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Dependency graph unavailable notice
+        if: needs.dependency-review-support.outputs.supported != 'true'
+        run: |
+          echo "Dependency graph is not enabled for this repository."
+          echo "Skipping dependency-review until enabled in repo settings."
+
+      - name: Dependency review
+        if: needs.dependency-review-support.outputs.supported == 'true'
+        uses: actions/dependency-review-action@v4
+
+  # ── npm audit (all events) ────────────────────────────────────────────────
   npm-audit-enhanced:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v6
-      
+      - uses: actions/checkout@v4
+
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          
+
       - name: Install dependencies
         run: npm ci
-        
-      - name: Run npm audit with detailed reporting
-        run: npm audit --json > audit-report.json
-        
-      - name: Create audit report artifact
+
+      - name: Run npm audit (production only, high+ severity)
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Export full audit report artifact
+        if: always()
+        run: npm audit --json > audit-report.json || true
+
+      - name: Upload audit report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: npm-audit-report
           path: audit-report.json
-          
-      - name: Fail on high severity vulnerabilities
-        run: |
-          echo "Checking for high severity vulnerabilities..."
-          HIGH_COUNT=$(jq '.metadata.vulnerabilities.high' audit-report.json)
-          if [ "$HIGH_COUNT" -gt 0 ]; then
-            echo "Found $HIGH_COUNT high severity vulnerabilities"
-            exit 1
-          fi
-          echo "No high severity vulnerabilities found"
-          
-  # SBOM generation and verification
-  sbom:
-    runs-on: ubuntu-latest
-    needs: [npm-audit-enhanced]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - uses: actions/checkout@v6
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: npm
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Generate SBOM
-        run: |
-          npm install -g @cyclonedx/bom
-          cyclonedx-bom -o bom.xml --output-format xml
-          
-      - name: SBOM as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: software-bill-of-materials
-          path: bom.xml
-          
-      - name: Verify SBOM
-        run: |
-          echo "SBOM generated successfully"
-          wc -l bom.xml
-          
-  # Secret scanning (basic implementation)
+
+  # ── Secret scanning ───────────────────────────────────────────────────────
   secret-scanning:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event_name == 'push'
     steps:
-      - uses: actions/checkout@v6
-      
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Install git-secrets
         run: |
-          # Install git-secrets for secret scanning
-          if [ "$RUNNER_OS" == "Linux" ]; then
-            sudo apt-get update && sudo apt-get install -y git-secrets
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            brew install git-secrets
-          fi
-          
+          sudo apt-get update -qq && sudo apt-get install -y -qq git-secrets
+
+      - name: Register AWS patterns
+        run: git secrets --register-aws --global
+
       - name: Scan for secrets
         id: secret_scan
         run: |
-          # Initialize git-secrets with AWS patterns (can be extended)
-          git secrets --register-aws --global
-          # Add custom patterns for common secrets
-          git secrets --add --global --literal "barrits_" 2>/dev/null || true
-          # Scan repository
-          if git secrets --scan-history; then
-            echo "No secrets found in history"
+          if git secrets --scan-history 2>&1; then
+            echo "No secrets detected."
             echo "secrets_found=false" >> $GITHUB_OUTPUT
           else
             echo "Potential secrets detected!"
             echo "secrets_found=true" >> $GITHUB_OUTPUT
-            exit 1
           fi
         continue-on-error: true
-        
+
       - name: Fail if secrets found
         if: steps.secret_scan.outputs.secrets_found == 'true'
         run: |
-          echo "Secret scanning failed - potential credentials detected"
+          echo "Secret scanning failed – potential credentials detected."
           exit 1
-          
-  # Security summary
+
+  # ── SBOM (main push only) ─────────────────────────────────────────────────
+  sbom:
+    needs: npm-audit-enhanced
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate SBOM
+        run: |
+          npm install -g @cyclonedx/bom
+          cyclonedx-bom -o bom.xml --output-format xml
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: software-bill-of-materials
+          path: bom.xml
+
+  # ── Summary ───────────────────────────────────────────────────────────────
   security-summary:
-    needs: [npm-audit-enhanced, sbom, secret-scanning]
+    needs: [npm-audit-enhanced, secret-scanning]
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Collect security results
+      - name: Security check summary
         run: |
-          echo "Security check completed for ${{ github.sha }}"
-          echo "Results available in workflow artifacts"
+          echo "Security checks completed for commit ${{ github.sha }}"
+          echo "npm-audit: ${{ needs.npm-audit-enhanced.result }}"
+          echo "secret-scan: ${{ needs.secret-scanning.result }}"

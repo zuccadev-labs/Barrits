@@ -1,4 +1,8 @@
 import type { CompareFunction, SortDirection } from "../internal/compare";
+/**
+ * [EN] Type definition for OrderCriterion.
+ * [ES] Definición de tipo para OrderCriterion.
+ */
 export type OrderCriterion<Value, Result = unknown> = {
     readonly project: (value: Value) => Result;
     readonly direction?: SortDirection;

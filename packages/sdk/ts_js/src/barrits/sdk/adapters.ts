@@ -1,3 +1,8 @@
+/**
+ * @module
+ * [EN] Placeholder module description.
+ * [ES] Descripción de marcador de posición del módulo.
+ */
 import { detectRuntime } from "../internal/runtime";
 import type { RuntimeFileSystemAdapter, RuntimeFileSystemEntry } from "./contracts";
 
@@ -121,3 +126,4 @@ export const createRuntimeFileSystemAdapter = (): RuntimeFileSystemAdapter => {
 
   throw new Error(`Unsupported runtime for filesystem operations: ${runtime}`);
 };
+

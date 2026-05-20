@@ -1,8 +1,14 @@
+---
+title: "00. User Guide Index"
+description: "Corporate documentation for User Guide - @zuccadev-labs/barrits (ts_js)."
+---
+
 # User Guide - @zuccadev-labs/barrits (ts_js)
 
 This index lists all user-facing documentation for the TypeScript and JavaScript SDK in reading order.
 
 ---
+
 ## Reading Order
 
 | # | Document | Purpose |
@@ -19,8 +25,10 @@ This index lists all user-facing documentation for the TypeScript and JavaScript
 | 09b | [API Reference - Algorithms](09b-api-reference-algorithms.md) | Collections, search, sort, time series, graphs |
 | 09c | [API Reference - Consume and Adapters](09c-api-reference-consume-and-adapters.md) | Manifest readers, Node/Deno adapters, bundler plugins |
 | 09d | [API Reference - Traits and Composition](09d-api-reference-traits-and-composition.md) | Trait descriptors, composition, and advanced typing |
+| 10 | [Deno BaaS Core (IoC, Schema)](10-deno-baas-core.md) | Dynamic IoC Container and OpenAPI primitives |
 
 ---
+
 ## Examples Index
 
 - [Examples Overview](examples/00-index.md)
@@ -31,10 +39,3 @@ This index lists all user-facing documentation for the TypeScript and JavaScript
 - [Bun](examples/06-bun.md)
 
 ---
-
-## Navigation
-
-- [← Repository root](../../../../README.md)
-- [Package Quick Start](../../../../packages/sdk/ts_js/README.md)
-- [Development Guide](../../../development/EN/packages/ts_js/00-index.md)
-- [Investigations](../../../investigations/EN/packages/ts_js/00-index.md)

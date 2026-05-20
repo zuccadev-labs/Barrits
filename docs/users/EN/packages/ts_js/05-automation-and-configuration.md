@@ -1,3 +1,8 @@
+---
+title: "Automation and Configuration"
+description: "Corporate documentation for Automation and Configuration."
+---
+
 # Automation and Configuration
 
 Barrits acts as a package with an integrated automation engine. Project configuration is declared once and the SDK derives discovery, manifest generation, and watch behavior from that declaration.

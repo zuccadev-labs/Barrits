@@ -9,5 +9,9 @@ type BarritsRollupPluginOptions = {
     package?: BarritsPackageAutomationOptions;
     virtualModuleId?: string;
 };
+/**
+ * [EN] Implementation of Barrits rollup plugin.
+ * [ES] Implementación de Barrits rollup plugin.
+ */
 export declare const barritsRollupPlugin: (options?: BarritsRollupPluginOptions) => RollupPlugin;
 export {};

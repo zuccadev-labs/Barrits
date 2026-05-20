@@ -1,6 +1,10 @@
 import type { CompareFunction, SortDirection } from "../internal/compare";
 import { defaultCompare, reverseCompare } from "../internal/compare";
 
+/**
+ * [EN] Implementation of Stable sort by.
+ * [ES] Implementación de Stable sort by.
+ */
 export const stableSortBy = <Value, Result>(
   values: readonly Value[],
   rank: (value: Value) => Result,
