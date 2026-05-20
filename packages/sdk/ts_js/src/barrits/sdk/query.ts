@@ -1,3 +1,8 @@
+/**
+ * @module
+ * [EN] Placeholder module description.
+ * [ES] Descripción de marcador de posición del módulo.
+ */
 import type {
   BarritsConsumedTraitDescriptor,
   BarritsDomainIntegration,
@@ -138,6 +143,10 @@ const filterTraitDiagnostics = (
   return diagnostics.filter((diagnostic) => visibleFiles.has(diagnostic.sourceFile));
 };
 
+/**
+ * [EN] Implementation of Filter integration graph.
+ * [ES] Implementación de Filter integration graph.
+ */
 export const filterIntegrationGraph = (
   graph: BarritsIntegrationGraph,
   filters: BarritsGraphFilters = {},
@@ -207,6 +216,10 @@ export const filterIntegrationGraph = (
   };
 };
 
+/**
+ * [EN] Implementation of Resolve project file path.
+ * [ES] Implementación de Resolve project file path.
+ */
 export const resolveProjectFilePath = (
   projectRoot: string,
   filePath: string | undefined,

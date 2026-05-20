@@ -122,6 +122,10 @@ export declare const BarritsLogic: {
 };
 export { aggregateAlgorithms, averageBy, binarySearch, breadthFirstSearch, buildAdjacencyList, bucketByInterval, chunk, collectionAlgorithms, depthFirstSearch, detectDirectedCycle, detectTimeSeriesGaps, differenceSeries, dijkstraShortestPath, annualizedVolatility, exponentialMovingAverage, findSortedRange, graphAlgorithms, groupBy, histogramBy, indexBy, insertSorted, linearSearch, lowerBound, maxDrawdown, maxFlow, maxBy, minBy, minimumSpanningTree, movingAverage, movingAverageSeries, orderBy, paginate, partitionBy, quickSort, rankBy, resampleSeries, returnsSeries, rollingSum, searchAlgorithms, selectionAlgorithms, slidingWindow, sortTimeSeries, sortAlgorithms, stableSortBy, sumBy, timeSeriesAlgorithms, topologicalSort, topK, uniqueBy, upperBound, windowAlgorithms, windowDelta, } from "./algorithms/index";
 export type { CompareFunction, DrawdownPoint, GraphAdjacencyEntry, GraphEdge, GraphNodeId, GraphPath, MaxFlowResult, MinimumSpanningTreeResult, OrderCriterion, PaginatedResult, PaginationOptions, PartitionResult, RankedValue, SearchPredicate, SortDirection, SortedRangeMatch, TimeBucket, TimeGap, TimeSeriesPoint, } from "./algorithms/index";
+/**
+ * [EN] Implementation of Logic.
+ * [ES] Implementación de Logic.
+ */
 export declare const logic: {
     algorithms: {
         aggregate: {

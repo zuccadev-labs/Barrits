@@ -6,8 +6,16 @@
  */
 export type CompareFunction<Value> = (left: Value, right: Value) => number;
 
+/**
+ * [EN] Type definition for SortDirection.
+ * [ES] Definición de tipo para SortDirection.
+ */
 export type SortDirection = "asc" | "desc";
 
+/**
+ * [EN] Type definition for Projection.
+ * [ES] Definición de tipo para Projection.
+ */
 export type Projection<Value, Result> = (value: Value) => Result;
 
 /**

@@ -1,3 +1,8 @@
+/**
+ * @module
+ * [EN] Placeholder module description.
+ * [ES] Descripción de marcador de posición del módulo.
+ */
 import type { BarritsDiscovery, FindBarritsOptions, RuntimeFileSystemAdapter } from "./contracts";
 import { basenamePath, dirnamePath, isRootPath, joinPath, normalizePath } from "./path";
 
@@ -5,6 +10,15 @@ const DEFAULT_MAX_DEPTH = 4;
 const DEFAULT_TARGET_NAME = "barrits";
 const DEFAULT_IGNORED_DIRECTORIES = [".git", "node_modules", "dist", "build", ".next", ".turbo"];
 
+/**
+ * Recursively searches for a directory with the given name.
+ * @param adapter - Filesystem adapter.
+ * @param rootDirectory - Starting directory.
+ * @param targetName - Directory name to find.
+ * @param maxDepth - Maximum depth to search.
+ * @param ignoredDirectories - Set of directory names to ignore.
+ * @returns Promise resolving to the found directory path or null.
+ */
 const findInDescendants = async (
   adapter: RuntimeFileSystemAdapter,
   rootDirectory: string,
@@ -45,6 +59,12 @@ const findInDescendants = async (
   return null;
 };
 
+/**
+ * Discovers the Barrits project structure starting from a given directory.
+ * @param adapter - Filesystem adapter for the current runtime.
+ * @param options - Optional configuration for the discovery process.
+ * @returns A promise that resolves to the discovered Barrits structure or null if not found.
+ */
 export const findBarritsDirectory = async (
   adapter: RuntimeFileSystemAdapter,
   options: FindBarritsOptions = {},
@@ -107,3 +127,5 @@ export const findBarritsDirectory = async (
 
   return null;
 };
+
+

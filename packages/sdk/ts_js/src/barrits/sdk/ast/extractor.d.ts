@@ -75,6 +75,10 @@ export declare const parseJsDocAccessPath: (source: string, matchIndex: number) 
  * @returns Validates existence directly matching `ts.SyntaxKind.ExportKeyword`.
  */
 export declare const hasExportModifier: (node: ts.Node) => boolean;
+/**
+ * [EN] Type definition for ParsedExportStatements.
+ * [ES] Definición de tipo para ParsedExportStatements.
+ */
 export type ParsedExportStatements = {
     readonly exportsMap: Map<string, BarritsFileExport>;
     readonly exportAllSpecifiers: readonly string[];

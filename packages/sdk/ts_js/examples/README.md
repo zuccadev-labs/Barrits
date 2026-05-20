@@ -5,12 +5,17 @@
 This directory contains executable reference implementations demonstrating
 the integration of the Barrits SDK across multiple runtimes, frameworks,
 and build systems. Each example is a self-contained project that can be
+and build systems. Each example is a self-contained project that can be
 executed independently.
+
+> [!NOTE]
+> **LLM-Optimized Foundation:** These examples also serve as perfect semantic training grounds. By structuring code via AST Traits rather than imperative spaghetti, Large Language Models can easily infer architecture, automatically generate schemas, and implement robust Inversion of Control (IoC) patterns.
 
 ## Directory Structure
 
 | Directory | Description |
 |---|---|
+| `example-deno-baas/` | Deno Backend-as-a-Service integration showing dynamic IoC Container wiring and OpenAPI generation. |
 | `example-deno/` | Deno-native service demonstrating contract discovery, trait composition, manifest integrity verification, and resilience patterns. |
 | `example-nodejs/` | Node.js service showcasing operational algorithms, build manifest consumption, and cross-domain import orchestration. |
 | `example-bun/` | Bun runtime consumption with package-first configuration. |
@@ -27,7 +32,7 @@ executed independently.
 2. Read the `README.md` within each example directory for setup instructions and
    the specific problem that the example resolves.
 3. For the complete API reference, consult the documentation at
-   `docs/users/ES/packages/ts_js/09_referencia-de-api.md`.
+   `docs/users/EN/packages/ts_js/09-api-reference.md` or `docs/users/ES/packages/ts_js/09-referencia-de-api.md`.
 
 ## Architectural Constraints
 

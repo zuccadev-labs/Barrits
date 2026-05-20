@@ -1,17 +1,29 @@
-# 00 TS/JS Investigation Index
+---
+title: "00 — Investigations Index"
+description: "Corporate documentation for 00 — Investigations Index."
+---
 
-This directory centralizes the historical and technical record of the architectural evolution of `barrits`. It documents the design challenges addressed, the strategic decisions adopted, and the conclusions derived from the iteration processes.
+# Architectural Decisions and Investigations — @zuccadev-labs/barrits
+
+This index centralizes the history of discoveries, refactorings, and technical design decisions (ADRs) that have shaped the evolution of Barrits, from its conception for bundler unification to its establishment as a cross-cutting SDK and the foundation of the corporate monorepo.
+
+---
 
 ## Recommended Reading Order
 
-1.  **[01-purpose-and-problem.md](01-purpose-and-problem.md)**: Analysis of the initial problem and the SDK's design objectives.
-2.  **[02-architectural-decisions.md](02-architectural-decisions.md)**: Record of the structural decisions that define the current architecture.
-3.  **[03-path-to-monorepo.md](03-path-to-monorepo.md)**: Chronicle of the migration from a root package toward a monorepo structure by SDK.
-4.  **[04-microservices-and-orchestration.md](04-microservices-and-orchestration.md)**: Technical detail on the fragmentation of the core into SRP micro-services.
-5.  **[05-conclusions-and-limits.md](05-conclusions-and-limits.md)**: Summary of retained and discarded concepts, and the subsequent roadmap.
+| # | Document | Focus |
+| :--- | :--- | :--- |
+| 01 | [Purpose and Problem](01-purpose-and-problem.md) | Analysis of the initial problem and the SDK's design objectives |
+| 02 | [Architectural Decisions](02-architectural-decisions.md) | Runtime vs pre-build separation and pure contracts |
+| 03 | [Path to the Monorepo](03-path-to-monorepo.md) | Why Barrits becomes the foundation of ZuccaDev Labs |
+| 04 | [Microservices and Orchestration](04-microservices-and-orchestration.md) | Reflections on distributed dependency injection |
+| 05 | [Conclusions and Design Limits](05-conclusions-and-limits.md) | What Barrits is, and what it does not try to be |
+| 06 | [Deno BaaS Architecture (Parse Alternative)](06-deno-baas-architecture.md) | AST-based IoC and Strict Database Delegation |
+
+---
 
 ## Corporate Editorial Standards
 
-- These documents preserve technical judgment and architectural reasoning (trade-offs), differing from operational development guides.
+- The documents preserve an evolutionary narrative: they record both successes and technological pivots without erasing the history.
 - An objective third-person narrative is maintained to represent project governance professionally.
 - The segregation from the `development` folder allows for isolating the historical context from the current procedures manual.

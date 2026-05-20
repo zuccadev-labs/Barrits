@@ -1,3 +1,7 @@
+/**
+ * [EN] Type definition for PartitionResult.
+ * [ES] Definición de tipo para PartitionResult.
+ */
 export type PartitionResult<Value> = {
   readonly matched: Value[];
   readonly rejected: Value[];

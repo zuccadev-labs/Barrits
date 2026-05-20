@@ -1,4 +1,9 @@
-# User Guide — @zuccadev-labs/barrits (ts_js)
+---
+title: "00. User Guide Index"
+description: "Corporate documentation for User Guide - @zuccadev-labs/barrits (ts_js)."
+---
+
+# User Guide - @zuccadev-labs/barrits (ts_js)
 
 This index lists all user-facing documentation for the TypeScript and JavaScript SDK in reading order.
 
@@ -16,9 +21,11 @@ This index lists all user-facing documentation for the TypeScript and JavaScript
 | 06 | [Commands and Runtimes](06-commands-and-runtimes.md) | CLI usage for Node.js and Deno |
 | 07 | [Manifests, Bundlers, and Consumption](07-manifests-bundlers-and-consumption.md) | Reading artifacts and integrating with bundlers |
 | 08 | [Traits and Composition](08-traits-and-composition.md) | Declarative trait descriptors and pipeline composition |
-| 09 | [API Reference — Package Config](09a-api-reference-package-config.md) | `defineBarritsPackage`, `defineBarritsConfig`, etc. |
-| 09b | [API Reference — Algorithms](09b-api-reference-algorithms.md) | Collections, search, sort, time series, graphs |
-| 09c | [API Reference — Consume and Adapters](09c-api-reference-consume-and-adapters.md) | Manifest readers, Node/Deno adapters, bundler plugins |
+| 09 | [API Reference - Package Config](09a-api-reference-package-config.md) | `defineBarritsPackage`, `defineBarritsConfig`, etc. |
+| 09b | [API Reference - Algorithms](09b-api-reference-algorithms.md) | Collections, search, sort, time series, graphs |
+| 09c | [API Reference - Consume and Adapters](09c-api-reference-consume-and-adapters.md) | Manifest readers, Node/Deno adapters, bundler plugins |
+| 09d | [API Reference - Traits and Composition](09d-api-reference-traits-and-composition.md) | Trait descriptors, composition, and advanced typing |
+| 10 | [Deno BaaS Core (IoC, Schema)](10-deno-baas-core.md) | Dynamic IoC Container and OpenAPI primitives |
 
 ---
 
@@ -32,10 +39,3 @@ This index lists all user-facing documentation for the TypeScript and JavaScript
 - [Bun](examples/06-bun.md)
 
 ---
-
-## Navigation
-
-- [← Repository root](../../../../README.md)
-- [Package Quick Start](../../../../packages/sdk/ts_js/README.md)
-- [Development Guide](../../../development/EN/packages/ts_js/00-index.md)
-- [Investigations](../../../investigations/EN/packages/ts_js/00-index.md)

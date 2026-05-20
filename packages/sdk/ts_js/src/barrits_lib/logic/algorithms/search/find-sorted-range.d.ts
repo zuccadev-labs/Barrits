@@ -1,4 +1,8 @@
 import type { CompareFunction } from "../internal/compare";
+/**
+ * [EN] Type definition for SortedRangeMatch.
+ * [ES] Definición de tipo para SortedRangeMatch.
+ */
 export type SortedRangeMatch = {
     readonly found: boolean;
     readonly startIndex: number;

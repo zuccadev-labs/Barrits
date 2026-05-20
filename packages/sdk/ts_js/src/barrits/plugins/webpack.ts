@@ -28,7 +28,7 @@ type WebpackPlugin = {
   apply: (compiler: WebpackCompiler) => void;
 };
 
-type BarritsWebpackPluginOptions = {
+export type BarritsWebpackPluginOptions = {
   manifestPath?: string;
   package?: BarritsPackageAutomationOptions;
   virtualModuleId?: string;

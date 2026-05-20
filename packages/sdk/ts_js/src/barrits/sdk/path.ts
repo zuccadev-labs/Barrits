@@ -1,4 +1,8 @@
-const normalizeSeparators = (value: string): string => {
+/**
+ * @module
+ * [EN] Path manipulation utilities for Barrits.
+ * [ES] Utilidades de manipulación de rutas para Barrits.
+ */const normalizeSeparators = (value: string): string => {
   return value.replace(/\\+/g, "/").replace(/\/+/g, "/");
 };
 
@@ -14,6 +18,10 @@ const trimTrailingSlash = (value: string): string => {
   return value.endsWith("/") ? value.slice(0, -1) : value;
 };
 
+/**
+ * [EN] Implementation of Normalize path.
+ * [ES] Implementación de Normalize path.
+ */
 export const normalizePath = (value: string): string => {
   const normalized = normalizeSeparators(value.trim());
 
@@ -24,6 +32,10 @@ export const normalizePath = (value: string): string => {
   return trimTrailingSlash(normalized);
 };
 
+/**
+ * [EN] Implementation of Dirname path.
+ * [ES] Implementación de Dirname path.
+ */
 export const dirnamePath = (value: string): string => {
   const normalized = normalizePath(value);
 
@@ -40,12 +52,20 @@ export const dirnamePath = (value: string): string => {
   return normalized.slice(0, separatorIndex);
 };
 
+/**
+ * [EN] Implementation of Basename path.
+ * [ES] Implementación de Basename path.
+ */
 export const basenamePath = (value: string): string => {
   const normalized = normalizePath(value);
   const separatorIndex = normalized.lastIndexOf("/");
   return separatorIndex === -1 ? normalized : normalized.slice(separatorIndex + 1);
 };
 
+/**
+ * [EN] Implementation of Join path.
+ * [ES] Implementación de Join path.
+ */
 export const joinPath = (...segments: string[]): string => {
   const filteredSegments = segments.filter(Boolean).map((segment) => normalizeSeparators(segment));
 
@@ -59,6 +79,10 @@ export const joinPath = (...segments: string[]): string => {
   return normalizePath([base, ...rest.map((segment) => segment.replace(/^\/+/, ""))].join("/"));
 };
 
+/**
+ * [EN] Implementation of Is root path.
+ * [ES] Implementación de Is root path.
+ */
 export const isRootPath = (value: string): boolean => {
   const normalized = normalizePath(value);
   return normalized === "/" || /^[A-Za-z]:\/$/.test(normalized);

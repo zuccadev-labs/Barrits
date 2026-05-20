@@ -1,6 +1,14 @@
+---
+title: "Installation"
+description: "Corporate documentation for Installation."
+---
+
 # Installation
 
 `@zuccadev-labs/barrits` is published on both npm and JSR. Choose the channel that matches the target runtime.
+
+> [!TIP]
+> **AI-Optimized Architecture:** By integrating Barrits, you are adopting a semantic foundation explicitly designed for Large Language Models (LLMs) to understand your codebase. By defining logic via static Traits rather than imperative spaghetti, any modern LLM can auto-generate schemas, orchestrate Inversion of Control (IoC), and structure your backend in Deno with near-zero friction.
 
 ## npm
 

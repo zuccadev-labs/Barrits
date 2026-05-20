@@ -1,0 +1,27 @@
+# @zuccadev-labs/barrits CODEOWNERS
+# This file defines who is responsible for code in specific paths.
+
+# Owners for the entire repository
+* @zuccadev-labs/maintainers
+
+# SDK core
+/packages/sdk/ts_js/src/ @zuccadev-labs/sdk-maintainers
+
+# Adapters
+/packages/sdk/ts_js/adapters/ @zuccadev-labs/adapters-maintainers
+
+# Examples
+/packages/sdk/ts_js/examples/ @zuccadev-labs/examples-maintainers
+
+# Documentation
+/docs/ @zuccadev-labs/docs-maintainers
+
+# GitHub workflows
+/.github/workflows/ @zuccadev-labs/devops
+
+# Dependabot configuration
+/.github/dependabot.yml @zuccadev-labs/devops
+
+# Package.json and lockfiles (shared)
+/package.json @zuccadev-labs/devops
+/package-lock.json @zuccadev-labs/devops

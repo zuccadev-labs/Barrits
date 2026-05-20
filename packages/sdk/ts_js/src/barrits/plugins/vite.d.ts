@@ -14,5 +14,9 @@ type BarritsVitePluginOptions = {
     package?: BarritsPackageAutomationOptions;
     virtualModuleId?: string;
 };
+/**
+ * [EN] Implementation of Barrits vite plugin.
+ * [ES] Implementación de Barrits vite plugin.
+ */
 export declare const barritsVitePlugin: (options?: BarritsVitePluginOptions) => VitePlugin;
 export {};
