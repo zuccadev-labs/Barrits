@@ -1,6 +1,6 @@
 {
   "name": "@zuccadev-labs/barrits",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Industrial-grade plugin orchestration for unified AST and filesystem transformations.",
   "license": "MIT",
   "author": "David Euclides Zuccarini Barrueta (devzucca / zuccadev)",
@@ -94,6 +94,23 @@
     "./deno/cli": {
       "import": "./dist/adapters/deno/cli.js",
       "default": "./dist/adapters/deno/cli.js"
+    },
+    "./deno/kv": {
+      "types": "./dist/adapters/deno/kv.d.ts",
+      "import": "./dist/adapters/deno/kv.js",
+      "default": "./dist/adapters/deno/kv.js"
+    },
+    "./ioc": {
+      "types": "./dist/src/barrits/ioc/index.d.ts",
+      "import": "./dist/src/barrits/ioc/index.js",
+      "require": "./dist/src/barrits/ioc/index.cjs",
+      "default": "./dist/src/barrits/ioc/index.js"
+    },
+    "./schema": {
+      "types": "./dist/src/barrits/schema/openapi.d.ts",
+      "import": "./dist/src/barrits/schema/openapi.js",
+      "require": "./dist/src/barrits/schema/openapi.cjs",
+      "default": "./dist/src/barrits/schema/openapi.js"
     },
     "./package.json": "./package.json"
   },

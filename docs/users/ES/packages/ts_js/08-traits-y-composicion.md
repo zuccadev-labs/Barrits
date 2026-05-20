@@ -1,3 +1,8 @@
+---
+title: "08 Traits y composición de ts_js"
+description: "Corporate documentation for 08 Traits y composición de ts_js."
+---
+
 # 08 Traits y composición de ts_js
 
 Los traits declarativos se usan cuando se necesita composición de dominio con contratos explícitos y menor drift entre implementación, metadata y tooling.

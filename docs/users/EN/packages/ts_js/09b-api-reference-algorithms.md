@@ -1,3 +1,8 @@
+---
+title: "API Reference — Algorithms"
+description: "Corporate documentation for API Reference — Algorithms."
+---
+
 # API Reference — Algorithms
 
 This reference covers the built-in algorithm catalog available from `@zuccadev-labs/barrits`. These utilities are part of the `barrits_lib` base library, accessible both via the flat main import and through the `barrits.logic` namespace.
@@ -65,7 +70,7 @@ Indexes a collection by a unique key.
 
 ```ts
 import { indexBy } from "@zuccadev-labs/barrits";
-const byId = indexBy(items, (i) => i.id);
+const byId = indexBy(items, (the developer) => the developer.id);
 ```
 
 ### `uniqueBy(collection, projector)`
@@ -86,7 +91,7 @@ Sequential search for unsorted or small collections.
 
 ```ts
 import { linearSearch } from "@zuccadev-labs/barrits";
-linearSearch(items, (i) => i.name === "target");
+linearSearch(items, (the developer) => the developer.name === "target");
 ```
 
 ### `binarySearch(collection, target, compare?)`
@@ -127,8 +132,8 @@ Sorts a collection by one or more declarative criteria.
 ```ts
 import { orderBy } from "@zuccadev-labs/barrits";
 orderBy(items, [
-  { project: (i) => i.score, direction: "desc" },
-  { project: (i) => i.name, direction: "asc" },
+  { project: (the developer) => the developer.score, direction: "desc" },
+  { project: (the developer) => the developer.name, direction: "asc" },
 ]);
 ```
 

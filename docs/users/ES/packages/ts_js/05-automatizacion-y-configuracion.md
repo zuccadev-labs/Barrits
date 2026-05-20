@@ -1,3 +1,8 @@
+---
+title: "05 Automatización y configuración de ts_js"
+description: "Corporate documentation for 05 Automatización y configuración de ts_js."
+---
+
 # 05 Automatización y configuración de ts_js
 
 Barrits actúa como un paquete con motor integrado de automatización. La configuración del proyecto se declara una sola vez y el SDK deriva el discovery, la generación de manifests y el comportamiento de watch a partir de esa declaración.

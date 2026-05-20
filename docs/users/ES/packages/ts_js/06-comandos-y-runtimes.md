@@ -1,3 +1,8 @@
+---
+title: "06 Comandos y runtimes de ts_js"
+description: "Corporate documentation for 06 Comandos y runtimes de ts_js."
+---
+
 # 06 Comandos y runtimes de ts_js
 
 La CLI de Barrits no representa la experiencia principal de integración, pero sirve como fallback operativo, herramienta de diagnóstico y automatización puntual cuando se necesita resolver el proyecto directamente desde Node.js o Deno.

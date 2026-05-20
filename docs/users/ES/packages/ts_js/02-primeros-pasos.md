@@ -1,3 +1,8 @@
+---
+title: "02 Primeros Pasos Operativos de ts_js"
+description: "Corporate documentation for 02 Primeros Pasos Operativos de ts_js."
+---
+
 # 02 Primeros Pasos Operativos de ts_js
 
 La integración de `barrits` se realiza conceptualmente como un motor de infraestructura en lugar de un simple comando. El primer paso operativo consiste en declarar de forma determinista el *runtime* del proyecto consumidor, permitiendo que el SDK derive la automatización subsecuente mediante introspección estática.

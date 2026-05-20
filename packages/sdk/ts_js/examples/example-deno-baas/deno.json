@@ -1,0 +1,10 @@
+{
+  "name": "@barrits-example/deno-baas",
+  "version": "1.0.0",
+  "tasks": {
+    "start": "deno run --unstable-kv -A main.ts"
+  },
+  "imports": {
+    "@zuccadev-labs/barrits/": "../../"
+  }
+}

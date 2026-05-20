@@ -1,3 +1,8 @@
+---
+title: "07 Manifests, bundlers y consumo de ts_js"
+description: "Corporate documentation for 07 Manifests, bundlers y consumo de ts_js."
+---
+
 # 07 Manifests, bundlers y consumo de ts_js
 
 Barrits usa manifests y snapshots como contratos de primera clase entre el motor de descubrimiento y el tooling externo. Esto elimina la necesidad de reimplementar discovery dentro de cada bundler o integración backend.

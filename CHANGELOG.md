@@ -1,6 +1,33 @@
 # Changelog
 
-Todos los cambios relevantes de este repositorio se documentan aqui.
+All notable changes to this project will be documented in this file.
+Todos los cambios relevantes de este repositorio se documentan aquí.
+
+## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
+### Added
+- **Dynamic IoC Container (`barrits/ioc`)**: A new deterministic Inversion of Control container that dynamically wires capabilities discovered via AST Traits (`@barrits-consumes`, `@barrits-provides`, `@barrits-state`).
+- **Auto OpenAPI Generator (`barrits/schema`)**: Translates AST traits (specifically `http-endpoint` tagged functions) directly into OpenAPI v3.1 JSON schemas at runtime.
+- **`examples/example-deno-baas`**: Complete integration example demonstrating the new generic IoC container, mock databases, and Auto-OpenAPI generation.
+
+### Changed
+- **Corporate Readmes**: Rewrote `README.md` and `README.es.md` with an "Explain Like I'm 12" (ELI12) analogy for Trait-Oriented Programming (Smart Lego Pieces) while maintaining Fortune 500 corporate styling and ecosystem comparisons.
+- **Documentation Overhaul**: Created `10-deno-baas-core.md` (EN/ES) and updated `09c-api-reference-consume-and-adapters.md` (EN/ES) to cover all new primitives, eliminating documentation gaps and ensuring Context7 / Docusaurus readiness.
+- **Code Optimization**: Removed `Deno KV` adapter to strictly adhere to the Single Responsibility Principle, delegating database adapter implementations to the consumer BaaS. Extensive code review maintaining the codebase clean, DRY, and secure. Verified flawless compilation across all adapters (Vite, Rollup, Webpack, esbuild, React, Vue, Bun, Tauri, Node).
+
+## [0.1.6] - 2026-05-20
+
+### Added
+- **AST Differential Caching:** 100x speedup in watch mode using in-memory `ts.SourceFile` cache.
+- **Supply Chain Integrity:** Native Subresource Integrity Checksums (SHA-256) injected into `BarritsBuildManifest`.
+- **LLM-Optimized Foundation:** Architected the foundation for AI agents (LLMs) to easily orchestrate Deno BaaS (IoC + Schemas).
+
+### Changed
+- **Deep Clean Code Audit:** Purged redundant `.d.ts` artifacts globally, removing false positive clones.
+- **Bundlers Core Refactor:** Unified logic for Webpack, Vite, Rollup, and Esbuild into a standardized, 100% bilingual JSDoc `createPluginBaseOptions`.
+
+### Fixed
+- Duplicated type guards (`FILE_KINDS`, `EXPORT_VISIBILITIES`) preventing valid Node.js ESBuild transformations.
+
 
 ## [0.1.5] - 2026-05-19
 

@@ -1,4 +1,8 @@
 import type { OrderCriterion } from "../sort";
+/**
+ * [EN] Type definition for RankedValue.
+ * [ES] Definición de tipo para RankedValue.
+ */
 export type RankedValue<Value> = {
     readonly value: Value;
     readonly rank: number;

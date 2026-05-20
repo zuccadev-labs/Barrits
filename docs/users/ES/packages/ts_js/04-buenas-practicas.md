@@ -1,3 +1,8 @@
+---
+title: "04 Buenas prácticas de ts_js"
+description: "Corporate documentation for 04 Buenas prácticas de ts_js."
+---
+
 # 04 Buenas prácticas de ts_js
 
 Estas prácticas mantienen el contrato package-first y previenen el drift de integración más frecuente.

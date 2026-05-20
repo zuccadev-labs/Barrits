@@ -1,3 +1,8 @@
+---
+title: "Examples and Walkthroughs"
+description: "Corporate documentation for Examples and Walkthroughs."
+---
+
 # Examples and Walkthroughs
 
 This document covers common integration scenarios with `@zuccadev-labs/barrits` step by step. Each section corresponds to a concrete use case with a matching real example in the repository.

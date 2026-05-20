@@ -1,3 +1,8 @@
+---
+title: "09a — Referencia de API: Configuración Package-First"
+description: "Corporate documentation for 09a — Referencia de API: Configuración Package-First."
+---
+
 # 09a — Referencia de API: Configuración Package-First
 
 Este documento cubre la superficie de API orientada a configuración, rutas, nombres, traits y manifests de `@zuccadev-labs/barrits`. Para cada función se describe qué hace, para qué sirve, cómo se usa y dónde aparece en los recorridos reales del repositorio.

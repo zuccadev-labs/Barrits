@@ -1,3 +1,8 @@
+---
+title: "Ecosistema y Recorridos (Paso a Paso)"
+description: "Corporate documentation for Ecosistema y Recorridos (Paso a Paso)."
+---
+
 # Ecosistema y Recorridos (Paso a Paso)
 
 Este documento instruye de forma minuciosa y orientada al consumidor final cómo aprovechar el potencial arquitectónico del orquestador Barrits como motor de descubrimiento y orquestación de módulos.

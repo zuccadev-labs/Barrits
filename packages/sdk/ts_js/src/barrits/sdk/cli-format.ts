@@ -1,3 +1,8 @@
+/**
+ * @module
+ * [EN] Placeholder module description.
+ * [ES] Descripción de marcador de posición del módulo.
+ */
 import type { BarritsBuildManifest, BarritsIntegrationGraph, BarritsTraitDiagnostic } from "./contracts";
 
 type TraitDiagnosticCarrier = Pick<BarritsIntegrationGraph, "traitDescriptors" | "traitDiagnostics"> | Pick<BarritsBuildManifest, "traitDescriptors" | "traitDiagnostics">;
@@ -29,6 +34,10 @@ const formatTraitDiagnosticCategorySummary = (diagnostics: readonly BarritsTrait
   return parts.length > 0 ? `  - categories: ${parts.join(", ")}` : null;
 };
 
+/**
+ * [EN] Implementation of Format trait overview lines.
+ * [ES] Implementación de Format trait overview lines.
+ */
 export const formatTraitOverviewLines = (value: TraitDiagnosticCarrier): string[] => {
   const lines = [`traits: ${value.traitDescriptors.length}`];
 
@@ -41,6 +50,10 @@ export const formatTraitOverviewLines = (value: TraitDiagnosticCarrier): string[
   return lines;
 };
 
+/**
+ * [EN] Implementation of Format trait diagnostic detail lines.
+ * [ES] Implementación de Format trait diagnostic detail lines.
+ */
 export const formatTraitDiagnosticDetailLines = (diagnostics: readonly BarritsTraitDiagnostic[], limit = 12): string[] => {
   if (diagnostics.length === 0) {
     return [];

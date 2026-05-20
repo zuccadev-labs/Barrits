@@ -1,3 +1,8 @@
+---
+title: "09b — Referencia de API: Algoritmos"
+description: "Corporate documentation for 09b — Referencia de API: Algoritmos."
+---
+
 # 09b — Referencia de API: Algoritmos
 
 Catálogo completo de algoritmos disponibles en `@zuccadev-labs/barrits`. Estos utilitarios forman parte de la librería base `barrits_lib` y son accesibles tanto por importación plana como a través del namespace `barrits.logic`.
