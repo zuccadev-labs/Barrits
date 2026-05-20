@@ -40,14 +40,14 @@ jobs:
         shell: pwsh
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup npm
         run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 24
       - name: Resolve release context
@@ -144,7 +144,7 @@ jobs:
         shell: pwsh
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
@@ -152,7 +152,7 @@ jobs:
       - name: Setup npm
         run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
@@ -195,7 +195,7 @@ jobs:
         shell: pwsh
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
@@ -203,7 +203,7 @@ jobs:
       - name: Setup npm
         run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm

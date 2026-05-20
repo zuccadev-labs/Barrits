@@ -1,11 +1,17 @@
+---
+title: "09 Referencia de API — Archivo de respaldo"
+description: "Corporate documentation for 09 Referencia de API — Archivo de respaldo."
+---
+
 # 09 Referencia de API — Archivo de respaldo
 
 > **Este documento es el archivo de respaldo histórico.**
 > La referencia activa está dividida en tres documentos especializados:
 >
-> - [09a — Configuración, Traits y Manifests](09a_referencia-de-api-configuracion.md)
-> - [09b — Algoritmos](09b_referencia-de-api-algoritmos.md)
-> - [09c — Consume y Adapters](09c_referencia-de-api-consume-y-adapters.md)
+> - [09a — Configuración, Traits y Manifests](09a-referencia-de-api-configuracion.md)
+> - [09b — Algoritmos](09b-referencia-de-api-algoritmos.md)
+> - [09c — Consume y Adapters](09c-referencia-de-api-consume-y-adapters.md)
+> - [09d — Traits y Composición](09d-referencia-de-api-traits-y-composicion.md)
 
 ---
 
@@ -48,13 +54,13 @@ Este archivo actúa como referencia central de respaldo de la superficie públic
 - `findBarritsConfigFile()`
   Que hace: localiza el archivo de configuracion del proyecto.
   Para que sirve: discovery controlado de `barrits.config.*`.
-  Como se usa: se llama antes de cargar o resolver configuracion cuando necesito saber si el archivo existe.
+  Como se usa: se llama antes de cargar o resolver configuracion cuando es necesario determinar si el archivo existe.
   Donde se usa: es util en tooling y diagnostico; queda explicada en `05_automatizacion-y-configuracion.md`.
 
 - `resolveBarritsConfig()`
   Que hace: resuelve la configuracion efectiva del proyecto.
   Para que sirve: aplica defaults y devuelve un objeto listo para operar.
-  Como se usa: se usa cuando necesito la configuracion final, no solo el archivo fuente.
+  Como se usa: se usa cuando se requiere la configuración final, no solo el archivo fuente.
   Donde se usa: en flujos de automatizacion y CLI.
 
 - `createBarrits(options?)`
@@ -74,7 +80,7 @@ Este archivo actúa como referencia central de respaldo de la superficie públic
 - `parsePath(path)`
   Que hace: separa una ruta publica en sus partes.
   Para que sirve: inspeccion, validacion o transformacion de rutas package-first.
-  Como se usa: se llama cuando necesito recuperar dominios o segmentos a partir de una ruta conocida.
+  Como se usa: se llama cuando se requiere recuperar dominios o segmentos a partir de una ruta conocida.
   Donde se usa: diagnostico, tooling o validaciones internas del consumidor; Bun la usa en `examples/example-bun/barrits/index.ts`.
 
 - `PACKAGE_NAME`
@@ -91,13 +97,13 @@ Este archivo actúa como referencia central de respaldo de la superficie públic
 
 - `barrits` y `brt`
   Que hace: agrupan la API por dominios (`logic`, `routes`, `traits` y otros).
-  Para que sirve: acceso namespaced cuando prefiero navegar por familias en vez de imports flat.
+  Para que sirve: acceso namespaced cuando se prefiere navegar por familias en vez de imports flat.
   Como se usa: 
     - Acceso por dominio: `barrits.logic.orderBy(...)`, `barrits.routes.buildPath(...)`
     - Acceso por submódulo: `barrits.logic.searchAlgorithms.binarySearch(...)`
     - Acceso por función específica: `barrits.traits.composePipeline(...)`
     - Acceso corto: `brt.logic.orderBy(...)` (alias de barrits)
-  Donde se usa: consumo avanzado, shells exploratorios y cuando se quiere evitar imports múltiples.
+  Donde se usa: consumo avanzado, shells exploratorios y cuando se busca evitar imports múltiples.
 
 ### Consumo resumido de manifests y snapshots
 

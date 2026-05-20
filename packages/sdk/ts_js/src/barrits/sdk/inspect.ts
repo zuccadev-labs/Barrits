@@ -1,3 +1,8 @@
+/**
+ * @module
+ * [EN] Placeholder module description.
+ * [ES] Descripción de marcador de posición del módulo.
+ */
 import { joinPath, normalizePath } from "./path";
 import { loadBarritsConfig, type BarritsExportContractConfig } from "../config";
 import { inspectLayer } from "./crawler/layer";

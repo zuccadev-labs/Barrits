@@ -1,3 +1,8 @@
+---
+title: "Commands and Runtimes"
+description: "Corporate documentation for Commands and Runtimes."
+---
+
 # Commands and Runtimes
 
 The Barrits CLI is not the primary integration path, but serves as an operational fallback, diagnostic tool, and automation trigger when resolution needs to be driven directly from Node.js or Deno.

@@ -1,7 +1,7 @@
 {
   "name": "@zuccadev-labs/barrits",
-  "version": "0.1.6",
-  "description": "Industrial-grade plugin orchestration for unified AST and filesystem transformations.",
+  "version": "0.1.7",
+  "description": "Package-first functional automation for barrits/ domains, manifests and live watch flows.",
   "license": "MIT",
   "author": "David Euclides Zuccarini Barrueta (devzucca / zuccadev)",
   "homepage": "https://github.com/zuccadev-labs/Barrits/tree/main/packages/sdk/ts_js",
@@ -119,8 +119,8 @@
     "barrits:build": "node ../../../node_modules/tsx/dist/cli.mjs adapters/node/cli.ts build -- node -e \"console.log(process.env.BARRITS_BUILD_MANIFEST || '')\""
   },
   "devDependencies": {
-    "@types/node": "^25.8.0",
+    "@types/node": "^25.6.0",
     "tsup": "^8.5.1",
-    "tsx": "^4.22.0"
+    "tsx": "^4.21.0"
   }
 }

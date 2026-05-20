@@ -19,7 +19,7 @@ test("rollup plugin accepts package-first automation options", async () => {
   });
 
   const resolvedId = await plugin.resolveId?.("barrits:manifest");
-  assert.equal(resolvedId, "\0barrits:manifest");
+  assert.equal(resolvedId, "\0:barrits:manifest");
 
   const source = await plugin.load?.(resolvedId ?? "");
   assert.equal(typeof source, "string");

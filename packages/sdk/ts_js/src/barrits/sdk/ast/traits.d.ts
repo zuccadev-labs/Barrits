@@ -1,6 +1,10 @@
 import ts from "typescript";
 import type { BarritsTraitDescriptorInspection } from "../contracts";
 import type { BarritsTraitContractConfig } from "../../config";
+/**
+ * [EN] Type definition for ExportedTraitBinding.
+ * [ES] Definición de tipo para ExportedTraitBinding.
+ */
 export type ExportedTraitBinding = {
     readonly bindingKind: "const" | "function" | "class";
     readonly bindingName: string;
@@ -13,6 +17,10 @@ export type ExportedTraitBinding = {
     readonly runtimeProvides?: readonly string[];
     readonly runtimeState?: readonly string[];
 };
+/**
+ * [EN] Type definition for TraitRuntimeMetadata.
+ * [ES] Definición de tipo para TraitRuntimeMetadata.
+ */
 export type TraitRuntimeMetadata = {
     readonly conflicts?: readonly string[];
     readonly consumes?: readonly string[];
@@ -45,6 +53,18 @@ export declare const collectExportedTraitBindings: (source: string, relativePath
  * Traces context pointers securely parsing traits without side-effects or heavy runtime impact.
  */
 export declare const collectTraitDescriptorMetadata: (source: string, relativePath: string) => BarritsTraitDescriptorInspection[];
+/**
+ * [EN] Implementation of Normalize contract string array.
+ * [ES] Implementación de Normalize contract string array.
+ */
 export declare const normalizeContractStringArray: (values: readonly string[] | undefined) => string[];
+/**
+ * [EN] Implementation of To trait contract descriptor.
+ * [ES] Implementación de To trait contract descriptor.
+ */
 export declare const toTraitContractDescriptor: (contract: BarritsTraitContractConfig) => BarritsTraitDescriptorInspection | null;
+/**
+ * [EN] Implementation of Merge trait descriptors.
+ * [ES] Implementación de Merge trait descriptors.
+ */
 export declare const mergeTraitDescriptors: (discoveredDescriptors: readonly BarritsTraitDescriptorInspection[], contractDescriptors: readonly BarritsTraitDescriptorInspection[]) => BarritsTraitDescriptorInspection[];

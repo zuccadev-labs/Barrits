@@ -1,3 +1,7 @@
+/**
+ * [EN] Implementation of Group by.
+ * [ES] Implementación de Group by.
+ */
 export const groupBy = <Value, Key>(
   values: readonly Value[],
   selectKey: (value: Value, index: number, values: readonly Value[]) => Key,

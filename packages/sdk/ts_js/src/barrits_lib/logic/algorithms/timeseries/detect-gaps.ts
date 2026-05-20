@@ -1,6 +1,10 @@
 import { sortTimeSeries } from "./sort-time-series";
 import type { TimeSeriesPoint } from "./types";
 
+/**
+ * [EN] Type definition for TimeGap.
+ * [ES] Definición de tipo para TimeGap.
+ */
 export type TimeGap = {
   readonly from: number;
   readonly to: number;

@@ -1,3 +1,8 @@
+/**
+ * @module
+ * [EN] Placeholder module description.
+ * [ES] Descripción de marcador de posición del módulo.
+ */
 import type {
   BarritsBuildManifest,
   BarritsConsumedStateSummary,
@@ -596,6 +601,10 @@ export const parseBuildManifest = (source: string): BarritsBuildManifest => {
   return parseBuildManifestPayload(source);
 };
 
+/**
+ * [EN] Implementation of Parse watch snapshot.
+ * [ES] Implementación de Parse watch snapshot.
+ */
 export const parseWatchSnapshot = (source: string): BarritsWatchSnapshot => {
   return parseWatchSnapshotPayload(source);
 };
@@ -618,6 +627,10 @@ export const readBuildManifestSummary = async (
   return createBuildManifestSummary(await readBuildManifest(filePath, readTextFile));
 };
 
+/**
+ * [EN] Implementation of Read watch snapshot.
+ * [ES] Implementación de Read watch snapshot.
+ */
 export const readWatchSnapshot = async (
   filePath: string,
   readTextFile: ReadTextFile,
@@ -625,6 +638,10 @@ export const readWatchSnapshot = async (
   return parseWatchSnapshot(await readTextFile(filePath));
 };
 
+/**
+ * [EN] Implementation of Read watch snapshot summary.
+ * [ES] Implementación de Read watch snapshot summary.
+ */
 export const readWatchSnapshotSummary = async (
   filePath: string,
   readTextFile: ReadTextFile,
@@ -632,6 +649,10 @@ export const readWatchSnapshotSummary = async (
   return createWatchSnapshotSummary(await readWatchSnapshot(filePath, readTextFile));
 };
 
+/**
+ * [EN] Implementation of Read language tool snapshot.
+ * [ES] Implementación de Read language tool snapshot.
+ */
 export const readLanguageToolSnapshot = async (
   filePath: string,
   readTextFile: ReadTextFile,
@@ -641,6 +662,12 @@ export const readLanguageToolSnapshot = async (
 
 /** [EN] Transforms a raw manifest into a high-level summary of domains and traits.
  *  [ES] Transforma un manifiesto crudo en un resumen de alto nivel de dominios y traits. */
+/**
+ * [EN] Creates a summary of the build manifest for consumption by language tools.
+ * [ES] Crea un resumen del manifiesto de construcción para su consumo por herramientas de lenguaje.
+ * @param manifest - [EN] The build manifest to summarize. [ES] El manifiesto de construcción que se resumirá.
+ * @returns [EN] A summary of the build manifest. [ES] Un resumen del manifiesto de construcción.
+ */
 export const createBuildManifestSummary = (
   manifest: BarritsBuildManifest | null,
 ): BarritsConsumedStateSummary => {
@@ -666,6 +693,10 @@ export const createBuildManifestSummary = (
   }, manifest.filters);
 };
 
+/**
+ * [EN] Implementation of Create watch snapshot summary.
+ * [ES] Implementación de Create watch snapshot summary.
+ */
 export const createWatchSnapshotSummary = (
   snapshot: BarritsWatchSnapshot | null,
 ): BarritsConsumedStateSummary => {
@@ -692,6 +723,10 @@ export const createWatchSnapshotSummary = (
   }, snapshot.filters);
 };
 
+/**
+ * [EN] Implementation of Create language tool snapshot.
+ * [ES] Implementación de Create language tool snapshot.
+ */
 export const createLanguageToolSnapshot = (
   snapshot: BarritsWatchSnapshot,
 ): BarritsLanguageToolSnapshot => {
@@ -719,3 +754,4 @@ export const createLanguageToolSnapshot = (
     collisions: snapshot.graph.collisions ?? [],
   }, snapshot.filters);
 };
+

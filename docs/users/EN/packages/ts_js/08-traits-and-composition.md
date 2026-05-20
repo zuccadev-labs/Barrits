@@ -1,3 +1,8 @@
+---
+title: "Traits and Composition"
+description: "Corporate documentation for Traits and Composition."
+---
+
 # Traits and Composition
 
 Declarative traits are the mechanism for composing domains with explicit contracts, reducing drift between implementation, metadata, and tooling.

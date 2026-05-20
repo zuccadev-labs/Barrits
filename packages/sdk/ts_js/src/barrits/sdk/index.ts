@@ -1,3 +1,8 @@
+/**
+ * @module
+ * [EN] Placeholder module description.
+ * [ES] Descripción de marcador de posición del módulo.
+ */
 export type {
 	BarritsDiscovery,
 	BarritsDiscoveryStrategy,

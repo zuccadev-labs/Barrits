@@ -1,3 +1,8 @@
+---
+title: "API Reference — Package Configuration"
+description: "Corporate documentation for API Reference — Package Configuration."
+---
+
 # API Reference — Package Configuration
 
 This reference covers the package-first API surface of `@zuccadev-labs/barrits`. For each function, the documentation describes what it does, what problem it solves, how to use it, and where it appears in the repository examples.
@@ -145,7 +150,7 @@ Namespaced access to all API domains: `logic`, `routes`, `traits`.
 ```ts
 import { barrits, brt } from "@zuccadev-labs/barrits";
 
-barrits.logic.orderBy(items, [{ project: (i) => i.score, direction: "asc" }]);
+barrits.logic.orderBy(items, [{ project: (the developer) => the developer.score, direction: "asc" }]);
 brt.traits.composePipeline(initialValue, step1, step2);
 ```
 

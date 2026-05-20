@@ -1,4 +1,8 @@
-import type { BarritsBuildManifest, BarritsIntegrationGraph, BarritsSelectionFilters, BarritsWatchSnapshot } from "./contracts";
+/**
+ * @module
+ * [EN] Manifest creation and serialization utilities for Barrits.
+ * [ES] Utilidades de creación y serialización de manifiestos para Barrits.
+ */import type { BarritsBuildManifest, BarritsIntegrationGraph, BarritsSelectionFilters, BarritsWatchSnapshot } from "./contracts";
 import { filterImportActions } from "./imports";
 import { filterIntegrationGraph } from "./query";
 
@@ -15,6 +19,10 @@ const hasSelectionFilters = (filters: BarritsSelectionFilters | undefined): filt
   );
 };
 
+/**
+ * [EN] Implementation of Create projected graph.
+ * [ES] Implementación de Create projected graph.
+ */
 export const createProjectedGraph = (
   graph: BarritsIntegrationGraph,
   filters: BarritsSelectionFilters = {},
@@ -37,6 +45,10 @@ const generateChecksum = (data: string): string => {
   return `sha256-barrits-${Math.abs(hash).toString(16).padStart(8, "0")}`;
 };
 
+/**
+ * [EN] Implementation of Create build manifest.
+ * [ES] Implementación de Create build manifest.
+ */
 export const createBuildManifest = (
   graph: BarritsIntegrationGraph,
   filters?: BarritsSelectionFilters,
@@ -73,6 +85,10 @@ export const createBuildManifest = (
   };
 };
 
+/**
+ * [EN] Implementation of Stringify build manifest.
+ * [ES] Implementación de Stringify build manifest.
+ */
 export const stringifyBuildManifest = (
   graph: BarritsIntegrationGraph,
   filters?: BarritsSelectionFilters,
@@ -80,6 +96,10 @@ export const stringifyBuildManifest = (
   return JSON.stringify(createBuildManifest(graph, filters), null, 2);
 };
 
+/**
+ * [EN] Implementation of Create watch snapshot.
+ * [ES] Implementación de Create watch snapshot.
+ */
 export const createWatchSnapshot = (
   graph: BarritsIntegrationGraph,
   mode: "watch" | "dev",
@@ -93,6 +113,10 @@ export const createWatchSnapshot = (
   };
 };
 
+/**
+ * [EN] Implementation of Stringify watch snapshot.
+ * [ES] Implementación de Stringify watch snapshot.
+ */
 export const stringifyWatchSnapshot = (
   graph: BarritsIntegrationGraph,
   mode: "watch" | "dev",

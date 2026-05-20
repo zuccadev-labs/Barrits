@@ -46,6 +46,10 @@ export const classifyFileKind = (relativePath: string): BarritsFileKind => {
   return "domain";
 };
 
+/**
+ * [EN] Implementation of To relative file path.
+ * [ES] Implementación de To relative file path.
+ */
 export const toRelativeFilePath = (barritsDirectory: string, filePath: string): string => {
   return relativeFromBase(barritsDirectory, filePath);
 };
@@ -111,6 +115,10 @@ export const inspectFile = async (
   };
 };
 
+/**
+ * [EN] Type definition for InspectedLayer.
+ * [ES] Definición de tipo para InspectedLayer.
+ */
 export type InspectedLayer = {
   readonly sourceLayer: BarritsSourceLayer;
   readonly rootFiles: readonly BarritsFileIntegration[];
