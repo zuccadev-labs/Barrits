@@ -9,11 +9,11 @@
     "tauri:build": "node ../../../../../node_modules/@tauri-apps/cli/tauri.js build"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/api": "^2.11.1",
     "@zuccadev-labs/barrits": "file:../.."
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.11.1",
-    "vite": "^8.0.13"
+    "@tauri-apps/cli": "^2.11.3",
+    "vite": "^8.0.16"
   }
 }
