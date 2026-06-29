@@ -1,18 +1,10 @@
 /**
  * @module
- * [EN] Placeholder module description.
- * [ES] Descripción de marcador de posición del módulo.
+ * [EN] Cross-platform filesystem adapters for Deno and Node.js, with dynamic runtime detection.
+ * [ES] Adaptadores multiplataforma del sistema de archivos para Deno y Node.js, con detección dinámica del entorno.
  */
 import { detectRuntime } from "../internal/runtime";
 import type { RuntimeFileSystemAdapter, RuntimeFileSystemEntry } from "./contracts";
-
-/**
- * @module
- * [EN] Multi-platform filesystem adapters for Barrits. 
- * Provides deterministic implementations for Deno and Node.js runtimes.
- * [ES] Adaptadores de sistema de archivos multiplataforma para Barrits. 
- * Proporciona implementaciones deterministas para los entornos Deno y Node.js.
- */
 
 const runtimeImport = <TModule>(specifier: string): Promise<TModule> => {
   const importModule = Function("specifier", "return import(specifier);") as (specifier: string) => Promise<TModule>;

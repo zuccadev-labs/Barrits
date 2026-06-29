@@ -1,7 +1,7 @@
 /**
  * @module
- * [EN] Placeholder module description.
- * [ES] Descripción de marcador de posición del módulo.
+ * [EN] Integration graph filtering, collision detection, and project path resolution queries.
+ * [ES] Filtrado del grafo de integración, detección de colisiones y resolución de rutas de proyecto.
  */
 import type {
   BarritsConsumedTraitDescriptor,

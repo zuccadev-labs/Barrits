@@ -1,7 +1,7 @@
 /**
  * @module
- * [EN] Placeholder module description.
- * [ES] Descripción de marcador de posición del módulo.
+ * [EN] Integration graph inspection via AST crawling, trait discovery, and diagnostics collection.
+ * [ES] Inspección del grafo de integración mediante crawling AST, descubrimiento de traits y recolección de diagnósticos.
  */
 import { joinPath, normalizePath } from "./path";
 import { loadBarritsConfig, type BarritsExportContractConfig } from "../config";

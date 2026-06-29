@@ -6,6 +6,7 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 ## [0.1.8] - 2026-06-29
 ### Fixed
 - **False SHA-256 Checksum**: Replaced FNV-1a non-cryptographic hash (labeled `sha256-`) with real SHA-256 via Web Crypto API (`crypto.subtle.digest`). The old implementation used FNV-1a (32-bit, non-cryptographic) but misleadingly prefixed the output as `sha256-barrits-`, creating a false security guarantee. Now uses real SHA-256 digest for supply chain integrity.
+- **Placeholder Module Descriptions**: Replaced 14 `[EN] Placeholder module description` JSDoc `@module` annotations across all SDK source and type declaration files with actual bilingual descriptions reflecting each module's single responsibility.
 
 ### Changed
 - **Async API**: `createBuildManifest`, `stringifyBuildManifest`, and internal `generateChecksum` now return `Promise` values to support async Web Crypto API.

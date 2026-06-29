@@ -1,7 +1,7 @@
 /**
  * @module
- * [EN] Placeholder module description.
- * [ES] Descripción de marcador de posición del módulo.
+ * [EN] Recursive discovery and auto-location of barrits directories within project trees.
+ * [ES] Descubrimiento recursivo y localización automática de directorios barrits en árboles de proyecto.
  */
 import type { BarritsDiscovery, FindBarritsOptions, RuntimeFileSystemAdapter } from "./contracts";
 import { basenamePath, dirnamePath, isRootPath, joinPath, normalizePath } from "./path";

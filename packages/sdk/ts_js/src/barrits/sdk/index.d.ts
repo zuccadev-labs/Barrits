@@ -1,7 +1,7 @@
 /**
  * @module
- * [EN] Placeholder module description.
- * [ES] Descripción de marcador de posición del módulo.
+ * [EN] Public SDK barrel module re-exporting all Barrits primitives, types, and adapters for consumer use.
+ * [ES] Módulo barrel público del SDK que re-exporta todos los primitivos, tipos y adaptadores de Barrits para uso del consumidor.
  */
 export type { BarritsDiscovery, BarritsDiscoveryStrategy, BarritsBuildManifest, BarritsConsumedStateSummary, BarritsDomainIntegration, BarritsExportCollision, BarritsExportKind, BarritsExportVisibility, BarritsFileExport, BarritsFileKind, BarritsFileIntegration, BarritsGraphFilters, BarritsIntegrationGraph, BarritsImportAction, BarritsImportActionKind, BarritsImportFilters, BarritsTraitDescriptorInspection, BarritsSourceLayer, BarritsLanguageToolDomain, BarritsLanguageToolSnapshot, BarritsSelectionFilters, BarritsImportWriteMode, BarritsWatchSnapshot, FindBarritsOptions, RuntimeFileSystemAdapter, RuntimeFileSystemEntry, RuntimeFileSystemEntryType, } from "./contracts";
 export { findBarritsDirectory } from "./discovery";

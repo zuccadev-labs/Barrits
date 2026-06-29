@@ -1,7 +1,7 @@
 /**
  * @module
- * [EN] Placeholder module description.
- * [ES] Descripción de marcador de posición del módulo.
+ * [EN] Build manifest and watch snapshot consumption: parsing, summarization, and diagnostics.
+ * [ES] Consumo de manifiestos de compilación y snapshots de observación: análisis, resumen y diagnósticos.
  */
 import type {
   BarritsBuildManifest,

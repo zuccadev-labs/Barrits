@@ -1,7 +1,7 @@
 /**
  * @module
- * [EN] Placeholder module description.
- * [ES] Descripción de marcador de posición del módulo.
+ * [EN] Managed import generation, filtering, and application for auto-imports within barrits domains.
+ * [ES] Generación, filtrado y aplicación de importaciones gestionadas para auto-imports dentro de dominios barrits.
  */
 import type { BarritsImportAction, BarritsImportFilters, BarritsImportWriteMode, BarritsIntegrationGraph } from "./contracts";
 
