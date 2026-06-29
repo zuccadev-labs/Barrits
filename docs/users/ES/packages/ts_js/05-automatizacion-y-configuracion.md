@@ -183,4 +183,4 @@ export default defineBarritsPackage({
 
 ---
 
-[← Buenas Prácticas](04_buenas_practicas.md) | [Comandos y Runtimes →](06_comandos_y_runtimes.md)
+[← Buenas Prácticas](04_buenas_practicas.md) | [Comandos y Runtimes →](06-comandos-y-runtimes.md)

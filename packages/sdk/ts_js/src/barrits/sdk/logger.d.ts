@@ -15,16 +15,16 @@ export type BarritsLogLevel = "debug" | "info" | "warn" | "error" | "off";
  * [ES] Contrato para implementaciones de registro industrial.
  */
 export interface BarritsLogger {
-  /** [EN] Log level. [ES] Nivel de log. */
-  level: BarritsLogLevel;
-  /** [EN] Log debug message. [ES] Registrar mensaje de depuración. */
-  debug(message: string, ...args: unknown[]): void;
-  /** [EN] Log info message. [ES] Registrar mensaje informativo. */
-  info(message: string, ...args: unknown[]): void;
-  /** [EN] Log warning message. [ES] Registrar mensaje de advertencia. */
-  warn(message: string, ...args: unknown[]): void;
-  /** [EN] Log error message. [ES] Registrar mensaje de error. */
-  error(message: string, ...args: unknown[]): void;
+    /** [EN] Log level. [ES] Nivel de log. */
+    level: BarritsLogLevel;
+    /** [EN] Log debug message. [ES] Registrar mensaje de depuración. */
+    debug(message: string, ...args: unknown[]): void;
+    /** [EN] Log info message. [ES] Registrar mensaje informativo. */
+    info(message: string, ...args: unknown[]): void;
+    /** [EN] Log warning message. [ES] Registrar mensaje de advertencia. */
+    warn(message: string, ...args: unknown[]): void;
+    /** [EN] Log error message. [ES] Registrar mensaje de error. */
+    error(message: string, ...args: unknown[]): void;
 }
 /**
  * [EN] Default industrial logger implementation using standard console.
@@ -33,14 +33,14 @@ export interface BarritsLogger {
  * Siguiendo SRP: Esta clase solo maneja el formato de los logs y el filtrado por niveles.
  */
 export declare class DefaultBarritsLogger implements BarritsLogger {
-  level: BarritsLogLevel;
-  constructor(level?: BarritsLogLevel);
-  private shouldLog;
-  private format;
-  debug(message: string, ...args: unknown[]): void;
-  info(message: string, ...args: unknown[]): void;
-  warn(message: string, ...args: unknown[]): void;
-  error(message: string, ...args: unknown[]): void;
+    level: BarritsLogLevel;
+    constructor(level?: BarritsLogLevel);
+    private shouldLog;
+    private format;
+    debug(message: string, ...args: unknown[]): void;
+    info(message: string, ...args: unknown[]): void;
+    warn(message: string, ...args: unknown[]): void;
+    error(message: string, ...args: unknown[]): void;
 }
 /**
  * [EN] Global default logger instance.

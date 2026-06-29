@@ -366,4 +366,4 @@ logic.searchAlgorithms.binarySearch(sorted, target);
 
 ---
 
-[← Configuración Package-First](09a_referencia-de-api-configuracion.md) | [Consume y Adapters →](09c_referencia-de-api-consume-y-adapters.md)
+[← Configuración Package-First](09a-referencia-de-api-configuracion.md) | [Consume y Adapters →](09c-referencia-de-api-consume-y-adapters.md)

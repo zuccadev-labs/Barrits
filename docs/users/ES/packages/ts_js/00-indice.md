@@ -2,7 +2,7 @@
 
 Bienvenido a la documentación para usuarios y consumidores del SDK `@zuccadev-labs/barrits`.
 
-> **Nota:** Esta sección está diseñada para desarrolladores que integran Barrits en sus proyectos. Si estás buscando entender las decisiones de diseño o el desarrollo interno del SDK, consulta la [Guía de Desarrollo](../../../development/ES/packages/ts_js/00-indice.md) o el [Índice de Investigaciones](../../../investigations/ES/packages/ts_js/00_indice.md).
+> **Nota:** Esta sección está diseñada para desarrolladores que integran Barrits en sus proyectos. Si estás buscando entender las decisiones de diseño o el desarrollo interno del SDK, consulta la [Guía de Desarrollo](../../../development/ES/packages/ts_js/00-indice.md) o el [Índice de Investigaciones](../../../investigations/ES/packages/ts_js/00-indice.md).
 
 ---
 
@@ -38,3 +38,16 @@ En el repositorio, dentro de `packages/sdk/ts_js/examples/`, encontrarás proyec
 - `example-deno-baas/`: Demuestra el Contenedor IoC dinámico y el Generador de OpenAPI para construir backends.
 
 Cada ejemplo cuenta con su propio `README.md` con instrucciones de ejecución (`npm run dev`, `deno run`, etc.).
+
+## Regla editorial
+
+- El `README.md` del paquete es la portada pública que se ve en npm y JSR.
+- Esta carpeta expande el uso real en español.
+- Los README de los ejemplos enlazan aquí en lugar de repetir la referencia completa de API.
+
+## Navegación
+
+- [← Raíz del repositorio](../../../../README.es.md)
+- [Inicio Rápido del Paquete](../../../../packages/sdk/ts_js/README.md)
+- [Guía de Desarrollo](../../../development/ES/packages/ts_js/00-indice.md)
+- [Investigaciones](../../../investigations/ES/packages/ts_js/00-indice.md)

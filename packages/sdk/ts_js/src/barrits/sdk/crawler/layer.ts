@@ -1,6 +1,7 @@
 import { joinPath } from "../path";
 import { isInternalPath, relativeFromBase, extractExports } from "../ast/extractor";
 import { collectTraitDescriptorMetadata } from "../ast/traits";
+import { mapConcurrent } from "../async-utils";
 import type {
   BarritsFileKind,
   BarritsFileIntegration,
@@ -197,7 +198,7 @@ export const inspectLayer = async (
   }
 
   const files = await collectFiles(adapter, directory);
-  const inspectedFiles = await Promise.all(files.map((filePath) => inspectFile(adapter, directory, filePath, sourceLayer)));
+  const inspectedFiles = await mapConcurrent(files, 10, (filePath) => inspectFile(adapter, directory, filePath, sourceLayer));
 
   return buildLayer(directory, inspectedFiles, sourceLayer);
 };
