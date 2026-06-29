@@ -70,15 +70,21 @@ const resolveDenoPath = (...segments: string[]): string => {
     getDenoGlobals().cwd().replace(/\\/g, "/"),
   );
 
-  const parts = resolved.split("/");
+  const isPosixAbsolute = resolved.startsWith("/");
+  const driveLetterMatch = resolved.match(/^([A-Za-z]:\/)/);
+  const isWindowsAbsolute = driveLetterMatch !== null;
+
+  const parts = resolved.replace(/^[A-Za-z]:\//, "").split("/");
   const normalized: string[] = [];
 
   for (const part of parts) {
     if (part === "." || part === "") continue;
     if (part === "..") {
       if (normalized.length > 0 && normalized[normalized.length - 1] !== "..") {
+        const lastSegment = normalized[normalized.length - 1];
+        if (isWindowsAbsolute && /^[A-Za-z]:$/.test(lastSegment)) continue;
         normalized.pop();
-      } else {
+      } else if (!isPosixAbsolute && !isWindowsAbsolute) {
         normalized.push("..");
       }
       continue;
@@ -86,7 +92,15 @@ const resolveDenoPath = (...segments: string[]): string => {
     normalized.push(part);
   }
 
-  return normalized.join("/");
+  let result = normalized.join("/");
+
+  if (isPosixAbsolute) {
+    result = `/${result}`;
+  } else if (isWindowsAbsolute && driveLetterMatch) {
+    result = `${driveLetterMatch[1]}${result}`;
+  }
+
+  return result;
 };
 
 const getDenoGlobals = (): DenoGlobals => {
