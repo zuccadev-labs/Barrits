@@ -43,3 +43,5 @@ Thumbs.db
 # Local Copilot customizations (kept in workspace, excluded from repo commits)
 .github/skills/
 .github/agents/
+
+context7.json

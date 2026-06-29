@@ -48,8 +48,23 @@ export const normalizePath = (value: string): string => {
     resolved.push(segment);
   }
 
-  const result = resolved.join("/");
-  return trimTrailingSlash(result || ".");
+  let result = resolved.join("/");
+
+  if (isAbsolute) {
+    if (!result.startsWith("/") && !/^[A-Za-z]:/.test(result)) {
+      result = "/" + result;
+    }
+
+    if (/^[A-Za-z]:$/.test(result)) {
+      result = result + "/";
+    }
+  }
+
+  if (result === "") {
+    result = ".";
+  }
+
+  return trimTrailingSlash(result);
 };
 
 /**

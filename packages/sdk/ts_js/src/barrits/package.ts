@@ -1,5 +1,5 @@
 import type { BarritsPackageAutomationOptions } from "./plugins/shared";
-import { DEFAULT_AUTOMATION_DIRECTORY, type BarritsRootConfig, type BarritsRuntimeKind, type BarritsWatchMode } from "./config";
+import { type BarritsRootConfig, type BarritsRuntimeKind, type BarritsWatchMode } from "./config";
 import { normalizePackageOptions } from "./internal/config_normalization";
 
 export type { BarritsRootConfig, BarritsRuntimeKind, BarritsWatchMode } from "./config";
