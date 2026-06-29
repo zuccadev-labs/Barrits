@@ -11,6 +11,7 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 ### Changed
 - **Async API**: `createBuildManifest`, `stringifyBuildManifest`, and internal `generateChecksum` now return `Promise` values to support async Web Crypto API.
 - **CI Action Version Consistency**: Unified `actions/dependency-review-action` from `@v4` to `@v5` in `security-enhanced.yml` to match `security.yml`, eliminating the version mismatch.
+- **Pre-commit Secret Scanning**: Added `git-secrets` scanning to Husky pre-commit hook. Scans all staged files for potential credentials before allowing the commit. Skips gracefully if `git-secrets` is not installed.
 
 ## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
 ### Added
