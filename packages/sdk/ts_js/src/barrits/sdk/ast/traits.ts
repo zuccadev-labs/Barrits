@@ -3,7 +3,7 @@ import { parseTraitDescriptorJsDoc } from "../../traits/descriptor";
 import { createCachedSourceFile } from "./cache";
 import { extractAttachedJsDoc, hasExportModifier } from "./extractor";
 import { normalizePath } from "../path";
-import type { BarritsTraitDescriptorInspection, BarritsTraitDiagnostic } from "../contracts";
+import type { BarritsTraitDescriptorInspection } from "../contracts";
 import type { BarritsTraitContractConfig } from "../../config";
 
 /**

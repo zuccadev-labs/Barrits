@@ -1,4 +1,4 @@
-import type { BarritsBuildManifest, BarritsConsumedTraitDescriptor } from "../sdk/contracts";
+import type { BarritsBuildManifest } from "../sdk/contracts";
 
 /**
  * [EN] Factory function type for generating capability instances.
