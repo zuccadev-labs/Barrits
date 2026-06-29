@@ -72,14 +72,14 @@ export { readLanguageToolSnapshot, } from "./sdk/consume";
  * [EN] Creates a compact summary view from a build manifest payload.
  * [ES] Crea una vista de resumen compacta a partir de una carga útil de manifiesto de build.
  */
-export { createBuildManifestSummary, } from "./sdk/consume";
+export { createBuildManifestSummary, } from "./sdk/summarization";
 /**
  * [EN] Creates a compact summary view from a watch snapshot payload.
  * [ES] Crea una vista de resumen compacta a partir de una carga útil de snapshot de observación.
  */
-export { createWatchSnapshotSummary, } from "./sdk/consume";
+export { createWatchSnapshotSummary, } from "./sdk/summarization";
 /**
  * [EN] Creates an editor-focused snapshot model for tooling pipelines.
  * [ES] Crea un modelo de snapshot enfocado en el editor para pipelines de herramientas.
  */
-export { createLanguageToolSnapshot, } from "./sdk/consume";
+export { createLanguageToolSnapshot, } from "./sdk/summarization";

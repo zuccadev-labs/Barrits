@@ -7,7 +7,8 @@ export type { BarritsDiscovery, BarritsDiscoveryStrategy, BarritsBuildManifest, 
 export { findBarritsDirectory } from "./discovery";
 export { isBarritsExportVisibility, isBarritsFileKind } from "./guards";
 export { inspectBarritsIntegrations } from "./inspect";
-export { createBuildManifestSummary, createLanguageToolSnapshot, createWatchSnapshotSummary, parseBuildManifest, parseWatchSnapshot, readBuildManifest, readBuildManifestSummary, readLanguageToolSnapshot, readWatchSnapshot, readWatchSnapshotSummary, } from "./consume";
+export { createBuildManifestSummary, createLanguageToolSnapshot, createWatchSnapshotSummary, } from "./summarization";
+export { parseBuildManifest, parseWatchSnapshot, readBuildManifest, readBuildManifestSummary, readLanguageToolSnapshot, readWatchSnapshot, readWatchSnapshotSummary, } from "./consume";
 export { applyManagedImports, createImportBlock, createImportsModuleSource, filterImportActions } from "./imports";
 export { createBuildManifest, createProjectedGraph, createWatchSnapshot, stringifyBuildManifest, stringifyWatchSnapshot } from "./manifest";
 export { filterIntegrationGraph, resolveProjectFilePath } from "./query";

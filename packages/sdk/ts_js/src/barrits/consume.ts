@@ -114,7 +114,7 @@ export {
  */
 export {
   createBuildManifestSummary,
-} from "./sdk/consume";
+} from "./sdk/summarization";
 
 /** 
  * [EN] Creates a compact summary view from a watch snapshot payload. 
@@ -122,7 +122,7 @@ export {
  */
 export {
   createWatchSnapshotSummary,
-} from "./sdk/consume";
+} from "./sdk/summarization";
 
 /** 
  * [EN] Creates an editor-focused snapshot model for tooling pipelines. 
@@ -130,4 +130,4 @@ export {
  */
 export {
   createLanguageToolSnapshot,
-} from "./sdk/consume";
+} from "./sdk/summarization";
