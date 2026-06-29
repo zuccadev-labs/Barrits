@@ -37,7 +37,7 @@ const inspectAutomationFixture = async () => {
 
 test("imports and automation flow stays consistent for named and namespace modes", async () => {
   const { targetPath, graph } = await inspectAutomationFixture();
-  const manifest = createBuildManifest(graph);
+  const manifest = await createBuildManifest(graph);
   const summary = createBuildManifestSummary(manifest);
   const importsModuleSource = createImportsModuleSource(graph);
   const originalTargetSource = await readFile(targetPath, "utf8");
@@ -96,7 +96,7 @@ test("discovery and automation also work when barrits lives inside src", async (
   assert.match(discovery.barritsDirectory, /src[\\/]barrits$/);
 
   const graph = await inspectBarritsIntegrations(adapter, discovery);
-  const manifest = createBuildManifest(graph);
+  const manifest = await createBuildManifest(graph);
   const summary = createBuildManifestSummary(manifest);
 
   assert.deepEqual(summary.domains, ["logic"]);
@@ -300,7 +300,7 @@ test("automation inspection exposes declarative trait metadata from barrits/trai
   assert.ok(watchSnapshotSummary.traitDiagnostics);
   assert.ok(watchSnapshotSummary.traitDiagnostics?.some((diagnostic) => diagnostic.code === "trait-duplicate-name"));
 
-  const buildManifestSummary = createBuildManifestSummary(createBuildManifest(graph));
+  const buildManifestSummary = createBuildManifestSummary(await createBuildManifest(graph));
   assert.ok(buildManifestSummary.traitDiagnostics);
   assert.ok(buildManifestSummary.traitDiagnostics?.some((diagnostic) => diagnostic.code === "trait-unsupported-factory"));
 

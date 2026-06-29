@@ -36,23 +36,23 @@ export const createProjectedGraph = (
   });
 };
 
-const generateChecksum = (data: string): string => {
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < data.length; i++) {
-    hash ^= data.charCodeAt(i);
-    hash = (hash * 0x01000193) >>> 0;
-  }
-  return `sha256-barrits-${Math.abs(hash).toString(16).padStart(8, "0")}`;
+const generateChecksum = async (data: string): Promise<string> => {
+  const encoder = new TextEncoder();
+  const dataBuffer = encoder.encode(data);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", dataBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `sha256-barrits-${hashHex}`;
 };
 
 /**
  * [EN] Implementation of Create build manifest.
  * [ES] Implementación de Create build manifest.
  */
-export const createBuildManifest = (
+export const createBuildManifest = async (
   graph: BarritsIntegrationGraph,
   filters?: BarritsSelectionFilters,
-): BarritsBuildManifest => {
+): Promise<BarritsBuildManifest> => {
   const generatedAt = new Date().toISOString();
   
   const sortedTraits = [...graph.traitDescriptors].sort((left, right) => left.name.localeCompare(right.name));
@@ -71,7 +71,7 @@ export const createBuildManifest = (
 
   return {
     generatedAt,
-    checksum: generateChecksum(payloadTokens),
+    checksum: await generateChecksum(payloadTokens),
     ...(() => {
       const { rootFiles, domains, libraryRootFiles, libraryDomains, ...base } = graph;
       return base;
@@ -89,11 +89,11 @@ export const createBuildManifest = (
  * [EN] Implementation of Stringify build manifest.
  * [ES] Implementación de Stringify build manifest.
  */
-export const stringifyBuildManifest = (
+export const stringifyBuildManifest = async (
   graph: BarritsIntegrationGraph,
   filters?: BarritsSelectionFilters,
-): string => {
-  return JSON.stringify(createBuildManifest(graph, filters), null, 2);
+): Promise<string> => {
+  return JSON.stringify(await createBuildManifest(graph, filters), null, 2);
 };
 
 /**

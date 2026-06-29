@@ -74,7 +74,7 @@ const ensureAutomaticManifest = async (
   }
 
   const graph = await inspectBarritsIntegrations(adapter, discovery);
-  const manifest = createBuildManifest(graph);
+  const manifest = await createBuildManifest(graph);
   const manifestDirectory = resolve(projectRoot, automationDirectory);
   const manifestPath = resolve(manifestDirectory, "auto-build-manifest.json");
   await mkdir(manifestDirectory, { recursive: true });

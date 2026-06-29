@@ -570,9 +570,9 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
   if (options.command === "build") {
     const { buildManifestPath } = automationPaths;
     const buildGraph = createProjectedGraph(graph, selectionFilters);
-    await ensureTextFile(buildManifestPath, stringifyBuildManifest(buildGraph, selectionFilters));
+    await ensureTextFile(buildManifestPath, await stringifyBuildManifest(buildGraph, selectionFilters));
 
-    const manifest = createBuildManifest(buildGraph, selectionFilters);
+    const manifest = await createBuildManifest(buildGraph, selectionFilters);
 
     if (options.json) {
       console.log(JSON.stringify(manifest, null, 2));
@@ -599,7 +599,7 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
   const watchSnapshotPath = options.snapshotFile
     ? resolve(discovery.projectRoot, options.snapshotFile)
     : (options.writeSnapshot ? defaultWatchSnapshotPath : undefined);
-  await ensureTextFile(buildManifestPath, stringifyBuildManifest(watchGraph, selectionFilters));
+  await ensureTextFile(buildManifestPath, await stringifyBuildManifest(watchGraph, selectionFilters));
 
   if (watchSnapshotPath) {
     await ensureTextFile(
@@ -618,7 +618,7 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
     json: options.json,
     onGraph: async (nextGraph) => {
       const nextProjectedGraph = createProjectedGraph(nextGraph, selectionFilters);
-      await ensureTextFile(buildManifestPath, stringifyBuildManifest(nextProjectedGraph, selectionFilters));
+      await ensureTextFile(buildManifestPath, await stringifyBuildManifest(nextProjectedGraph, selectionFilters));
 
       if (watchSnapshotPath) {
         await ensureTextFile(

@@ -12,12 +12,12 @@ export declare const createProjectedGraph: (graph: BarritsIntegrationGraph, filt
  * [EN] Implementation of Create build manifest.
  * [ES] Implementación de Create build manifest.
  */
-export declare const createBuildManifest: (graph: BarritsIntegrationGraph, filters?: BarritsSelectionFilters) => BarritsBuildManifest;
+export declare const createBuildManifest: (graph: BarritsIntegrationGraph, filters?: BarritsSelectionFilters) => Promise<BarritsBuildManifest>;
 /**
  * [EN] Implementation of Stringify build manifest.
  * [ES] Implementación de Stringify build manifest.
  */
-export declare const stringifyBuildManifest: (graph: BarritsIntegrationGraph, filters?: BarritsSelectionFilters) => string;
+export declare const stringifyBuildManifest: (graph: BarritsIntegrationGraph, filters?: BarritsSelectionFilters) => Promise<string>;
 /**
  * [EN] Implementation of Create watch snapshot.
  * [ES] Implementación de Create watch snapshot.

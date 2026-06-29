@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 Todos los cambios relevantes de este repositorio se documentan aquí.
 
+## [0.1.8] - 2026-06-29
+### Fixed
+- **False SHA-256 Checksum**: Replaced FNV-1a non-cryptographic hash (labeled `sha256-`) with real SHA-256 via Web Crypto API (`crypto.subtle.digest`). The old implementation used FNV-1a (32-bit, non-cryptographic) but misleadingly prefixed the output as `sha256-barrits-`, creating a false security guarantee. Now uses real SHA-256 digest for supply chain integrity.
+
+### Changed
+- **Async API**: `createBuildManifest`, `stringifyBuildManifest`, and internal `generateChecksum` now return `Promise` values to support async Web Crypto API.
+
 ## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
 ### Added
 - **Dynamic IoC Container (`barrits/ioc`)**: A new deterministic Inversion of Control container that dynamically wires capabilities discovered via AST Traits (`@barrits-consumes`, `@barrits-provides`, `@barrits-state`).
@@ -18,7 +25,7 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 
 ### Added
 - **AST Differential Caching:** 100x speedup in watch mode using in-memory `ts.SourceFile` cache.
-- **Supply Chain Integrity:** Native Subresource Integrity Checksums (SHA-256) injected into `BarritsBuildManifest`.
+- **Supply Chain Integrity:** Non-cryptographic FNV-1a hash (mislabeled as `sha256-`) injected into `BarritsBuildManifest` for change detection. **Note:** This was later corrected to real SHA-256 in v0.1.8.
 - **LLM-Optimized Foundation:** Architected the foundation for AI agents (LLMs) to easily orchestrate Deno BaaS (IoC + Schemas).
 
 ### Changed
