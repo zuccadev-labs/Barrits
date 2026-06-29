@@ -19,6 +19,7 @@ export default defineConfig({
   dts: false,
   sourcemap: true,
   clean: true,
+  splitting: true,
   treeshake: true,
   external: ["typescript"],
   outDir: "dist",
