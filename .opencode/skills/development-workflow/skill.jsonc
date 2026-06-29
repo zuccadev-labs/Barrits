@@ -1,0 +1,21 @@
+{
+  "name": "development-workflow",
+  "description": "Standard development workflow: commit conventions, PR process, and branch strategy.",
+  "prompts": [
+    {
+      "name": "start-feature",
+      "description": "Start a new feature branch from dev.",
+      "prompt": "git checkout dev && git pull && git checkout -b feature/<name>. Follow conventional commits: feat: for new features, fix: for bugs, refactor: for refactoring, chore: for tooling, docs: for documentation."
+    },
+    {
+      "name": "commit-changes",
+      "description": "Commit staged changes with conventional commit and CHANGELOG update.",
+      "prompt": "After changes are staged (git add), use a conventional commit message: <type>(<scope>): <description>. Update CHANGELOG.md under the [Unreleased] or version section. Run npm test before committing (Husky pre-commit hook will run it)."
+    },
+    {
+      "name": "create-pr",
+      "description": "Create a PR from the current branch into dev.",
+      "prompt": "gh pr create --base dev --head <current-branch> --title '<type>(<scope>): <title>' --body '<description>. Closes #<issue>' --reviewer <reviewer>"
+    }
+  ]
+}

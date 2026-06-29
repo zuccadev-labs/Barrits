@@ -1,0 +1,16 @@
+{
+  "name": "integration-points",
+  "description": "Integration with build tools: Vite, esbuild, Rollup, Webpack, and bundler plugins.",
+  "prompts": [
+    {
+      "name": "add-bundler-plugin",
+      "description": "Wire up a bundler plugin to a consumer project.",
+      "prompt": "Import the appropriate plugin from @zuccadev-labs/barrits/<bundler> (vite, esbuild, rollup, webpack). Configure with automationDirectory and manifestPath options. See packages/sdk/ts_js/examples/ for reference configurations."
+    },
+    {
+      "name": "configure-package-first",
+      "description": "Configure package-first automation mode.",
+      "prompt": "Add a barrits.config.mjs file at project root. Export defineBarritsConfig({ autoManifest: true, automationDirectory: '.cache/barrits' }). The plugins will auto-discover and generate manifests."
+    }
+  ]
+}

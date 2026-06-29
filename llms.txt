@@ -1,0 +1,51 @@
+# Barrits Project — LLM Context
+
+This file provides essential context for LLM-assisted development on the Barrits monorepo.
+
+## Quick Links
+- README: ./README.md
+- CHANGELOG: ./CHANGELOG.md
+- Contributing: ./docs/development/EN/CONTRIBUTING.md
+- Security: ./SECURITY.md
+- SDK barrel: packages/sdk/ts_js/src/barrits/sdk/index.ts
+- SDK package.json: packages/sdk/ts_js/package.json
+- ADRs: docs/investigations/adr/
+- Forensic audit: docs/investigations/ES/packages/ts_js/10-auditoria-forense-integral.md
+
+## Architecture
+- Monorepo with npm workspaces
+- Primary SDK at packages/sdk/ts_js/
+- Test runner: node:test (via tsx --test)
+- Build: tsup + tsc --emitDeclarationOnly
+- CI: 4 workflows in .github/workflows/
+- Pre-commit: Husky with npm test + git-secrets
+
+## Key Conventions
+- Conventional commits: feat:, fix:, refactor:, chore:, docs:
+- Bilingual docs: [EN] / [ES] in JSDoc and markdown
+- API design: named exports, no default exports, strict TypeScript
+- All SDK modules in src/barrits/sdk/ have @module JSDoc
+- CHANGELOG updated before every release/PR
+
+## SDK Modules (src/barrits/sdk/)
+- contracts — All types and interfaces
+- discovery — Directory and file discovery
+- inspect — Integration graph inspection
+- manifest — Build manifest creation
+- imports — Import action generation
+- query — Graph filtering and querying
+- validation — JSON schema validation
+- summarization — State summary creation
+- consume — Manifest/snapshot parsing + file I/O
+- path — Path manipulation utilities
+- guards — Type guards (BarritsFileKind, BarritsExportVisibility)
+- cli-parser — Shared CLI argument parsing
+- cli-format — CLI output formatting
+
+## Adapters (adapters/)
+- node/cli.ts — Node.js CLI (uses path.resolve)
+- deno/cli.ts — Deno CLI (custom path resolution)
+
+## Plugins (src/barrits/plugins/)
+- vite, esbuild, rollup, webpack — Bundler plugins
+- shared.ts — Shared plugin utilities (loadManifest, etc.)

@@ -1,0 +1,125 @@
+# Barrits Project — Full LLM Context
+
+## Repository
+Barrits is a package-first functional automation tool for TypeScript/JavaScript monorepos. It discovers project structure, inspects integration graphs, generates import actions, and creates build manifests with trait-oriented contract validation.
+
+### File Tree (Key Paths)
+```
+barrits/
+├── .eslintrc.js
+├── .github/
+│   ├── workflows/
+│   │   ├── ci.yml
+│   │   ├── release.yml
+│   │   ├── security.yml
+│   │   └── security-enhanced.yml
+│   └── agents/
+├── .husky/pre-commit
+├── .opencode/skills/          # 9 skill packages
+├── docs/
+│   ├── investigations/adr/    # Architecture Decision Records
+│   ├── investigations/ES/     # Spanish audit reports
+│   ├── users/                 # User documentation
+│   ├── development/           # Developer documentation
+│   └── package/               # Package governance
+├── packages/
+│   └── sdk/ts_js/
+│       ├── package.json
+│       ├── tsconfig.json
+│       ├── src/barrits/
+│       │   ├── config.ts
+│       │   ├── package.ts
+│       │   ├── consume.ts        # Top-level re-exports
+│       │   ├── sdk/              # Core SDK modules
+│       │   │   ├── index.ts      # Barrel file (10 public exports)
+│       │   │   ├── contracts.ts  # All types
+│       │   │   ├── cli-parser.ts # CLI argument parsing
+│       │   │   ├── validation.ts # JSON schema validation
+│       │   │   ├── summarization.ts
+│       │   │   ├── consume.ts    # Manifest/snapshot parsing
+│       │   │   ├── discovery.ts
+│       │   │   ├── inspect.ts
+│       │   │   ├── manifest.ts
+│       │   │   ├── imports.ts
+│       │   │   ├── query.ts
+│       │   │   ├── path.ts
+│       │   │   ├── guards.ts
+│       │   │   ├── cli-format.ts
+│       │   │   ├── logger.ts
+│       │   │   └── ast/          # TypeScript AST utilities
+│       │   │       ├── cache.ts
+│       │   │       ├── diagnostics.ts
+│       │   │       ├── extractor.ts
+│       │   │       └── traits.ts
+│       │   ├── plugins/          # Bundler plugins
+│       │   │   ├── shared.ts
+│       │   │   ├── vite.ts
+│       │   │   ├── esbuild.ts
+│       │   │   ├── rollup.ts
+│       │   │   └── webpack.ts
+│       │   ├── traits/           # Trait descriptor management
+│       │   │   ├── descriptor.ts  # 448 lines — largest file
+│       │   │   └── compose/
+│       │   ├── api/              # Public API modules
+│       │   ├── ioc/              # DI container
+│       │   ├── internal/         # Internal utilities
+│       │   ├── logic/            # Business logic
+│       │   ├── routes/           # Route definitions
+│       │   ├── schema/           # OpenAPI schema
+│       │   └── shared/           # Shared constants/types
+│       ├── adapters/
+│       │   ├── node/cli.ts       # Node.js CLI
+│       │   └── deno/cli.ts       # Deno CLI
+│       └── tests/
+│           ├── sdk-consume.test.ts
+│           ├── sdk-contracts.test.ts
+│           ├── sdk-discovery.test.ts
+│           ├── sdk-manifest.test.ts
+│           ├── sdk-query.test.ts
+│           ├── node-trait-diag.test.ts
+│           ├── deno-trait-diag.test.ts
+│           ├── node-dev-flow.test.ts
+│           ├── deno-dev-watch.test.ts
+│           ├── plugin-vite.test.ts
+│           ├── plugin-esbuild.test.ts
+│           ├── plugin-rollup.test.ts
+│           ├── plugin-webpack.test.ts
+│           └── helpers/
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── SECURITY.md
+├── CODE_OF_CONDUCT.md
+├── llms.txt
+└── README.md
+```
+
+## Test Architecture
+- **Runner**: node:test (built-in Node.js test runner)
+- **Runner command**: `tsx --test tests/**/*.test.ts`
+- **Framework**: Not jest/vitest/mocha — uses `describe/it` from `node:test` (via `test` and `describe` from `node:test`)
+- **Assertions**: `node:assert/strict` (strict mode)
+- **Coverage**: Not yet configured (planned: c8 or node --experimental-test-coverage)
+- **Known flaky tests**: 2 Deno tests (deno-dev-watch) — Deno not fully reliable on Windows
+- **Total**: 65 tests, 63 pass, 2 flaky
+
+## Key Constraints
+- `typescript@^6.0.3` in devDependencies (moved from dependencies — was bloating consumer installs)
+- `tsx@^4.22.4` for test running
+- `tsup@^8.5.1` for bundling
+- Node.js >=18, ESM-only package
+- .d.ts files check in for every SDK module (source of truth for type declarations)
+- Deno adapter uses custom path resolution (not Node's path.resolve)
+
+## Security Baseline
+- No Function()/eval() anywhere (replaced with direct import())
+- normalizePath resolves .. segments; Windows drive letters preserved as root anchors
+- resolveDenoPath strips absolute prefixes and resolves .. segments
+- JSON.parse has 10MB size limit via parseJsonSource
+- CLI --target/--snapshot reject -- and .. values
+- git-secrets scans staged files pre-commit
+
+## Unresolved Technical Debt
+- ~42 source modules lack dedicated unit tests
+- 9 files >200 lines (largest: traits/descriptor.ts at 448 lines)
+- No lint or coverage gates in CI
+- security.yml and security-enhanced.yml are partially duplicated

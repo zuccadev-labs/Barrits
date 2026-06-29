@@ -62,27 +62,58 @@ export const parseArguments = (argumentsList: string[]): CliOptions => {
       continue;
     }
 
-    if (argument === "detect") { options.command = "detect"; continue; }
-    if (argument === "info") { options.command = "info"; continue; }
-    if (argument === "watch") { options.command = "watch"; continue; }
-    if (argument === "dev") { options.command = "dev"; continue; }
-    if (argument === "imports") { options.command = "imports"; continue; }
-    if (argument === "build") { options.command = "build"; continue; }
+    if (argument === "detect") {
+      options.command = "detect";
+      continue;
+    }
+    if (argument === "info") {
+      options.command = "info";
+      continue;
+    }
+    if (argument === "watch") {
+      options.command = "watch";
+      continue;
+    }
+    if (argument === "dev") {
+      options.command = "dev";
+      continue;
+    }
+    if (argument === "imports") {
+      options.command = "imports";
+      continue;
+    }
+    if (argument === "build") {
+      options.command = "build";
+      continue;
+    }
 
-    if (argument === "--json") { options.json = true; continue; }
-    if (argument === "--write") { options.write = true; continue; }
-    if (argument === "--write-snapshot") { options.writeSnapshot = true; continue; }
+    if (argument === "--json") {
+      options.json = true;
+      continue;
+    }
+    if (argument === "--write") {
+      options.write = true;
+      continue;
+    }
+    if (argument === "--write-snapshot") {
+      options.writeSnapshot = true;
+      continue;
+    }
 
     if (argument === "--target") {
       const value = cliArguments[index + 1];
-      if (value && !value.startsWith("--")) { options.targetFile = value; }
+      if (value && !value.startsWith("--") && !value.includes("..")) {
+        options.targetFile = value;
+      }
       index += 1;
       continue;
     }
 
     if (argument === "--snapshot") {
       const value = cliArguments[index + 1];
-      if (value && !value.startsWith("--")) { options.snapshotFile = value; }
+      if (value && !value.startsWith("--") && !value.includes("..")) {
+        options.snapshotFile = value;
+      }
       index += 1;
       continue;
     }
@@ -116,14 +147,18 @@ export const parseArguments = (argumentsList: string[]): CliOptions => {
 
     if (argument === "--file-kind") {
       const fileKind = cliArguments[index + 1];
-      if (fileKind && isBarritsFileKind(fileKind)) { options.fileKinds.push(fileKind); }
+      if (fileKind && isBarritsFileKind(fileKind)) {
+        options.fileKinds.push(fileKind);
+      }
       index += 1;
       continue;
     }
 
     if (argument === "--visibility") {
       const visibility = cliArguments[index + 1];
-      if (visibility && isBarritsExportVisibility(visibility)) { options.visibilities.push(visibility); }
+      if (visibility && isBarritsExportVisibility(visibility)) {
+        options.visibilities.push(visibility);
+      }
       index += 1;
       continue;
     }

@@ -2,7 +2,7 @@
  * @module
  * [EN] Path manipulation utilities for Barrits.
  * [ES] Utilidades de manipulación de rutas para Barrits.
- */const normalizeSeparators = (value: string): string => {
+ */ const normalizeSeparators = (value: string): string => {
   return value.replace(/\\+/g, "/").replace(/\/+/g, "/");
 };
 
@@ -37,6 +37,8 @@ export const normalizePath = (value: string): string => {
     if (segment === "." || segment === "") continue;
     if (segment === "..") {
       if (resolved.length > 0 && resolved[resolved.length - 1] !== "..") {
+        const lastSegment = resolved[resolved.length - 1];
+        if (isAbsolute && /^[A-Za-z]:$/.test(lastSegment)) continue;
         resolved.pop();
       } else if (!isAbsolute) {
         resolved.push("..");

@@ -105,9 +105,7 @@
     "access": "public"
   },
   "sideEffects": false,
-  "dependencies": {
-    "typescript": "^6.0.3"
-  },
+  "dependencies": {},
   "scripts": {
     "dev": "node ../../../node_modules/tsx/dist/cli.mjs watch src/index.ts",
     "build": "node ../../../node_modules/tsup/dist/cli-default.js && node ../../../node_modules/typescript/lib/tsc.js --emitDeclarationOnly",
@@ -121,6 +119,7 @@
   "devDependencies": {
     "@types/node": "^25.6.0",
     "tsup": "^8.5.1",
-    "tsx": "^4.22.4"
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
   }
 }

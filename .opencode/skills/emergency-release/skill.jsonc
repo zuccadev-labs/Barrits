@@ -1,0 +1,11 @@
+{
+  "name": "emergency-release",
+  "description": "Emergency release process for hotfixes and critical security patches.",
+  "prompts": [
+    {
+      "name": "security-hotfix",
+      "description": "Process for releasing a critical security fix outside the normal release cycle.",
+      "prompt": "1) Create fix on a hotfix/<name> branch from main. 2) Apply the fix with conventional commit fix(security): description. 3) Update CHANGELOG.md under Fixed section. 4) Create PR into main with 'hotfix' label. 5) After merge, npm version patch && npm publish from packages/sdk/ts_js. 6) Cherry-pick into dev."
+    }
+  ]
+}

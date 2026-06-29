@@ -1,0 +1,21 @@
+{
+  "name": "security-audit",
+  "description": "Security audit workflow for identifying and fixing vulnerabilities in the Barrits codebase.",
+  "prompts": [
+    {
+      "name": "audit-path-traversal",
+      "description": "Search for unvalidated path resolution patterns across adapters and SDK modules.",
+      "prompt": "Search for path traversal vulnerabilities: look for path.resolve, joinPath, resolveDenoPath, normalizePath patterns that handle user-supplied path segments. Verify .. segments are resolved and absolute paths are rejected."
+    },
+    {
+      "name": "audit-dynamic-exec",
+      "description": "Search for Function(), eval(), or new Function() constructor usages.",
+      "prompt": "Grep for Function(, eval(, new Function across packages/sdk/ts_js/src. Verify all dynamic imports use direct import() and not Function-wrapped wrappers."
+    },
+    {
+      "name": "audit-input-validation",
+      "description": "Review all CLI argument and JSON.parse call sites for validation guards.",
+      "prompt": "Check cli-parser.ts for unvalidated --target/--snapshot/--domain/--export values. Check plugins/shared.ts for JSON.parse without size limit. Verify all external inputs are validated before processing."
+    }
+  ]
+}

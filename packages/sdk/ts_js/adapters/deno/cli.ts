@@ -3,11 +3,34 @@
  * Deno CLI for Barrits discovery, inspection, imports, watch, and build automation.
  */
 
-import { applyManagedImports, createBuildManifest, createImportsModuleSource, createProjectedGraph, filterImportActions, filterIntegrationGraph, findBarritsDirectory, inspectBarritsIntegrations, resolveProjectFilePath, stringifyBuildManifest, stringifyWatchSnapshot } from "../../src/barrits/sdk";
+import {
+  applyManagedImports,
+  createBuildManifest,
+  createImportsModuleSource,
+  createProjectedGraph,
+  filterImportActions,
+  filterIntegrationGraph,
+  findBarritsDirectory,
+  inspectBarritsIntegrations,
+  resolveProjectFilePath,
+  stringifyBuildManifest,
+  stringifyWatchSnapshot,
+} from "../../src/barrits/sdk";
 import { formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
 import { resolveBarritsConfig } from "../../src/barrits/package";
 import { createDenoFileSystemAdapter } from "./filesystem";
-import { parseArguments, toSelectionFilters, printGraph, printImportActions, hasCollisions, failOnCollisions, toGraphFingerprint, type CliOptions, type IntegrationGraph, type AutomationArtifactPaths } from "../../src/barrits/sdk/cli-parser";
+import {
+  parseArguments,
+  toSelectionFilters,
+  printGraph,
+  printImportActions,
+  hasCollisions,
+  failOnCollisions,
+  toGraphFingerprint,
+  type CliOptions,
+  type IntegrationGraph,
+  type AutomationArtifactPaths,
+} from "../../src/barrits/sdk/cli-parser";
 
 type DenoGlobals = {
   args: string[];
@@ -36,15 +59,34 @@ const dirname = (filePath: string): string => {
 };
 
 const resolveDenoPath = (...segments: string[]): string => {
-  return segments
-    .filter(Boolean)
-    .reduce((currentPath, segment) => {
+  const resolved = segments.filter(Boolean).reduce(
+    (currentPath, segment) => {
       const normalizedSegment = segment.replace(/\\/g, "/");
 
       const safeSegment = normalizedSegment.replace(/^(?:[A-Za-z]:)?\/+/, "");
 
       return `${currentPath.replace(/\/+$/g, "")}/${safeSegment.replace(/^\/+/, "")}`;
-    }, getDenoGlobals().cwd().replace(/\\/g, "/"));
+    },
+    getDenoGlobals().cwd().replace(/\\/g, "/"),
+  );
+
+  const parts = resolved.split("/");
+  const normalized: string[] = [];
+
+  for (const part of parts) {
+    if (part === "." || part === "") continue;
+    if (part === "..") {
+      if (normalized.length > 0 && normalized[normalized.length - 1] !== "..") {
+        normalized.pop();
+      } else {
+        normalized.push("..");
+      }
+      continue;
+    }
+    normalized.push(part);
+  }
+
+  return normalized.join("/");
 };
 
 const getDenoGlobals = (): DenoGlobals => {
@@ -90,11 +132,7 @@ const resolveAutomationArtifactPaths = async (projectRoot: string): Promise<Auto
   };
 };
 
-const runChildCommand = async (
-  childArgs: string[],
-  cwd: string,
-  envVars: Record<string, string>,
-): Promise<number> => {
+const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record<string, string>): Promise<number> => {
   if (childArgs.length === 0) {
     return 0;
   }
@@ -242,7 +280,9 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
 
       if (options.targetFile) {
         const runtime = getDenoGlobals();
-        const targetFilePath = options.targetFile ? resolveDenoPath(discovery.projectRoot, options.targetFile) : resolveProjectFilePath(discovery.projectRoot, options.targetFile);
+        const targetFilePath = options.targetFile
+          ? resolveDenoPath(discovery.projectRoot, options.targetFile)
+          : resolveProjectFilePath(discovery.projectRoot, options.targetFile);
 
         if (!targetFilePath) {
           throw new Error("Unable to resolve imports target file.");
@@ -299,7 +339,9 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
   const watchGraph = createProjectedGraph(graph, selectionFilters);
   const watchSnapshotPath = options.snapshotFile
     ? resolveDenoPath(discovery.projectRoot, options.snapshotFile)
-    : (options.writeSnapshot ? defaultWatchSnapshotPath : undefined);
+    : options.writeSnapshot
+      ? defaultWatchSnapshotPath
+      : undefined;
   await ensureTextFile(buildManifestPath, await stringifyBuildManifest(watchGraph, selectionFilters));
 
   if (watchSnapshotPath) {

@@ -1,0 +1,16 @@
+{
+  "name": "onboarding",
+  "description": "Developer onboarding guide and first-time setup for the Barrits monorepo.",
+  "prompts": [
+    {
+      "name": "setup-dev",
+      "description": "Full development setup checklist for new contributors.",
+      "prompt": "Guide the user through: 1) git clone the repo, 2) npm install from root (workspaces), 3) cd packages/sdk/ts_js && npm run build, 4) npm test to verify 63/65 passing tests (2 known flaky Deno tests). Check Node >=18, Deno >=2.x, Bun >=1.x."
+    },
+    {
+      "name": "project-structure",
+      "description": "Explain the monorepo layout and where to find key files.",
+      "prompt": "The monorepo structure: root has .husky/, .github/workflows/ (4 CI workflows), docs/ (5 categories, bilingual EN/ES), packages/sdk/ts_js/ (main SDK). SDK src/barrits/sdk/ contains: discover, inspect, imports, manifest, query, contracts, validation, summarization, consume, path, guards, cli-parser, cli-format. adapters/ has node/ and deno/ CLI implementations. plugins/ has vite, esbuild, rollup, webpack."
+    }
+  ]
+}

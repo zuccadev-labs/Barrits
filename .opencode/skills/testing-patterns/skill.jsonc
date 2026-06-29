@@ -1,0 +1,16 @@
+{
+  "name": "testing-patterns",
+  "description": "Testing conventions and test-writing patterns for the Barrits SDK.",
+  "prompts": [
+    {
+      "name": "run-tests",
+      "description": "Run the SDK test suite via tsx --test with the glob pattern tests/**/*.test.ts",
+      "command": "cd packages/sdk/ts_js && npm test"
+    },
+    {
+      "name": "write-test",
+      "description": "Create a new test file following existing patterns: use node:test (assert/strict, describe/it), import the module under test from source, use temporary directories under os.tmpdir() for integration tests.",
+      "prompt": "Write tests for <MODULE_PATH> following the existing pattern in tests/. Use node:test runner, not jest or vitest. Import from ../../src/barrits/sdk/<module>. For integration tests, use mkdtempSync from node:fs and os.tmpdir()."
+    }
+  ]
+}

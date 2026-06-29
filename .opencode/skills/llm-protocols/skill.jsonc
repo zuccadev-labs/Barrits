@@ -1,0 +1,16 @@
+{
+  "name": "llm-protocols",
+  "description": "LLM agent protocols, documentation standards, and AI-friendly coding practices for the Barrits project.",
+  "prompts": [
+    {
+      "name": "read-project-context",
+      "description": "Load full project context for LLM-assisted development.",
+      "prompt": "Read llms.txt and llms-full.txt from project root for comprehensive context: architecture, key files, API surface, and conventions. For deep module context, read the @module JSDoc and index.ts barrel exports."
+    },
+    {
+      "name": "jsdoc-standard",
+      "description": "Apply the project's JSDoc standard: bilingual [EN]/[ES] with @param, @returns where applicable.",
+      "prompt": "Follow the existing JSDoc pattern: /** @module */ at file top with [EN] and [ES] description. For exported functions, include [EN]/[ES] description. Use @param and @returns for complex signatures. Keep comments concise and factual."
+    }
+  ]
+}

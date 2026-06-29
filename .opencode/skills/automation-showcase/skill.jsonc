@@ -1,0 +1,16 @@
+{
+  "name": "automation-showcase",
+  "description": "Automation showcase: demonstrate Barrits SDK features with live examples.",
+  "prompts": [
+    {
+      "name": "showcase-discovery",
+      "description": "Demonstrate the discovery and inspection pipeline.",
+      "prompt": "Run: cd packages/sdk/ts_js && npx tsx adapters/node/cli.ts info to show integration graph. Use --json flag for structured output. Explain domains, exports, trait descriptors, and diagnostics."
+    },
+    {
+      "name": "showcase-imports",
+      "description": "Demonstrate import action generation.",
+      "prompt": "Run: cd packages/sdk/ts_js && npx tsx adapters/node/cli.ts imports to show generated import statements and their kinds (named-import, namespace-access, alias-namespace-access)."
+    }
+  ]
+}

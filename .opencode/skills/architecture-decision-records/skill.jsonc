@@ -1,0 +1,11 @@
+{
+  "name": "architecture-decision-records",
+  "description": "Architecture Decision Record (ADR) creation and management following the project template.",
+  "prompts": [
+    {
+      "name": "create-adr",
+      "description": "Create a new ADR following the project's ADR template.",
+      "prompt": "Use the template at docs/investigations/adr/TEMPLATE.md. Create a new file docs/investigations/adr/<NNNN>-<kebab-case-title>.md. Include: title, status (proposed/accepted/deprecated/superseded), context, decision, consequences (positive/negative/neutral), and implementation (key files changed, migration path if any)."
+    }
+  ]
+}

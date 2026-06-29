@@ -23,7 +23,23 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 - **Absolute Path Injection Prevention in Deno CLI**: Fixed `resolveDenoPath()` in `adapters/deno/cli.ts` which previously returned user-supplied absolute paths as-is without joining them to the working directory. Now strips leading separators and drive letters from user segments, ensuring all paths resolve relative to the project root.
 - **Removed Unsafe `Function()` Constructor**: Replaced `Function("specifier", "return import(specifier)")` with direct `import(specifier)` in both `src/barrits/config.ts` and `src/barrits/sdk/adapters.ts`. The `Function()` wrapper bypassed static analysis, violated CSP, and created a latent code-injection vector. Direct `import()` is functionally identical and safe.
 - **JSON Parse Size Limit**: Added a 10 MB size limit to `parseJsonSource()` in `src/barrits/sdk/validation.ts`. Previously `JSON.parse()` was called without any input size validation, creating a DoS risk via memory exhaustion from large manifest files.
-- **CLI Input Validation**: Added validation guards to CLI argument parsing in `cli-parser.ts`. `--target` and `--snapshot` now reject values that look like flags. `--domain` validates against `^[a-zA-Z][a-zA-Z0-9_-]*$`. `--export` validates against JavaScript identifier rules `^[a-zA-Z_$][a-zA-Z0-9_$]*$`.
+- **CLI Input Validation**: Added validation guards to CLI argument parsing in `cli-parser.ts`. `--target` and `--snapshot` now reject values that look like flags or contain `..` path traversal segments. `--domain` validates against `^[a-zA-Z][a-zA-Z0-9_-]*$`. `--export` validates against JavaScript identifier rules `^[a-zA-Z_$][a-zA-Z0-9_$]*$`.
+- **resolveDenoPath `..` Resolution**: Fixed `resolveDenoPath()` in `adapters/deno/cli.ts` to normalize `..` segments after stripping absolute prefixes, preventing path traversal through crafted `--target`/`--snapshot` arguments.
+- **plugins/shared.ts JSON.parse Safety**: Replaced unprotected `JSON.parse()` with `parseJsonSource()` that enforces the 10 MB size limit, ensuring consistency with the SDK validation module.
+- **normalizePath Windows Drive Letter Fix**: Fixed `normalizePath()` to preserve Windows drive letters (e.g., `C:`) as root anchors when `..` resolves above the drive root.
+
+### Changed
+- **Moved `typescript` to devDependencies**: Relocated `typescript@^6.0.3` from `dependencies` to `devDependencies` in `package.json`, eliminating ~60 MB of unnecessary install weight for SDK consumers. Only used at build type-check and emit-declaration time.
+- **Missing `.d.ts` Files Generated**: Added `cli-parser.d.ts` and `validation.d.ts` for the two SDK modules that lacked declaration files. Updated `summarization.d.ts` to declare all 7 exported symbols (previously only 3 were declared).
+- **Orphan File Cleanup**: Removed `contracts.ts.tmp`, a stale artifact left from the consume.ts refactor.
+- **ESLint Configuration Fixed**: Renamed `.eslintrc.js` to `.eslintrc.cjs` to fix CJS/ESM module resolution with the project's `"type": "module"` setting. Removed deprecated `@typescript-eslint/eslint-recommended` and `prettier` plugin (formatting handled separately). Added `.eslintignore` for `.d.ts` files.
+- **Prettier Configuration**: Added `.prettierrc` with project-standard settings and `endOfLine: "auto"` for cross-platform compatibility.
+- **Lint Pipeline Added to CI**: Added `npm run lint` step to `ci.yml` between dependency installation and typechecking, with `--max-warnings 11` to allow existing backlog items.
+- **Developer Experience**: Created `llms.txt` and `llms-full.txt` at repository root following the LLM context standard. Added `CODE_OF_CONDUCT.md` for community governance.
+- **OpenCode Skills Created**: Implemented 9 specialized skill packages under `.opencode/skills/`: `testing-patterns`, `security-audit`, `onboarding`, `emergency-release`, `automation-showcase`, `development-workflow`, `integration-points`, `llm-protocols`, `architecture-decision-records`.
+
+### Added
+- **Forensic Audit Report**: Comprehensive 80+ file, ~12,000 LOC forensic audit at `docs/investigations/ES/packages/ts_js/10-auditoria-forense-integral.md`. Scorecard: 6.2/10 enterprise readiness. 34-point action plan across security, testing, CI, skills, and documentation.
 
 ## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
 ### Added
