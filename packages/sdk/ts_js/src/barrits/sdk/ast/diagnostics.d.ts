@@ -7,4 +7,7 @@ import type { ExportedTraitBinding } from "./traits";
  * @param bindingsBySourceFile - Deep programmatic node mapping representing AST node explicit structures natively pointing targeting interface bindings.
  * @returns Exhaustive diagnostic payload collection detailing validation failures or structural drifts natively identifying path context.
  */
-export declare const collectTraitDiagnostics: (descriptors: readonly BarritsTraitDescriptorInspection[], bindingsBySourceFile: ReadonlyMap<string, readonly ExportedTraitBinding[]>) => BarritsTraitDiagnostic[];
+export declare const collectTraitDiagnostics: (
+  descriptors: readonly BarritsTraitDescriptorInspection[],
+  bindingsBySourceFile: ReadonlyMap<string, readonly ExportedTraitBinding[]>,
+) => BarritsTraitDiagnostic[];

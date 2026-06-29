@@ -6,11 +6,34 @@ import { dirname, resolve } from "node:path";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-import { applyManagedImports, createBuildManifest, createImportsModuleSource, createProjectedGraph, filterImportActions, filterIntegrationGraph, findBarritsDirectory, inspectBarritsIntegrations, resolveProjectFilePath, stringifyBuildManifest, stringifyWatchSnapshot } from "../../src/barrits/sdk";
+import {
+  applyManagedImports,
+  createBuildManifest,
+  createImportsModuleSource,
+  createProjectedGraph,
+  filterImportActions,
+  filterIntegrationGraph,
+  findBarritsDirectory,
+  inspectBarritsIntegrations,
+  resolveProjectFilePath,
+  stringifyBuildManifest,
+  stringifyWatchSnapshot,
+} from "../../src/barrits/sdk";
 import { formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
 import { resolveBarritsConfig } from "../../src/barrits/package";
 import { createNodeFileSystemAdapter } from "./filesystem";
-import { parseArguments, toSelectionFilters, printGraph, printImportActions, hasCollisions, failOnCollisions, toGraphFingerprint, type CliOptions, type IntegrationGraph, type AutomationArtifactPaths } from "../../src/barrits/sdk/cli-parser";
+import {
+  parseArguments,
+  toSelectionFilters,
+  printGraph,
+  printImportActions,
+  hasCollisions,
+  failOnCollisions,
+  toGraphFingerprint,
+  type CliOptions,
+  type IntegrationGraph,
+  type AutomationArtifactPaths,
+} from "../../src/barrits/sdk/cli-parser";
 
 const HELP_TEXT = `barrits SDK
 
@@ -74,11 +97,7 @@ const quoteCmdArgument = (value: string): string => {
   return `"${value.replace(/"/g, '\\"')}"`;
 };
 
-const runChildCommand = async (
-  childArgs: string[],
-  cwd: string,
-  envVars: Record<string, string>,
-): Promise<number> => {
+const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record<string, string>): Promise<number> => {
   if (childArgs.length === 0) {
     return 0;
   }
@@ -87,20 +106,16 @@ const runChildCommand = async (
     const [command, ...args] = childArgs;
     const commandName = resolveChildCommand(command);
     const child = spawn(
-      isWindowsPackageManagerCommand(command)
-        ? process.env.ComSpec ?? "cmd.exe"
-        : commandName,
-      isWindowsPackageManagerCommand(command)
-        ? ["/d", "/s", "/c", [commandName, ...args].map(quoteCmdArgument).join(" ")]
-        : args,
+      isWindowsPackageManagerCommand(command) ? (process.env.ComSpec ?? "cmd.exe") : commandName,
+      isWindowsPackageManagerCommand(command) ? ["/d", "/s", "/c", [commandName, ...args].map(quoteCmdArgument).join(" ")] : args,
       {
-      cwd,
-      stdio: "inherit",
-      shell: false,
-      env: {
-        ...process.env,
-        ...envVars,
-      },
+        cwd,
+        stdio: "inherit",
+        shell: false,
+        env: {
+          ...process.env,
+          ...envVars,
+        },
       },
     );
 
@@ -124,34 +139,35 @@ const startWatchSession = (
   let timer: NodeJS.Timeout | undefined;
   let lastFingerprint = "";
 
-  const watchers = [discovery.barritsDirectory]
-    .map((directory) => watch(directory, { recursive: true }, () => {
-    if (timer) {
-      clearTimeout(timer);
-    }
+  const watchers = [discovery.barritsDirectory].map((directory) =>
+    watch(directory, { recursive: true }, () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
 
-    timer = setTimeout(() => {
-      void emitGraph().then(async (nextGraph) => {
-        const nextFingerprint = toGraphFingerprint(nextGraph);
+      timer = setTimeout(() => {
+        void emitGraph().then(async (nextGraph) => {
+          const nextFingerprint = toGraphFingerprint(nextGraph);
 
-        if (nextFingerprint === lastFingerprint) {
-          return;
-        }
+          if (nextFingerprint === lastFingerprint) {
+            return;
+          }
 
-        lastFingerprint = nextFingerprint;
+          lastFingerprint = nextFingerprint;
 
-        if (!options.json) {
-          console.log("change detected");
-        }
+          if (!options.json) {
+            console.log("change detected");
+          }
 
-        if (options.onGraph) {
-          await options.onGraph(nextGraph);
-        }
+          if (options.onGraph) {
+            await options.onGraph(nextGraph);
+          }
 
-        printGraph(nextGraph, options.json);
-      });
-    }, 100);
-    }));
+          printGraph(nextGraph, options.json);
+        });
+      }, 100);
+    }),
+  );
 
   return {
     setInitialGraph(graph: IntegrationGraph) {
@@ -230,7 +246,9 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
       await ensureTextFile(importsModulePath, createImportsModuleSource(importsGraph));
 
       if (options.targetFile) {
-        const targetFilePath = options.targetFile ? resolve(discovery.projectRoot, options.targetFile) : resolveProjectFilePath(discovery.projectRoot, options.targetFile);
+        const targetFilePath = options.targetFile
+          ? resolve(discovery.projectRoot, options.targetFile)
+          : resolveProjectFilePath(discovery.projectRoot, options.targetFile);
 
         if (!targetFilePath) {
           throw new Error("Unable to resolve imports target file.");
@@ -287,7 +305,9 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
   const watchGraph = createProjectedGraph(graph, selectionFilters);
   const watchSnapshotPath = options.snapshotFile
     ? resolve(discovery.projectRoot, options.snapshotFile)
-    : (options.writeSnapshot ? defaultWatchSnapshotPath : undefined);
+    : options.writeSnapshot
+      ? defaultWatchSnapshotPath
+      : undefined;
   await ensureTextFile(buildManifestPath, await stringifyBuildManifest(watchGraph, selectionFilters));
 
   if (watchSnapshotPath) {

@@ -4,7 +4,9 @@
  * [ES] Utilidades de formato de salida CLI para resúmenes de traits y diagnósticos.
  */
 import type { BarritsBuildManifest, BarritsIntegrationGraph, BarritsTraitDiagnostic } from "./contracts";
-type TraitDiagnosticCarrier = Pick<BarritsIntegrationGraph, "traitDescriptors" | "traitDiagnostics"> | Pick<BarritsBuildManifest, "traitDescriptors" | "traitDiagnostics">;
+type TraitDiagnosticCarrier =
+  | Pick<BarritsIntegrationGraph, "traitDescriptors" | "traitDiagnostics">
+  | Pick<BarritsBuildManifest, "traitDescriptors" | "traitDiagnostics">;
 /**
  * [EN] Implementation of Format trait overview lines.
  * [ES] Implementación de Format trait overview lines.

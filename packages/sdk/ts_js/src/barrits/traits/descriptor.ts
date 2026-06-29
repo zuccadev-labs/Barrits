@@ -1,6 +1,6 @@
-type UnionToIntersection<TValue> = (
-  TValue extends unknown ? (value: TValue) => void : never
-) extends (value: infer TIntersection) => void ? TIntersection : never;
+type UnionToIntersection<TValue> = (TValue extends unknown ? (value: TValue) => void : never) extends (value: infer TIntersection) => void
+  ? TIntersection
+  : never;
 
 type AnyTraitDescriptor = TraitDescriptor<string, any, any>;
 
@@ -8,11 +8,7 @@ type AnyTraitDescriptor = TraitDescriptor<string, any, any>;
 export type TraitConflictStrategy = "throw" | "left" | "right";
 
 /** Context object passed to each trait factory during composition. */
-export type TraitDescriptorContext<
-  TState extends object,
-  TResolvedTraits extends object,
-  TName extends string,
-> = {
+export type TraitDescriptorContext<TState extends object, TResolvedTraits extends object, TName extends string> = {
   readonly descriptorName: TName;
   readonly order: readonly string[];
   readonly state: TState;
@@ -38,11 +34,7 @@ export type TraitDescriptor<
 };
 
 /** Authoring input accepted by `createTraitDescriptor`. */
-export type TraitDescriptorInput<
-  TName extends string,
-  TState extends object,
-  TProvides extends object,
-> = {
+export type TraitDescriptorInput<TName extends string, TState extends object, TProvides extends object> = {
   readonly name: TName;
   readonly summary?: string;
   readonly requires?: readonly string[];
@@ -69,11 +61,7 @@ export type TraitDescriptorJsDocMetadata = {
 };
 
 /** Mixed input for JSDoc-derived trait descriptors with explicit override fields. */
-export type TraitDescriptorFromJsDocInput<
-  TName extends string,
-  TState extends object,
-  TProvides extends object,
-> = {
+export type TraitDescriptorFromJsDocInput<TName extends string, TState extends object, TProvides extends object> = {
   readonly name?: TName;
   readonly summary?: string;
   readonly requires?: readonly string[];
@@ -122,13 +110,12 @@ export type ComposedTraitDescriptorsResult<TState extends object, TTraits extend
   readonly traitMetadata: Readonly<Record<string, TraitDescriptorMetadata>>;
 };
 
-type TraitProvides<TDescriptor> = TDescriptor extends TraitDescriptor<string, object, infer TProvides>
-  ? TProvides
-  : never;
+type TraitProvides<TDescriptor> = TDescriptor extends TraitDescriptor<string, object, infer TProvides> ? TProvides : never;
 
-type MergeTraitProvides<TDescriptors extends readonly AnyTraitDescriptor[]> = UnionToIntersection<
-  TraitProvides<TDescriptors[number]>
-> extends object ? UnionToIntersection<TraitProvides<TDescriptors[number]>> : Record<string, never>;
+type MergeTraitProvides<TDescriptors extends readonly AnyTraitDescriptor[]> =
+  UnionToIntersection<TraitProvides<TDescriptors[number]>> extends object
+    ? UnionToIntersection<TraitProvides<TDescriptors[number]>>
+    : Record<string, never>;
 
 const compareLexically = (left: string, right: string): number => {
   return left.localeCompare(right);
@@ -145,11 +132,13 @@ const normalizeUniqueStrings = (values: readonly string[] | undefined): string[]
 const normalizeJsDocBlock = (value: string): string => {
   return value
     .split(/\r?\n/u)
-    .map((line) => line
-      .replace(/^\s*\/\*\*?\s?/u, "")
-      .replace(/^\s*\*\s?/u, "")
-      .replace(/\s*\*\/\s*$/u, "")
-      .trim())
+    .map((line) =>
+      line
+        .replace(/^\s*\/\*\*?\s?/u, "")
+        .replace(/^\s*\*\s?/u, "")
+        .replace(/\s*\*\/\s*$/u, "")
+        .trim(),
+    )
     .join("\n")
     .trim();
 };
@@ -208,11 +197,7 @@ export const parseTraitDescriptorJsDoc = (jsDoc: string): TraitDescriptorJsDocMe
  * @param descriptor Trait declaration input authored in code.
  * @returns Normalized trait descriptor ready for composition.
  */
-export const createTraitDescriptor = <
-  const TName extends string,
-  TState extends object,
-  TProvides extends object,
->(
+export const createTraitDescriptor = <const TName extends string, TState extends object, TProvides extends object>(
   descriptor: TraitDescriptorInput<TName, TState, TProvides>,
 ): TraitDescriptor<TName, TState, TProvides> => {
   return {
@@ -281,10 +266,7 @@ const toTraitDescriptorMetadata = (descriptor: AnyTraitDescriptor): TraitDescrip
   };
 };
 
-const assertConsumedCapabilities = (
-  descriptors: readonly AnyTraitDescriptor[],
-  traitValues: Record<string, unknown>,
-): void => {
+const assertConsumedCapabilities = (descriptors: readonly AnyTraitDescriptor[], traitValues: Record<string, unknown>): void => {
   for (const descriptor of descriptors) {
     for (const consumedCapability of descriptor.consumes) {
       if (consumedCapability in traitValues) {
@@ -308,9 +290,7 @@ const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): stri
 
     for (const requiredDescriptor of descriptor.requires) {
       if (!descriptorMap.has(requiredDescriptor)) {
-        throw new Error(
-          `Trait descriptor "${descriptor.name}" requires "${requiredDescriptor}", but it is not part of the composition.`,
-        );
+        throw new Error(`Trait descriptor "${descriptor.name}" requires "${requiredDescriptor}", but it is not part of the composition.`);
       }
 
       const currentDependents = dependents.get(requiredDescriptor) ?? [];
@@ -447,7 +427,7 @@ export const composeTraitDescriptors = <
   const traits: Record<string, unknown> = {};
   const traitProviders: Record<string, readonly string[]> = {};
   const traitMetadata: Record<string, TraitDescriptorMetadata> = {};
-  const state = (options.state ?? ({} as TState));
+  const state = options.state ?? ({} as TState);
   const conflictStrategy = options.onConflict ?? "throw";
 
   for (const descriptorName of order) {
@@ -483,13 +463,7 @@ export const composeTraitDescriptors = <
       const ownerTraitName = Object.entries(traitProviders).find(([, keys]) => keys.includes(providedKey))?.[0] ?? "unknown";
 
       if (options.resolveConflict) {
-        traits[providedKey] = options.resolveConflict(
-          providedKey,
-          leftValue,
-          rightValue,
-          ownerTraitName,
-          descriptor.name,
-        );
+        traits[providedKey] = options.resolveConflict(providedKey, leftValue, rightValue, ownerTraitName, descriptor.name);
         continue;
       }
 

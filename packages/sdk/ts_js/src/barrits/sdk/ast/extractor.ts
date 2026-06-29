@@ -31,7 +31,12 @@ export const relativeFromBase = (basePath: string, targetPath: string): string =
  * @returns True if the file targets internal domain architecture.
  */
 export const isInternalPath = (relativePath: string): boolean => {
-  return relativePath === "internal.ts" || relativePath.includes("/internal/") || relativePath.endsWith("/internal.ts") || relativePath.startsWith("internal/");
+  return (
+    relativePath === "internal.ts" ||
+    relativePath.includes("/internal/") ||
+    relativePath.endsWith("/internal.ts") ||
+    relativePath.startsWith("internal/")
+  );
 };
 
 /**
@@ -100,7 +105,7 @@ export const stripSourceExtension = (relativePath: string): string => {
 
 /**
  * Interprets a filesystem relative source path transforming it into structural namespace boundaries.
- * 
+ *
  * @param relativePath - Contextual relative path descriptor.
  * @returns Array representing abstract syntax access spaces.
  */
@@ -162,7 +167,7 @@ export const extractAttachedJsDoc = (source: string, matchIndex: number): string
 
 /**
  * Filters normalized JSDoc inputs evaluating path structure and filtering implicit structural data components.
- * 
+ *
  * @param source - Plain string module buffer payload.
  * @param matchIndex - Pointer memory locational byte index targeting a declaration node.
  * @returns The resolved `@barrits-path` structural route override strings, or undefined natively.
@@ -180,11 +185,13 @@ export const parseJsDocAccessPath = (source: string, matchIndex: number): string
     return undefined;
   }
 
-  return tagMatch[1]
-    .split(".")
-    .map((segment: string) => segment.trim())
-    .filter(Boolean)
-    .join(".") || undefined;
+  return (
+    tagMatch[1]
+      .split(".")
+      .map((segment: string) => segment.trim())
+      .filter(Boolean)
+      .join(".") || undefined
+  );
 };
 
 /**
@@ -212,7 +219,7 @@ export type ParsedExportStatements = {
 
 /**
  * Queries abstract module components identifying named and default explicit programmatic payload exports globally mapping access keys.
- * 
+ *
  * @param source - Immutable parsed plain text input.
  * @param relativePath - Unmutated contextual system identifier relative file path mapping string locator strings identifier maps.
  * @returns An extracted ParsedExportStatements object mapping standard definitions and aggregating broad system namespace overrides logic dependencies map.
@@ -233,11 +240,7 @@ export const collectDirectExports = (source: string, relativePath: string): Pars
     const jsDocAccessPath = parseJsDocAccessPath(source, matchIndex);
     const derivedAccessPath = deriveExportAccessPath(relativePath, normalizedName);
     const accessPath = jsDocAccessPath ?? derivedAccessPath;
-    const accessStrategy = jsDocAccessPath
-      ? "jsdoc"
-      : accessPath === normalizedName
-        ? "export-name"
-        : "file-system";
+    const accessStrategy = jsDocAccessPath ? "jsdoc" : accessPath === normalizedName ? "export-name" : "file-system";
 
     exportsMap.set(normalizedName, {
       name: normalizedName,
@@ -326,13 +329,7 @@ export const extractExports = async (
 
     try {
       const reexportedSource = await adapter.readTextFile(absoluteFilePath);
-      const reexportedExports = await extractExports(
-        adapter,
-        barritsDirectory,
-        resolvedRelativePath,
-        reexportedSource,
-        visited,
-      );
+      const reexportedExports = await extractExports(adapter, barritsDirectory, resolvedRelativePath, reexportedSource, visited);
 
       for (const reexportedEntry of reexportedExports) {
         exportsMap.set(reexportedEntry.name, {

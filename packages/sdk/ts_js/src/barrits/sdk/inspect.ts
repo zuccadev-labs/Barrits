@@ -115,9 +115,8 @@ const applyExportVisibilityOverrides = (
   return files.map((file) => {
     const normalizedPath = normalizePath(file.path);
     const nextExports = file.exports.map((entry) => {
-      const visibility = byName.get(`${normalizedPath}:${entry.name}`)
-        ?? byAccessPath.get(`${normalizedPath}:${entry.accessPath}`)
-        ?? entry.visibility;
+      const visibility =
+        byName.get(`${normalizedPath}:${entry.name}`) ?? byAccessPath.get(`${normalizedPath}:${entry.accessPath}`) ?? entry.visibility;
 
       return visibility === entry.visibility ? entry : { ...entry, visibility };
     });
@@ -167,16 +166,24 @@ export const inspectBarritsIntegrations = async (
 
   inspectedFiles = applyExportVisibilityOverrides(inspectedFiles, exportVisibilityOverrides);
 
-  const rootFiles = mergeRootFiles(inspectedFiles.filter((file) => file.path === "index.ts"), []);
+  const rootFiles = mergeRootFiles(
+    inspectedFiles.filter((file) => file.path === "index.ts"),
+    [],
+  );
   const domains = mergeDomains(
-    allLayers.flatMap((layer) => layer.domains.map((domain) => ({
-      ...domain,
-      files: inspectedFiles.filter((file) => file.path.startsWith(`${domain.name}/`) && file.sourceLayer === layer.sourceLayer),
-    }))),
+    allLayers.flatMap((layer) =>
+      layer.domains.map((domain) => ({
+        ...domain,
+        files: inspectedFiles.filter((file) => file.path.startsWith(`${domain.name}/`) && file.sourceLayer === layer.sourceLayer),
+      })),
+    ),
     [],
   );
   const exportsCount = inspectedFiles.reduce((count, file) => count + file.exports.length, 0);
-  const publicExportsCount = inspectedFiles.reduce((count, file) => count + file.exports.filter((entry) => entry.visibility === "public").length, 0);
+  const publicExportsCount = inspectedFiles.reduce(
+    (count, file) => count + file.exports.filter((entry) => entry.visibility === "public").length,
+    0,
+  );
   const internalExportsCount = exportsCount - publicExportsCount;
   const barrelsCount = inspectedFiles.filter((file) => file.kind === "barrel" || file.kind === "root").length;
 

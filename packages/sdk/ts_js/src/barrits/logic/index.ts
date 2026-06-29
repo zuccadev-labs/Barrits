@@ -54,7 +54,7 @@ import {
   windowDelta,
   arithmetic,
   restar,
-  sumar
+  sumar,
 } from "../../barrits_lib/logic";
 
 export { arithmetic, restar, sumar };

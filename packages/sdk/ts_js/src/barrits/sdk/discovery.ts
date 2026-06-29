@@ -127,5 +127,3 @@ export const findBarritsDirectory = async (
 
   return null;
 };
-
-

@@ -80,8 +80,8 @@ export declare const hasExportModifier: (node: ts.Node) => boolean;
  * [ES] Definición de tipo para ParsedExportStatements.
  */
 export type ParsedExportStatements = {
-    readonly exportsMap: Map<string, BarritsFileExport>;
-    readonly exportAllSpecifiers: readonly string[];
+  readonly exportsMap: Map<string, BarritsFileExport>;
+  readonly exportAllSpecifiers: readonly string[];
 };
 /**
  * Queries abstract module components identifying named and default explicit programmatic payload exports globally mapping access keys.
@@ -102,4 +102,10 @@ export declare const collectDirectExports: (source: string, relativePath: string
  * @param visited - Shared deduplicating context recursive caching logic.
  * @returns Explicit explicit exported manifest module configurations natively mapped to export file components object payload.
  */
-export declare const extractExports: (adapter: RuntimeFileSystemAdapter, barritsDirectory: string, relativePath: string, source: string, visited?: Set<string>) => Promise<BarritsFileExport[]>;
+export declare const extractExports: (
+  adapter: RuntimeFileSystemAdapter,
+  barritsDirectory: string,
+  relativePath: string,
+  source: string,
+  visited?: Set<string>,
+) => Promise<BarritsFileExport[]>;

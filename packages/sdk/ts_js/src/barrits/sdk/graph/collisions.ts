@@ -1,8 +1,4 @@
-import type { 
-  BarritsFileIntegration, 
-  BarritsDomainIntegration, 
-  BarritsExportCollision 
-} from "../contracts";
+import type { BarritsFileIntegration, BarritsDomainIntegration, BarritsExportCollision } from "../contracts";
 
 type PublicNamespaceEntry = {
   namespace: string;

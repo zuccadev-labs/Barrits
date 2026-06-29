@@ -5,7 +5,9 @@
  */
 import type { BarritsBuildManifest, BarritsIntegrationGraph, BarritsTraitDiagnostic } from "./contracts";
 
-type TraitDiagnosticCarrier = Pick<BarritsIntegrationGraph, "traitDescriptors" | "traitDiagnostics"> | Pick<BarritsBuildManifest, "traitDescriptors" | "traitDiagnostics">;
+type TraitDiagnosticCarrier =
+  | Pick<BarritsIntegrationGraph, "traitDescriptors" | "traitDiagnostics">
+  | Pick<BarritsBuildManifest, "traitDescriptors" | "traitDiagnostics">;
 
 const countTraitDiagnosticSeverities = (diagnostics: readonly BarritsTraitDiagnostic[]) => {
   const errorCount = diagnostics.filter((diagnostic) => diagnostic.severity === "error").length;

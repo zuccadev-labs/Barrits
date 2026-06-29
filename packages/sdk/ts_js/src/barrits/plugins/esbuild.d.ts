@@ -1,12 +1,12 @@
 import { type BarritsPackageAutomationOptions } from "./shared";
 type EsbuildPlugin = {
-    name: string;
-    setup: (build: any) => void;
+  name: string;
+  setup: (build: any) => void;
 };
 type BarritsEsbuildPluginOptions = {
-    manifestPath?: string;
-    package?: BarritsPackageAutomationOptions;
-    virtualModuleId?: string;
+  manifestPath?: string;
+  package?: BarritsPackageAutomationOptions;
+  virtualModuleId?: string;
 };
 /**
  * [EN] Implementation of Barrits esbuild plugin.

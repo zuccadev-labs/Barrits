@@ -16,14 +16,11 @@ export type BarritsOpenApiOptions = {
 /**
  * [EN] Generates an OpenAPI v3.1 schema from a BarritsBuildManifest.
  * [ES] Genera un esquema OpenAPI v3.1 desde un BarritsBuildManifest.
- * 
+ *
  * @param manifest [EN] The discovery manifest. [ES] El manifiesto de descubrimiento.
  * @param options [EN] Generation options. [ES] Opciones de generación.
  */
-export const generateOpenApiSchema = (
-  manifest: BarritsBuildManifest,
-  options: BarritsOpenApiOptions = {}
-): Record<string, any> => {
+export const generateOpenApiSchema = (manifest: BarritsBuildManifest, options: BarritsOpenApiOptions = {}): Record<string, any> => {
   const openapi = {
     openapi: "3.1.0",
     info: {
@@ -40,7 +37,7 @@ export const generateOpenApiSchema = (
   for (const descriptor of manifest.traitDescriptors) {
     if (descriptor.tags.includes("http-endpoint") || descriptor.name.toLowerCase().includes("endpoint")) {
       const path = `/${descriptor.name.toLowerCase().replace(/endpoint$/, "")}`;
-      
+
       openapi.paths[path] = {
         post: {
           summary: descriptor.summary ?? `Executes ${descriptor.name}`,

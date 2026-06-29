@@ -14,19 +14,26 @@ export declare const normalizeAutomationDirectory: (value: string | undefined) =
  * Expert normalization of root package options into a deterministic runtime contract.
  * Used by defineBarritsPackage for synchronous simple normalization.
  */
-export declare const normalizePackageOptions: (options?: BarritsRootConfig, fallbackProjectRoot?: string) => {
-    runtime: BarritsRuntimeKind;
-    watch: BarritsWatchMode;
-    debugCommands: boolean;
-    projectRoot: string;
-    manifestPath?: string;
-    autoManifest: boolean;
-    automationDirectory: string;
-    discoveryRoots: readonly string[];
-    traitConflictStrategy: "error" | "override" | "merge";
+export declare const normalizePackageOptions: (
+  options?: BarritsRootConfig,
+  fallbackProjectRoot?: string,
+) => {
+  runtime: BarritsRuntimeKind;
+  watch: BarritsWatchMode;
+  debugCommands: boolean;
+  projectRoot: string;
+  manifestPath?: string;
+  autoManifest: boolean;
+  automationDirectory: string;
+  discoveryRoots: readonly string[];
+  traitConflictStrategy: "error" | "override" | "merge";
 };
 /**
  * Expert resolution of merged configuration.
  * Used by resolveBarritsConfig for final integration.
  */
-export declare const normalizeResolvedConfig: (mergedConfig: BarritsRootConfig, initialProjectRoot: string, configFilePath?: string) => ResolvedBarritsConfig;
+export declare const normalizeResolvedConfig: (
+  mergedConfig: BarritsRootConfig,
+  initialProjectRoot: string,
+  configFilePath?: string,
+) => ResolvedBarritsConfig;

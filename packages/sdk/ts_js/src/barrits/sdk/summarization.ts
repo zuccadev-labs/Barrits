@@ -39,9 +39,7 @@ export const mapTraitDescriptors = (
   });
 };
 
-export const mapTraitDiagnostics = (
-  diagnostics: readonly BarritsTraitDiagnostic[] | undefined,
-): BarritsTraitDiagnostic[] => {
+export const mapTraitDiagnostics = (diagnostics: readonly BarritsTraitDiagnostic[] | undefined): BarritsTraitDiagnostic[] => {
   return [...(diagnostics ?? [])].sort((left, right) => {
     if (left.severity === right.severity) {
       if (left.code === right.code) {
@@ -65,15 +63,18 @@ export const createTraitDiagnosticAggregate = (
   const counts = createEmptyTraitDiagnosticCounts();
   const byCategory = createEmptyTraitDiagnosticCategoryCounts();
   const byCode = createEmptyTraitDiagnosticCodeCounts();
-  const byDescriptor = new Map<string, {
-    descriptorName: string;
-    sourceFile: string;
-    bindingName?: string;
-    counts: MutableTraitDiagnosticCounts;
-    byCategory: MutableTraitDiagnosticCategoryCounts;
-    byCode: MutableTraitDiagnosticCodeCounts;
-    codes: Set<BarritsTraitDiagnostic["code"]>;
-  }>();
+  const byDescriptor = new Map<
+    string,
+    {
+      descriptorName: string;
+      sourceFile: string;
+      bindingName?: string;
+      counts: MutableTraitDiagnosticCounts;
+      byCategory: MutableTraitDiagnosticCategoryCounts;
+      byCode: MutableTraitDiagnosticCodeCounts;
+      codes: Set<BarritsTraitDiagnostic["code"]>;
+    }
+  >();
 
   for (const diagnostic of diagnostics) {
     counts.total += 1;
@@ -139,9 +140,7 @@ const withOptionalFilters = <T extends object>(
   };
 };
 
-export const createBuildManifestSummary = (
-  manifest: BarritsBuildManifest | null,
-): BarritsConsumedStateSummary => {
+export const createBuildManifestSummary = (manifest: BarritsBuildManifest | null): BarritsConsumedStateSummary => {
   if (!manifest) {
     return {
       generatedAt: null,
@@ -152,21 +151,22 @@ export const createBuildManifestSummary = (
     };
   }
 
-  return withOptionalFilters({
-    generatedAt: manifest.generatedAt,
-    strategy: manifest.strategy,
-    domains: manifest.domains,
-    importStatements: mapImportStatements(manifest.importActions),
-    traitDescriptors: mapTraitDescriptors(manifest.traitDescriptors),
-    traitDiagnostics: mapTraitDiagnostics(manifest.traitDiagnostics),
-    traitDiagnosticAggregate: createTraitDiagnosticAggregate(manifest.traitDiagnostics),
-    collisionsCount: manifest.collisions?.length ?? 0,
-  }, manifest.filters);
+  return withOptionalFilters(
+    {
+      generatedAt: manifest.generatedAt,
+      strategy: manifest.strategy,
+      domains: manifest.domains,
+      importStatements: mapImportStatements(manifest.importActions),
+      traitDescriptors: mapTraitDescriptors(manifest.traitDescriptors),
+      traitDiagnostics: mapTraitDiagnostics(manifest.traitDiagnostics),
+      traitDiagnosticAggregate: createTraitDiagnosticAggregate(manifest.traitDiagnostics),
+      collisionsCount: manifest.collisions?.length ?? 0,
+    },
+    manifest.filters,
+  );
 };
 
-export const createWatchSnapshotSummary = (
-  snapshot: BarritsWatchSnapshot | null,
-): BarritsConsumedStateSummary => {
+export const createWatchSnapshotSummary = (snapshot: BarritsWatchSnapshot | null): BarritsConsumedStateSummary => {
   if (!snapshot) {
     return {
       generatedAt: null,
@@ -177,22 +177,23 @@ export const createWatchSnapshotSummary = (
     };
   }
 
-  return withOptionalFilters({
-    generatedAt: snapshot.generatedAt,
-    mode: snapshot.mode,
-    strategy: snapshot.graph.strategy,
-    domains: snapshot.graph.domains.map((domain) => domain.name),
-    importStatements: mapImportStatements(snapshot.graph.importActions),
-    traitDescriptors: mapTraitDescriptors(snapshot.graph.traitDescriptors),
-    traitDiagnostics: mapTraitDiagnostics(snapshot.graph.traitDiagnostics),
-    traitDiagnosticAggregate: createTraitDiagnosticAggregate(snapshot.graph.traitDiagnostics),
-    collisionsCount: snapshot.graph.collisions?.length ?? 0,
-  }, snapshot.filters);
+  return withOptionalFilters(
+    {
+      generatedAt: snapshot.generatedAt,
+      mode: snapshot.mode,
+      strategy: snapshot.graph.strategy,
+      domains: snapshot.graph.domains.map((domain) => domain.name),
+      importStatements: mapImportStatements(snapshot.graph.importActions),
+      traitDescriptors: mapTraitDescriptors(snapshot.graph.traitDescriptors),
+      traitDiagnostics: mapTraitDiagnostics(snapshot.graph.traitDiagnostics),
+      traitDiagnosticAggregate: createTraitDiagnosticAggregate(snapshot.graph.traitDiagnostics),
+      collisionsCount: snapshot.graph.collisions?.length ?? 0,
+    },
+    snapshot.filters,
+  );
 };
 
-export const createLanguageToolSnapshot = (
-  snapshot: BarritsWatchSnapshot,
-): BarritsLanguageToolSnapshot => {
+export const createLanguageToolSnapshot = (snapshot: BarritsWatchSnapshot): BarritsLanguageToolSnapshot => {
   const traitDiagnosticAggregate = createTraitDiagnosticAggregate(snapshot.graph.traitDiagnostics) ?? {
     counts: createEmptyTraitDiagnosticCounts(),
     byCategory: createEmptyTraitDiagnosticCategoryCounts(),
@@ -200,20 +201,23 @@ export const createLanguageToolSnapshot = (
     byDescriptor: [],
   };
 
-  return withOptionalFilters({
-    generatedAt: snapshot.generatedAt,
-    mode: snapshot.mode,
-    strategy: snapshot.graph.strategy,
-    domains: snapshot.graph.domains.map((domain) => ({
-      name: domain.name,
-      filesCount: domain.files.length,
-      exportNames: domain.files.flatMap((file) => file.exports.map((entry) => entry.name)),
-    })),
-    traitDescriptors: mapTraitDescriptors(snapshot.graph.traitDescriptors),
-    traitDiagnostics: mapTraitDiagnostics(snapshot.graph.traitDiagnostics),
-    traitDiagnosticAggregate,
-    importActions: snapshot.graph.importActions,
-    importStatements: mapImportStatements(snapshot.graph.importActions),
-    collisions: snapshot.graph.collisions ?? [],
-  }, snapshot.filters);
+  return withOptionalFilters(
+    {
+      generatedAt: snapshot.generatedAt,
+      mode: snapshot.mode,
+      strategy: snapshot.graph.strategy,
+      domains: snapshot.graph.domains.map((domain) => ({
+        name: domain.name,
+        filesCount: domain.files.length,
+        exportNames: domain.files.flatMap((file) => file.exports.map((entry) => entry.name)),
+      })),
+      traitDescriptors: mapTraitDescriptors(snapshot.graph.traitDescriptors),
+      traitDiagnostics: mapTraitDiagnostics(snapshot.graph.traitDiagnostics),
+      traitDiagnosticAggregate,
+      importActions: snapshot.graph.importActions,
+      importStatements: mapImportStatements(snapshot.graph.importActions),
+      collisions: snapshot.graph.collisions ?? [],
+    },
+    snapshot.filters,
+  );
 };

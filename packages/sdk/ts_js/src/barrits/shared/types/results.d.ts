@@ -8,6 +8,6 @@ export type RuntimeName = "node" | "deno" | "unknown";
  * [ES] Definición de tipo para PathParts.
  */
 export type PathParts = {
-    readonly segments: string[];
-    readonly query: Record<string, string>;
+  readonly segments: string[];
+  readonly query: Record<string, string>;
 };

@@ -1,7 +1,4 @@
-import type { 
-  BarritsTraitDescriptorInspection, 
-  BarritsTraitDiagnostic 
-} from "../contracts";
+import type { BarritsTraitDescriptorInspection, BarritsTraitDiagnostic } from "../contracts";
 import type { ExportedTraitBinding } from "./traits";
 
 /**
@@ -31,9 +28,7 @@ export const collectTraitDiagnostics = (
     }
   }
 
-  const createTraitDiagnostic = (
-    diagnostic: Omit<BarritsTraitDiagnostic, "category">,
-  ): BarritsTraitDiagnostic => {
+  const createTraitDiagnostic = (diagnostic: Omit<BarritsTraitDiagnostic, "category">): BarritsTraitDiagnostic => {
     switch (diagnostic.code) {
       case "trait-conflicts-mismatch":
       case "trait-consumes-mismatch":
@@ -58,38 +53,44 @@ export const collectTraitDiagnostics = (
 
   for (const descriptor of descriptors) {
     if (descriptor.requires.includes(descriptor.name)) {
-      diagnostics.push(createTraitDiagnostic({
-        code: "trait-self-requires",
-        severity: "error",
-        message: `Trait descriptor "${descriptor.name}" declares itself inside requires in ${descriptor.sourceFile}. A trait cannot depend on its own identity.`,
-        sourceFile: descriptor.sourceFile,
-        descriptorName: descriptor.name,
-        bindingName: descriptor.bindingName,
-      }));
+      diagnostics.push(
+        createTraitDiagnostic({
+          code: "trait-self-requires",
+          severity: "error",
+          message: `Trait descriptor "${descriptor.name}" declares itself inside requires in ${descriptor.sourceFile}. A trait cannot depend on its own identity.`,
+          sourceFile: descriptor.sourceFile,
+          descriptorName: descriptor.name,
+          bindingName: descriptor.bindingName,
+        }),
+      );
     }
 
     if (descriptor.conflicts.includes(descriptor.name)) {
-      diagnostics.push(createTraitDiagnostic({
-        code: "trait-self-conflict",
-        severity: "error",
-        message: `Trait descriptor "${descriptor.name}" declares itself inside conflicts in ${descriptor.sourceFile}. A trait cannot be incompatible with its own identity.`,
-        sourceFile: descriptor.sourceFile,
-        descriptorName: descriptor.name,
-        bindingName: descriptor.bindingName,
-      }));
+      diagnostics.push(
+        createTraitDiagnostic({
+          code: "trait-self-conflict",
+          severity: "error",
+          message: `Trait descriptor "${descriptor.name}" declares itself inside conflicts in ${descriptor.sourceFile}. A trait cannot be incompatible with its own identity.`,
+          sourceFile: descriptor.sourceFile,
+          descriptorName: descriptor.name,
+          bindingName: descriptor.bindingName,
+        }),
+      );
     }
 
     const contradictoryDependencies = descriptor.requires.filter((requiredName) => descriptor.conflicts.includes(requiredName));
 
     if (contradictoryDependencies.length > 0) {
-      diagnostics.push(createTraitDiagnostic({
-        code: "trait-requires-conflict-overlap",
-        severity: "error",
-        message: `Trait descriptor "${descriptor.name}" both requires and conflicts with [${contradictoryDependencies.join(", ")}] in ${descriptor.sourceFile}. Dependency and incompatibility contracts must not overlap.`,
-        sourceFile: descriptor.sourceFile,
-        descriptorName: descriptor.name,
-        bindingName: descriptor.bindingName,
-      }));
+      diagnostics.push(
+        createTraitDiagnostic({
+          code: "trait-requires-conflict-overlap",
+          severity: "error",
+          message: `Trait descriptor "${descriptor.name}" both requires and conflicts with [${contradictoryDependencies.join(", ")}] in ${descriptor.sourceFile}. Dependency and incompatibility contracts must not overlap.`,
+          sourceFile: descriptor.sourceFile,
+          descriptorName: descriptor.name,
+          bindingName: descriptor.bindingName,
+        }),
+      );
     }
 
     for (let i = 0; i < descriptor.requires.length; i++) {
@@ -100,14 +101,16 @@ export const collectTraitDiagnostics = (
       for (let j = i + 1; j < descriptor.requires.length; j++) {
         const traitB = descriptor.requires[j];
         if (descriptorA.conflicts.includes(traitB)) {
-          diagnostics.push(createTraitDiagnostic({
-            code: "trait-required-conflicts",
-            severity: "error",
-            message: `Trait descriptor "${descriptor.name}" requires both "${traitA}" and "${traitB}" in ${descriptor.sourceFile}, but "${traitA}" declares a conflict with "${traitB}". This composition is impossible to satisfy.`,
-            sourceFile: descriptor.sourceFile,
-            descriptorName: descriptor.name,
-            bindingName: descriptor.bindingName,
-          }));
+          diagnostics.push(
+            createTraitDiagnostic({
+              code: "trait-required-conflicts",
+              severity: "error",
+              message: `Trait descriptor "${descriptor.name}" requires both "${traitA}" and "${traitB}" in ${descriptor.sourceFile}, but "${traitA}" declares a conflict with "${traitB}". This composition is impossible to satisfy.`,
+              sourceFile: descriptor.sourceFile,
+              descriptorName: descriptor.name,
+              bindingName: descriptor.bindingName,
+            }),
+          );
         }
       }
     }
@@ -115,14 +118,16 @@ export const collectTraitDiagnostics = (
     const missingRequiredTraits = descriptor.requires.filter((requiredName) => !descriptorsByName.has(requiredName));
 
     for (const missingRequiredTrait of missingRequiredTraits) {
-      diagnostics.push(createTraitDiagnostic({
-        code: "trait-missing-required-trait",
-        severity: "warning",
-        message: `Trait descriptor "${descriptor.name}" requires "${missingRequiredTrait}" in ${descriptor.sourceFile}, but that trait was not found among the inspected trait descriptors. The contract may still be satisfied externally, but the current portable graph cannot verify it.`,
-        sourceFile: descriptor.sourceFile,
-        descriptorName: descriptor.name,
-        bindingName: descriptor.bindingName,
-      }));
+      diagnostics.push(
+        createTraitDiagnostic({
+          code: "trait-missing-required-trait",
+          severity: "warning",
+          message: `Trait descriptor "${descriptor.name}" requires "${missingRequiredTrait}" in ${descriptor.sourceFile}, but that trait was not found among the inspected trait descriptors. The contract may still be satisfied externally, but the current portable graph cannot verify it.`,
+          sourceFile: descriptor.sourceFile,
+          descriptorName: descriptor.name,
+          bindingName: descriptor.bindingName,
+        }),
+      );
     }
 
     const missingConsumedCapabilities = descriptor.consumes.filter((capabilityName) => {
@@ -134,26 +139,30 @@ export const collectTraitDiagnostics = (
     });
 
     for (const missingConsumedCapability of missingConsumedCapabilities) {
-      diagnostics.push(createTraitDiagnostic({
-        code: "trait-missing-consumed-capability",
-        severity: "warning",
-        message: `Trait descriptor "${descriptor.name}" consumes "${missingConsumedCapability}" in ${descriptor.sourceFile}, but that capability was not found among the inspected trait providers. The contract may still be satisfied externally, but the current portable graph cannot verify it.`,
-        sourceFile: descriptor.sourceFile,
-        descriptorName: descriptor.name,
-        bindingName: descriptor.bindingName,
-        capabilityName: missingConsumedCapability,
-      }));
+      diagnostics.push(
+        createTraitDiagnostic({
+          code: "trait-missing-consumed-capability",
+          severity: "warning",
+          message: `Trait descriptor "${descriptor.name}" consumes "${missingConsumedCapability}" in ${descriptor.sourceFile}, but that capability was not found among the inspected trait providers. The contract may still be satisfied externally, but the current portable graph cannot verify it.`,
+          sourceFile: descriptor.sourceFile,
+          descriptorName: descriptor.name,
+          bindingName: descriptor.bindingName,
+          capabilityName: missingConsumedCapability,
+        }),
+      );
     }
 
     if (!descriptor.factory) {
-      diagnostics.push(createTraitDiagnostic({
-        code: "trait-unsupported-factory",
-        severity: "warning",
-        message: `Trait descriptor "${descriptor.name}" is attached to export "${descriptor.bindingName}" in ${descriptor.sourceFile}, but no supported factory call was detected nearby. Prefer createTraitDescriptor() or createTraitDescriptorFromJsDoc().`,
-        sourceFile: descriptor.sourceFile,
-        descriptorName: descriptor.name,
-        bindingName: descriptor.bindingName,
-      }));
+      diagnostics.push(
+        createTraitDiagnostic({
+          code: "trait-unsupported-factory",
+          severity: "warning",
+          message: `Trait descriptor "${descriptor.name}" is attached to export "${descriptor.bindingName}" in ${descriptor.sourceFile}, but no supported factory call was detected nearby. Prefer createTraitDescriptor() or createTraitDescriptorFromJsDoc().`,
+          sourceFile: descriptor.sourceFile,
+          descriptorName: descriptor.name,
+          bindingName: descriptor.bindingName,
+        }),
+      );
       continue;
     }
 
@@ -161,19 +170,19 @@ export const collectTraitDiagnostics = (
       continue;
     }
 
-    const binding = bindingsBySourceFile
-      .get(descriptor.sourceFile)
-      ?.find((entry) => entry.bindingName === descriptor.bindingName);
+    const binding = bindingsBySourceFile.get(descriptor.sourceFile)?.find((entry) => entry.bindingName === descriptor.bindingName);
 
     if (binding?.runtimeName && binding.runtimeName !== descriptor.name) {
-      diagnostics.push(createTraitDiagnostic({
-        code: "trait-name-mismatch",
-        severity: "error",
-        message: `Trait descriptor "${descriptor.name}" documents export "${descriptor.bindingName}" in ${descriptor.sourceFile}, but createTraitDescriptor() declares runtime name "${binding.runtimeName}". Keep JSDoc and runtime trait identity aligned.`,
-        sourceFile: descriptor.sourceFile,
-        descriptorName: descriptor.name,
-        bindingName: descriptor.bindingName,
-      }));
+      diagnostics.push(
+        createTraitDiagnostic({
+          code: "trait-name-mismatch",
+          severity: "error",
+          message: `Trait descriptor "${descriptor.name}" documents export "${descriptor.bindingName}" in ${descriptor.sourceFile}, but createTraitDescriptor() declares runtime name "${binding.runtimeName}". Keep JSDoc and runtime trait identity aligned.`,
+          sourceFile: descriptor.sourceFile,
+          descriptorName: descriptor.name,
+          bindingName: descriptor.bindingName,
+        }),
+      );
     }
 
     if (binding?.runtimeProvides) {
@@ -181,14 +190,16 @@ export const collectTraitDiagnostics = (
       const runtimeProvides = binding.runtimeProvides.join(",");
 
       if (documentedProvides !== runtimeProvides) {
-        diagnostics.push(createTraitDiagnostic({
-          code: "trait-provides-mismatch",
-          severity: "warning",
-          message: `Trait descriptor "${descriptor.name}" documents provides [${descriptor.provides.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeProvides.join(", ")}] in ${descriptor.sourceFile}. Keep portable metadata aligned with runtime capabilities.`,
-          sourceFile: descriptor.sourceFile,
-          descriptorName: descriptor.name,
-          bindingName: descriptor.bindingName,
-        }));
+        diagnostics.push(
+          createTraitDiagnostic({
+            code: "trait-provides-mismatch",
+            severity: "warning",
+            message: `Trait descriptor "${descriptor.name}" documents provides [${descriptor.provides.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeProvides.join(", ")}] in ${descriptor.sourceFile}. Keep portable metadata aligned with runtime capabilities.`,
+            sourceFile: descriptor.sourceFile,
+            descriptorName: descriptor.name,
+            bindingName: descriptor.bindingName,
+          }),
+        );
       }
     }
 
@@ -197,14 +208,16 @@ export const collectTraitDiagnostics = (
       const runtimeConflicts = binding.runtimeConflicts.join(",");
 
       if (documentedConflicts !== runtimeConflicts) {
-        diagnostics.push(createTraitDiagnostic({
-          code: "trait-conflicts-mismatch",
-          severity: "warning",
-          message: `Trait descriptor "${descriptor.name}" documents conflicts [${descriptor.conflicts.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeConflicts.join(", ")}] in ${descriptor.sourceFile}. Keep incompatibility metadata aligned with runtime composition policy.`,
-          sourceFile: descriptor.sourceFile,
-          descriptorName: descriptor.name,
-          bindingName: descriptor.bindingName,
-        }));
+        diagnostics.push(
+          createTraitDiagnostic({
+            code: "trait-conflicts-mismatch",
+            severity: "warning",
+            message: `Trait descriptor "${descriptor.name}" documents conflicts [${descriptor.conflicts.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeConflicts.join(", ")}] in ${descriptor.sourceFile}. Keep incompatibility metadata aligned with runtime composition policy.`,
+            sourceFile: descriptor.sourceFile,
+            descriptorName: descriptor.name,
+            bindingName: descriptor.bindingName,
+          }),
+        );
       }
     }
 
@@ -213,14 +226,16 @@ export const collectTraitDiagnostics = (
       const runtimeRequires = binding.runtimeRequires.join(",");
 
       if (documentedRequires !== runtimeRequires) {
-        diagnostics.push(createTraitDiagnostic({
-          code: "trait-requires-mismatch",
-          severity: "warning",
-          message: `Trait descriptor "${descriptor.name}" documents requires [${descriptor.requires.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeRequires.join(", ")}] in ${descriptor.sourceFile}. Keep dependency metadata aligned with runtime composition order.`,
-          sourceFile: descriptor.sourceFile,
-          descriptorName: descriptor.name,
-          bindingName: descriptor.bindingName,
-        }));
+        diagnostics.push(
+          createTraitDiagnostic({
+            code: "trait-requires-mismatch",
+            severity: "warning",
+            message: `Trait descriptor "${descriptor.name}" documents requires [${descriptor.requires.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeRequires.join(", ")}] in ${descriptor.sourceFile}. Keep dependency metadata aligned with runtime composition order.`,
+            sourceFile: descriptor.sourceFile,
+            descriptorName: descriptor.name,
+            bindingName: descriptor.bindingName,
+          }),
+        );
       }
     }
 
@@ -229,14 +244,16 @@ export const collectTraitDiagnostics = (
       const runtimeConsumes = binding.runtimeConsumes.join(",");
 
       if (documentedConsumes !== runtimeConsumes) {
-        diagnostics.push(createTraitDiagnostic({
-          code: "trait-consumes-mismatch",
-          severity: "warning",
-          message: `Trait descriptor "${descriptor.name}" documents consumes [${descriptor.consumes.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeConsumes.join(", ")}] in ${descriptor.sourceFile}. Keep capability dependency metadata aligned with runtime expectations.`,
-          sourceFile: descriptor.sourceFile,
-          descriptorName: descriptor.name,
-          bindingName: descriptor.bindingName,
-        }));
+        diagnostics.push(
+          createTraitDiagnostic({
+            code: "trait-consumes-mismatch",
+            severity: "warning",
+            message: `Trait descriptor "${descriptor.name}" documents consumes [${descriptor.consumes.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeConsumes.join(", ")}] in ${descriptor.sourceFile}. Keep capability dependency metadata aligned with runtime expectations.`,
+            sourceFile: descriptor.sourceFile,
+            descriptorName: descriptor.name,
+            bindingName: descriptor.bindingName,
+          }),
+        );
       }
     }
 
@@ -245,14 +262,16 @@ export const collectTraitDiagnostics = (
       const runtimeState = binding.runtimeState.join(",");
 
       if (documentedState !== runtimeState) {
-        diagnostics.push(createTraitDiagnostic({
-          code: "trait-state-mismatch",
-          severity: "warning",
-          message: `Trait descriptor "${descriptor.name}" documents state [${descriptor.state.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeState.join(", ")}] in ${descriptor.sourceFile}. Keep state ownership metadata aligned with runtime slots.`,
-          sourceFile: descriptor.sourceFile,
-          descriptorName: descriptor.name,
-          bindingName: descriptor.bindingName,
-        }));
+        diagnostics.push(
+          createTraitDiagnostic({
+            code: "trait-state-mismatch",
+            severity: "warning",
+            message: `Trait descriptor "${descriptor.name}" documents state [${descriptor.state.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeState.join(", ")}] in ${descriptor.sourceFile}. Keep state ownership metadata aligned with runtime slots.`,
+            sourceFile: descriptor.sourceFile,
+            descriptorName: descriptor.name,
+            bindingName: descriptor.bindingName,
+          }),
+        );
       }
     }
   }
@@ -263,14 +282,16 @@ export const collectTraitDiagnostics = (
     }
 
     for (const descriptor of matchingDescriptors) {
-      diagnostics.push(createTraitDiagnostic({
-        code: "trait-duplicate-name",
-        severity: "error",
-        message: `Trait descriptor "${descriptorName}" is declared more than once across inspected files. Keep trait names globally stable and unique.`,
-        sourceFile: descriptor.sourceFile,
-        descriptorName,
-        bindingName: descriptor.bindingName,
-      }));
+      diagnostics.push(
+        createTraitDiagnostic({
+          code: "trait-duplicate-name",
+          severity: "error",
+          message: `Trait descriptor "${descriptorName}" is declared more than once across inspected files. Keep trait names globally stable and unique.`,
+          sourceFile: descriptor.sourceFile,
+          descriptorName,
+          bindingName: descriptor.bindingName,
+        }),
+      );
     }
   }
 
@@ -280,15 +301,17 @@ export const collectTraitDiagnostics = (
     }
 
     for (const descriptor of matchingDescriptors) {
-      diagnostics.push(createTraitDiagnostic({
-        code: "trait-duplicate-provides",
-        severity: "warning",
-        message: `Trait capability "${capabilityName}" is declared by multiple inspected traits. This may be intentional, but usually deserves explicit conflict policy or clearer ownership.`,
-        sourceFile: descriptor.sourceFile,
-        descriptorName: descriptor.name,
-        bindingName: descriptor.bindingName,
-        capabilityName,
-      }));
+      diagnostics.push(
+        createTraitDiagnostic({
+          code: "trait-duplicate-provides",
+          severity: "warning",
+          message: `Trait capability "${capabilityName}" is declared by multiple inspected traits. This may be intentional, but usually deserves explicit conflict policy or clearer ownership.`,
+          sourceFile: descriptor.sourceFile,
+          descriptorName: descriptor.name,
+          bindingName: descriptor.bindingName,
+          capabilityName,
+        }),
+      );
     }
   }
 

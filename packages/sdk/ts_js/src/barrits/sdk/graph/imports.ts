@@ -1,9 +1,4 @@
-import type { 
-  BarritsFileIntegration, 
-  BarritsDomainIntegration, 
-  BarritsImportAction,
-  BarritsFileExport
-} from "../contracts";
+import type { BarritsFileIntegration, BarritsDomainIntegration, BarritsImportAction, BarritsFileExport } from "../contracts";
 
 /**
  * Filter exported interfaces natively targeting mapped module components resolving explicit interfaces mapping.

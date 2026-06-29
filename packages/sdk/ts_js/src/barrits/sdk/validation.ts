@@ -71,9 +71,7 @@ export const createEmptyTraitDiagnosticCategoryCounts = (): MutableTraitDiagnost
 });
 
 export const createEmptyTraitDiagnosticCodeCounts = (): MutableTraitDiagnosticCodeCounts => {
-  return Object.fromEntries(
-    TRAIT_DIAGNOSTIC_CODES.map((code) => [code, 0]),
-  ) as MutableTraitDiagnosticCodeCounts;
+  return Object.fromEntries(TRAIT_DIAGNOSTIC_CODES.map((code) => [code, 0])) as MutableTraitDiagnosticCodeCounts;
 };
 
 type JsonRecord = Record<string, unknown>;
@@ -172,11 +170,7 @@ export const withOptionalProperty = <T extends object, K extends string, V>(
   };
 };
 
-export const expectSelectionFilters = (
-  value: unknown,
-  payloadName: string,
-  path: string,
-): BarritsSelectionFilters | undefined => {
+export const expectSelectionFilters = (value: unknown, payloadName: string, path: string): BarritsSelectionFilters | undefined => {
   if (value === undefined) {
     return undefined;
   }
@@ -225,11 +219,7 @@ export const expectSelectionFilters = (
   return filters;
 };
 
-export const expectTraitDescriptor = (
-  value: unknown,
-  payloadName: string,
-  path: string,
-): BarritsConsumedTraitDescriptor => {
+export const expectTraitDescriptor = (value: unknown, payloadName: string, path: string): BarritsConsumedTraitDescriptor => {
   const record = expectRecord(value, payloadName, path);
 
   const descriptor = {
@@ -247,11 +237,7 @@ export const expectTraitDescriptor = (
   };
 
   return withOptionalProperty(
-    withOptionalProperty(
-      descriptor,
-      "summary",
-      expectOptionalString(record.summary, payloadName, `${path}.summary`),
-    ),
+    withOptionalProperty(descriptor, "summary", expectOptionalString(record.summary, payloadName, `${path}.summary`)),
     "factory",
     record.factory === undefined
       ? undefined
@@ -259,17 +245,25 @@ export const expectTraitDescriptor = (
   ) as BarritsConsumedTraitDescriptor;
 };
 
-export const expectTraitDiagnostic = (
-  value: unknown,
-  payloadName: string,
-  path: string,
-): BarritsTraitDiagnostic => {
+export const expectTraitDiagnostic = (value: unknown, payloadName: string, path: string): BarritsTraitDiagnostic => {
   const record = expectRecord(value, payloadName, path);
 
   const diagnostic = {
     code: expectEnumValue(record.code, TRAIT_DIAGNOSTIC_CODE_SET, payloadName, `${path}.code`, "valid BarritsTraitDiagnosticCode"),
-    category: expectEnumValue(record.category, TRAIT_DIAGNOSTIC_CATEGORIES, payloadName, `${path}.category`, "valid BarritsTraitDiagnosticCategory"),
-    severity: expectEnumValue(record.severity, TRAIT_DIAGNOSTIC_SEVERITIES, payloadName, `${path}.severity`, "valid BarritsTraitDiagnosticSeverity"),
+    category: expectEnumValue(
+      record.category,
+      TRAIT_DIAGNOSTIC_CATEGORIES,
+      payloadName,
+      `${path}.category`,
+      "valid BarritsTraitDiagnosticCategory",
+    ),
+    severity: expectEnumValue(
+      record.severity,
+      TRAIT_DIAGNOSTIC_SEVERITIES,
+      payloadName,
+      `${path}.severity`,
+      "valid BarritsTraitDiagnosticSeverity",
+    ),
     message: expectString(record.message, payloadName, `${path}.message`),
     sourceFile: expectString(record.sourceFile, payloadName, `${path}.sourceFile`),
   };
@@ -305,17 +299,29 @@ export const expectExportCollision = (
   value: unknown,
   payloadName: string,
   path: string,
-): { type: "project-project" | "project-library"; namespace: string; exportName: string; projectSourceFile: string; conflictSourceFile: string; librarySourceFile?: string; message: string } => {
+): {
+  type: "project-project" | "project-library";
+  namespace: string;
+  exportName: string;
+  projectSourceFile: string;
+  conflictSourceFile: string;
+  librarySourceFile?: string;
+  message: string;
+} => {
   const record = expectRecord(value, payloadName, path);
 
-  return withOptionalProperty({
-    type: expectEnumValue(record.type, EXPORT_COLLISION_TYPES, payloadName, `${path}.type`, "valid collision type"),
-    namespace: expectString(record.namespace, payloadName, `${path}.namespace`),
-    exportName: expectString(record.exportName, payloadName, `${path}.exportName`),
-    projectSourceFile: expectString(record.projectSourceFile, payloadName, `${path}.projectSourceFile`),
-    conflictSourceFile: expectString(record.conflictSourceFile, payloadName, `${path}.conflictSourceFile`),
-    message: expectString(record.message, payloadName, `${path}.message`),
-  }, "librarySourceFile", expectOptionalString(record.librarySourceFile, payloadName, `${path}.librarySourceFile`));
+  return withOptionalProperty(
+    {
+      type: expectEnumValue(record.type, EXPORT_COLLISION_TYPES, payloadName, `${path}.type`, "valid collision type"),
+      namespace: expectString(record.namespace, payloadName, `${path}.namespace`),
+      exportName: expectString(record.exportName, payloadName, `${path}.exportName`),
+      projectSourceFile: expectString(record.projectSourceFile, payloadName, `${path}.projectSourceFile`),
+      conflictSourceFile: expectString(record.conflictSourceFile, payloadName, `${path}.conflictSourceFile`),
+      message: expectString(record.message, payloadName, `${path}.message`),
+    },
+    "librarySourceFile",
+    expectOptionalString(record.librarySourceFile, payloadName, `${path}.librarySourceFile`),
+  );
 };
 
 export const expectFileExport = (value: unknown, payloadName: string, path: string) => {
@@ -324,7 +330,13 @@ export const expectFileExport = (value: unknown, payloadName: string, path: stri
   return {
     name: expectString(record.name, payloadName, `${path}.name`),
     accessPath: expectString(record.accessPath, payloadName, `${path}.accessPath`),
-    accessStrategy: expectEnumValue(record.accessStrategy, new Set(["export-name", "file-system", "jsdoc"]), payloadName, `${path}.accessStrategy`, "valid BarritsExportAccessStrategy"),
+    accessStrategy: expectEnumValue(
+      record.accessStrategy,
+      new Set(["export-name", "file-system", "jsdoc"]),
+      payloadName,
+      `${path}.accessStrategy`,
+      "valid BarritsExportAccessStrategy",
+    ),
     kind: expectEnumValue(record.kind, EXPORT_KINDS, payloadName, `${path}.kind`, "valid BarritsExportKind"),
     visibility: expectString(record.visibility, payloadName, `${path}.visibility`),
   };
@@ -332,9 +344,10 @@ export const expectFileExport = (value: unknown, payloadName: string, path: stri
 
 export const expectFileIntegration = (value: unknown, payloadName: string, path: string) => {
   const record = expectRecord(value, payloadName, path);
-  const visibilityEntries = expectOptionalArray(record.exports, payloadName, `${path}.exports`, (entry, index) =>
-    expectFileExport(entry, payloadName, `${path}.exports[${index}]`),
-  ) ?? [];
+  const visibilityEntries =
+    expectOptionalArray(record.exports, payloadName, `${path}.exports`, (entry, index) =>
+      expectFileExport(entry, payloadName, `${path}.exports[${index}]`),
+    ) ?? [];
 
   visibilityEntries.forEach((entry, index) => {
     if (!isBarritsExportVisibility(entry.visibility)) {
@@ -344,7 +357,12 @@ export const expectFileIntegration = (value: unknown, payloadName: string, path:
 
   return {
     path: expectString(record.path, payloadName, `${path}.path`),
-    isIndex: typeof record.isIndex === "boolean" ? record.isIndex : (() => { throw createInvalidPayloadError(payloadName, `${path}.isIndex`, "boolean"); })(),
+    isIndex:
+      typeof record.isIndex === "boolean"
+        ? record.isIndex
+        : (() => {
+            throw createInvalidPayloadError(payloadName, `${path}.isIndex`, "boolean");
+          })(),
     kind: (() => {
       const value = expectString(record.kind, payloadName, `${path}.kind`);
       if (!isBarritsFileKind(value)) {
@@ -354,9 +372,10 @@ export const expectFileIntegration = (value: unknown, payloadName: string, path:
     })(),
     sourceLayer: expectEnumValue(record.sourceLayer, SOURCE_LAYERS, payloadName, `${path}.sourceLayer`, "valid BarritsSourceLayer"),
     exports: visibilityEntries,
-    traitDescriptors: expectOptionalArray(record.traitDescriptors, payloadName, `${path}.traitDescriptors`, (entry, index) =>
-      expectTraitDescriptor(entry, payloadName, `${path}.traitDescriptors[${index}]`),
-    ) ?? [],
+    traitDescriptors:
+      expectOptionalArray(record.traitDescriptors, payloadName, `${path}.traitDescriptors`, (entry, index) =>
+        expectTraitDescriptor(entry, payloadName, `${path}.traitDescriptors[${index}]`),
+      ) ?? [],
   };
 };
 
@@ -366,18 +385,17 @@ export const expectDomainIntegration = (value: unknown, payloadName: string, pat
   return {
     name: expectString(record.name, payloadName, `${path}.name`),
     path: expectString(record.path, payloadName, `${path}.path`),
-    files: expectOptionalArray(record.files, payloadName, `${path}.files`, (entry, index) =>
-      expectFileIntegration(entry, payloadName, `${path}.files[${index}]`),
-    ) ?? [],
+    files:
+      expectOptionalArray(record.files, payloadName, `${path}.files`, (entry, index) =>
+        expectFileIntegration(entry, payloadName, `${path}.files[${index}]`),
+      ) ?? [],
   };
 };
 
 export const parseJsonSource = (source: string, payloadName: string): JsonRecord => {
   const MAX_JSON_SIZE = 10 * 1024 * 1024;
   if (source.length > MAX_JSON_SIZE) {
-    throw new Error(
-      `JSON payload "${payloadName}" exceeds maximum size of ${MAX_JSON_SIZE} bytes (received ${source.length} bytes)`,
-    );
+    throw new Error(`JSON payload "${payloadName}" exceeds maximum size of ${MAX_JSON_SIZE} bytes (received ${source.length} bytes)`);
   }
 
   const parsed = JSON.parse(source) as unknown;

@@ -1,18 +1,21 @@
 import { type BarritsPackageAutomationOptions } from "./shared";
 type VitePlugin = {
-    name: string;
-    resolveId?: (id: string) => string | null | Promise<string | null>;
-    load?: (id: string) => string | null | Promise<string | null>;
-    config?: () => {
+  name: string;
+  resolveId?: (id: string) => string | null | Promise<string | null>;
+  load?: (id: string) => string | null | Promise<string | null>;
+  config?: () =>
+    | {
         define?: Record<string, string>;
-    } | void | Promise<{
+      }
+    | void
+    | Promise<{
         define?: Record<string, string>;
-    } | void>;
+      } | void>;
 };
 type BarritsVitePluginOptions = {
-    manifestPath?: string;
-    package?: BarritsPackageAutomationOptions;
-    virtualModuleId?: string;
+  manifestPath?: string;
+  package?: BarritsPackageAutomationOptions;
+  virtualModuleId?: string;
 };
 /**
  * [EN] Implementation of Barrits vite plugin.

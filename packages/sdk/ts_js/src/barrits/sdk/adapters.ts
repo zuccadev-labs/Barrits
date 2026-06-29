@@ -34,9 +34,7 @@ export class DenoFileSystemAdapter implements RuntimeFileSystemAdapter {
 
   async listDirectories(path: string): Promise<string[]> {
     const entries = await this.listEntries(path);
-    return entries
-      .filter((e) => e.type === "directory")
-      .map((e) => e.name);
+    return entries.filter((e) => e.type === "directory").map((e) => e.name);
   }
 
   async listEntries(path: string): Promise<RuntimeFileSystemEntry[]> {
@@ -78,9 +76,7 @@ export class NodeFileSystemAdapter implements RuntimeFileSystemAdapter {
   async listDirectories(path: string): Promise<string[]> {
     const fs = await runtimeImport<typeof import("node:fs/promises")>("node:fs/promises");
     const entries = await fs.readdir(path, { withFileTypes: true });
-    return entries
-      .filter((e) => e.isDirectory())
-      .map((e) => e.name);
+    return entries.filter((e) => e.isDirectory()).map((e) => e.name);
   }
 
   async listEntries(path: string): Promise<RuntimeFileSystemEntry[]> {
@@ -117,4 +113,3 @@ export const createRuntimeFileSystemAdapter = (): RuntimeFileSystemAdapter => {
 
   throw new Error(`Unsupported runtime for filesystem operations: ${runtime}`);
 };
-

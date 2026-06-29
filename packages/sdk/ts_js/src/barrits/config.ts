@@ -3,44 +3,39 @@ import { normalizeResolvedConfig } from "./internal/config_normalization";
 
 /**
  * @module
- * [EN] Configuration engine for Barrits orchestrations. Handles file discovery, 
+ * [EN] Configuration engine for Barrits orchestrations. Handles file discovery,
  * normalization, and runtime state resolution.
- * [ES] Motor de configuración para orquestaciones de Barrits. Maneja el descubrimiento de archivos, 
+ * [ES] Motor de configuración para orquestaciones de Barrits. Maneja el descubrimiento de archivos,
  * la normalización y la resolución del estado en tiempo de ejecución.
  */
 
-/** 
+/**
  * [EN] Supported runtime identifiers for package-level configuration.
  * [ES] Identificadores de tiempo de ejecución soportados para la configuración a nivel de paquete.
  */
 export type BarritsRuntimeKind = "node" | "deno" | "react" | "browser" | "other";
 
-/** [EN] Strategy for resolving trait composition conflicts. 
+/** [EN] Strategy for resolving trait composition conflicts.
  *  [ES] Estrategia para resolver conflictos de composición de traits. */
 export type BarritsTraitConflictStrategy = "error" | "override" | "merge";
 
-/** 
+/**
  * [EN] Watch policy used by automation and adapter orchestration.
  * [ES] Política de observación (watch) utilizada por la automatización y la orquestación de adaptadores.
  */
 export type BarritsWatchMode = "auto" | "manual" | "off";
 
-/** 
+/**
  * [EN] Default folder where Barrits stores generated automation artifacts.
  * [ES] Carpeta predeterminada donde Barrits almacena los artefactos de automatización generados.
  */
 export const DEFAULT_AUTOMATION_DIRECTORY = ".barrits";
 
-/** 
+/**
  * [EN] Candidate config filenames resolved in project root order.
  * [ES] Nombres de archivos de configuración candidatos resueltos en orden desde la raíz del proyecto.
  */
-export const BARRITS_CONFIG_FILENAMES = [
-  "barrits.config.ts",
-  "barrits.config.mts",
-  "barrits.config.js",
-  "barrits.config.mjs",
-] as const;
+export const BARRITS_CONFIG_FILENAMES = ["barrits.config.ts", "barrits.config.mts", "barrits.config.js", "barrits.config.mjs"] as const;
 
 /**
  * [EN] Manual trait contract entry used when declarative JSDoc is not present in the source file.
@@ -101,7 +96,7 @@ export type BarritsContractsConfig = {
   exports?: readonly BarritsExportContractConfig[];
 };
 
-/** 
+/**
  * [EN] Root configuration schema accepted by `barrits.config.*` files.
  * [ES] Esquema de configuración raíz aceptado por los archivos `barrits.config.*`.
  */
@@ -126,19 +121,19 @@ export type BarritsRootConfig = {
   traitConflictStrategy?: BarritsTraitConflictStrategy;
   /** [EN] Manual contract definitions. [ES] Definiciones manuales de contratos. */
   contracts?: BarritsContractsConfig;
-  /** 
+  /**
    * [EN] Optional main method to override default bootstrap.
    * [ES] Método principal opcional para anular el bootstrap predeterminado.
    */
   main?: () => Promise<void> | void;
-  /** 
+  /**
    * [EN] Optional custom namespace injected when creating abstract factories.
    * [ES] Espacio de nombres personalizado inyectado al crear factorías abstractas.
    */
   namespace?: string;
 };
 
-/** 
+/**
  * [EN] Fully resolved runtime configuration consumed internally by Barrits.
  * [ES] Configuración de tiempo de ejecución completamente resuelta consumida internamente por Barrits.
  */
@@ -240,9 +235,7 @@ export const defineBarritsConfig = <TConfig extends BarritsRootConfig>(config: T
  * @param projectRoot - [EN] Root folder to inspect. [ES] Carpeta raíz a inspeccionar.
  * @returns [EN] Absolute config path when found, otherwise undefined. [ES] Ruta absoluta de configuración cuando se encuentra, de lo contrario undefined.
  */
-export const findBarritsConfigFile = async (
-  projectRoot: string = getCurrentWorkingDirectory(),
-): Promise<string | undefined> => {
+export const findBarritsConfigFile = async (projectRoot: string = getCurrentWorkingDirectory()): Promise<string | undefined> => {
   const runtime = detectRuntime();
 
   if (runtime !== "node" && runtime !== "deno") {
@@ -315,9 +308,5 @@ export const resolveBarritsConfig = async (
     ...options,
   } satisfies BarritsRootConfig;
 
-  return normalizeResolvedConfig(
-    mergedConfig,
-    initialProjectRoot,
-    loadedConfig?.configFilePath,
-  );
+  return normalizeResolvedConfig(mergedConfig, initialProjectRoot, loadedConfig?.configFilePath);
 };

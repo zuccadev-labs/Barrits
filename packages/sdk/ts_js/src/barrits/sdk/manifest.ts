@@ -2,20 +2,18 @@
  * @module
  * [EN] Manifest creation and serialization utilities for Barrits.
  * [ES] Utilidades de creación y serialización de manifiestos para Barrits.
- */import type { BarritsBuildManifest, BarritsIntegrationGraph, BarritsSelectionFilters, BarritsWatchSnapshot } from "./contracts";
+ */ import type { BarritsBuildManifest, BarritsIntegrationGraph, BarritsSelectionFilters, BarritsWatchSnapshot } from "./contracts";
 import { filterImportActions } from "./imports";
 import { filterIntegrationGraph } from "./query";
 
 const hasSelectionFilters = (filters: BarritsSelectionFilters | undefined): filters is BarritsSelectionFilters => {
   return Boolean(
-    filters
-    && (
-      filters.domains?.length
-      || filters.exports?.length
-      || filters.fileKinds?.length
-      || filters.visibilities?.length
-      || filters.kinds?.length
-    ),
+    filters &&
+    (filters.domains?.length ||
+      filters.exports?.length ||
+      filters.fileKinds?.length ||
+      filters.visibilities?.length ||
+      filters.kinds?.length),
   );
 };
 
@@ -23,10 +21,7 @@ const hasSelectionFilters = (filters: BarritsSelectionFilters | undefined): filt
  * [EN] Implementation of Create projected graph.
  * [ES] Implementación de Create projected graph.
  */
-export const createProjectedGraph = (
-  graph: BarritsIntegrationGraph,
-  filters: BarritsSelectionFilters = {},
-): BarritsIntegrationGraph => {
+export const createProjectedGraph = (graph: BarritsIntegrationGraph, filters: BarritsSelectionFilters = {}): BarritsIntegrationGraph => {
   const filteredGraph = filterIntegrationGraph(graph, filters);
 
   return filterImportActions(filteredGraph, {
@@ -54,7 +49,7 @@ export const createBuildManifest = async (
   filters?: BarritsSelectionFilters,
 ): Promise<BarritsBuildManifest> => {
   const generatedAt = new Date().toISOString();
-  
+
   const sortedTraits = [...graph.traitDescriptors].sort((left, right) => left.name.localeCompare(right.name));
   const sortedActions = [...graph.importActions].sort((left, right) => left.exportName.localeCompare(right.exportName));
 
@@ -65,8 +60,8 @@ export const createBuildManifest = async (
     graph.discoveryRoots.join(","),
     graph.filesCount.toString(),
     graph.exportsCount.toString(),
-    sortedTraits.map(t => t.name).join(","),
-    sortedActions.map(i => i.exportName).join(";")
+    sortedTraits.map((t) => t.name).join(","),
+    sortedActions.map((i) => i.exportName).join(";"),
   ].join("|");
 
   return {
@@ -89,10 +84,7 @@ export const createBuildManifest = async (
  * [EN] Implementation of Stringify build manifest.
  * [ES] Implementación de Stringify build manifest.
  */
-export const stringifyBuildManifest = async (
-  graph: BarritsIntegrationGraph,
-  filters?: BarritsSelectionFilters,
-): Promise<string> => {
+export const stringifyBuildManifest = async (graph: BarritsIntegrationGraph, filters?: BarritsSelectionFilters): Promise<string> => {
   return JSON.stringify(await createBuildManifest(graph, filters), null, 2);
 };
 

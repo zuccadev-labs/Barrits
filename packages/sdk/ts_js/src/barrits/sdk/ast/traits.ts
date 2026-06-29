@@ -3,10 +3,7 @@ import { parseTraitDescriptorJsDoc } from "../../traits/descriptor";
 import { createCachedSourceFile } from "./cache";
 import { extractAttachedJsDoc, hasExportModifier } from "./extractor";
 import { normalizePath } from "../path";
-import type { 
-  BarritsTraitDescriptorInspection, 
-  BarritsTraitDiagnostic,
-} from "../contracts";
+import type { BarritsTraitDescriptorInspection, BarritsTraitDiagnostic } from "../contracts";
 import type { BarritsTraitContractConfig } from "../../config";
 
 /**
@@ -63,29 +60,29 @@ export const resolveTraitDescriptorFactoryFromExpression = (
       }
     }
 
-    return resolveTraitDescriptorFactoryFromExpression(expression.expression)
-      ?? expression.arguments
-        .map((argument) => resolveTraitDescriptorFactoryFromExpression(argument))
-        .find(Boolean);
+    return (
+      resolveTraitDescriptorFactoryFromExpression(expression.expression) ??
+      expression.arguments.map((argument) => resolveTraitDescriptorFactoryFromExpression(argument)).find(Boolean)
+    );
   }
 
   if (
-    ts.isParenthesizedExpression(expression)
-    || ts.isAsExpression(expression)
-    || ts.isSatisfiesExpression(expression)
-    || ts.isNonNullExpression(expression)
+    ts.isParenthesizedExpression(expression) ||
+    ts.isAsExpression(expression) ||
+    ts.isSatisfiesExpression(expression) ||
+    ts.isNonNullExpression(expression)
   ) {
     return resolveTraitDescriptorFactoryFromExpression(expression.expression);
   }
 
   if (ts.isConditionalExpression(expression)) {
-    return resolveTraitDescriptorFactoryFromExpression(expression.whenTrue)
-      ?? resolveTraitDescriptorFactoryFromExpression(expression.whenFalse);
+    return (
+      resolveTraitDescriptorFactoryFromExpression(expression.whenTrue) ?? resolveTraitDescriptorFactoryFromExpression(expression.whenFalse)
+    );
   }
 
   if (ts.isBinaryExpression(expression)) {
-    return resolveTraitDescriptorFactoryFromExpression(expression.left)
-      ?? resolveTraitDescriptorFactoryFromExpression(expression.right);
+    return resolveTraitDescriptorFactoryFromExpression(expression.left) ?? resolveTraitDescriptorFactoryFromExpression(expression.right);
   }
 
   if (ts.isAwaitExpression(expression)) {

@@ -54,9 +54,7 @@ export const mergeTraits = <TLeft extends object, TRight extends object>(
       continue;
     }
 
-    throw new Error(
-      `Trait collision for "${key}". Pass { onConflict: "left" | "right" } or a resolveConflict callback to mergeTraits().`,
-    );
+    throw new Error(`Trait collision for "${key}". Pass { onConflict: "left" | "right" } or a resolveConflict callback to mergeTraits().`);
   }
 
   return result as TLeft & TRight;

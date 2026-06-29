@@ -6,28 +6,28 @@ import type { BarritsTraitContractConfig } from "../../config";
  * [ES] Definición de tipo para ExportedTraitBinding.
  */
 export type ExportedTraitBinding = {
-    readonly bindingKind: "const" | "function" | "class";
-    readonly bindingName: string;
-    readonly matchIndex: number;
-    readonly runtimeConflicts?: readonly string[];
-    readonly factory?: "createTraitDescriptor" | "createTraitDescriptorFromJsDoc";
-    readonly runtimeConsumes?: readonly string[];
-    readonly runtimeName?: string;
-    readonly runtimeRequires?: readonly string[];
-    readonly runtimeProvides?: readonly string[];
-    readonly runtimeState?: readonly string[];
+  readonly bindingKind: "const" | "function" | "class";
+  readonly bindingName: string;
+  readonly matchIndex: number;
+  readonly runtimeConflicts?: readonly string[];
+  readonly factory?: "createTraitDescriptor" | "createTraitDescriptorFromJsDoc";
+  readonly runtimeConsumes?: readonly string[];
+  readonly runtimeName?: string;
+  readonly runtimeRequires?: readonly string[];
+  readonly runtimeProvides?: readonly string[];
+  readonly runtimeState?: readonly string[];
 };
 /**
  * [EN] Type definition for TraitRuntimeMetadata.
  * [ES] Definición de tipo para TraitRuntimeMetadata.
  */
 export type TraitRuntimeMetadata = {
-    readonly conflicts?: readonly string[];
-    readonly consumes?: readonly string[];
-    readonly name?: string;
-    readonly requires?: readonly string[];
-    readonly provides?: readonly string[];
-    readonly state?: readonly string[];
+  readonly conflicts?: readonly string[];
+  readonly consumes?: readonly string[];
+  readonly name?: string;
+  readonly requires?: readonly string[];
+  readonly provides?: readonly string[];
+  readonly state?: readonly string[];
 };
 /**
  * Resolves deeply nested semantic abstract factories evaluating expression tree architectures mapped targeting capability creation.
@@ -35,7 +35,9 @@ export type TraitRuntimeMetadata = {
  * @param expression - Typescript logic interface binding literal root syntax expression node component dependency pointer.
  * @returns Resolves the factory literal identifier string natively mapped.
  */
-export declare const resolveTraitDescriptorFactoryFromExpression: (expression: ts.Expression | undefined) => "createTraitDescriptor" | "createTraitDescriptorFromJsDoc" | undefined;
+export declare const resolveTraitDescriptorFactoryFromExpression: (
+  expression: ts.Expression | undefined,
+) => "createTraitDescriptor" | "createTraitDescriptorFromJsDoc" | undefined;
 /**
  * Parses a TypeScript Array Literal node mapping plain text constants mapping primitive string interfaces.
  */
@@ -67,4 +69,7 @@ export declare const toTraitContractDescriptor: (contract: BarritsTraitContractC
  * [EN] Implementation of Merge trait descriptors.
  * [ES] Implementación de Merge trait descriptors.
  */
-export declare const mergeTraitDescriptors: (discoveredDescriptors: readonly BarritsTraitDescriptorInspection[], contractDescriptors: readonly BarritsTraitDescriptorInspection[]) => BarritsTraitDescriptorInspection[];
+export declare const mergeTraitDescriptors: (
+  discoveredDescriptors: readonly BarritsTraitDescriptorInspection[],
+  contractDescriptors: readonly BarritsTraitDescriptorInspection[],
+) => BarritsTraitDescriptorInspection[];

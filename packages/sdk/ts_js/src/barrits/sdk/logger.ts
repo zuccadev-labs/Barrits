@@ -1,8 +1,8 @@
 /**
  * @module
- * [EN] Industrial telemetry and logging system for Barrits. 
+ * [EN] Industrial telemetry and logging system for Barrits.
  * Provides a standard, pluggable interface for observability across all runtimes.
- * [ES] Sistema de telemetría y registro industrial para Barrits. 
+ * [ES] Sistema de telemetría y registro industrial para Barrits.
  * Proporciona una interfaz estándar y conectable para la observabilidad en todos los entornos de ejecución.
  */
 

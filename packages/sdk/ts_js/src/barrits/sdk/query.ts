@@ -64,23 +64,19 @@ const filterFiles = (
       return [];
     }
 
-    return [{
-      ...file,
-      exports,
-    }];
+    return [
+      {
+        ...file,
+        exports,
+      },
+    ];
   });
 };
 
-const collectGraphMetrics = (
-  rootFiles: readonly BarritsFileIntegration[],
-  domains: readonly BarritsDomainIntegration[],
-) => {
+const collectGraphMetrics = (rootFiles: readonly BarritsFileIntegration[], domains: readonly BarritsDomainIntegration[]) => {
   const files = [...rootFiles, ...domains.flatMap((domain) => domain.files)];
   const exportsCount = files.reduce((count, file) => count + file.exports.length, 0);
-  const publicExportsCount = files.reduce(
-    (count, file) => count + file.exports.filter((entry) => entry.visibility === "public").length,
-    0,
-  );
+  const publicExportsCount = files.reduce((count, file) => count + file.exports.filter((entry) => entry.visibility === "public").length, 0);
 
   return {
     filesCount: files.length,
@@ -136,10 +132,7 @@ const filterTraitDescriptors = (
   return descriptors.filter((descriptor) => visibleFiles.has(descriptor.sourceFile));
 };
 
-const filterTraitDiagnostics = (
-  diagnostics: readonly BarritsTraitDiagnostic[],
-  visibleFiles: Set<string>,
-): BarritsTraitDiagnostic[] => {
+const filterTraitDiagnostics = (diagnostics: readonly BarritsTraitDiagnostic[], visibleFiles: Set<string>): BarritsTraitDiagnostic[] => {
   return diagnostics.filter((diagnostic) => visibleFiles.has(diagnostic.sourceFile));
 };
 
@@ -147,19 +140,14 @@ const filterTraitDiagnostics = (
  * [EN] Implementation of Filter integration graph.
  * [ES] Implementación de Filter integration graph.
  */
-export const filterIntegrationGraph = (
-  graph: BarritsIntegrationGraph,
-  filters: BarritsGraphFilters = {},
-): BarritsIntegrationGraph => {
+export const filterIntegrationGraph = (graph: BarritsIntegrationGraph, filters: BarritsGraphFilters = {}): BarritsIntegrationGraph => {
   const domainFilter = filters.domains ? new Set(filters.domains) : null;
   const exportFilter = filters.exports ? new Set(filters.exports) : null;
   const fileKindFilter = filters.fileKinds ? new Set(filters.fileKinds) : null;
   const visibilityFilter = filters.visibilities ? new Set(filters.visibilities) : null;
   const shouldKeepRootFiles = !domainFilter || domainFilter.has("root");
 
-  const rootFiles = shouldKeepRootFiles
-    ? filterFiles(graph.rootFiles, { fileKindFilter, exportFilter, visibilityFilter })
-    : [];
+  const rootFiles = shouldKeepRootFiles ? filterFiles(graph.rootFiles, { fileKindFilter, exportFilter, visibilityFilter }) : [];
   const libraryRootFiles = shouldKeepRootFiles
     ? filterFiles(graph.libraryRootFiles, { fileKindFilter, exportFilter, visibilityFilter })
     : [];
@@ -174,10 +162,12 @@ export const filterIntegrationGraph = (
       return [];
     }
 
-    return [{
-      ...domain,
-      files,
-    }];
+    return [
+      {
+        ...domain,
+        files,
+      },
+    ];
   });
   const libraryDomains = graph.libraryDomains.flatMap((domain) => {
     if (domainFilter && !domainFilter.has(domain.name)) {
@@ -190,10 +180,12 @@ export const filterIntegrationGraph = (
       return [];
     }
 
-    return [{
-      ...domain,
-      files,
-    }];
+    return [
+      {
+        ...domain,
+        files,
+      },
+    ];
   });
   const metrics = collectGraphMetrics(rootFiles, domains);
   const visibleTraitFiles = collectVisibleTraitDescriptorFiles(rootFiles, domains, graph.traitDescriptors);
@@ -220,10 +212,7 @@ export const filterIntegrationGraph = (
  * [EN] Implementation of Resolve project file path.
  * [ES] Implementación de Resolve project file path.
  */
-export const resolveProjectFilePath = (
-  projectRoot: string,
-  filePath: string | undefined,
-): string | undefined => {
+export const resolveProjectFilePath = (projectRoot: string, filePath: string | undefined): string | undefined => {
   if (!filePath) {
     return undefined;
   }

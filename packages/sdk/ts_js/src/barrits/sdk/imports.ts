@@ -62,11 +62,7 @@ export const createImportsModuleSource = (graph: BarritsIntegrationGraph): strin
     );
   }
 
-  lines.push(
-    "] as const;",
-    "",
-    "export const importMap = {",
-  );
+  lines.push("] as const;", "", "export const importMap = {");
 
   const actionGroups = new Map<string, BarritsImportAction[]>();
 
@@ -94,19 +90,16 @@ export const createImportsModuleSource = (graph: BarritsIntegrationGraph): strin
   lines.push(
     "} as const;",
     "",
-    "export const namedImports = importActions.filter((action) => action.kind === \"named-import\");",
-    "export const namespaceAccess = importActions.filter((action) => action.kind === \"namespace-access\");",
-    "export const aliasNamespaceAccess = importActions.filter((action) => action.kind === \"alias-namespace-access\");",
+    'export const namedImports = importActions.filter((action) => action.kind === "named-import");',
+    'export const namespaceAccess = importActions.filter((action) => action.kind === "namespace-access");',
+    'export const aliasNamespaceAccess = importActions.filter((action) => action.kind === "alias-namespace-access");',
     "",
   );
 
   return lines.join("\n");
 };
 
-const dedupeActions = (
-  actions: readonly BarritsImportAction[],
-  mode: BarritsImportWriteMode,
-): BarritsImportAction[] => {
+const dedupeActions = (actions: readonly BarritsImportAction[], mode: BarritsImportWriteMode): BarritsImportAction[] => {
   const seen = new Set<string>();
   const filtered: BarritsImportAction[] = [];
 
@@ -130,10 +123,7 @@ const dedupeActions = (
  * [EN] Implementation of Filter import actions.
  * [ES] Implementación de Filter import actions.
  */
-export const filterImportActions = (
-  graph: BarritsIntegrationGraph,
-  filters: BarritsImportFilters = {},
-): BarritsIntegrationGraph => {
+export const filterImportActions = (graph: BarritsIntegrationGraph, filters: BarritsImportFilters = {}): BarritsIntegrationGraph => {
   const domainFilter = filters.domains ? new Set(filters.domains) : null;
   const exportFilter = filters.exports ? new Set(filters.exports) : null;
   const kindFilter = filters.kinds ? new Set(filters.kinds) : null;
@@ -164,10 +154,7 @@ export const filterImportActions = (
  * [EN] Implementation of Create import block.
  * [ES] Implementación de Create import block.
  */
-export const createImportBlock = (
-  graph: BarritsIntegrationGraph,
-  mode: BarritsImportWriteMode = "named-import",
-): string => {
+export const createImportBlock = (graph: BarritsIntegrationGraph, mode: BarritsImportWriteMode = "named-import"): string => {
   if (mode === "named-import") {
     const names = dedupeActions(graph.importActions, "named-import")
       .map((action) => action.exportName)

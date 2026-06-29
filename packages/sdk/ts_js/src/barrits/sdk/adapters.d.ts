@@ -4,23 +4,23 @@ import type { RuntimeFileSystemAdapter, RuntimeFileSystemEntry } from "./contrac
  * [ES] Implementación nativa de Deno del adaptador de sistema de archivos.
  */
 export declare class DenoFileSystemAdapter implements RuntimeFileSystemAdapter {
-    private get Deno();
-    cwd(): string;
-    directoryExists(path: string): Promise<boolean>;
-    listDirectories(path: string): Promise<string[]>;
-    listEntries(path: string): Promise<RuntimeFileSystemEntry[]>;
-    readTextFile(path: string): Promise<string>;
+  private get Deno();
+  cwd(): string;
+  directoryExists(path: string): Promise<boolean>;
+  listDirectories(path: string): Promise<string[]>;
+  listEntries(path: string): Promise<RuntimeFileSystemEntry[]>;
+  readTextFile(path: string): Promise<string>;
 }
 /**
  * [EN] Native Node.js implementation of the filesystem adapter.
  * [ES] Implementación nativa de Node.js del adaptador de sistema de archivos.
  */
 export declare class NodeFileSystemAdapter implements RuntimeFileSystemAdapter {
-    cwd(): Promise<string>;
-    directoryExists(path: string): Promise<boolean>;
-    listDirectories(path: string): Promise<string[]>;
-    listEntries(path: string): Promise<RuntimeFileSystemEntry[]>;
-    readTextFile(path: string): Promise<string>;
+  cwd(): Promise<string>;
+  directoryExists(path: string): Promise<boolean>;
+  listDirectories(path: string): Promise<string[]>;
+  listEntries(path: string): Promise<RuntimeFileSystemEntry[]>;
+  readTextFile(path: string): Promise<string>;
 }
 /**
  * [EN] Factory method to create the appropriate filesystem adapter for the current runtime.

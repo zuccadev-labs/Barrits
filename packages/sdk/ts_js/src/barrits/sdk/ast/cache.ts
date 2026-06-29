@@ -1,9 +1,12 @@
 import ts from "typescript";
 
-const AST_CACHE = new Map<string, {
-  readonly source: string;
-  readonly sourceFile: ts.SourceFile;
-}>();
+const AST_CACHE = new Map<
+  string,
+  {
+    readonly source: string;
+    readonly sourceFile: ts.SourceFile;
+  }
+>();
 
 /**
  * Retrieves a cached Abstract Syntax Tree (AST) source file for a given path and string source.
