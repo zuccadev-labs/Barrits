@@ -2,7 +2,7 @@ import type { BarritsFileKind, BarritsIntegrationGraph, BarritsSelectionFilters 
 import { formatTraitDiagnosticDetailLines, formatTraitOverviewLines } from "./cli-format";
 import { isBarritsExportVisibility, isBarritsFileKind } from "./guards";
 
-export type CliCommand = "detect" | "help" | "info" | "watch" | "dev" | "imports" | "build";
+export type CliCommand = "detect" | "help" | "info" | "watch" | "dev" | "imports" | "build" | "completion";
 
 export type CliOptions = {
   command: CliCommand;
@@ -19,6 +19,7 @@ export type CliOptions = {
   snapshotFile?: string;
   targetFile?: string;
   childArgs: string[];
+  shellType: string;
 };
 
 export type IntegrationGraph = BarritsIntegrationGraph;
@@ -52,6 +53,7 @@ export const parseArguments = (argumentsList: string[]): CliOptions => {
     fileKinds: [],
     visibilities: [],
     childArgs,
+    shellType: "bash",
   };
 
   for (let index = 0; index < cliArguments.length; index += 1) {
@@ -84,6 +86,15 @@ export const parseArguments = (argumentsList: string[]): CliOptions => {
     }
     if (argument === "build") {
       options.command = "build";
+      continue;
+    }
+    if (argument === "completion") {
+      options.command = "completion";
+      const shellArg = cliArguments[index + 1];
+      if (shellArg && !shellArg.startsWith("--")) {
+        options.shellType = shellArg;
+        index += 1;
+      }
       continue;
     }
 

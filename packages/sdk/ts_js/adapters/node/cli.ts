@@ -20,6 +20,7 @@ import {
   stringifyWatchSnapshot,
 } from "../../src/barrits/sdk";
 import { formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
+import { printCompletion } from "../../src/barrits/sdk/completion";
 import { resolveBarritsConfig } from "../../src/barrits/package";
 import { createNodeFileSystemAdapter } from "./filesystem";
 import {
@@ -49,7 +50,9 @@ Usage:
   brt imports [path] [--json] [--write] [--target file] [--mode named-import|namespace-access|alias-namespace-access] [--domain name] [--export name] [--kind kind]
   brt build [path] [--json] [--domain name] [--export name] [--file-kind kind] [--visibility public|internal] [--kind kind] [-- command]
   brt dev [path] [--json] [--domain name] [--export name] [--file-kind kind] [--visibility public|internal] [--kind kind] [--write-snapshot] [--snapshot file] [-- command]
+  barrits completion <bash|zsh|fish>
   barrits help
+  brt completion <bash|zsh|fish>
 
 Description:
   Detects the barrits directory, inspects its integrations and can watch changes automatically.
@@ -201,6 +204,11 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
 
   if (options.command === "help") {
     console.log(HELP_TEXT);
+    return 0;
+  }
+
+  if (options.command === "completion") {
+    printCompletion(options.shellType);
     return 0;
   }
 

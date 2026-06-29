@@ -30,6 +30,7 @@ import {
   type IntegrationGraph,
   type AutomationArtifactPaths,
 } from "../../src/barrits/sdk/cli-parser";
+import { printCompletion } from "../../src/barrits/sdk/completion";
 
 type DenoGlobals = {
   args: string[];
@@ -123,6 +124,7 @@ Usage:
   deno run -A jsr:@barrits/sdk/cli imports [path] [--json] [--write] [--target file] [--mode named-import|namespace-access|alias-namespace-access] [--domain name] [--export name] [--kind kind]
   deno run -A jsr:@barrits/sdk/cli build [path] [--json] [--domain name] [--export name] [--file-kind kind] [--visibility public|internal] [--kind kind] [-- command]
   deno run -A jsr:@barrits/sdk/cli dev [path] [--json] [--domain name] [--export name] [--file-kind kind] [--visibility public|internal] [--kind kind] [--write-snapshot] [--snapshot file] [-- command]
+  deno run -A jsr:@barrits/sdk/cli completion <bash|zsh|fish>
   deno run -A jsr:@barrits/sdk/cli help
 
 Description:
@@ -246,6 +248,11 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
 
   if (options.command === "help") {
     console.log(HELP_TEXT);
+    return 0;
+  }
+
+  if (options.command === "completion") {
+    printCompletion(options.shellType);
     return 0;
   }
 
