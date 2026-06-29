@@ -153,6 +153,7 @@ const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record
   }
 
   const runtime = getDenoGlobals();
+  const timeoutMs = Number(runtime.env.toObject()["BARRITS_CHILD_TIMEOUT_MS"]) || 600_000;
   const [command, ...args] = childArgs;
   const child = new runtime.Command(command, {
     args,
@@ -165,7 +166,14 @@ const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record
     stdout: "inherit",
     stderr: "inherit",
   });
-  const result = await child.output();
+
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const result = await Promise.race([
+    child.output().then((r) => { clearTimeout(timeoutId); return r; }),
+    new Promise<{ code: number }>((resolve, reject) => {
+      timeoutId = setTimeout(() => reject(new Error(`Child process timed out after ${timeoutMs}ms`)), timeoutMs);
+    }),
+  ]);
   return result.code;
 };
 

@@ -96,6 +96,8 @@ const quoteCmdArgument = (value: string): string => {
   return `"${value.replace(/"/g, '\\"')}"`;
 };
 
+const CHILD_TIMEOUT_MS = Number(process.env.BARRITS_CHILD_TIMEOUT_MS) || 600_000;
+
 const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record<string, string>): Promise<number> => {
   if (childArgs.length === 0) {
     return 0;
@@ -122,11 +124,21 @@ const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record
       child.kill("SIGTERM");
     };
 
+    const timeoutId = setTimeout(() => {
+      child.kill("SIGTERM");
+    }, CHILD_TIMEOUT_MS);
+
     process.once("SIGINT", stopChild);
     process.once("SIGTERM", stopChild);
 
-    child.once("error", () => resolvePromise(1));
-    child.once("exit", (code) => resolvePromise(code ?? 0));
+    child.once("error", () => {
+      clearTimeout(timeoutId);
+      resolvePromise(1);
+    });
+    child.once("exit", (code) => {
+      clearTimeout(timeoutId);
+      resolvePromise(code ?? 0);
+    });
   });
 };
 
