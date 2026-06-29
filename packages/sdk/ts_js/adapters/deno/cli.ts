@@ -62,9 +62,11 @@ const resolveDenoPath = (...segments: string[]): string => {
     (currentPath, segment) => {
       const normalizedSegment = segment.replace(/\\/g, "/");
 
-      const safeSegment = normalizedSegment.replace(/^(?:[A-Za-z]:)?\/+/, "");
+      if (/^(?:[A-Za-z]:\/|\/)/.test(normalizedSegment)) {
+        return normalizedSegment;
+      }
 
-      return `${currentPath.replace(/\/+$/g, "")}/${safeSegment.replace(/^\/+/, "")}`;
+      return `${currentPath.replace(/\/+$/g, "")}/${normalizedSegment.replace(/^\/+/, "")}`;
     },
     getDenoGlobals().cwd().replace(/\\/g, "/"),
   );
