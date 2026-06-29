@@ -18,6 +18,13 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 - **Dependency Bumps**: Updated `tsx` from `^4.21.0` to `^4.22.4` across all workspace packages. This fixes the pre-commit hook failure caused by a stale `node_modules/tsx` binary.
 - **CI Action Version Bumps**: Updated `actions/checkout` from `v4` to `v7` across 4 workflow files (ci.yml, release.yml, security-enhanced.yml, security.yml). Updated `actions/upload-artifact` from `v4` to `v7` in security-enhanced.yml. These align the repo with the latest GitHub Action runtimes.
 
+### Security
+- **Path Traversal Prevention in `normalizePath`**: Added resolution of `..` (parent directory) segments to `normalizePath()` in `src/barrits/sdk/path.ts`. Previously the function only normalized separators without resolving `..`, allowing directory traversal via crafted paths. Now correctly resolves `..` components and prevents escaping above the root for absolute paths.
+- **Absolute Path Injection Prevention in Deno CLI**: Fixed `resolveDenoPath()` in `adapters/deno/cli.ts` which previously returned user-supplied absolute paths as-is without joining them to the working directory. Now strips leading separators and drive letters from user segments, ensuring all paths resolve relative to the project root.
+- **Removed Unsafe `Function()` Constructor**: Replaced `Function("specifier", "return import(specifier)")` with direct `import(specifier)` in both `src/barrits/config.ts` and `src/barrits/sdk/adapters.ts`. The `Function()` wrapper bypassed static analysis, violated CSP, and created a latent code-injection vector. Direct `import()` is functionally identical and safe.
+- **JSON Parse Size Limit**: Added a 10 MB size limit to `parseJsonSource()` in `src/barrits/sdk/validation.ts`. Previously `JSON.parse()` was called without any input size validation, creating a DoS risk via memory exhaustion from large manifest files.
+- **CLI Input Validation**: Added validation guards to CLI argument parsing in `cli-parser.ts`. `--target` and `--snapshot` now reject values that look like flags. `--domain` validates against `^[a-zA-Z][a-zA-Z0-9_-]*$`. `--export` validates against JavaScript identifier rules `^[a-zA-Z_$][a-zA-Z0-9_$]*$`.
+
 ## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
 ### Added
 - **Dynamic IoC Container (`barrits/ioc`)**: A new deterministic Inversion of Control container that dynamically wires capabilities discovered via AST Traits (`@barrits-consumes`, `@barrits-provides`, `@barrits-state`).

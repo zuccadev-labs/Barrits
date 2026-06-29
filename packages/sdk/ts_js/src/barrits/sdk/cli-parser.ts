@@ -74,27 +74,33 @@ export const parseArguments = (argumentsList: string[]): CliOptions => {
     if (argument === "--write-snapshot") { options.writeSnapshot = true; continue; }
 
     if (argument === "--target") {
-      options.targetFile = cliArguments[index + 1];
+      const value = cliArguments[index + 1];
+      if (value && !value.startsWith("--")) { options.targetFile = value; }
       index += 1;
       continue;
     }
 
     if (argument === "--snapshot") {
-      options.snapshotFile = cliArguments[index + 1];
+      const value = cliArguments[index + 1];
+      if (value && !value.startsWith("--")) { options.snapshotFile = value; }
       index += 1;
       continue;
     }
 
     if (argument === "--domain") {
       const domain = cliArguments[index + 1];
-      if (domain) { options.domains.push(domain); }
+      if (domain && !domain.startsWith("--") && /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(domain)) {
+        options.domains.push(domain);
+      }
       index += 1;
       continue;
     }
 
     if (argument === "--export") {
       const exportName = cliArguments[index + 1];
-      if (exportName) { options.exports.push(exportName); }
+      if (exportName && !exportName.startsWith("--") && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(exportName)) {
+        options.exports.push(exportName);
+      }
       index += 1;
       continue;
     }

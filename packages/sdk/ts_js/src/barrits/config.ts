@@ -165,8 +165,7 @@ type RuntimeGlobals = typeof globalThis & {
 };
 
 const runtimeImport = <TModule>(specifier: string): Promise<TModule> => {
-  const importModule = Function("specifier", "return import(specifier);") as (specifier: string) => Promise<TModule>;
-  return importModule(specifier);
+  return import(specifier) as Promise<TModule>;
 };
 
 const toRuntimeModuleSpecifier = (filePath: string): string => {

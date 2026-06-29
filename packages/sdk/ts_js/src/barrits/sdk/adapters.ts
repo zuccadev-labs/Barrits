@@ -7,8 +7,7 @@ import { detectRuntime } from "../internal/runtime";
 import type { RuntimeFileSystemAdapter, RuntimeFileSystemEntry } from "./contracts";
 
 const runtimeImport = <TModule>(specifier: string): Promise<TModule> => {
-  const importModule = Function("specifier", "return import(specifier);") as (specifier: string) => Promise<TModule>;
-  return importModule(specifier);
+  return import(specifier) as Promise<TModule>;
 };
 
 /**

@@ -373,6 +373,13 @@ export const expectDomainIntegration = (value: unknown, payloadName: string, pat
 };
 
 export const parseJsonSource = (source: string, payloadName: string): JsonRecord => {
+  const MAX_JSON_SIZE = 10 * 1024 * 1024;
+  if (source.length > MAX_JSON_SIZE) {
+    throw new Error(
+      `JSON payload "${payloadName}" exceeds maximum size of ${MAX_JSON_SIZE} bytes (received ${source.length} bytes)`,
+    );
+  }
+
   const parsed = JSON.parse(source) as unknown;
   return expectRecord(parsed, payloadName, "$root");
 };

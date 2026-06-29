@@ -29,7 +29,25 @@ export const normalizePath = (value: string): string => {
     return ".";
   }
 
-  return trimTrailingSlash(normalized);
+  const isAbsolute = normalized.startsWith("/") || /^[A-Za-z]:\//.test(normalized);
+  const segments = normalized.split("/");
+  const resolved: string[] = [];
+
+  for (const segment of segments) {
+    if (segment === "." || segment === "") continue;
+    if (segment === "..") {
+      if (resolved.length > 0 && resolved[resolved.length - 1] !== "..") {
+        resolved.pop();
+      } else if (!isAbsolute) {
+        resolved.push("..");
+      }
+      continue;
+    }
+    resolved.push(segment);
+  }
+
+  const result = resolved.join("/");
+  return trimTrailingSlash(result || ".");
 };
 
 /**
