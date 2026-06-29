@@ -4,12 +4,12 @@ import type { BarritsBuildManifest } from "../sdk/contracts";
  * [ES] Opciones para la generación del esquema OpenAPI.
  */
 export type BarritsOpenApiOptions = {
-  /** [EN] API Title. [ES] Título de la API. */
-  title?: string;
-  /** [EN] API Version. [ES] Versión de la API. */
-  version?: string;
-  /** [EN] API Description. [ES] Descripción de la API. */
-  description?: string;
+    /** [EN] API Title. [ES] Título de la API. */
+    title?: string;
+    /** [EN] API Version. [ES] Versión de la API. */
+    version?: string;
+    /** [EN] API Description. [ES] Descripción de la API. */
+    description?: string;
 };
 /**
  * [EN] Generates an OpenAPI v3.1 schema from a BarritsBuildManifest.

@@ -18,8 +18,8 @@ El acceso a la documentación de usuario se organiza mediante la siguiente jerar
 #### packages
 
 ##### ts_js
-- **[Índice de Usuario](ES/packages/ts_js/00_indice.md)**
-- **[Guía de Instalación](ES/packages/ts_js/01_instalacion.md)**
+- **[Índice de Usuario](ES/packages/ts_js/00-indice.md)**
+- **[Guía de Instalación](ES/packages/ts_js/01-instalacion.md)**
 - **[Referencia de API - Completa](ES/packages/ts_js/09_referencia-de-api.md)**
 
 ## Alcance de esta Sección

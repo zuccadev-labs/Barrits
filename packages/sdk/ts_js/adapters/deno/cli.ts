@@ -408,5 +408,8 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
 if (import.meta.main) {
   void runDenoCli().then((exitCode) => {
     getDenoGlobals().exit(exitCode);
+  }).catch((error: unknown) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    getDenoGlobals().exit(1);
   });
 }

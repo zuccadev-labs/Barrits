@@ -18,7 +18,7 @@ Para consultar el registro de investigación de un componente específico, se es
 #### packages
 
 ##### ts_js
-- **[Índice de Investigación](ES/packages/ts_js/00_indice.md)**
+- **[Índice de Investigación](ES/packages/ts_js/00-indice.md)**
 - **[Propósito y Problemática](ES/packages/ts_js/01_proposito-y-problema.md)**
 - **[Decisiones de Arquitectura](ES/packages/ts_js/02_decisiones-de-arquitectura.md)**
 - **[Evolución hacia Monorepo](ES/packages/ts_js/03_camino-hacia-el-monorepo.md)**

@@ -1,7 +1,7 @@
 /**
  * @module
- * [EN] Build manifest and watch snapshot consumption: parsing and file reading.
- * [ES] Consumo de manifiestos de compilación y snapshots de observación: análisis y lectura de archivos.
+ * [EN] Build manifest and watch snapshot consumption: parsing, validation, and file reading.
+ * [ES] Consumo de manifiestos de compilación y snapshots de observación: análisis, validación y lectura de archivos.
  */
 import type { BarritsBuildManifest, BarritsConsumedStateSummary, BarritsLanguageToolSnapshot, BarritsWatchSnapshot } from "./contracts";
 type ReadTextFile = (filePath: string) => Promise<string>;

@@ -8,13 +8,13 @@ export { buildPath, parsePath, path };
  * Contiene utilidades para construir, parsear y gestionar rutas de recursos.
  */
 export declare const routes: {
-  /** [EN] Path manipulation utility. [ES] Utilidad de manipulación de rutas. */
-  path: {
+    /** [EN] Path manipulation utility. [ES] Utilidad de manipulación de rutas. */
+    path: {
+        buildPath: (...segments: string[]) => string;
+        parsePath: (value: string) => import("..").PathParts;
+    };
+    /** [EN] Build a path from parts. [ES] Construir una ruta a partir de partes. */
     buildPath: (...segments: string[]) => string;
+    /** [EN] Parse a path into metadata. [ES] Parsear una ruta en metadatos. */
     parsePath: (value: string) => import("..").PathParts;
-  };
-  /** [EN] Build a path from parts. [ES] Construir una ruta a partir de partes. */
-  buildPath: (...segments: string[]) => string;
-  /** [EN] Parse a path into metadata. [ES] Parsear una ruta en metadatos. */
-  parsePath: (value: string) => import("..").PathParts;
 };
