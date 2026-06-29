@@ -44,7 +44,10 @@ type DenoGlobals = {
   Command: new (
     command: string,
     options?: { args?: string[]; cwd?: string; env?: Record<string, string>; stdin?: "inherit"; stdout?: "inherit"; stderr?: "inherit" },
-  ) => { output: () => Promise<{ code: number }> };
+  ) => {
+    output: () => Promise<{ code: number }>;
+    spawn: () => { status: Promise<{ code: number }>; kill: (signal?: string) => void };
+  };
 };
 
 const dirname = (filePath: string): string => {
@@ -169,11 +172,15 @@ const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record
     stderr: "inherit",
   });
 
+  const process = child.spawn();
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   const result = await Promise.race([
-    child.output().then((r) => { clearTimeout(timeoutId); return r; }),
+    process.status.then((s) => { clearTimeout(timeoutId); return s; }),
     new Promise<{ code: number }>((resolve, reject) => {
-      timeoutId = setTimeout(() => reject(new Error(`Child process timed out after ${timeoutMs}ms`)), timeoutMs);
+      timeoutId = setTimeout(() => {
+        process.kill("SIGTERM");
+        reject(new Error(`Child process timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
     }),
   ]);
   return result.code;

@@ -18,37 +18,36 @@ const BARRITS_OPTIONS = [
 const BARRITS_KINDS = ["named-import", "namespace-access", "alias-namespace-access"] as const;
 
 const generateBashCompletion = (): string => `_barrits_completion() {
-  local cur prev words cword
-  _init_completion || return
+  local cur prev
+  COMPREPLY=()
+  cur="\${COMP_WORDS[COMP_CWORD]}"
+  prev="\${COMP_WORDS[COMP_CWORD-1]}"
 
-  if [[ $cword -eq 1 ]]; then
+  if [[ $COMP_CWORD -eq 1 ]]; then
     COMPREPLY=($(compgen -W "${BARRITS_COMMANDS.join(" ")}" -- "$cur"))
-    return
+    return 0
   fi
 
   case $prev in
     --domain|--export|--target|--snapshot)
-      return
+      return 0
       ;;
-    --kind)
+    --kind|--mode)
       COMPREPLY=($(compgen -W "${BARRITS_KINDS.join(" ")}" -- "$cur"))
-      return
+      return 0
       ;;
     --file-kind)
       COMPREPLY=($(compgen -W "source barrel config" -- "$cur"))
-      return
+      return 0
       ;;
     --visibility)
       COMPREPLY=($(compgen -W "public internal" -- "$cur"))
-      return
-      ;;
-    --mode)
-      COMPREPLY=($(compgen -W "${BARRITS_KINDS.join(" ")}" -- "$cur"))
-      return
+      return 0
       ;;
   esac
 
   COMPREPLY=($(compgen -W "${BARRITS_OPTIONS.join(" ")}" -- "$cur"))
+  return 0
 }
 
 complete -F _barrits_completion barrits brt
