@@ -14,6 +14,7 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 - **Pre-commit Secret Scanning**: Added `git-secrets` scanning to Husky pre-commit hook. Scans all staged files for potential credentials before allowing the commit. Skips gracefully if `git-secrets` is not installed.
 - **Shared CLI Parser Module**: Extracted 11 duplicated functions, 4 type definitions, and 4 constants (157 lines total) from `node/cli.ts` and `deno/cli.ts` into a new shared module `src/barrits/sdk/cli-parser.ts`. Both CLI adapters now import from the single source, reducing `node/cli.ts` from 668 to 357 lines and `deno/cli.ts` from 651 to 357 lines. The module is internal (not exported from the SDK barrel), following the same pattern as `cli-format.ts`.
 - **Consume Monolith SRP Split**: Decomposed the 757-line `consume.ts` into three focused modules: `validation.ts` (~300 lines) for JSON schema validation primitives, `summarization.ts` (219 lines) for diagnostic aggregation and compact summary creation, and the reduced `consume.ts` (167 lines) retaining only parsing and file reading responsibilities. All 10 public exports preserved via `index.ts` barrel from both `./summarization` and `./consume`. No breaking changes to consumers.
+- **ADR Documentation**: Added ADR template and 3 new architecture decision records documenting (0002) SHA-256 checksum replacement, (0003) CLI parser extraction, and (0004) consume.ts SRP split.
 
 ## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
 ### Added
