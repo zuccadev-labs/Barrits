@@ -30,6 +30,7 @@ import {
   type IntegrationGraph,
   type AutomationArtifactPaths,
 } from "../../src/barrits/sdk/cli-parser";
+import { printCompletion } from "../../src/barrits/sdk/completion";
 
 type DenoGlobals = {
   args: string[];
@@ -43,7 +44,10 @@ type DenoGlobals = {
   Command: new (
     command: string,
     options?: { args?: string[]; cwd?: string; env?: Record<string, string>; stdin?: "inherit"; stdout?: "inherit"; stderr?: "inherit" },
-  ) => { output: () => Promise<{ code: number }> };
+  ) => {
+    output: () => Promise<{ code: number }>;
+    spawn: () => { status: Promise<{ code: number }>; kill: (signal?: string) => void };
+  };
 };
 
 const dirname = (filePath: string): string => {
@@ -123,6 +127,7 @@ Usage:
   deno run -A jsr:@barrits/sdk/cli imports [path] [--json] [--write] [--target file] [--mode named-import|namespace-access|alias-namespace-access] [--domain name] [--export name] [--kind kind]
   deno run -A jsr:@barrits/sdk/cli build [path] [--json] [--domain name] [--export name] [--file-kind kind] [--visibility public|internal] [--kind kind] [-- command]
   deno run -A jsr:@barrits/sdk/cli dev [path] [--json] [--domain name] [--export name] [--file-kind kind] [--visibility public|internal] [--kind kind] [--write-snapshot] [--snapshot file] [-- command]
+  deno run -A jsr:@barrits/sdk/cli completion <bash|zsh|fish>
   deno run -A jsr:@barrits/sdk/cli help
 
 Description:
@@ -153,19 +158,33 @@ const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record
   }
 
   const runtime = getDenoGlobals();
+  const denoEnv = runtime.env.toObject();
+  const rawTimeout = denoEnv["BARRITS_CHILD_TIMEOUT_MS"];
+  const timeoutMs = rawTimeout ? Number(rawTimeout) : 600_000;
   const [command, ...args] = childArgs;
   const child = new runtime.Command(command, {
     args,
     cwd,
     env: {
-      ...runtime.env.toObject(),
+      ...denoEnv,
       ...envVars,
     },
     stdin: "inherit",
     stdout: "inherit",
     stderr: "inherit",
   });
-  const result = await child.output();
+
+  const process = child.spawn();
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const result = await Promise.race([
+    process.status.then((s) => { clearTimeout(timeoutId); return s; }),
+    new Promise<{ code: number }>((resolve, reject) => {
+      timeoutId = setTimeout(() => {
+        process.kill("SIGTERM");
+        reject(new Error(`Child process timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
+    }),
+  ]);
   return result.code;
 };
 
@@ -238,6 +257,11 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
 
   if (options.command === "help") {
     console.log(HELP_TEXT);
+    return 0;
+  }
+
+  if (options.command === "completion") {
+    printCompletion(options.shellType);
     return 0;
   }
 
@@ -390,14 +414,17 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
 
   if (options.command === "dev" && options.childArgs.length > 0) {
     const watchPromise = session.run();
-    const exitCode = await runChildCommand(options.childArgs, discovery.projectRoot, {
-      BARRITS_BUILD_MANIFEST: buildManifestPath,
-      ...(watchSnapshotPath ? { BARRITS_WATCH_SNAPSHOT: watchSnapshotPath } : {}),
-      BARRITS_DEV_MODE: "1",
-    });
-    session.close();
-    await watchPromise;
-    return exitCode;
+    try {
+      const exitCode = await runChildCommand(options.childArgs, discovery.projectRoot, {
+        BARRITS_BUILD_MANIFEST: buildManifestPath,
+        ...(watchSnapshotPath ? { BARRITS_WATCH_SNAPSHOT: watchSnapshotPath } : {}),
+        BARRITS_DEV_MODE: "1",
+      });
+      return exitCode;
+    } finally {
+      session.close();
+      await watchPromise;
+    }
   }
 
   await session.run();

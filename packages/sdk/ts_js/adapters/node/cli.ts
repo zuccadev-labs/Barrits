@@ -20,6 +20,7 @@ import {
   stringifyWatchSnapshot,
 } from "../../src/barrits/sdk";
 import { formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
+import { printCompletion } from "../../src/barrits/sdk/completion";
 import { resolveBarritsConfig } from "../../src/barrits/package";
 import { createNodeFileSystemAdapter } from "./filesystem";
 import {
@@ -49,7 +50,9 @@ Usage:
   brt imports [path] [--json] [--write] [--target file] [--mode named-import|namespace-access|alias-namespace-access] [--domain name] [--export name] [--kind kind]
   brt build [path] [--json] [--domain name] [--export name] [--file-kind kind] [--visibility public|internal] [--kind kind] [-- command]
   brt dev [path] [--json] [--domain name] [--export name] [--file-kind kind] [--visibility public|internal] [--kind kind] [--write-snapshot] [--snapshot file] [-- command]
+  barrits completion <bash|zsh|fish>
   barrits help
+  brt completion <bash|zsh|fish>
 
 Description:
   Detects the barrits directory, inspects its integrations and can watch changes automatically.
@@ -96,6 +99,9 @@ const quoteCmdArgument = (value: string): string => {
   return `"${value.replace(/"/g, '\\"')}"`;
 };
 
+const rawTimeout = process.env.BARRITS_CHILD_TIMEOUT_MS;
+const CHILD_TIMEOUT_MS = rawTimeout ? Number(rawTimeout) : 600_000;
+
 const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record<string, string>): Promise<number> => {
   if (childArgs.length === 0) {
     return 0;
@@ -122,11 +128,21 @@ const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record
       child.kill("SIGTERM");
     };
 
+    const timeoutId = setTimeout(() => {
+      child.kill("SIGTERM");
+    }, CHILD_TIMEOUT_MS);
+
     process.once("SIGINT", stopChild);
     process.once("SIGTERM", stopChild);
 
-    child.once("error", () => resolvePromise(1));
-    child.once("exit", (code) => resolvePromise(code ?? 0));
+    child.once("error", () => {
+      clearTimeout(timeoutId);
+      resolvePromise(1);
+    });
+    child.once("exit", (code, signal) => {
+      clearTimeout(timeoutId);
+      resolvePromise(signal !== null ? 1 : (code ?? 0));
+    });
   });
 };
 
@@ -189,6 +205,11 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
 
   if (options.command === "help") {
     console.log(HELP_TEXT);
+    return 0;
+  }
+
+  if (options.command === "completion") {
+    printCompletion(options.shellType);
     return 0;
   }
 
