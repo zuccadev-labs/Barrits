@@ -19,6 +19,7 @@ import {
   stringifyBuildManifest,
   stringifyWatchSnapshot,
 } from "../../src/barrits/sdk";
+import { BarritsSpinner } from "../../src/barrits/sdk/cli-spinner";
 import { formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
 import { printCompletion } from "../../src/barrits/sdk/completion";
 import { resolveBarritsConfig } from "../../src/barrits/package";
@@ -295,15 +296,22 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
   }
 
   if (options.command === "build") {
+    const buildSpinner = new BarritsSpinner();
+    buildSpinner.start("building...");
+
     const { buildManifestPath } = automationPaths;
     const buildGraph = createProjectedGraph(graph, selectionFilters);
+
+    buildSpinner.update("writing manifest...");
     await ensureTextFile(buildManifestPath, await stringifyBuildManifest(buildGraph, selectionFilters));
 
     const manifest = await createBuildManifest(buildGraph, selectionFilters);
 
     if (options.json) {
+      buildSpinner.stopAndClear();
       console.log(JSON.stringify(manifest, null, 2));
     } else {
+      buildSpinner.succeed("build complete");
       console.log(`buildManifest: ${buildManifestPath}`);
       console.log(`domains: ${manifest.domains.join(", ")}`);
 
@@ -339,9 +347,8 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
 
   printGraph(watchGraph, options.json);
 
-  if (!options.json) {
-    console.log("watching for changes in barrits/ ...");
-  }
+  const startupSpinner = new BarritsSpinner();
+  startupSpinner.start(options.command === "dev" ? "starting dev session..." : "watching for changes in barrits/ ...");
 
   const session = startWatchSession(discovery, emitGraph, {
     json: options.json,
@@ -360,6 +367,7 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
   session.setInitialGraph(watchGraph);
 
   if (options.command === "dev" && options.childArgs.length > 0) {
+    startupSpinner.succeed("dev session started");
     const exitCode = await runChildCommand(options.childArgs, discovery.projectRoot, {
       BARRITS_BUILD_MANIFEST: buildManifestPath,
       ...(watchSnapshotPath ? { BARRITS_WATCH_SNAPSHOT: watchSnapshotPath } : {}),
@@ -368,6 +376,8 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
     session.close();
     return exitCode;
   }
+
+  startupSpinner.succeed("watching for changes in barrits/ ...");
 
   return new Promise<number>((resolvePromise) => {
     const stop = (): void => {

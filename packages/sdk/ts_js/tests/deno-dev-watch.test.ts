@@ -80,7 +80,7 @@ test("deno dev flow runs a child consumer with manifest and snapshot outputs", {
   );
 
   assert.equal(result.exitCode, 0);
-  assert.match(result.stdout, /watching for changes in barrits\//);
+  assert.match(result.stderr, /starting dev session/);
   assert.doesNotMatch(result.stderr, /missing-deno-dev-environment/);
 
   const payloadLine = result.stdout

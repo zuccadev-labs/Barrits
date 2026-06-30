@@ -71,7 +71,7 @@ export const waitForProcessOutput = async (
     const onStdout = (chunk: Buffer): void => {
       stdout += chunk.toString();
 
-      if (matcher.test(stdout)) {
+      if (matcher.test(stdout) || matcher.test(stderr)) {
         cleanup();
         resolvePromise({ stdout, stderr });
       }
@@ -79,6 +79,11 @@ export const waitForProcessOutput = async (
 
     const onStderr = (chunk: Buffer): void => {
       stderr += chunk.toString();
+
+      if (matcher.test(stdout) || matcher.test(stderr)) {
+        cleanup();
+        resolvePromise({ stdout, stderr });
+      }
     };
 
     const onExit = (): void => {
