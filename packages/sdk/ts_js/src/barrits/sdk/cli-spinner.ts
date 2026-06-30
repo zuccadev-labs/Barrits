@@ -1,8 +1,18 @@
 const DEFAULT_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 
+const getDenoNamespace = (): unknown | undefined => {
+  try {
+    return (globalThis as Record<string, unknown>).Deno;
+  } catch {
+    return undefined;
+  }
+};
+
 const isDeno = (): boolean => {
   try {
-    return typeof Deno !== "undefined" && Deno?.stdout !== undefined;
+    const deno = getDenoNamespace();
+    const stdout = (deno as Record<string, unknown> | undefined)?.stdout;
+    return stdout !== undefined;
   } catch {
     return false;
   }
@@ -19,7 +29,9 @@ const isNode = (): boolean => {
 const isTerminal = (): boolean => {
   if (isDeno()) {
     try {
-      return (Deno as any).stderr?.isTerminal?.() ?? false;
+      const stderr = (getDenoNamespace() as Record<string, unknown>).stderr as Record<string, unknown> | undefined;
+      const isTerminalFn = stderr?.isTerminal as (() => boolean) | undefined;
+      return isTerminalFn?.() ?? false;
     } catch {
       return false;
     }
@@ -51,7 +63,8 @@ export class BarritsSpinner {
     if (isDeno()) {
       const encoder = new TextEncoder();
       try {
-        (Deno as any).stderr?.writeSync?.(encoder.encode(text));
+        const denoStderr = (getDenoNamespace() as Record<string, unknown>).stderr as { writeSync?: (data: Uint8Array) => void } | undefined;
+        denoStderr?.writeSync?.(encoder.encode(text));
       } catch {
         /** ignore */
       }
