@@ -1,0 +1,62 @@
+@startuml Barrits - Core SDK Components
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Component Diagram - Core SDK
+
+Container(sdk_core, "SDK Core Library", "TypeScript")
+
+System_Boundary(discovery, "Discovery & Inspection") {
+  Component(find_barrits, "findBarritsDirectory", "TypeScript", "Locates barrits/ directory by crawling parent directories")
+  Component(inspect, "inspectBarritsIntegrations", "TypeScript", "Scans barrits/ directory, builds integration graph")
+  Component(imports, "Import Management", "TypeScript", "applyManagedImports, createImportBlock, createImportsModuleSource, filterImportActions")
+}
+
+System_Boundary(manifest, "Manifest Generation") {
+  Component(build_manifest, "createBuildManifest", "TypeScript", "Generates build-manifest.json with project graph snapshot")
+  Component(watch_snapshot, "createWatchSnapshot", "TypeScript", "Generates watch-snapshot.json for live dev sessions")
+  Component(summary, "Summarization", "TypeScript", "createBuildManifestSummary, createLanguageToolSnapshot, createWatchSnapshotSummary")
+}
+
+System_Boundary(consume, "Consumption API") {
+  Component(read_manifest, "readBuildManifest / parseBuildManifest", "TypeScript", "Reads and validates build manifest from disk")
+  Component(read_snapshot, "readWatchSnapshot / parseWatchSnapshot", "TypeScript", "Reads and validates watch snapshot from disk")
+}
+
+System_Boundary(cli_layer, "CLI Support") {
+  Component(cli_parser, "parseArguments", "TypeScript", "Argument parsing, command detection, filter handling")
+  Component(cli_format, "cli-format", "TypeScript", "Human-readable output formatting for trait diagnostics")
+  Component(cli_spinner, "BarritsSpinner", "TypeScript", "Zero-dependency animated spinner for build/dev/watch")
+  Component(completion, "Shell Completion", "TypeScript", "bash/zsh/fish shell completion generators")
+}
+
+System_Boundary(ast, "AST Subsystem") {
+  Component(ast_extractor, "AST Extractor", "TypeScript", "Extracts exports from source files, resolves internal paths")
+  Component(ast_traits, "Trait Metadata Collector", "TypeScript", "Collects JSDoc trait metadata from source files")
+  Component(ast_diagnostics, "Trait Diagnostics", "TypeScript", "Detects drift, impossible, non-verifiable trait states")
+}
+
+System_Boundary(graph, "Graph Subsystem") {
+  Component(collisions, "Collision Detection", "TypeScript", "Detects project-project and project-library export collisions")
+  Component(graph_imports, "Import Graph", "TypeScript", "Builds and analyzes import dependency graph")
+}
+
+System_Boundary(crawler, "Crawler") {
+  Component(file_classifier, "File Classifier", "TypeScript", "classifyFileKind, crawlSourceLayer - determines file kind and layer")
+}
+
+Rel(find_barrits, inspect, "Provides directory path")
+Rel(inspect, ast_extractor, "Uses AST extraction")
+Rel(inspect, ast_traits, "Uses trait metadata")
+Rel(inspect, file_classifier, "Uses file classification")
+Rel(inspect, build_manifest, "Feeds integration graph")
+Rel(inspect, graph_imports, "Builds import graph")
+Rel(inspect, collisions, "Detects export collisions")
+Rel(build_manifest, watch_snapshot, "Feeds snapshot")
+Rel(build_manifest, summary, "Generates summaries")
+Rel(cli_parser, inspect, "CLI options drive inspection")
+Rel(cli_parser, cli_format, "Uses output formatting")
+Rel(cli_parser, cli_spinner, "Uses animated spinner")
+
+@enduml
