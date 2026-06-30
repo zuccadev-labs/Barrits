@@ -1,0 +1,30 @@
+@startuml Barrits - Context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title System Context - Barrits Monorepo
+
+Person(developer, "Developer", "Writes package-first automation using barrits CLI or SDK")
+Person(ci_cd, "CI/CD Pipeline", "GitHub Actions, automated builds and deployments")
+
+System_Boundary(barrits_system, "Barrits Monorepo") {
+  System(ts_sdk, "Barrits TS/JS SDK", "Package-first functional automation for typesafe dependency orchestration, manifests and live watch flows")
+  System(go_sdk, "Barrits Go SDK", "Placeholder - future Go implementation")
+  System(kotlin_sdk, "Barrits Kotlin SDK", "Placeholder - future Kotlin implementation")
+  System(python_sdk, "Barrits Python SDK", "Placeholder - future Python implementation")
+}
+
+System_Ext(npm_registry, "npm Registry", "Package distribution for Node.js ecosystem")
+System_Ext(jsr_registry, "JSR Registry", "TypeScript-first registry for Deno and Node.js")
+System_Ext(deno_land, "Deno Land", "Deno runtime ecosystem")
+System_Ext(bun_land, "Bun", "Bun runtime ecosystem")
+
+Rel(developer, ts_sdk, "Uses CLI commands (barrits/brt) or SDK API")
+Rel(ci_cd, ts_sdk, "Runs integration tests and validates examples")
+Rel(ts_sdk, npm_registry, "Publishes @zuccadev-labs/barrits")
+Rel(ts_sdk, jsr_registry, "Publishes to JSR (deno.land/x)")
+Rel(ts_sdk, deno_land, "Runs on Deno via adapters/deno")
+Rel(ts_sdk, bun_land, "Runs on Bun via Node.js compat")
+
+@enduml
