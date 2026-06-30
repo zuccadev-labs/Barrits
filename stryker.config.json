@@ -1,0 +1,34 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "testRunner": "tap",
+  "tap": {
+    "testFiles": [
+      "packages/sdk/ts_js/tests/property-based.test.ts",
+      "packages/sdk/ts_js/tests/cli-parser.test.ts"
+    ],
+    "nodeArgs": [
+      "--import",
+      "tsx",
+      "--test-reporter=tap",
+      "-r",
+      "{{hookFile}}",
+      "{{testFile}}"
+    ]
+  },
+  "concurrency": 4,
+  "mutate": [
+    "packages/sdk/ts_js/src/barrits/sdk/guards.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/path.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/cli-parser.ts"
+  ],
+  "checkers": ["typescript"],
+  "tsconfigFile": "packages/sdk/ts_js/tsconfig.json",
+  "coverageAnalysis": "perTest",
+  "timeoutMS": 30000,
+  "cleanTempDir": true,
+  "thresholds": {
+    "high": 80,
+    "low": 60,
+    "break": 50
+  }
+}
