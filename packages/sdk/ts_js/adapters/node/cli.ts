@@ -99,7 +99,8 @@ const quoteCmdArgument = (value: string): string => {
   return `"${value.replace(/"/g, '\\"')}"`;
 };
 
-const CHILD_TIMEOUT_MS = Number(process.env.BARRITS_CHILD_TIMEOUT_MS) || 600_000;
+const rawTimeout = process.env.BARRITS_CHILD_TIMEOUT_MS;
+const CHILD_TIMEOUT_MS = rawTimeout ? Number(rawTimeout) : 600_000;
 
 const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record<string, string>): Promise<number> => {
   if (childArgs.length === 0) {

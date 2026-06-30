@@ -99,6 +99,11 @@ _barrits() {
             '--help[Show help]'
           ;;
         help|completion)
+          case $words[1] in
+            completion)
+              _arguments '1:shell:(bash zsh fish)'
+              ;;
+          esac
           ;;
       esac
       ;;
@@ -129,6 +134,9 @@ complete -c barrits -n '__fish_seen_subcommand_from imports' -l mode -d 'Import 
 # watch/dev specific
 complete -c barrits -n '__fish_seen_subcommand_from watch dev' -l write-snapshot -d 'Write snapshot file'
 complete -c barrits -n '__fish_seen_subcommand_from watch dev' -l snapshot -d 'Snapshot file path' -r
+
+# completion specific
+complete -c barrits -n '__fish_seen_subcommand_from completion' -f -a 'bash zsh fish'
 `;
 
 const getCommandDescription = (command: string): string => {

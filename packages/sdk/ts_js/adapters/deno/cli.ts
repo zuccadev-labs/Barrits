@@ -158,13 +158,15 @@ const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record
   }
 
   const runtime = getDenoGlobals();
-  const timeoutMs = Number(runtime.env.toObject()["BARRITS_CHILD_TIMEOUT_MS"]) || 600_000;
+  const denoEnv = runtime.env.toObject();
+  const rawTimeout = denoEnv["BARRITS_CHILD_TIMEOUT_MS"];
+  const timeoutMs = rawTimeout ? Number(rawTimeout) : 600_000;
   const [command, ...args] = childArgs;
   const child = new runtime.Command(command, {
     args,
     cwd,
     env: {
-      ...runtime.env.toObject(),
+      ...denoEnv,
       ...envVars,
     },
     stdin: "inherit",
