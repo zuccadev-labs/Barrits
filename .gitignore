@@ -9,6 +9,12 @@ coverage/
 **/coverage/
 *.tsbuildinfo
 
+# Generated API documentation
+docs/api/
+
+# Benchmark results
+benchmarks/results/
+
 # Stryker mutation test reports and temp directories
 reports/
 .stryker-tmp/

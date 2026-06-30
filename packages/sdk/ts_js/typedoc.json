@@ -1,0 +1,19 @@
+{
+  "entryPoints": [
+    "src/barrits/sdk/index.ts",
+    "src/barrits/sdk/cli-parser.ts",
+    "src/barrits/sdk/cli-format.ts",
+    "src/barrits/sdk/path.ts",
+    "src/barrits/sdk/guards.ts",
+    "src/barrits/sdk/validation.ts",
+    "src/barrits/sdk/contracts.ts"
+  ],
+  "out": "docs/api",
+  "tsconfig": "tsconfig.json",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "skipErrorChecking": true,
+  "cleanOutputDir": true
+}
