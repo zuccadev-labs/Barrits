@@ -414,14 +414,17 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
 
   if (options.command === "dev" && options.childArgs.length > 0) {
     const watchPromise = session.run();
-    const exitCode = await runChildCommand(options.childArgs, discovery.projectRoot, {
-      BARRITS_BUILD_MANIFEST: buildManifestPath,
-      ...(watchSnapshotPath ? { BARRITS_WATCH_SNAPSHOT: watchSnapshotPath } : {}),
-      BARRITS_DEV_MODE: "1",
-    });
-    session.close();
-    await watchPromise;
-    return exitCode;
+    try {
+      const exitCode = await runChildCommand(options.childArgs, discovery.projectRoot, {
+        BARRITS_BUILD_MANIFEST: buildManifestPath,
+        ...(watchSnapshotPath ? { BARRITS_WATCH_SNAPSHOT: watchSnapshotPath } : {}),
+        BARRITS_DEV_MODE: "1",
+      });
+      return exitCode;
+    } finally {
+      session.close();
+      await watchPromise;
+    }
   }
 
   await session.run();

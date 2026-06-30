@@ -139,9 +139,9 @@ const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record
       clearTimeout(timeoutId);
       resolvePromise(1);
     });
-    child.once("exit", (code) => {
+    child.once("exit", (code, signal) => {
       clearTimeout(timeoutId);
-      resolvePromise(code ?? 0);
+      resolvePromise(signal !== null ? 1 : (code ?? 0));
     });
   });
 };
