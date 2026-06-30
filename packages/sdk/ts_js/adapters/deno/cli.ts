@@ -16,6 +16,7 @@ import {
   stringifyBuildManifest,
   stringifyWatchSnapshot,
 } from "../../src/barrits/sdk";
+import { BarritsSpinner } from "../../src/barrits/sdk/cli-spinner";
 import { formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
 import { resolveBarritsConfig } from "../../src/barrits/package";
 import { createDenoFileSystemAdapter } from "./filesystem";
@@ -348,15 +349,22 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
   }
 
   if (options.command === "build") {
+    const buildSpinner = new BarritsSpinner();
+    buildSpinner.start("building...");
+
     const { buildManifestPath } = automationPaths;
     const buildGraph = createProjectedGraph(graph, selectionFilters);
+
+    buildSpinner.update("writing manifest...");
     await ensureTextFile(buildManifestPath, await stringifyBuildManifest(buildGraph, selectionFilters));
 
     const manifest = await createBuildManifest(buildGraph, selectionFilters);
 
     if (options.json) {
+      buildSpinner.stopAndClear();
       console.log(JSON.stringify(manifest, null, 2));
     } else {
+      buildSpinner.succeed("build complete");
       console.log(`buildManifest: ${buildManifestPath}`);
       console.log(`domains: ${manifest.domains.join(", ")}`);
 
@@ -392,9 +400,8 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
 
   printGraph(watchGraph, options.json);
 
-  if (!options.json) {
-    console.log("watching for changes in barrits/ ...");
-  }
+  const startupSpinner = new BarritsSpinner();
+  startupSpinner.start(options.command === "dev" ? "starting dev session..." : "watching for changes in barrits/ ...");
 
   const session = startWatchSession(discovery, emitGraph, {
     json: options.json,
@@ -413,6 +420,7 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
   session.setInitialGraph(watchGraph);
 
   if (options.command === "dev" && options.childArgs.length > 0) {
+    startupSpinner.succeed("dev session started");
     const watchPromise = session.run();
     try {
       const exitCode = await runChildCommand(options.childArgs, discovery.projectRoot, {
@@ -426,6 +434,8 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
       await watchPromise;
     }
   }
+
+  startupSpinner.succeed("watching for changes in barrits/ ...");
 
   await session.run();
 
