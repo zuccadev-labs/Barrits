@@ -43,6 +43,7 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 - **normalizePath Windows Drive Letter Fix**: Fixed `normalizePath()` to preserve Windows drive letters (e.g., `C:`) as root anchors when `..` resolves above the drive root.
 
 ### Changed
+- **Refactor 7 funciones de alta complejidad cognitiva (≥15)**: Extraídas 16 helpers en 5 archivos del SDK core. `buildNamespaceImportActions` (24→3, −88%), `collectPublicNamespaceEntries` (22→0, −100%), `printInfoSummary` (19→2, −89%), `collectExportedTraitBindings` (17→7, −59%), `resolveTraitDescriptorFactoryFromExpression` (15→12, −20%), `orderTraitDescriptors` (15→1, −93%). Las 4 funciones con cog >15 pre-existentes (Deno adapter, algoritmo dijkstra/maxflow) se evaluaron como complejidad intrínseca sin extracción útil. `collectFiles` (15) se mantiene sin cambios por ser BFS intrínseco de 30 líneas. Validado: `tsc --noEmit` 0 errores, 935/935 tests pasan, MCP reindexado con +16 nodos.
 - **Moved `typescript` to devDependencies**: Relocated `typescript@^6.0.3` from `dependencies` to `devDependencies` in `package.json`, eliminating ~60 MB of unnecessary install weight for SDK consumers. Only used at build type-check and emit-declaration time.
 - **Missing `.d.ts` Files Generated**: Added `cli-parser.d.ts` and `validation.d.ts` for the two SDK modules that lacked declaration files. Updated `summarization.d.ts` to declare all 7 exported symbols (previously only 3 were declared).
 - **Orphan File Cleanup**: Removed `contracts.ts.tmp`, a stale artifact left from the consume.ts refactor.

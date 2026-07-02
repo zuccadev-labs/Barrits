@@ -42,6 +42,30 @@ export type TraitRuntimeMetadata = {
  * @param expression - Typescript logic interface binding literal root syntax expression node component dependency pointer.
  * @returns Resolves the factory literal identifier string natively mapped.
  */
+const resolveWrapExpression = (expression: ts.Expression): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
+  if (ts.isParenthesizedExpression(expression) || ts.isAsExpression(expression) || ts.isSatisfiesExpression(expression) || ts.isNonNullExpression(expression)) {
+    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
+  }
+
+  if (ts.isAwaitExpression(expression)) {
+    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
+  }
+
+  if (ts.isPropertyAccessExpression(expression)) {
+    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
+  }
+
+  return undefined;
+};
+
+const resolveBinaryExpression = (expression: ts.BinaryExpression | ts.ConditionalExpression): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
+  if (ts.isBinaryExpression(expression)) {
+    return resolveTraitDescriptorFactoryFromExpression(expression.left) ?? resolveTraitDescriptorFactoryFromExpression(expression.right);
+  }
+
+  return resolveTraitDescriptorFactoryFromExpression(expression.whenTrue) ?? resolveTraitDescriptorFactoryFromExpression(expression.whenFalse);
+};
+
 export const resolveTraitDescriptorFactoryFromExpression = (
   expression: ts.Expression | undefined,
 ): "createTraitDescriptor" | "createTraitDescriptorFromJsDoc" | undefined => {
@@ -66,31 +90,13 @@ export const resolveTraitDescriptorFactoryFromExpression = (
     );
   }
 
-  if (
-    ts.isParenthesizedExpression(expression) ||
-    ts.isAsExpression(expression) ||
-    ts.isSatisfiesExpression(expression) ||
-    ts.isNonNullExpression(expression)
-  ) {
-    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
+  const wrappedResult = resolveWrapExpression(expression);
+  if (wrappedResult !== undefined) {
+    return wrappedResult;
   }
 
-  if (ts.isConditionalExpression(expression)) {
-    return (
-      resolveTraitDescriptorFactoryFromExpression(expression.whenTrue) ?? resolveTraitDescriptorFactoryFromExpression(expression.whenFalse)
-    );
-  }
-
-  if (ts.isBinaryExpression(expression)) {
-    return resolveTraitDescriptorFactoryFromExpression(expression.left) ?? resolveTraitDescriptorFactoryFromExpression(expression.right);
-  }
-
-  if (ts.isAwaitExpression(expression)) {
-    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
-  }
-
-  if (ts.isPropertyAccessExpression(expression)) {
-    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
+  if (ts.isConditionalExpression(expression) || ts.isBinaryExpression(expression)) {
+    return resolveBinaryExpression(expression);
   }
 
   return undefined;
@@ -175,37 +181,48 @@ export const readTraitRuntimeMetadataFromCall = (expression: ts.Expression | und
 /**
  * Sweeps the AST structure explicitly collecting export bindings matching trait payload creation routines mapping signatures recursively natively traversing explicit modifiers.
  */
+const collectConstVariableTraitBindings = (
+  statement: ts.VariableStatement,
+  sourceFile: ts.SourceFile,
+): ExportedTraitBinding[] => {
+  if ((statement.declarationList.flags & ts.NodeFlags.Const) === 0) {
+    return [];
+  }
+
+  const bindings: ExportedTraitBinding[] = [];
+
+  for (const declaration of statement.declarationList.declarations) {
+    if (!ts.isIdentifier(declaration.name)) {
+      continue;
+    }
+
+    const runtimeMetadata = readTraitRuntimeMetadataFromCall(declaration.initializer);
+    const matchIndex = statement.getStart(sourceFile);
+
+    bindings.push({
+      bindingKind: "const",
+      bindingName: declaration.name.text,
+      matchIndex,
+      runtimeConflicts: runtimeMetadata?.conflicts,
+      runtimeConsumes: runtimeMetadata?.consumes,
+      factory: resolveTraitDescriptorFactoryFromExpression(declaration.initializer),
+      runtimeName: runtimeMetadata?.name,
+      runtimeRequires: runtimeMetadata?.requires,
+      runtimeProvides: runtimeMetadata?.provides,
+      runtimeState: runtimeMetadata?.state,
+    });
+  }
+
+  return bindings;
+};
+
 export const collectExportedTraitBindings = (source: string, relativePath: string): ExportedTraitBinding[] => {
   const sourceFile = createCachedSourceFile(relativePath, source);
   const bindings: ExportedTraitBinding[] = [];
 
   for (const statement of sourceFile.statements) {
     if (ts.isVariableStatement(statement) && hasExportModifier(statement)) {
-      if ((statement.declarationList.flags & ts.NodeFlags.Const) === 0) {
-        continue;
-      }
-
-      for (const declaration of statement.declarationList.declarations) {
-        if (!ts.isIdentifier(declaration.name)) {
-          continue;
-        }
-
-        const runtimeMetadata = readTraitRuntimeMetadataFromCall(declaration.initializer);
-
-        bindings.push({
-          bindingKind: "const",
-          bindingName: declaration.name.text,
-          matchIndex: statement.getStart(sourceFile),
-          runtimeConflicts: runtimeMetadata?.conflicts,
-          runtimeConsumes: runtimeMetadata?.consumes,
-          factory: resolveTraitDescriptorFactoryFromExpression(declaration.initializer),
-          runtimeName: runtimeMetadata?.name,
-          runtimeRequires: runtimeMetadata?.requires,
-          runtimeProvides: runtimeMetadata?.provides,
-          runtimeState: runtimeMetadata?.state,
-        });
-      }
-
+      bindings.push(...collectConstVariableTraitBindings(statement, sourceFile));
       continue;
     }
 

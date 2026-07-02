@@ -1,4 +1,4 @@
-import type { BarritsFileKind, BarritsIntegrationGraph, BarritsSelectionFilters } from "./contracts";
+import type { BarritsFileExport, BarritsFileKind, BarritsIntegrationGraph, BarritsSelectionFilters } from "./contracts";
 import { formatTraitDiagnosticDetailLines, formatTraitOverviewLines } from "./cli-format";
 import { isBarritsExportVisibility, isBarritsFileKind } from "./guards";
 
@@ -161,6 +161,51 @@ export const toGraphFingerprint = (graph: IntegrationGraph): string => {
   return JSON.stringify(graph);
 };
 
+const formatExportLabel = (file: { readonly exports: readonly BarritsFileExport[] }): string =>
+  file.exports.map((entry) => `${entry.name}:${entry.visibility}`).join(", ") || "-";
+
+const printRootFilesInfo = (rootFiles: IntegrationGraph["rootFiles"]): void => {
+  if (rootFiles.length === 0) return;
+
+  console.log("rootFiles:");
+  for (const file of rootFiles) {
+    console.log(`  - ${file.path} [${file.kind}]: ${formatExportLabel(file)}`);
+  }
+};
+
+const printDomainsInfo = (domains: IntegrationGraph["domains"]): void => {
+  if (domains.length === 0) return;
+
+  console.log("domains:");
+  for (const domain of domains) {
+    console.log(`  - ${domain.name}`);
+    for (const file of domain.files) {
+      console.log(`    ${file.path} [${file.kind}]: ${formatExportLabel(file)}`);
+    }
+  }
+};
+
+const printImportActionsInfo = (importActions: IntegrationGraph["importActions"]): void => {
+  if (importActions.length === 0) return;
+
+  console.log("importActions:");
+  for (const action of importActions.slice(0, 12)) {
+    console.log(`  - ${action.exportName} (${action.kind}): ${action.statement}`);
+  }
+  if (importActions.length > 12) {
+    console.log(`  ... ${importActions.length - 12} more`);
+  }
+};
+
+const printCollisionsInfo = (collisions: IntegrationGraph["collisions"]): void => {
+  if (collisions.length === 0) return;
+
+  console.log("collisions:");
+  for (const collision of collisions) {
+    console.log(`  - ${collision.message}`);
+  }
+};
+
 export const printInfoSummary = (graph: IntegrationGraph): void => {
   console.log(`barrits: ${graph.barritsDirectory}`);
   console.log(`projectRoot: ${graph.projectRoot}`);
@@ -175,47 +220,10 @@ export const printInfoSummary = (graph: IntegrationGraph): void => {
     console.log(line);
   }
 
-  if (graph.rootFiles.length > 0) {
-    console.log("rootFiles:");
-
-    for (const file of graph.rootFiles) {
-      const exportsLabel = file.exports.map((entry) => `${entry.name}:${entry.visibility}`).join(", ") || "-";
-      console.log(`  - ${file.path} [${file.kind}]: ${exportsLabel}`);
-    }
-  }
-
-  if (graph.domains.length > 0) {
-    console.log("domains:");
-
-    for (const domain of graph.domains) {
-      console.log(`  - ${domain.name}`);
-
-      for (const file of domain.files) {
-        const exportsLabel = file.exports.map((entry) => `${entry.name}:${entry.visibility}`).join(", ") || "-";
-        console.log(`    ${file.path} [${file.kind}]: ${exportsLabel}`);
-      }
-    }
-  }
-
-  if (graph.importActions.length > 0) {
-    console.log("importActions:");
-
-    for (const action of graph.importActions.slice(0, 12)) {
-      console.log(`  - ${action.exportName} (${action.kind}): ${action.statement}`);
-    }
-
-    if (graph.importActions.length > 12) {
-      console.log(`  ... ${graph.importActions.length - 12} more`);
-    }
-  }
-
-  if (graph.collisions.length > 0) {
-    console.log("collisions:");
-
-    for (const collision of graph.collisions) {
-      console.log(`  - ${collision.message}`);
-    }
-  }
+  printRootFilesInfo(graph.rootFiles);
+  printDomainsInfo(graph.domains);
+  printImportActionsInfo(graph.importActions);
+  printCollisionsInfo(graph.collisions);
 
   for (const line of formatTraitDiagnosticDetailLines(graph.traitDiagnostics)) {
     console.log(line);

@@ -83,6 +83,17 @@ const buildRootImportActions = (
   return rootNamedImportNames;
 };
 
+const isNamedImportCandidate = (
+  exportedMember: BarritsFileExport,
+  rootNamedImportNames: Set<string>,
+): boolean => {
+  return (
+    exportedMember.visibility === "public" &&
+    !rootNamedImportNames.has(exportedMember.name) &&
+    /^[A-Za-z_$][A-Za-z0-9_$]*$/u.test(exportedMember.name)
+  );
+};
+
 const countNamedImportCandidates = (
   domains: readonly BarritsDomainIntegration[],
   rootNamedImportNames: Set<string>,
@@ -97,13 +108,7 @@ const countNamedImportCandidates = (
       if (file.kind === "internal") continue;
 
       for (const exportedMember of file.exports) {
-        if (
-          exportedMember.visibility !== "public" ||
-          rootNamedImportNames.has(exportedMember.name) ||
-          !/^[A-Za-z_$][A-Za-z0-9_$]*$/u.test(exportedMember.name)
-        ) {
-          continue;
-        }
+        if (!isNamedImportCandidate(exportedMember, rootNamedImportNames)) continue;
 
         nameCounts.set(exportedMember.name, (nameCounts.get(exportedMember.name) ?? 0) + 1);
 
@@ -142,59 +147,68 @@ const buildNamedImportActions = (
   }
 };
 
+const collectDomainExportCandidates = (
+  domain: BarritsDomainIntegration,
+): Map<string, { sourceFile: string; exportedMember: BarritsFileExport }> => {
+  const domainExports = new Map<string, { sourceFile: string; exportedMember: BarritsFileExport }>();
+
+  for (const file of domain.files) {
+    if (file.kind === "internal") continue;
+
+    for (const exportedMember of file.exports) {
+      if (exportedMember.visibility !== "public") continue;
+
+      if (!domainExports.has(exportedMember.accessPath)) {
+        domainExports.set(exportedMember.accessPath, {
+          sourceFile: file.path,
+          exportedMember,
+        });
+      }
+    }
+  }
+
+  return domainExports;
+};
+
+const pushNamespaceActionsForDomain = (
+  domainName: string,
+  domainExports: Map<string, { sourceFile: string; exportedMember: BarritsFileExport }>,
+  actions: Map<string, BarritsImportAction>,
+): void => {
+  const sorted = Array.from(domainExports.values()).sort((left, right) =>
+    left.exportedMember.accessPath.localeCompare(right.exportedMember.accessPath),
+  );
+
+  for (const { sourceFile, exportedMember } of sorted) {
+    if (exportedMember.accessPath === domainName) continue;
+
+    pushAction(actions, {
+      exportName: exportedMember.accessPath,
+      domain: domainName,
+      sourceFile,
+      kind: "namespace-access",
+      statement: `barrits.${domainName}.${exportedMember.accessPath}`,
+    });
+
+    pushAction(actions, {
+      exportName: exportedMember.accessPath,
+      domain: domainName,
+      sourceFile,
+      kind: "alias-namespace-access",
+      statement: `brt.${domainName}.${exportedMember.accessPath}`,
+    });
+  }
+};
+
 const buildNamespaceImportActions = (
   domains: readonly BarritsDomainIntegration[],
   actions: Map<string, BarritsImportAction>,
 ): void => {
   for (const domain of domains) {
-    if (domain.name === "api") {
-      continue;
-    }
+    if (domain.name === "api") continue;
 
-    const domainExports = new Map<string, { sourceFile: string; exportedMember: BarritsFileExport }>();
-
-    for (const file of domain.files) {
-      if (file.kind === "internal") {
-        continue;
-      }
-
-      for (const exportedMember of file.exports) {
-        if (exportedMember.visibility !== "public") {
-          continue;
-        }
-
-        if (!domainExports.has(exportedMember.accessPath)) {
-          domainExports.set(exportedMember.accessPath, {
-            sourceFile: file.path,
-            exportedMember,
-          });
-        }
-      }
-    }
-
-    for (const { sourceFile, exportedMember } of Array.from(domainExports.values()).sort((left, right) => {
-      return left.exportedMember.accessPath.localeCompare(right.exportedMember.accessPath);
-    })) {
-      if (exportedMember.accessPath === domain.name) {
-        continue;
-      }
-
-      pushAction(actions, {
-        exportName: exportedMember.accessPath,
-        domain: domain.name,
-        sourceFile,
-        kind: "namespace-access",
-        statement: `barrits.${domain.name}.${exportedMember.accessPath}`,
-      });
-
-      pushAction(actions, {
-        exportName: exportedMember.accessPath,
-        domain: domain.name,
-        sourceFile,
-        kind: "alias-namespace-access",
-        statement: `brt.${domain.name}.${exportedMember.accessPath}`,
-      });
-    }
+    const candidates = collectDomainExportCandidates(domain);
+    pushNamespaceActionsForDomain(domain.name, candidates, actions);
   }
 };
 
