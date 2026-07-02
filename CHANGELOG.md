@@ -19,6 +19,7 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 - **Vacuous `console.log` Restoration Test Replaced**: Replaced a test in `completion.test.ts` that verified `console.log` restoration via the test's own `finally` block (not `printCompletion`) with a direct assertion that `printCompletion` does not replace `console.log`.
 
 ### Changed
+- **Refactor extractor.ts y path.ts**: Extraídas 6 funciones helper (`resolvePathSegments`, `reconstructAbsolutePath`, `pushExport`, `handleVariableStatement`, `handleFunctionDeclaration`, `handleExportDeclaration`) para reducir complejidad cognitiva. `normalizePath` bajó de 23→3 (−87%), `collectDirectExports` de 24→7 (−71%). Sin cambios de comportamiento. Validado: 935 tests, 0 fallos, `tsc --noEmit` 0 errores.
 - **Async API**: `createBuildManifest`, `stringifyBuildManifest`, and internal `generateChecksum` now return `Promise` values to support async Web Crypto API.
 - **CI Action Version Consistency**: Unified `actions/dependency-review-action` from `@v4` to `@v5` in `security-enhanced.yml` to match `security.yml`, eliminating the version mismatch.
 - **Pre-commit Secret Scanning**: Added `git-secrets` scanning to Husky pre-commit hook. Scans all staged files for potential credentials before allowing the commit. Skips gracefully if `git-secrets` is not installed.
