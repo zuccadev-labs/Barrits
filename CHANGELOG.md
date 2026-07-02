@@ -6,6 +6,7 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 ## [0.1.8] - 2026-07-02
 ### Added
 - **Test coverage para 8 módulos runtime sin cobertura previa**: 54 tests en 8 archivos nuevos cubriendo `internal/runtime/assertions.ts`, `internal/runtime/env.ts`, `routes/path/build.ts`, `routes/path/parse.ts`, `traits/compose/pipeline.ts`, `plugins/materialize.ts`, `api/domains.ts` y `api/factory.ts`. Total: 796 tests (todos pasan, 0 errores de tipo nuevos).
+- **Test coverage para config.ts y discovery.ts**: 32 tests en 2 archivos nuevos cubriendo `config.ts` (21) y `sdk/discovery.ts` (11). `config.test.ts` valida constantes, `defineBarritsConfig`, `findBarritsConfigFile`, `loadBarritsConfig` y `resolveBarritsConfig` usando directorios temporales reales e importación dinámica. `discovery.test.ts` prueba descubrimiento BFS con un `RuntimeFileSystemAdapter` mock cubriendo las 4 estrategias, límites de profundidad y directorios ignorados. Total: 828 tests (todos pasan, 0 errores de tipo nuevos).
 
 ### Fixed
 - **False SHA-256 Checksum**: Replaced FNV-1a non-cryptographic hash (labeled `sha256-`) with real SHA-256 via Web Crypto API (`crypto.subtle.digest`). The old implementation used FNV-1a (32-bit, non-cryptographic) but misleadingly prefixed the output as `sha256-barrits-`, creating a false security guarantee. Now uses real SHA-256 digest for supply chain integrity.
