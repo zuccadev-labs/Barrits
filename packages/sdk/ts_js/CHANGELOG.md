@@ -32,14 +32,19 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 - **Test coverage for `sdk/imports.ts`**: 19 tests covering filterImportActions (domain, export, kind, empty, graph preservation), createImportsModuleSource (structure, sorting, importMap grouping, empty), createImportBlock (named-import, empty, namespace-access, alias-namespace-access, dedup), and applyManagedImports (replace, append, prepend, namespace-access mode).
 - **Test coverage for `plugins/shared.ts`**: 25 new tests covering all 7 exported functions of the shared plugin module.
 - **Test coverage for `sdk/summarization.ts`**: 34 tests covering all 7 exported functions — mapImportStatements, mapTraitDescriptors, mapTraitDiagnostics, createTraitDiagnosticAggregate (undefined/empty, counts by severity/category/code, descriptor grouping, sorting), createBuildManifestSummary (null manifest, field mapping, filters, collisions), createWatchSnapshotSummary (null snapshot, field mapping, filters), createLanguageToolSnapshot (domains with filesCount/exportNames, empty aggregates, filters, importActions/collisions).
-- **Test coverage for `sdk/completion.ts`**: 23 tests covering both exported functions — generateCompletionScript (bash/zsh/fish generation, option flags, kind values, command descriptions, case-sensitive error handling) and printCompletion (stdout capture for all 3 shells, error message, console.log restoration). Total tests: 684, 0 failures. Coverage: 45/64 source files (70%) with tests.
+- **Test coverage for `sdk/completion.ts`**: 23 tests covering both exported functions — generateCompletionScript (bash/zsh/fish generation, option flags, kind values, command descriptions, case-sensitive error handling) and printCompletion (stdout capture for all 3 shells, error message, console.log restoration).
+- **Test coverage for `internal/config_normalization.ts`**: 24 tests covering all 3 exported functions — normalizeAutomationDirectory (undefined/empty/whitespace/trim/trailing slashes/backslashes/preserved paths), normalizePackageOptions (defaults, all option overrides, fallbackProjectRoot), and normalizeResolvedConfig (optional field extension, undefined configFilePath).
+- **Test coverage for `sdk/async-utils.ts`**: 11 tests covering mapConcurrent (empty input, sequential concurrency 1, high concurrency, order preservation, zero/negative/NaN/Infinity concurrency, concurrency limiting, error propagation, non-number items).
+- **Test coverage for `sdk/logger.ts`**: 16 tests covering DefaultBarritsLogger (default/constructor level, all 5 log levels with filtering, extra args forwarding, timestamp format) and logger singleton (instance type, default level info).
+- **Test coverage for `shared/constants/index.ts`**: 4 tests covering PACKAGE_NAME and PACKAGE_ALIAS values and frozen immutability.
+- **Fixed unhandled rejection in `mapConcurrent`**: Added `.catch(() => undefined)` to the `.finally()` cleanup chain to prevent unhandled promise rejections when a concurrent task fails. Total tests: 739, 0 failures. Coverage: 49/64 source files (77%) with tests.
 
 ### Refactored
 - **`runDenoCli` and `runNodeCli`**: Extracted inline command handlers (`handleNodeImports`, `handleNodeBuild`, `handleNodeWatchDev`, `handleDenoImports`, `handleDenoBuild`, `handleDenoWatchDev`) into dedicated functions, reducing cognitive complexity from 37 and 35 respectively to well under 30 each. No behavioral change.
 
 ### Changed
 - **`.gitignore`**: Added `AGENTS.md` and `agent.md` to prevent accidental commits of local agent instruction files.
-- **Total tests**: 547 (+181 from 366, +16 quality improvements), 25 test files, 45 suites. Coverage: 37/64 source files (58%) with tests.
+- **Total tests**: 739 (+192 from 547), 29 test files, 76 suites. Coverage: 49/64 source files (77%) with tests.
 
 ## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
 ### Added
