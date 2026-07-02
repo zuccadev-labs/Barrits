@@ -13,6 +13,32 @@ export const isAggregatorFile = (path: string): boolean => {
   return path === "index.ts" || path.endsWith("/index.ts") || path === "api/flat.ts";
 };
 
+const resolveProjectCollision = (
+  entry: PublicNamespaceEntry,
+  existingSourceFile: string,
+  collisions: BarritsExportCollision[],
+  projectNamespaces: Map<string, string>,
+): void => {
+  const existingIsAggregator = isAggregatorFile(existingSourceFile);
+  const currentIsAggregator = isAggregatorFile(entry.sourceFile);
+
+  if (existingIsAggregator !== currentIsAggregator) {
+    if (!currentIsAggregator) {
+      projectNamespaces.set(`${entry.namespace}:${entry.exportName}`, entry.sourceFile);
+    }
+    return;
+  }
+
+  collisions.push({
+    type: "project-project",
+    namespace: entry.namespace,
+    exportName: entry.exportName,
+    projectSourceFile: existingSourceFile,
+    conflictSourceFile: entry.sourceFile,
+    message: `Export collision for ${entry.namespace}.${entry.exportName}: ${existingSourceFile} and ${entry.sourceFile} resolve to the same namespace path. Use @barrits-path to disambiguate.`,
+  });
+};
+
 /**
  * Discovers and maps logically flat representations of all deeply nested public exports aggregating domain interfaces.
  */
@@ -87,25 +113,7 @@ export const collectCollisions = (
     const existingSourceFile = projectNamespaces.get(collisionKey);
 
     if (existingSourceFile && existingSourceFile !== entry.sourceFile) {
-      const existingIsAggregator = isAggregatorFile(existingSourceFile);
-      const currentIsAggregator = isAggregatorFile(entry.sourceFile);
-
-      if (existingIsAggregator !== currentIsAggregator) {
-        if (!currentIsAggregator) {
-          projectNamespaces.set(collisionKey, entry.sourceFile);
-        }
-
-        continue;
-      }
-
-      collisions.push({
-        type: "project-project",
-        namespace: entry.namespace,
-        exportName: entry.exportName,
-        projectSourceFile: existingSourceFile,
-        conflictSourceFile: entry.sourceFile,
-        message: `Export collision for ${entry.namespace}.${entry.exportName}: ${existingSourceFile} and ${entry.sourceFile} resolve to the same namespace path. Use @barrits-path to disambiguate.`,
-      });
+      resolveProjectCollision(entry, existingSourceFile, collisions, projectNamespaces);
       continue;
     }
 

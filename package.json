@@ -45,7 +45,20 @@
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.2.0",
+    "esbuild": "^0.28.1",
     "fast-check": "^4.8.0",
     "prettier": "^3.4.0"
+  },
+  "overrides": {
+    "@babel/core": "^8.0.1",
+    "esbuild": "^0.28.1",
+    "qs": "^6.15.3",
+    "tsup": {
+      "esbuild": "^0.28.1"
+    },
+    "bundle-require": {
+      "esbuild": "^0.28.1"
+    },
+    "vite": "^8.1.3"
   }
 }

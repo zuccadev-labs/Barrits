@@ -83,58 +83,54 @@ const buildRootImportActions = (
   return rootNamedImportNames;
 };
 
-const buildNamedImportActions = (
+const countNamedImportCandidates = (
   domains: readonly BarritsDomainIntegration[],
   rootNamedImportNames: Set<string>,
-  actions: Map<string, BarritsImportAction>,
-): void => {
-  const namedImportNameCounts = new Map<string, number>();
-  const firstNamedImportSourceByName = new Map<string, string>();
+): { nameCounts: Map<string, number>; firstSources: Map<string, string> } => {
+  const nameCounts = new Map<string, number>();
+  const firstSources = new Map<string, string>();
 
   for (const domain of domains) {
-    if (domain.name === "api") {
-      continue;
-    }
+    if (domain.name === "api") continue;
 
     for (const file of domain.files) {
-      if (file.kind === "internal") {
-        continue;
-      }
+      if (file.kind === "internal") continue;
 
       for (const exportedMember of file.exports) {
-        if (exportedMember.visibility !== "public") {
+        if (
+          exportedMember.visibility !== "public" ||
+          rootNamedImportNames.has(exportedMember.name) ||
+          !/^[A-Za-z_$][A-Za-z0-9_$]*$/u.test(exportedMember.name)
+        ) {
           continue;
         }
 
-        if (rootNamedImportNames.has(exportedMember.name)) {
-          continue;
-        }
+        nameCounts.set(exportedMember.name, (nameCounts.get(exportedMember.name) ?? 0) + 1);
 
-        if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/u.test(exportedMember.name)) {
-          continue;
-        }
-
-        namedImportNameCounts.set(exportedMember.name, (namedImportNameCounts.get(exportedMember.name) ?? 0) + 1);
-
-        if (!firstNamedImportSourceByName.has(exportedMember.name)) {
-          firstNamedImportSourceByName.set(exportedMember.name, file.path);
+        if (!firstSources.has(exportedMember.name)) {
+          firstSources.set(exportedMember.name, file.path);
         }
       }
     }
   }
 
-  for (const [exportName, count] of Array.from(namedImportNameCounts.entries()).sort((left, right) => {
+  return { nameCounts, firstSources };
+};
+
+const buildNamedImportActions = (
+  domains: readonly BarritsDomainIntegration[],
+  rootNamedImportNames: Set<string>,
+  actions: Map<string, BarritsImportAction>,
+): void => {
+  const { nameCounts, firstSources } = countNamedImportCandidates(domains, rootNamedImportNames);
+
+  for (const [exportName, count] of Array.from(nameCounts.entries()).sort((left, right) => {
     return left[0].localeCompare(right[0]);
   })) {
-    if (count !== 1) {
-      continue;
-    }
+    if (count !== 1) continue;
 
-    const sourceFile = firstNamedImportSourceByName.get(exportName);
-
-    if (!sourceFile) {
-      continue;
-    }
+    const sourceFile = firstSources.get(exportName);
+    if (!sourceFile) continue;
 
     pushAction(actions, {
       exportName,

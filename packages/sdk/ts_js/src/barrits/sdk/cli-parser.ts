@@ -61,20 +61,36 @@ const isValidExportName = (s: string): boolean => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.t
 const isValidImportKind = (s: string): s is "named-import" | "namespace-access" | "alias-namespace-access" =>
   s === "named-import" || s === "namespace-access" || s === "alias-namespace-access";
 
+const BOOLEAN_FLAGS = new Map<string, (opts: CliOptions) => void>([
+  ["--json", (o) => { o.json = true; }],
+  ["--write", (o) => { o.write = true; }],
+  ["--write-snapshot", (o) => { o.writeSnapshot = true; }],
+]);
+
+const COMMANDS = new Set<string>(["detect", "info", "watch", "dev", "imports", "build"]);
+
+const HELP_ALIASES = new Set<string>(["help", "--help", "-h"]);
+
+const VALUE_FLAGS = new Map<string, (opts: CliOptions, value: string) => void>([
+  ["--target", (o, v) => { if (v && !v.includes("..")) o.targetFile = v; }],
+  ["--snapshot", (o, v) => { if (v && !v.includes("..")) o.snapshotFile = v; }],
+  ["--domain", (o, v) => { if (v && isValidName(v)) o.domains.push(v); }],
+  ["--export", (o, v) => { if (v && isValidExportName(v)) o.exports.push(v); }],
+  ["--kind", (o, v) => { if (isValidImportKind(v)) o.kinds.push(v); }],
+  ["--file-kind", (o, v) => { if (isBarritsFileKind(v)) o.fileKinds.push(v); }],
+  ["--visibility", (o, v) => { if (isBarritsExportVisibility(v)) o.visibilities.push(v); }],
+  ["--mode", (o, v) => { if (isValidImportKind(v)) o.mode = v; }],
+]);
+
 const handleArgument = (args: string[], i: number, opts: CliOptions): number => {
   const arg = args[i];
 
-  if (arg === "--json") { opts.json = true; return 0; }
-  if (arg === "--write") { opts.write = true; return 0; }
-  if (arg === "--write-snapshot") { opts.writeSnapshot = true; return 0; }
+  const booleanFlag = BOOLEAN_FLAGS.get(arg);
+  if (booleanFlag) { booleanFlag(opts); return 0; }
 
-  if (arg === "help" || arg === "--help" || arg === "-h") { opts.command = "help"; return 0; }
-  if (arg === "detect") { opts.command = "detect"; return 0; }
-  if (arg === "info") { opts.command = "info"; return 0; }
-  if (arg === "watch") { opts.command = "watch"; return 0; }
-  if (arg === "dev") { opts.command = "dev"; return 0; }
-  if (arg === "imports") { opts.command = "imports"; return 0; }
-  if (arg === "build") { opts.command = "build"; return 0; }
+  if (COMMANDS.has(arg)) { opts.command = arg as CliCommand; return 0; }
+
+  if (HELP_ALIASES.has(arg)) { opts.command = "help"; return 0; }
 
   if (arg === "completion") {
     opts.command = "completion";
@@ -83,53 +99,8 @@ const handleArgument = (args: string[], i: number, opts: CliOptions): number => 
     return 0;
   }
 
-  if (arg === "--target") {
-    const value = nextValue(args, i);
-    if (value && !value.includes("..")) { opts.targetFile = value; }
-    return 1;
-  }
-
-  if (arg === "--snapshot") {
-    const value = nextValue(args, i);
-    if (value && !value.includes("..")) { opts.snapshotFile = value; }
-    return 1;
-  }
-
-  if (arg === "--domain") {
-    const value = nextValue(args, i);
-    if (value && isValidName(value)) { opts.domains.push(value); }
-    return 1;
-  }
-
-  if (arg === "--export") {
-    const value = nextValue(args, i);
-    if (value && isValidExportName(value)) { opts.exports.push(value); }
-    return 1;
-  }
-
-  if (arg === "--kind") {
-    const value = args[i + 1];
-    if (isValidImportKind(value)) { opts.kinds.push(value); }
-    return 1;
-  }
-
-  if (arg === "--file-kind") {
-    const value = args[i + 1];
-    if (value && isBarritsFileKind(value)) { opts.fileKinds.push(value); }
-    return 1;
-  }
-
-  if (arg === "--visibility") {
-    const value = args[i + 1];
-    if (value && isBarritsExportVisibility(value)) { opts.visibilities.push(value); }
-    return 1;
-  }
-
-  if (arg === "--mode") {
-    const value = args[i + 1];
-    if (isValidImportKind(value)) { opts.mode = value; }
-    return 1;
-  }
+  const valueFlag = VALUE_FLAGS.get(arg);
+  if (valueFlag) { valueFlag(opts, args[i + 1]); return 1; }
 
   if (!opts.startDirectory && !arg.startsWith("--")) {
     opts.startDirectory = arg;

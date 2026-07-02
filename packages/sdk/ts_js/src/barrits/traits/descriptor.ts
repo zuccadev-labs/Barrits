@@ -430,6 +430,32 @@ export const composeTraitDescriptors = <
   const state = options.state ?? ({} as TState);
   const conflictStrategy = options.onConflict ?? "throw";
 
+  const resolveCapabilityConflict = (
+    providedKey: string,
+    leftValue: unknown,
+    rightValue: unknown,
+    ownerTraitName: string,
+    currentDescriptorName: string,
+  ): void => {
+    if (options.resolveConflict) {
+      traits[providedKey] = options.resolveConflict(providedKey, leftValue, rightValue, ownerTraitName, currentDescriptorName);
+      return;
+    }
+
+    if (conflictStrategy === "left") {
+      return;
+    }
+
+    if (conflictStrategy === "right") {
+      traits[providedKey] = rightValue;
+      return;
+    }
+
+    throw new Error(
+      `Trait capability collision for "${providedKey}" between "${ownerTraitName}" and "${currentDescriptorName}". Declare explicit conflicts or pass a conflict strategy.`,
+    );
+  };
+
   for (const descriptorName of order) {
     const descriptor = descriptorMap.get(descriptorName);
 
@@ -453,32 +479,10 @@ export const composeTraitDescriptors = <
         continue;
       }
 
-      const leftValue = traits[providedKey];
-      const rightValue = createdTrait[providedKey];
-
-      if (Object.is(leftValue, rightValue)) {
-        continue;
+      if (!Object.is(traits[providedKey], createdTrait[providedKey])) {
+        const ownerTraitName = Object.entries(traitProviders).find(([, keys]) => keys.includes(providedKey))?.[0] ?? "unknown";
+        resolveCapabilityConflict(providedKey, traits[providedKey], createdTrait[providedKey], ownerTraitName, descriptor.name);
       }
-
-      const ownerTraitName = Object.entries(traitProviders).find(([, keys]) => keys.includes(providedKey))?.[0] ?? "unknown";
-
-      if (options.resolveConflict) {
-        traits[providedKey] = options.resolveConflict(providedKey, leftValue, rightValue, ownerTraitName, descriptor.name);
-        continue;
-      }
-
-      if (conflictStrategy === "left") {
-        continue;
-      }
-
-      if (conflictStrategy === "right") {
-        traits[providedKey] = rightValue;
-        continue;
-      }
-
-      throw new Error(
-        `Trait capability collision for "${providedKey}" between "${ownerTraitName}" and "${descriptor.name}". Declare explicit conflicts or pass a conflict strategy.`,
-      );
     }
   }
 

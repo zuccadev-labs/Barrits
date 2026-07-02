@@ -130,65 +130,45 @@ export const readTraitRuntimeMetadataFromCall = (expression: ts.Expression | und
     return undefined;
   }
 
+  const fields: Record<string, { values: readonly string[] | undefined; isDynamic: boolean }> = {
+    provides: { values: undefined, isDynamic: false },
+    conflicts: { values: [], isDynamic: false },
+    requires: { values: [], isDynamic: false },
+    consumes: { values: [], isDynamic: false },
+    state: { values: [], isDynamic: false },
+  };
   let runtimeName: string | undefined;
-  let runtimeConflicts: readonly string[] = [];
-  let runtimeRequires: readonly string[] = [];
-  let runtimeConsumes: readonly string[] = [];
-  let runtimeProvides: readonly string[] | undefined;
-  let runtimeState: readonly string[] = [];
-  let hasDynamicConflicts = false;
-  let hasDynamicRequires = false;
-  let hasDynamicConsumes = false;
-  let hasDynamicProvides = false;
-  let hasDynamicState = false;
 
   for (const property of descriptorArgument.properties) {
     if (!ts.isPropertyAssignment(property) || !ts.isIdentifier(property.name)) {
       continue;
     }
 
-    if (property.name.text === "name" && ts.isStringLiteralLike(property.initializer)) {
-      runtimeName = property.initializer.text.trim() || undefined;
+    const propName = property.name.text;
+
+    if (propName === "name") {
+      if (ts.isStringLiteralLike(property.initializer)) {
+        runtimeName = property.initializer.text.trim() || undefined;
+      }
       continue;
     }
 
-    if (property.name.text === "provides") {
-      runtimeProvides = readStringArrayLiteral(property.initializer);
-      hasDynamicProvides = runtimeProvides === undefined;
-      continue;
-    }
+    const field = fields[propName];
 
-    if (property.name.text === "conflicts") {
-      runtimeConflicts = readStringArrayLiteral(property.initializer) ?? [];
-      hasDynamicConflicts = readStringArrayLiteral(property.initializer) === undefined;
-      continue;
-    }
-
-    if (property.name.text === "requires") {
-      runtimeRequires = readStringArrayLiteral(property.initializer) ?? [];
-      hasDynamicRequires = readStringArrayLiteral(property.initializer) === undefined;
-      continue;
-    }
-
-    if (property.name.text === "consumes") {
-      runtimeConsumes = readStringArrayLiteral(property.initializer) ?? [];
-      hasDynamicConsumes = readStringArrayLiteral(property.initializer) === undefined;
-      continue;
-    }
-
-    if (property.name.text === "state") {
-      runtimeState = readStringArrayLiteral(property.initializer) ?? [];
-      hasDynamicState = readStringArrayLiteral(property.initializer) === undefined;
+    if (field) {
+      const parsed = readStringArrayLiteral(property.initializer);
+      field.values = parsed ?? field.values;
+      field.isDynamic = parsed === undefined;
     }
   }
 
   return {
-    conflicts: hasDynamicConflicts ? undefined : runtimeConflicts,
-    consumes: hasDynamicConsumes ? undefined : runtimeConsumes,
+    conflicts: fields.conflicts.isDynamic ? undefined : fields.conflicts.values,
+    consumes: fields.consumes.isDynamic ? undefined : fields.consumes.values,
     name: runtimeName,
-    requires: hasDynamicRequires ? undefined : runtimeRequires,
-    provides: hasDynamicProvides ? undefined : runtimeProvides,
-    state: hasDynamicState ? undefined : runtimeState,
+    requires: fields.requires.isDynamic ? undefined : fields.requires.values,
+    provides: fields.provides.isDynamic ? undefined : fields.provides.values,
+    state: fields.state.isDynamic ? undefined : fields.state.values,
   };
 };
 

@@ -87,6 +87,28 @@ const collectGraphMetrics = (rootFiles: readonly BarritsFileIntegration[], domai
   };
 };
 
+const filterDomains = (
+  domains: readonly BarritsDomainIntegration[],
+  domainFilter: Set<string> | null,
+  fileKindFilter: Set<string> | null,
+  exportFilter: Set<string> | null,
+  visibilityFilter: Set<string> | null,
+): BarritsDomainIntegration[] => {
+  return domains.flatMap((domain) => {
+    if (domainFilter && !domainFilter.has(domain.name)) {
+      return [];
+    }
+
+    const files = filterFiles(domain.files, { fileKindFilter, exportFilter, visibilityFilter });
+
+    if (files.length === 0 && (fileKindFilter || exportFilter || visibilityFilter)) {
+      return [];
+    }
+
+    return [{ ...domain, files }];
+  });
+};
+
 const filterCollisions = (
   collisions: readonly BarritsExportCollision[],
   filters: {
@@ -151,42 +173,8 @@ export const filterIntegrationGraph = (graph: BarritsIntegrationGraph, filters: 
   const libraryRootFiles = shouldKeepRootFiles
     ? filterFiles(graph.libraryRootFiles, { fileKindFilter, exportFilter, visibilityFilter })
     : [];
-  const domains = graph.domains.flatMap((domain) => {
-    if (domainFilter && !domainFilter.has(domain.name)) {
-      return [];
-    }
-
-    const files = filterFiles(domain.files, { fileKindFilter, exportFilter, visibilityFilter });
-
-    if (files.length === 0 && (fileKindFilter || exportFilter || visibilityFilter)) {
-      return [];
-    }
-
-    return [
-      {
-        ...domain,
-        files,
-      },
-    ];
-  });
-  const libraryDomains = graph.libraryDomains.flatMap((domain) => {
-    if (domainFilter && !domainFilter.has(domain.name)) {
-      return [];
-    }
-
-    const files = filterFiles(domain.files, { fileKindFilter, exportFilter, visibilityFilter });
-
-    if (files.length === 0 && (fileKindFilter || exportFilter || visibilityFilter)) {
-      return [];
-    }
-
-    return [
-      {
-        ...domain,
-        files,
-      },
-    ];
-  });
+  const domains = filterDomains(graph.domains, domainFilter, fileKindFilter, exportFilter, visibilityFilter);
+  const libraryDomains = filterDomains(graph.libraryDomains, domainFilter, fileKindFilter, exportFilter, visibilityFilter);
   const metrics = collectGraphMetrics(rootFiles, domains);
   const visibleTraitFiles = collectVisibleTraitDescriptorFiles(rootFiles, domains, graph.traitDescriptors);
   const importActionFilters: BarritsImportFilters = {
