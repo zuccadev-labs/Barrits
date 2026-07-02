@@ -21,6 +21,7 @@
     "src/**/*.d.ts",
     "adapters/**/*.ts",
     "adapters/**/*.d.ts",
+    "tests/**/*.ts",
     "tsup.config.ts"
   ]
 }
