@@ -1,11 +1,8 @@
 const DEFAULT_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+const textEncoder = new TextEncoder();
 
 const getDenoNamespace = (): unknown | undefined => {
-  try {
-    return (globalThis as Record<string, unknown>).Deno;
-  } catch {
-    return undefined;
-  }
+  return (globalThis as Record<string, unknown>).Deno;
 };
 
 const isDeno = (): boolean => {
@@ -60,23 +57,18 @@ export class BarritsSpinner {
   }
 
   private writeStderr(text: string): void {
-    if (isDeno()) {
-      const encoder = new TextEncoder();
-      try {
+    try {
+      if (isDeno()) {
         const denoStderr = (getDenoNamespace() as Record<string, unknown>).stderr as { writeSync?: (data: Uint8Array) => void } | undefined;
-        denoStderr?.writeSync?.(encoder.encode(text));
-      } catch {
-        /** ignore */
+        denoStderr?.writeSync?.(textEncoder.encode(text));
+        return;
       }
-      return;
-    }
-    if (isNode()) {
-      try {
+      if (isNode()) {
         process?.stderr?.write(text);
-      } catch {
-        /** ignore */
+        return;
       }
-      return;
+    } catch {
+      /** ignore stderr write failures (e.g. closed pipe) */
     }
   }
 

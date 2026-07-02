@@ -4,7 +4,8 @@
   "tap": {
     "testFiles": [
       "packages/sdk/ts_js/tests/property-based.test.ts",
-      "packages/sdk/ts_js/tests/cli-parser.test.ts"
+      "packages/sdk/ts_js/tests/cli-parser.test.ts",
+      "packages/sdk/ts_js/tests/cli-format.test.ts"
     ],
     "nodeArgs": [
       "--import",
