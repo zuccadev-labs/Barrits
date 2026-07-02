@@ -18,22 +18,11 @@ const trimTrailingSlash = (value: string): string => {
   return value.endsWith("/") ? value.slice(0, -1) : value;
 };
 
-/**
- * [EN] Implementation of Normalize path.
- * [ES] Implementación de Normalize path.
- */
-export const normalizePath = (value: string): string => {
-  const normalized = normalizeSeparators(value.trim());
-
-  if (normalized === "") {
-    return ".";
-  }
-
+const resolvePathSegments = (normalized: string): { isAbsolute: boolean; resolved: string[] } => {
   const isAbsolute = normalized.startsWith("/") || /^[A-Za-z]:\//.test(normalized);
-  const segments = normalized.split("/");
   const resolved: string[] = [];
 
-  for (const segment of segments) {
+  for (const segment of normalized.split("/")) {
     if (segment === "." || segment === "") continue;
     if (segment === "..") {
       if (resolved.length > 0 && resolved[resolved.length - 1] !== "..") {
@@ -48,16 +37,37 @@ export const normalizePath = (value: string): string => {
     resolved.push(segment);
   }
 
+  return { isAbsolute, resolved };
+};
+
+const reconstructAbsolutePath = (result: string): string => {
+  if (!result.startsWith("/") && !/^[A-Za-z]:/.test(result)) {
+    result = "/" + result;
+  }
+
+  if (/^[A-Za-z]:$/.test(result)) {
+    result = result + "/";
+  }
+
+  return result;
+};
+
+/**
+ * [EN] Implementation of Normalize path.
+ * [ES] Implementación de Normalize path.
+ */
+export const normalizePath = (value: string): string => {
+  const normalized = normalizeSeparators(value.trim());
+
+  if (normalized === "") {
+    return ".";
+  }
+
+  const { isAbsolute, resolved } = resolvePathSegments(normalized);
   let result = resolved.join("/");
 
   if (isAbsolute) {
-    if (!result.startsWith("/") && !/^[A-Za-z]:/.test(result)) {
-      result = "/" + result;
-    }
-
-    if (/^[A-Za-z]:$/.test(result)) {
-      result = result + "/";
-    }
+    result = reconstructAbsolutePath(result);
   }
 
   if (result === "") {
