@@ -10,10 +10,10 @@ coverage/
 *.tsbuildinfo
 
 # Generated API documentation
-docs/api/
+**/docs/api/
 
 # Benchmark results
-benchmarks/results/
+**/benchmarks/results/
 
 # Stryker mutation test reports and temp directories
 reports/
