@@ -36,156 +36,117 @@ export const IMPORTS_MANIFEST_BASENAME = "import-actions.json";
 export const IMPORTS_MODULE_BASENAME = "import-actions.generated.ts";
 export const WATCH_SNAPSHOT_BASENAME = "watch-snapshot.json";
 
+const createDefaultOptions = (childArgs: string[]): CliOptions => ({
+  command: "detect",
+  json: false,
+  write: false,
+  writeSnapshot: false,
+  mode: "named-import",
+  domains: [],
+  exports: [],
+  kinds: [],
+  fileKinds: [],
+  visibilities: [],
+  childArgs,
+  shellType: "bash",
+});
+
+const nextValue = (args: string[], i: number): string | undefined => {
+  const v = args[i + 1];
+  return v && !v.startsWith("--") ? v : undefined;
+};
+
+const isValidName = (s: string): boolean => /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(s);
+const isValidExportName = (s: string): boolean => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(s);
+const isValidImportKind = (s: string): s is "named-import" | "namespace-access" | "alias-namespace-access" =>
+  s === "named-import" || s === "namespace-access" || s === "alias-namespace-access";
+
+const handleArgument = (args: string[], i: number, opts: CliOptions): number => {
+  const arg = args[i];
+
+  if (arg === "--json") { opts.json = true; return 0; }
+  if (arg === "--write") { opts.write = true; return 0; }
+  if (arg === "--write-snapshot") { opts.writeSnapshot = true; return 0; }
+
+  if (arg === "help" || arg === "--help" || arg === "-h") { opts.command = "help"; return 0; }
+  if (arg === "detect") { opts.command = "detect"; return 0; }
+  if (arg === "info") { opts.command = "info"; return 0; }
+  if (arg === "watch") { opts.command = "watch"; return 0; }
+  if (arg === "dev") { opts.command = "dev"; return 0; }
+  if (arg === "imports") { opts.command = "imports"; return 0; }
+  if (arg === "build") { opts.command = "build"; return 0; }
+
+  if (arg === "completion") {
+    opts.command = "completion";
+    const shellArg = nextValue(args, i);
+    if (shellArg) { opts.shellType = shellArg; return 1; }
+    return 0;
+  }
+
+  if (arg === "--target") {
+    const value = nextValue(args, i);
+    if (value && !value.includes("..")) { opts.targetFile = value; }
+    return 1;
+  }
+
+  if (arg === "--snapshot") {
+    const value = nextValue(args, i);
+    if (value && !value.includes("..")) { opts.snapshotFile = value; }
+    return 1;
+  }
+
+  if (arg === "--domain") {
+    const value = nextValue(args, i);
+    if (value && isValidName(value)) { opts.domains.push(value); }
+    return 1;
+  }
+
+  if (arg === "--export") {
+    const value = nextValue(args, i);
+    if (value && isValidExportName(value)) { opts.exports.push(value); }
+    return 1;
+  }
+
+  if (arg === "--kind") {
+    const value = args[i + 1];
+    if (isValidImportKind(value)) { opts.kinds.push(value); }
+    return 1;
+  }
+
+  if (arg === "--file-kind") {
+    const value = args[i + 1];
+    if (value && isBarritsFileKind(value)) { opts.fileKinds.push(value); }
+    return 1;
+  }
+
+  if (arg === "--visibility") {
+    const value = args[i + 1];
+    if (value && isBarritsExportVisibility(value)) { opts.visibilities.push(value); }
+    return 1;
+  }
+
+  if (arg === "--mode") {
+    const value = args[i + 1];
+    if (isValidImportKind(value)) { opts.mode = value; }
+    return 1;
+  }
+
+  if (!opts.startDirectory && !arg.startsWith("--")) {
+    opts.startDirectory = arg;
+  }
+
+  return 0;
+};
+
 export const parseArguments = (argumentsList: string[]): CliOptions => {
   const separatorIndex = argumentsList.indexOf("--");
   const cliArguments = separatorIndex === -1 ? argumentsList : argumentsList.slice(0, separatorIndex);
   const childArgs = separatorIndex === -1 ? [] : argumentsList.slice(separatorIndex + 1);
 
-  const options: CliOptions = {
-    command: "detect",
-    json: false,
-    write: false,
-    writeSnapshot: false,
-    mode: "named-import",
-    domains: [],
-    exports: [],
-    kinds: [],
-    fileKinds: [],
-    visibilities: [],
-    childArgs,
-    shellType: "bash",
-  };
+  const options = createDefaultOptions(childArgs);
 
-  for (let index = 0; index < cliArguments.length; index += 1) {
-    const argument = cliArguments[index];
-
-    if (argument === "help" || argument === "--help" || argument === "-h") {
-      options.command = "help";
-      continue;
-    }
-
-    if (argument === "detect") {
-      options.command = "detect";
-      continue;
-    }
-    if (argument === "info") {
-      options.command = "info";
-      continue;
-    }
-    if (argument === "watch") {
-      options.command = "watch";
-      continue;
-    }
-    if (argument === "dev") {
-      options.command = "dev";
-      continue;
-    }
-    if (argument === "imports") {
-      options.command = "imports";
-      continue;
-    }
-    if (argument === "build") {
-      options.command = "build";
-      continue;
-    }
-    if (argument === "completion") {
-      options.command = "completion";
-      const shellArg = cliArguments[index + 1];
-      if (shellArg && !shellArg.startsWith("--")) {
-        options.shellType = shellArg;
-        index += 1;
-      }
-      continue;
-    }
-
-    if (argument === "--json") {
-      options.json = true;
-      continue;
-    }
-    if (argument === "--write") {
-      options.write = true;
-      continue;
-    }
-    if (argument === "--write-snapshot") {
-      options.writeSnapshot = true;
-      continue;
-    }
-
-    if (argument === "--target") {
-      const value = cliArguments[index + 1];
-      if (value && !value.startsWith("--") && !value.includes("..")) {
-        options.targetFile = value;
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--snapshot") {
-      const value = cliArguments[index + 1];
-      if (value && !value.startsWith("--") && !value.includes("..")) {
-        options.snapshotFile = value;
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--domain") {
-      const domain = cliArguments[index + 1];
-      if (domain && !domain.startsWith("--") && /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(domain)) {
-        options.domains.push(domain);
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--export") {
-      const exportName = cliArguments[index + 1];
-      if (exportName && !exportName.startsWith("--") && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(exportName)) {
-        options.exports.push(exportName);
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--kind") {
-      const kind = cliArguments[index + 1];
-      if (kind === "named-import" || kind === "namespace-access" || kind === "alias-namespace-access") {
-        options.kinds.push(kind);
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--file-kind") {
-      const fileKind = cliArguments[index + 1];
-      if (fileKind && isBarritsFileKind(fileKind)) {
-        options.fileKinds.push(fileKind);
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--visibility") {
-      const visibility = cliArguments[index + 1];
-      if (visibility && isBarritsExportVisibility(visibility)) {
-        options.visibilities.push(visibility);
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--mode") {
-      const mode = cliArguments[index + 1];
-      if (mode === "named-import" || mode === "namespace-access" || mode === "alias-namespace-access") {
-        options.mode = mode;
-      }
-      index += 1;
-      continue;
-    }
-
-    if (!options.startDirectory && !argument.startsWith("--")) {
-      options.startDirectory = argument;
-    }
+  for (let i = 0; i < cliArguments.length; i += 1) {
+    i += handleArgument(cliArguments, i, options);
   }
 
   return options;

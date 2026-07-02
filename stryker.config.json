@@ -5,7 +5,8 @@
     "testFiles": [
       "packages/sdk/ts_js/tests/property-based.test.ts",
       "packages/sdk/ts_js/tests/cli-parser.test.ts",
-      "packages/sdk/ts_js/tests/cli-format.test.ts"
+      "packages/sdk/ts_js/tests/cli-format.test.ts",
+      "packages/sdk/ts_js/tests/validation.test.ts"
     ],
     "nodeArgs": [
       "--import",
@@ -20,7 +21,8 @@
   "mutate": [
     "packages/sdk/ts_js/src/barrits/sdk/guards.ts",
     "packages/sdk/ts_js/src/barrits/sdk/path.ts",
-    "packages/sdk/ts_js/src/barrits/sdk/cli-parser.ts"
+    "packages/sdk/ts_js/src/barrits/sdk/cli-parser.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/validation.ts"
   ],
   "checkers": ["typescript"],
   "tsconfigFile": "packages/sdk/ts_js/tsconfig.json",

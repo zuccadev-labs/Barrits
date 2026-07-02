@@ -3,6 +3,19 @@
 All notable changes to this SDK will be documented in this file.
 Todos los cambios relevantes para el SDK se documentan aquí.
 
+## [0.1.8] - 2026-07-02
+### Fixed
+- **Refactored `parseArguments`**: Reduced cognitive complexity from 68 to under 30 by extracting a `handleArgument` dispatcher and value-validation helpers (`nextValue`, `isValidName`, etc.), improving maintainability without behavioral changes. Validated via 78 passing tests (cli-parser.test.ts).
+
+### Refactored
+- **`runDenoCli` and `runNodeCli`**: Extracted inline command handlers (`handleNodeImports`, `handleNodeBuild`, `handleNodeWatchDev`, `handleDenoImports`, `handleDenoBuild`, `handleDenoWatchDev`) into dedicated functions, reducing cognitive complexity from 37 and 35 respectively to well under 30 each. No behavioral change.
+
+### Added
+- **Mutation coverage for `validation.ts`**: Added `validation.ts` to Stryker mutate list and `validation.test.ts` to test files. Wrote 10 Set-constant content tests covering `DISCOVERY_STRATEGIES`, `FILE_MODES`, `IMPORT_ACTION_KINDS`, `EXPORT_KINDS`, `SOURCE_LAYERS`, `BINDING_KINDS`, `TRAIT_FACTORIES`, `TRAIT_DIAGNOSTIC_SEVERITIES`, `TRAIT_DIAGNOSTIC_CATEGORIES`, and `EXPORT_COLLISION_TYPES`. Total validation tests: 115, all passing.
+
+### Changed
+- **`.gitignore`**: Added `AGENTS.md` and `agent.md` to prevent accidental commits of local agent instruction files.
+
 ## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
 ### Added
 - **Dynamic IoC Container (`barrits/ioc`)**: A new deterministic Inversion of Control container that dynamically wires capabilities discovered via AST Traits (`@barrits-consumes`, `@barrits-provides`, `@barrits-state`).

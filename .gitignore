@@ -54,4 +54,8 @@ Thumbs.db
 .github/skills/
 .github/agents/
 
+# Local agent instruction files
+AGENTS.md
+agent.md
+
 context7.json
