@@ -7,15 +7,24 @@
 };
 
 const trimTrailingSlash = (value: string): string => {
-  if (value === "/") {
-    return value;
+  const trimmed = value.trimEnd();
+
+  if (trimmed === "/") {
+    return trimmed;
   }
 
-  if (/^[A-Za-z]:\/$/.test(value)) {
-    return value;
+  if (/^[A-Za-z]:\/$/.test(trimmed)) {
+    return trimmed;
   }
 
-  return value.endsWith("/") ? value.slice(0, -1) : value;
+  return trimmed.endsWith("/") ? trimmed.slice(0, -1) : trimmed;
+};
+
+const canPopSegment = (resolved: string[], isAbsolute: boolean): boolean => {
+  if (resolved.length === 0) return false;
+  if (resolved[resolved.length - 1] === "..") return false;
+  if (isAbsolute && /^[A-Za-z]:$/.test(resolved[resolved.length - 1])) return false;
+  return true;
 };
 
 const resolvePathSegments = (normalized: string): { isAbsolute: boolean; resolved: string[] } => {
@@ -24,16 +33,16 @@ const resolvePathSegments = (normalized: string): { isAbsolute: boolean; resolve
 
   for (const segment of normalized.split("/")) {
     if (segment === "." || segment === "") continue;
+
     if (segment === "..") {
-      if (resolved.length > 0 && resolved[resolved.length - 1] !== "..") {
-        const lastSegment = resolved[resolved.length - 1];
-        if (isAbsolute && /^[A-Za-z]:$/.test(lastSegment)) continue;
+      if (canPopSegment(resolved, isAbsolute)) {
         resolved.pop();
       } else if (!isAbsolute) {
         resolved.push("..");
       }
       continue;
     }
+
     resolved.push(segment);
   }
 
