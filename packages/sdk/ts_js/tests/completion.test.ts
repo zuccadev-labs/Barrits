@@ -214,16 +214,9 @@ describe("printCompletion", () => {
     }
   });
 
-  it("restores console.log after printing", () => {
-    const originalLog = console.log;
-    console.log = () => {};
-
-    try {
-      printCompletion("bash");
-    } finally {
-      console.log = originalLog;
-    }
-
-    assert.equal(console.log, originalLog);
+  it("does not replace console.log", () => {
+    const original = console.log;
+    printCompletion("bash");
+    assert.equal(console.log, original);
   });
 });

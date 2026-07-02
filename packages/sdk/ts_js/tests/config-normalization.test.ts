@@ -155,4 +155,19 @@ describe("normalizeResolvedConfig", () => {
     const result = normalizeResolvedConfig({}, "/project");
     assert.equal(result.configFilePath, undefined);
   });
+
+  it("allows contracts absent", () => {
+    const result = normalizeResolvedConfig({}, "/project", "/project/barrits.config.ts");
+    assert.equal(result.contracts, undefined);
+  });
+
+  it("allows namespace absent", () => {
+    const result = normalizeResolvedConfig({}, "/project", "/project/barrits.config.ts");
+    assert.equal(result.namespace, undefined);
+  });
+
+  it("allows main absent", () => {
+    const result = normalizeResolvedConfig({}, "/project", "/project/barrits.config.ts");
+    assert.equal(result.main, undefined);
+  });
 });

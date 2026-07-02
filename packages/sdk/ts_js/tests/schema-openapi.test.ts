@@ -117,4 +117,12 @@ describe("generateOpenApiSchema", () => {
     ]));
     assert.ok(schema.paths["/health"]);
   });
+
+  it("throws on null manifest", () => {
+    assert.throws(() => (generateOpenApiSchema as any)(null), TypeError);
+  });
+
+  it("throws on undefined manifest", () => {
+    assert.throws(() => (generateOpenApiSchema as any)(undefined), TypeError);
+  });
 });

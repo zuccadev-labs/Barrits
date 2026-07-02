@@ -12,11 +12,5 @@ describe("shared constants", () => {
     assert.equal(PACKAGE_ALIAS, "brt");
   });
 
-  it("PACKAGE_NAME is frozen", () => {
-    assert.ok(Object.isFrozen(PACKAGE_NAME));
-  });
 
-  it("PACKAGE_ALIAS is frozen", () => {
-    assert.ok(Object.isFrozen(PACKAGE_ALIAS));
-  });
 });

@@ -3,10 +3,14 @@
 All notable changes to this project will be documented in this file.
 Todos los cambios relevantes de este repositorio se documentan aquí.
 
-## [0.1.8] - 2026-06-29
+## [0.1.8] - 2026-07-02
 ### Fixed
 - **False SHA-256 Checksum**: Replaced FNV-1a non-cryptographic hash (labeled `sha256-`) with real SHA-256 via Web Crypto API (`crypto.subtle.digest`). The old implementation used FNV-1a (32-bit, non-cryptographic) but misleadingly prefixed the output as `sha256-barrits-`, creating a false security guarantee. Now uses real SHA-256 digest for supply chain integrity.
 - **Placeholder Module Descriptions**: Replaced 14 `[EN] Placeholder module description` JSDoc `@module` annotations across all SDK source and type declaration files with actual bilingual descriptions reflecting each module's single responsibility.
+- **process.env Restoration Safety**: Wrapped `process.env.BARRITS_BUILD_MANIFEST` mutations in `plugins-shared.test.ts` with `try/finally` blocks to ensure environment variable restoration even on assertion failure. Previously used conditional `if` statements that leaked modified env vars when tests failed.
+- **Temp Directory Cleanup**: Added `after()` hook with tracked `Set<string>` to remove all temporary directories created by `mkdtemp` across `plugins-shared.test.ts` (10 call sites). Replaced dead `unlink` import with `rm` for recursive directory cleanup.
+- **Vacuous `Object.isFrozen` Assertions Removed**: Removed two tests in `shared-constants.test.ts` that asserted `Object.isFrozen` on string primitives, which always returns `true` regardless of the constant's immutability.
+- **Vacuous `console.log` Restoration Test Replaced**: Replaced a test in `completion.test.ts` that verified `console.log` restoration via the test's own `finally` block (not `printCompletion`) with a direct assertion that `printCompletion` does not replace `console.log`.
 
 ### Changed
 - **Async API**: `createBuildManifest`, `stringifyBuildManifest`, and internal `generateChecksum` now return `Promise` values to support async Web Crypto API.
@@ -41,6 +45,9 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 ### Added
 - **Forensic Audit Report**: Comprehensive 80+ file, ~12,000 LOC forensic audit at `docs/investigations/ES/packages/ts_js/10-auditoria-forense-integral.md`. Scorecard: 6.2/10 enterprise readiness. 34-point action plan across security, testing, CI, skills, and documentation.
 - **Test Coverage for `plugins/shared.ts`**: 25 new tests covering all 7 exported functions of the shared plugin module: `resolveManifestPath` (env var fallback, precedence), `createManifestModuleSource` (null/JSON/banner), `createPluginBaseOptions` (virtual module ID, prefix, manifest resolution, package options), `loadManifest` (valid/invalid/missing JSON), `resolvePackageAutomationOptions` (defaults, overrides, fallback root), `loadManifestOrCreate` (delegate to loadManifest, auto-create fallback to null without barrits directory), and `loadManifestForPackage` (manifest path, autoManifest disabled, no barrits directory). Total committed tests: 572 (+25).
+- **Test Coverage for `internal/config_normalization.ts`**: Added edge case tests for `normalizeResolvedConfig` covering absent `contracts`, absent `namespace`, absent `main`, and explicit `configFilePath`. Total config-related tests: 27 (+3).
+- **Test Coverage for `schema/openapi.ts`**: Added tests for `generateOpenApiSchema(null)` and `generateOpenApiSchema(undefined)`, verifying `TypeError` throw on invalid manifest input. Total schema tests: 12 (+2).
+- **Test Coverage Consolidation**: Merged previous Fase 2 batches (async-utils, logger, shared-constants, config-normalization, completion, summarization) into cumulative total. Full suite: **743 tests** across 76 suites, 742 passing (1 pre-existing failure unrelated to SDK). Coverage: 49/64 source files (77%) with direct test imports.
 
 ## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
 ### Added

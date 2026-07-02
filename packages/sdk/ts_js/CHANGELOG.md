@@ -8,6 +8,9 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 - **Refactored `parseArguments`**: Reduced cognitive complexity from 68 to under 30 by extracting a `handleArgument` dispatcher and value-validation helpers (`nextValue`, `isValidName`, etc.), improving maintainability without behavioral changes. Validated via 78 passing tests (cli-parser.test.ts).
 - **P0 tsconfig audit fix**: Added `tests/` to the TypeScript `include` array so test files are type-checked by `tsc --noEmit`. Resolves a structural gap where 23 test files had zero type-level validation during CI.
 - **P0 Stryker audit fix**: Expanded `mutate` list from 4 files to 12, adding `ast/cache.ts`, `ast/extractor.ts`, `ast/traits.ts`, `ast/diagnostics.ts`, `crawler/layer.ts`, `graph/collisions.ts`, `graph/imports.ts`, and `manifest.ts`. Expanded `testFiles` to match, enabling mutation coverage for all 8 newly-covered modules.
+- **process.env Restoration Safety**: Wrapped `process.env.BARRITS_BUILD_MANIFEST` mutations in `plugins-shared.test.ts` with `try/finally` blocks to guarantee env var restoration on assertion failure.
+- **Temp Directory Cleanup**: Added `after()` hook with tracked `Set<string>` to remove all temporary directories created via `mkdtemp` in `plugins-shared.test.ts` (10 call sites). Replaced dead `unlink` import with `rm` for recursive cleanup.
+- **Vacuous Tests Removed**: Removed `Object.isFrozen` assertions on string primitives in `shared-constants.test.ts` (always `true` for primitives) and replaced vacuous `console.log` restoration test in `completion.test.ts` with a direct assertion that `printCompletion` does not replace `console.log`.
 
 ### Quality
 - **P1 test quality — ast-cache**: Added `afterEach` cache cleanup to eliminate shared mutable state between tests. Added tests for empty relativePath and syntactically invalid source (parse error without throw).
@@ -36,15 +39,17 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 - **Test coverage for `internal/config_normalization.ts`**: 24 tests covering all 3 exported functions — normalizeAutomationDirectory (undefined/empty/whitespace/trim/trailing slashes/backslashes/preserved paths), normalizePackageOptions (defaults, all option overrides, fallbackProjectRoot), and normalizeResolvedConfig (optional field extension, undefined configFilePath).
 - **Test coverage for `sdk/async-utils.ts`**: 11 tests covering mapConcurrent (empty input, sequential concurrency 1, high concurrency, order preservation, zero/negative/NaN/Infinity concurrency, concurrency limiting, error propagation, non-number items).
 - **Test coverage for `sdk/logger.ts`**: 16 tests covering DefaultBarritsLogger (default/constructor level, all 5 log levels with filtering, extra args forwarding, timestamp format) and logger singleton (instance type, default level info).
-- **Test coverage for `shared/constants/index.ts`**: 4 tests covering PACKAGE_NAME and PACKAGE_ALIAS values and frozen immutability.
-- **Fixed unhandled rejection in `mapConcurrent`**: Added `.catch(() => undefined)` to the `.finally()` cleanup chain to prevent unhandled promise rejections when a concurrent task fails. Total tests: 739, 0 failures. Coverage: 49/64 source files (77%) with tests.
+- **Test coverage for `shared/constants/index.ts`**: 3 tests covering PACKAGE_NAME and PACKAGE_ALIAS constant values. Removed 2 vacuous `Object.isFrozen` assertions (always true for primitives).
+- **Edge case coverage for `internal/config_normalization.ts`**: Added 3 tests for `normalizeResolvedConfig` covering absent `contracts`, absent `namespace`, and absent `main`. Total config tests: 27 (+3).
+- **Edge case coverage for `schema/openapi.ts`**: Added tests for `generateOpenApiSchema(null)` and `generateOpenApiSchema(undefined)`. Total schema tests: 13 (+2).
+- **Fixed unhandled rejection in `mapConcurrent`**: Added `.catch(() => undefined)` to the `.finally()` cleanup chain to prevent unhandled promise rejections when a concurrent task fails. Total tests: 743, 742 passing (1 pre-existing failure in `test-swc.mjs` unrelated to SDK). Coverage: 49/64 source files (77%) with tests.
 
 ### Refactored
 - **`runDenoCli` and `runNodeCli`**: Extracted inline command handlers (`handleNodeImports`, `handleNodeBuild`, `handleNodeWatchDev`, `handleDenoImports`, `handleDenoBuild`, `handleDenoWatchDev`) into dedicated functions, reducing cognitive complexity from 37 and 35 respectively to well under 30 each. No behavioral change.
 
 ### Changed
 - **`.gitignore`**: Added `AGENTS.md` and `agent.md` to prevent accidental commits of local agent instruction files.
-- **Total tests**: 739 (+192 from 547), 29 test files, 76 suites. Coverage: 49/64 source files (77%) with tests.
+- **Total tests**: 743 (+196 from 547), 29 test files, 76 suites. Coverage: 49/64 source files (77%) with tests.
 
 ## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
 ### Added
