@@ -40,6 +40,7 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 
 ### Added
 - **Forensic Audit Report**: Comprehensive 80+ file, ~12,000 LOC forensic audit at `docs/investigations/ES/packages/ts_js/10-auditoria-forense-integral.md`. Scorecard: 6.2/10 enterprise readiness. 34-point action plan across security, testing, CI, skills, and documentation.
+- **Test Coverage for `plugins/shared.ts`**: 25 new tests covering all 7 exported functions of the shared plugin module: `resolveManifestPath` (env var fallback, precedence), `createManifestModuleSource` (null/JSON/banner), `createPluginBaseOptions` (virtual module ID, prefix, manifest resolution, package options), `loadManifest` (valid/invalid/missing JSON), `resolvePackageAutomationOptions` (defaults, overrides, fallback root), `loadManifestOrCreate` (delegate to loadManifest, auto-create fallback to null without barrits directory), and `loadManifestForPackage` (manifest path, autoManifest disabled, no barrits directory). Source files with tests now reach 43/64 (67%), total test count 627, 0 failures.
 
 ## [0.1.7] - 2026-05-20 (Deno BaaS Core & Corporate Documentation)
 ### Added
