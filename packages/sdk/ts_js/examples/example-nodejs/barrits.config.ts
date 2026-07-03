@@ -12,7 +12,7 @@ export default defineBarritsConfig({
     traits: [
       {
         name: "runtime-node",
-        sourceFile: "traits/index.ts",
+        sourceFile: "traits/runtime-trait.ts",
         bindingName: "nodeRuntimeTrait",
         provides: ["runtime:node"],
         tags: ["runtime"],

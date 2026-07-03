@@ -86,9 +86,9 @@ demonstrating factory injection with inter-service dependencies.
 
 ### 6. CLI Pipeline
 
-`scripts/cli-workflow.ts` demonstrates the programmatic API for the
-full Barrits pipeline: discovery → graph filtering → manifest creation →
-summary generation.
+`scripts/cli-workflow.ts` demonstrates the manifest consumption API:
+`parseBuildManifest` + `createBuildManifestSummary`, iterating over
+trait descriptors with provides/tags metadata.
 
 ### 7. Watch Snapshot Processing
 
