@@ -26,8 +26,8 @@ Deno.test("traits: re-exports all traits from barrel", async () => {
 
 Deno.test("parse-service: CRUD operations", async () => {
   const { parseServiceTrait } = await import("../barrits/traits/parse-service.ts");
-  const { create } = parseServiceTrait;
-  const svc = create();
+  const { create: buildService } = parseServiceTrait;
+  const svc = buildService();
   assertEquals(svc.list(), []);
 
   const user = svc.create({ username: "admin", role: "super" });
