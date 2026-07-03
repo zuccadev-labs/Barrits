@@ -92,7 +92,9 @@ jobs:
 
       - name: Install git-secrets
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq git-secrets
+          git clone https://github.com/awslabs/git-secrets.git /tmp/git-secrets
+          sudo make -C /tmp/git-secrets install
+          rm -rf /tmp/git-secrets
 
       - name: Register AWS patterns
         run: git secrets --register-aws --global
