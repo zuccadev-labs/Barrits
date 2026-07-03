@@ -42,6 +42,30 @@ export type TraitRuntimeMetadata = {
  * @param expression - Typescript logic interface binding literal root syntax expression node component dependency pointer.
  * @returns Resolves the factory literal identifier string natively mapped.
  */
+const resolveWrapExpression = (expression: ts.Expression): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
+  if (ts.isParenthesizedExpression(expression) || ts.isAsExpression(expression) || ts.isSatisfiesExpression(expression) || ts.isNonNullExpression(expression)) {
+    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
+  }
+
+  if (ts.isAwaitExpression(expression)) {
+    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
+  }
+
+  if (ts.isPropertyAccessExpression(expression)) {
+    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
+  }
+
+  return undefined;
+};
+
+const resolveBinaryExpression = (expression: ts.BinaryExpression | ts.ConditionalExpression): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
+  if (ts.isBinaryExpression(expression)) {
+    return resolveTraitDescriptorFactoryFromExpression(expression.left) ?? resolveTraitDescriptorFactoryFromExpression(expression.right);
+  }
+
+  return resolveTraitDescriptorFactoryFromExpression(expression.whenTrue) ?? resolveTraitDescriptorFactoryFromExpression(expression.whenFalse);
+};
+
 export const resolveTraitDescriptorFactoryFromExpression = (
   expression: ts.Expression | undefined,
 ): "createTraitDescriptor" | "createTraitDescriptorFromJsDoc" | undefined => {
@@ -66,31 +90,13 @@ export const resolveTraitDescriptorFactoryFromExpression = (
     );
   }
 
-  if (
-    ts.isParenthesizedExpression(expression) ||
-    ts.isAsExpression(expression) ||
-    ts.isSatisfiesExpression(expression) ||
-    ts.isNonNullExpression(expression)
-  ) {
-    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
+  const wrappedResult = resolveWrapExpression(expression);
+  if (wrappedResult !== undefined) {
+    return wrappedResult;
   }
 
-  if (ts.isConditionalExpression(expression)) {
-    return (
-      resolveTraitDescriptorFactoryFromExpression(expression.whenTrue) ?? resolveTraitDescriptorFactoryFromExpression(expression.whenFalse)
-    );
-  }
-
-  if (ts.isBinaryExpression(expression)) {
-    return resolveTraitDescriptorFactoryFromExpression(expression.left) ?? resolveTraitDescriptorFactoryFromExpression(expression.right);
-  }
-
-  if (ts.isAwaitExpression(expression)) {
-    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
-  }
-
-  if (ts.isPropertyAccessExpression(expression)) {
-    return resolveTraitDescriptorFactoryFromExpression(expression.expression);
+  if (ts.isConditionalExpression(expression) || ts.isBinaryExpression(expression)) {
+    return resolveBinaryExpression(expression);
   }
 
   return undefined;
@@ -130,102 +136,93 @@ export const readTraitRuntimeMetadataFromCall = (expression: ts.Expression | und
     return undefined;
   }
 
+  const fields: Record<string, { values: readonly string[] | undefined; isDynamic: boolean }> = {
+    provides: { values: undefined, isDynamic: false },
+    conflicts: { values: [], isDynamic: false },
+    requires: { values: [], isDynamic: false },
+    consumes: { values: [], isDynamic: false },
+    state: { values: [], isDynamic: false },
+  };
   let runtimeName: string | undefined;
-  let runtimeConflicts: readonly string[] = [];
-  let runtimeRequires: readonly string[] = [];
-  let runtimeConsumes: readonly string[] = [];
-  let runtimeProvides: readonly string[] | undefined;
-  let runtimeState: readonly string[] = [];
-  let hasDynamicConflicts = false;
-  let hasDynamicRequires = false;
-  let hasDynamicConsumes = false;
-  let hasDynamicProvides = false;
-  let hasDynamicState = false;
 
   for (const property of descriptorArgument.properties) {
     if (!ts.isPropertyAssignment(property) || !ts.isIdentifier(property.name)) {
       continue;
     }
 
-    if (property.name.text === "name" && ts.isStringLiteralLike(property.initializer)) {
-      runtimeName = property.initializer.text.trim() || undefined;
+    const propName = property.name.text;
+
+    if (propName === "name") {
+      if (ts.isStringLiteralLike(property.initializer)) {
+        runtimeName = property.initializer.text.trim() || undefined;
+      }
       continue;
     }
 
-    if (property.name.text === "provides") {
-      runtimeProvides = readStringArrayLiteral(property.initializer);
-      hasDynamicProvides = runtimeProvides === undefined;
-      continue;
-    }
+    const field = fields[propName];
 
-    if (property.name.text === "conflicts") {
-      runtimeConflicts = readStringArrayLiteral(property.initializer) ?? [];
-      hasDynamicConflicts = readStringArrayLiteral(property.initializer) === undefined;
-      continue;
-    }
-
-    if (property.name.text === "requires") {
-      runtimeRequires = readStringArrayLiteral(property.initializer) ?? [];
-      hasDynamicRequires = readStringArrayLiteral(property.initializer) === undefined;
-      continue;
-    }
-
-    if (property.name.text === "consumes") {
-      runtimeConsumes = readStringArrayLiteral(property.initializer) ?? [];
-      hasDynamicConsumes = readStringArrayLiteral(property.initializer) === undefined;
-      continue;
-    }
-
-    if (property.name.text === "state") {
-      runtimeState = readStringArrayLiteral(property.initializer) ?? [];
-      hasDynamicState = readStringArrayLiteral(property.initializer) === undefined;
+    if (field) {
+      const parsed = readStringArrayLiteral(property.initializer);
+      field.values = parsed ?? field.values;
+      field.isDynamic = parsed === undefined;
     }
   }
 
   return {
-    conflicts: hasDynamicConflicts ? undefined : runtimeConflicts,
-    consumes: hasDynamicConsumes ? undefined : runtimeConsumes,
+    conflicts: fields.conflicts.isDynamic ? undefined : fields.conflicts.values,
+    consumes: fields.consumes.isDynamic ? undefined : fields.consumes.values,
     name: runtimeName,
-    requires: hasDynamicRequires ? undefined : runtimeRequires,
-    provides: hasDynamicProvides ? undefined : runtimeProvides,
-    state: hasDynamicState ? undefined : runtimeState,
+    requires: fields.requires.isDynamic ? undefined : fields.requires.values,
+    provides: fields.provides.isDynamic ? undefined : fields.provides.values,
+    state: fields.state.isDynamic ? undefined : fields.state.values,
   };
 };
 
 /**
  * Sweeps the AST structure explicitly collecting export bindings matching trait payload creation routines mapping signatures recursively natively traversing explicit modifiers.
  */
+const collectConstVariableTraitBindings = (
+  statement: ts.VariableStatement,
+  sourceFile: ts.SourceFile,
+): ExportedTraitBinding[] => {
+  if ((statement.declarationList.flags & ts.NodeFlags.Const) === 0) {
+    return [];
+  }
+
+  const bindings: ExportedTraitBinding[] = [];
+
+  for (const declaration of statement.declarationList.declarations) {
+    if (!ts.isIdentifier(declaration.name)) {
+      continue;
+    }
+
+    const runtimeMetadata = readTraitRuntimeMetadataFromCall(declaration.initializer);
+    const matchIndex = statement.getStart(sourceFile);
+
+    bindings.push({
+      bindingKind: "const",
+      bindingName: declaration.name.text,
+      matchIndex,
+      runtimeConflicts: runtimeMetadata?.conflicts,
+      runtimeConsumes: runtimeMetadata?.consumes,
+      factory: resolveTraitDescriptorFactoryFromExpression(declaration.initializer),
+      runtimeName: runtimeMetadata?.name,
+      runtimeRequires: runtimeMetadata?.requires,
+      runtimeProvides: runtimeMetadata?.provides,
+      runtimeState: runtimeMetadata?.state,
+    });
+  }
+
+  return bindings;
+};
+
 export const collectExportedTraitBindings = (source: string, relativePath: string): ExportedTraitBinding[] => {
   const sourceFile = createCachedSourceFile(relativePath, source);
   const bindings: ExportedTraitBinding[] = [];
 
   for (const statement of sourceFile.statements) {
     if (ts.isVariableStatement(statement) && hasExportModifier(statement)) {
-      if ((statement.declarationList.flags & ts.NodeFlags.Const) === 0) {
-        continue;
-      }
-
-      for (const declaration of statement.declarationList.declarations) {
-        if (!ts.isIdentifier(declaration.name)) {
-          continue;
-        }
-
-        const runtimeMetadata = readTraitRuntimeMetadataFromCall(declaration.initializer);
-
-        bindings.push({
-          bindingKind: "const",
-          bindingName: declaration.name.text,
-          matchIndex: statement.getStart(sourceFile),
-          runtimeConflicts: runtimeMetadata?.conflicts,
-          runtimeConsumes: runtimeMetadata?.consumes,
-          factory: resolveTraitDescriptorFactoryFromExpression(declaration.initializer),
-          runtimeName: runtimeMetadata?.name,
-          runtimeRequires: runtimeMetadata?.requires,
-          runtimeProvides: runtimeMetadata?.provides,
-          runtimeState: runtimeMetadata?.state,
-        });
-      }
-
+      bindings.push(...collectConstVariableTraitBindings(statement, sourceFile));
       continue;
     }
 

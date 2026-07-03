@@ -26,11 +26,11 @@ test("esbuild plugin accepts package-first automation options", async () => {
   });
 
   plugin.setup({
-    onResolve: (_options, callback) => {
-      onResolveHandler = callback;
+    onResolve: (_options: unknown, callback: unknown) => {
+      onResolveHandler = callback as (args: { path: string }) => { path: string; namespace?: string } | null;
     },
-    onLoad: (_options, callback) => {
-      onLoadHandler = callback;
+    onLoad: (_options: unknown, callback: unknown) => {
+      onLoadHandler = callback as (args: { path: string }) => Promise<{ contents: string; loader: "js" } | null>;
     },
   });
 

@@ -53,5 +53,11 @@ Thumbs.db
 # Local Copilot customizations (kept in workspace, excluded from repo commits)
 .github/skills/
 .github/agents/
+.superpowers/
+.opencode/
+
+# Local agent instruction files
+AGENTS.md
+agent.md
 
 context7.json

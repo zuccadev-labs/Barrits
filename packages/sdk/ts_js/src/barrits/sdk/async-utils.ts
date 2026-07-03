@@ -13,7 +13,7 @@ export const mapConcurrent = async <T, U>(
     });
 
     executing.add(promise);
-    promise.finally(() => executing.delete(promise));
+    promise.finally(() => executing.delete(promise)).catch(() => undefined);
 
     if (executing.size >= safeConcurrency) {
       await Promise.race(executing);

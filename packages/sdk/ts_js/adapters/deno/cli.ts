@@ -15,6 +15,7 @@ import {
   resolveProjectFilePath,
   stringifyBuildManifest,
   stringifyWatchSnapshot,
+  type BarritsSelectionFilters,
 } from "../../src/barrits/sdk";
 import { BarritsSpinner } from "../../src/barrits/sdk/cli-spinner";
 import { formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
@@ -28,6 +29,7 @@ import {
   hasCollisions,
   failOnCollisions,
   toGraphFingerprint,
+  type CliOptions,
   type IntegrationGraph,
   type AutomationArtifactPaths,
 } from "../../src/barrits/sdk/cli-parser";
@@ -153,6 +155,161 @@ const resolveAutomationArtifactPaths = async (projectRoot: string): Promise<Auto
   };
 };
 
+const handleDenoImports = async (
+  options: CliOptions,
+  filteredGraph: IntegrationGraph,
+  discovery: { projectRoot: string },
+  automationPaths: AutomationArtifactPaths,
+): Promise<number> => {
+  const importsGraph = filterImportActions(filteredGraph, {
+    domains: options.domains.length > 0 ? options.domains : undefined,
+    exports: options.exports.length > 0 ? options.exports : undefined,
+    kinds: options.kinds.length > 0 ? options.kinds : undefined,
+  });
+
+  if (options.write) {
+    const { importsManifestPath, importsModulePath } = automationPaths;
+    await ensureTextFile(importsManifestPath, JSON.stringify(importsGraph.importActions, null, 2));
+    await ensureTextFile(importsModulePath, createImportsModuleSource(importsGraph));
+
+    if (options.targetFile) {
+      const runtime = getDenoGlobals();
+      const targetFilePath = options.targetFile
+        ? resolveDenoPath(discovery.projectRoot, options.targetFile)
+        : resolveProjectFilePath(discovery.projectRoot, options.targetFile);
+
+      if (!targetFilePath) {
+        throw new Error("Unable to resolve imports target file.");
+      }
+
+      const targetSource = await runtime.readTextFile(targetFilePath);
+      const nextSource = applyManagedImports(targetSource, importsGraph, options.mode);
+      await ensureTextFile(targetFilePath, nextSource);
+    }
+
+    if (!options.json) {
+      console.log(`importsManifest: ${importsManifestPath}`);
+      console.log(`importsModule: ${importsModulePath}`);
+
+      if (options.targetFile) {
+        console.log(`importsTarget: ${resolveProjectFilePath(discovery.projectRoot, options.targetFile)}`);
+        console.log(`importsMode: ${options.mode}`);
+      }
+    }
+  }
+
+  printImportActions(importsGraph, options.json);
+  return 0;
+};
+
+const handleDenoBuild = async (
+  options: CliOptions,
+  graph: IntegrationGraph,
+  selectionFilters: BarritsSelectionFilters,
+  automationPaths: AutomationArtifactPaths,
+  discovery: { projectRoot: string },
+): Promise<number> => {
+  const buildSpinner = new BarritsSpinner();
+  buildSpinner.start("building...");
+
+  const { buildManifestPath } = automationPaths;
+  const buildGraph = createProjectedGraph(graph, selectionFilters);
+
+  buildSpinner.update("writing manifest...");
+  await ensureTextFile(buildManifestPath, await stringifyBuildManifest(buildGraph, selectionFilters));
+
+  const manifest = await createBuildManifest(buildGraph, selectionFilters);
+
+  if (options.json) {
+    buildSpinner.stopAndClear();
+    console.log(JSON.stringify(manifest, null, 2));
+  } else {
+    buildSpinner.succeed("build complete");
+    console.log(`buildManifest: ${buildManifestPath}`);
+    console.log(`domains: ${manifest.domains.join(", ")}`);
+
+    for (const line of formatTraitOverviewLines(manifest)) {
+      console.log(line);
+    }
+  }
+
+  if (options.childArgs.length > 0) {
+    return runChildCommand(options.childArgs, discovery.projectRoot, {
+      BARRITS_BUILD_MANIFEST: buildManifestPath,
+    });
+  }
+
+  return 0;
+};
+
+const handleDenoWatchDev = async (
+  options: CliOptions,
+  graph: IntegrationGraph,
+  discovery: { barritsDirectory: string; projectRoot: string },
+  emitGraph: () => Promise<IntegrationGraph>,
+  selectionFilters: BarritsSelectionFilters,
+  automationPaths: AutomationArtifactPaths,
+): Promise<number> => {
+  const { buildManifestPath, watchSnapshotPath: defaultWatchSnapshotPath } = automationPaths;
+  const watchGraph = createProjectedGraph(graph, selectionFilters);
+  const watchSnapshotPath = options.snapshotFile
+    ? resolveDenoPath(discovery.projectRoot, options.snapshotFile)
+    : options.writeSnapshot
+      ? defaultWatchSnapshotPath
+      : undefined;
+  await ensureTextFile(buildManifestPath, await stringifyBuildManifest(watchGraph, selectionFilters));
+
+  if (watchSnapshotPath) {
+    await ensureTextFile(
+      watchSnapshotPath,
+      stringifyWatchSnapshot(watchGraph, options.command === "dev" ? "dev" : "watch", selectionFilters),
+    );
+  }
+
+  printGraph(watchGraph, options.json);
+
+  const startupSpinner = new BarritsSpinner();
+  startupSpinner.start(options.command === "dev" ? "starting dev session..." : "watching for changes in barrits/ ...");
+
+  const session = startWatchSession(discovery, emitGraph, {
+    json: options.json,
+    onGraph: async (nextGraph) => {
+      const nextProjectedGraph = createProjectedGraph(nextGraph, selectionFilters);
+      await ensureTextFile(buildManifestPath, await stringifyBuildManifest(nextProjectedGraph, selectionFilters));
+
+      if (watchSnapshotPath) {
+        await ensureTextFile(
+          watchSnapshotPath,
+          stringifyWatchSnapshot(nextProjectedGraph, options.command === "dev" ? "dev" : "watch", selectionFilters),
+        );
+      }
+    },
+  });
+  session.setInitialGraph(watchGraph);
+
+  if (options.command === "dev" && options.childArgs.length > 0) {
+    startupSpinner.succeed("dev session started");
+    const watchPromise = session.run();
+    try {
+      const exitCode = await runChildCommand(options.childArgs, discovery.projectRoot, {
+        BARRITS_BUILD_MANIFEST: buildManifestPath,
+        ...(watchSnapshotPath ? { BARRITS_WATCH_SNAPSHOT: watchSnapshotPath } : {}),
+        BARRITS_DEV_MODE: "1",
+      });
+      return exitCode;
+    } finally {
+      session.close();
+      await watchPromise;
+    }
+  }
+
+  startupSpinner.succeed("watching for changes in barrits/ ...");
+
+  await session.run();
+
+  return 0;
+};
+
 const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record<string, string>): Promise<number> => {
   if (childArgs.length === 0) {
     return 0;
@@ -276,15 +433,14 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
     return 1;
   }
 
-  if (options.command === "detect" && options.json) {
-    console.log(JSON.stringify({ found: true, ...discovery }, null, 2));
-    return 0;
-  }
-
   if (options.command === "detect") {
-    console.log(`barrits: ${discovery.barritsDirectory}`);
-    console.log(`projectRoot: ${discovery.projectRoot}`);
-    console.log(`strategy: ${discovery.strategy}`);
+    if (options.json) {
+      console.log(JSON.stringify({ found: true, ...discovery }, null, 2));
+    } else {
+      console.log(`barrits: ${discovery.barritsDirectory}`);
+      console.log(`projectRoot: ${discovery.projectRoot}`);
+      console.log(`strategy: ${discovery.strategy}`);
+    }
     return 0;
   }
 
@@ -307,139 +463,14 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
   }
 
   if (options.command === "imports") {
-    const importsGraph = filterImportActions(filteredGraph, {
-      domains: options.domains.length > 0 ? options.domains : undefined,
-      exports: options.exports.length > 0 ? options.exports : undefined,
-      kinds: options.kinds.length > 0 ? options.kinds : undefined,
-    });
-
-    if (options.write) {
-      const { importsManifestPath, importsModulePath } = automationPaths;
-      await ensureTextFile(importsManifestPath, JSON.stringify(importsGraph.importActions, null, 2));
-      await ensureTextFile(importsModulePath, createImportsModuleSource(importsGraph));
-
-      if (options.targetFile) {
-        const runtime = getDenoGlobals();
-        const targetFilePath = options.targetFile
-          ? resolveDenoPath(discovery.projectRoot, options.targetFile)
-          : resolveProjectFilePath(discovery.projectRoot, options.targetFile);
-
-        if (!targetFilePath) {
-          throw new Error("Unable to resolve imports target file.");
-        }
-
-        const targetSource = await runtime.readTextFile(targetFilePath);
-        const nextSource = applyManagedImports(targetSource, importsGraph, options.mode);
-        await ensureTextFile(targetFilePath, nextSource);
-      }
-
-      if (!options.json) {
-        console.log(`importsManifest: ${importsManifestPath}`);
-        console.log(`importsModule: ${importsModulePath}`);
-
-        if (options.targetFile) {
-          console.log(`importsTarget: ${resolveProjectFilePath(discovery.projectRoot, options.targetFile)}`);
-          console.log(`importsMode: ${options.mode}`);
-        }
-      }
-    }
-
-    printImportActions(importsGraph, options.json);
-    return 0;
+    return handleDenoImports(options, filteredGraph, discovery, automationPaths);
   }
 
   if (options.command === "build") {
-    const buildSpinner = new BarritsSpinner();
-    buildSpinner.start("building...");
-
-    const { buildManifestPath } = automationPaths;
-    const buildGraph = createProjectedGraph(graph, selectionFilters);
-
-    buildSpinner.update("writing manifest...");
-    await ensureTextFile(buildManifestPath, await stringifyBuildManifest(buildGraph, selectionFilters));
-
-    const manifest = await createBuildManifest(buildGraph, selectionFilters);
-
-    if (options.json) {
-      buildSpinner.stopAndClear();
-      console.log(JSON.stringify(manifest, null, 2));
-    } else {
-      buildSpinner.succeed("build complete");
-      console.log(`buildManifest: ${buildManifestPath}`);
-      console.log(`domains: ${manifest.domains.join(", ")}`);
-
-      for (const line of formatTraitOverviewLines(manifest)) {
-        console.log(line);
-      }
-    }
-
-    if (options.childArgs.length > 0) {
-      return runChildCommand(options.childArgs, discovery.projectRoot, {
-        BARRITS_BUILD_MANIFEST: buildManifestPath,
-      });
-    }
-
-    return 0;
+    return handleDenoBuild(options, graph, selectionFilters, automationPaths, discovery);
   }
 
-  const { buildManifestPath, watchSnapshotPath: defaultWatchSnapshotPath } = automationPaths;
-  const watchGraph = createProjectedGraph(graph, selectionFilters);
-  const watchSnapshotPath = options.snapshotFile
-    ? resolveDenoPath(discovery.projectRoot, options.snapshotFile)
-    : options.writeSnapshot
-      ? defaultWatchSnapshotPath
-      : undefined;
-  await ensureTextFile(buildManifestPath, await stringifyBuildManifest(watchGraph, selectionFilters));
-
-  if (watchSnapshotPath) {
-    await ensureTextFile(
-      watchSnapshotPath,
-      stringifyWatchSnapshot(watchGraph, options.command === "dev" ? "dev" : "watch", selectionFilters),
-    );
-  }
-
-  printGraph(watchGraph, options.json);
-
-  const startupSpinner = new BarritsSpinner();
-  startupSpinner.start(options.command === "dev" ? "starting dev session..." : "watching for changes in barrits/ ...");
-
-  const session = startWatchSession(discovery, emitGraph, {
-    json: options.json,
-    onGraph: async (nextGraph) => {
-      const nextProjectedGraph = createProjectedGraph(nextGraph, selectionFilters);
-      await ensureTextFile(buildManifestPath, await stringifyBuildManifest(nextProjectedGraph, selectionFilters));
-
-      if (watchSnapshotPath) {
-        await ensureTextFile(
-          watchSnapshotPath,
-          stringifyWatchSnapshot(nextProjectedGraph, options.command === "dev" ? "dev" : "watch", selectionFilters),
-        );
-      }
-    },
-  });
-  session.setInitialGraph(watchGraph);
-
-  if (options.command === "dev" && options.childArgs.length > 0) {
-    startupSpinner.succeed("dev session started");
-    const watchPromise = session.run();
-    try {
-      const exitCode = await runChildCommand(options.childArgs, discovery.projectRoot, {
-        BARRITS_BUILD_MANIFEST: buildManifestPath,
-        ...(watchSnapshotPath ? { BARRITS_WATCH_SNAPSHOT: watchSnapshotPath } : {}),
-        BARRITS_DEV_MODE: "1",
-      });
-      return exitCode;
-    } finally {
-      session.close();
-      await watchPromise;
-    }
-  }
-
-  startupSpinner.succeed("watching for changes in barrits/ ...");
-
-  await session.run();
-
-  return 0;
+  return handleDenoWatchDev(options, graph, discovery, emitGraph, selectionFilters, automationPaths);
 };
 
 if (import.meta.main) {

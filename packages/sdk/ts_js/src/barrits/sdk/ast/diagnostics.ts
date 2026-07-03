@@ -1,27 +1,26 @@
-import type { BarritsTraitDescriptorInspection, BarritsTraitDiagnostic } from "../contracts";
+import type { BarritsTraitDescriptorInspection, BarritsTraitDiagnostic, BarritsTraitDiagnosticCategory, BarritsTraitDiagnosticCode } from "../contracts";
 import type { ExportedTraitBinding } from "./traits";
 
+const DIAGNOSTIC_CODE_CATEGORY: Record<BarritsTraitDiagnosticCode, BarritsTraitDiagnosticCategory> = {
+  "trait-conflicts-mismatch": "drift",
+  "trait-consumes-mismatch": "drift",
+  "trait-name-mismatch": "drift",
+  "trait-provides-mismatch": "drift",
+  "trait-requires-mismatch": "drift",
+  "trait-state-mismatch": "drift",
+  "trait-duplicate-name": "impossible",
+  "trait-requires-conflict-overlap": "impossible",
+  "trait-self-conflict": "impossible",
+  "trait-self-requires": "impossible",
+  "trait-duplicate-provides": "non-verifiable",
+  "trait-required-conflicts": "non-verifiable",
+  "trait-missing-consumed-capability": "non-verifiable",
+  "trait-missing-required-trait": "non-verifiable",
+  "trait-unsupported-factory": "non-verifiable",
+};
+
 const createTraitDiagnostic = (diagnostic: Omit<BarritsTraitDiagnostic, "category">): BarritsTraitDiagnostic => {
-  switch (diagnostic.code) {
-    case "trait-conflicts-mismatch":
-    case "trait-consumes-mismatch":
-    case "trait-name-mismatch":
-    case "trait-provides-mismatch":
-    case "trait-requires-mismatch":
-    case "trait-state-mismatch":
-      return { ...diagnostic, category: "drift" };
-    case "trait-duplicate-name":
-    case "trait-requires-conflict-overlap":
-    case "trait-self-conflict":
-    case "trait-self-requires":
-      return { ...diagnostic, category: "impossible" };
-    case "trait-duplicate-provides":
-    case "trait-required-conflicts":
-    case "trait-missing-consumed-capability":
-    case "trait-missing-required-trait":
-    case "trait-unsupported-factory":
-      return { ...diagnostic, category: "non-verifiable" };
-  }
+  return { ...diagnostic, category: DIAGNOSTIC_CODE_CATEGORY[diagnostic.code] };
 };
 
 const indexDescriptors = (
@@ -204,95 +203,40 @@ const checkTraitRuntimeMismatches = (
     );
   }
 
-  if (binding?.runtimeProvides) {
-    const documentedProvides = descriptor.provides.join(",");
-    const runtimeProvides = binding.runtimeProvides.join(",");
+  const addListMismatch = (
+    code: BarritsTraitDiagnosticCode,
+    runtimeField: readonly string[] | undefined,
+    docField: readonly string[],
+    message: string,
+  ): void => {
+    if (!runtimeField) return;
+    if (docField.join(",") === runtimeField.join(",")) return;
+    diagnostics.push(
+      createTraitDiagnostic({
+        code,
+        severity: "warning",
+        message,
+        sourceFile: descriptor.sourceFile,
+        descriptorName: descriptor.name,
+        bindingName: descriptor.bindingName,
+      }),
+    );
+  };
 
-    if (documentedProvides !== runtimeProvides) {
-      diagnostics.push(
-        createTraitDiagnostic({
-          code: "trait-provides-mismatch",
-          severity: "warning",
-          message: `Trait descriptor "${descriptor.name}" documents provides [${descriptor.provides.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeProvides.join(", ")}] in ${descriptor.sourceFile}. Keep portable metadata aligned with runtime capabilities.`,
-          sourceFile: descriptor.sourceFile,
-          descriptorName: descriptor.name,
-          bindingName: descriptor.bindingName,
-        }),
-      );
-    }
-  }
+  addListMismatch("trait-provides-mismatch", binding?.runtimeProvides, descriptor.provides,
+    `Trait descriptor "${descriptor.name}" documents provides [${descriptor.provides.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeProvides?.join(", ")}] in ${descriptor.sourceFile}. Keep portable metadata aligned with runtime capabilities.`);
 
-  if (binding?.runtimeConflicts) {
-    const documentedConflicts = descriptor.conflicts.join(",");
-    const runtimeConflicts = binding.runtimeConflicts.join(",");
+  addListMismatch("trait-conflicts-mismatch", binding?.runtimeConflicts, descriptor.conflicts,
+    `Trait descriptor "${descriptor.name}" documents conflicts [${descriptor.conflicts.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeConflicts?.join(", ")}] in ${descriptor.sourceFile}. Keep incompatibility metadata aligned with runtime composition policy.`);
 
-    if (documentedConflicts !== runtimeConflicts) {
-      diagnostics.push(
-        createTraitDiagnostic({
-          code: "trait-conflicts-mismatch",
-          severity: "warning",
-          message: `Trait descriptor "${descriptor.name}" documents conflicts [${descriptor.conflicts.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeConflicts.join(", ")}] in ${descriptor.sourceFile}. Keep incompatibility metadata aligned with runtime composition policy.`,
-          sourceFile: descriptor.sourceFile,
-          descriptorName: descriptor.name,
-          bindingName: descriptor.bindingName,
-        }),
-      );
-    }
-  }
+  addListMismatch("trait-requires-mismatch", binding?.runtimeRequires, descriptor.requires,
+    `Trait descriptor "${descriptor.name}" documents requires [${descriptor.requires.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeRequires?.join(", ")}] in ${descriptor.sourceFile}. Keep dependency metadata aligned with runtime composition order.`);
 
-  if (binding?.runtimeRequires) {
-    const documentedRequires = descriptor.requires.join(",");
-    const runtimeRequires = binding.runtimeRequires.join(",");
+  addListMismatch("trait-consumes-mismatch", binding?.runtimeConsumes, descriptor.consumes,
+    `Trait descriptor "${descriptor.name}" documents consumes [${descriptor.consumes.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeConsumes?.join(", ")}] in ${descriptor.sourceFile}. Keep capability dependency metadata aligned with runtime expectations.`);
 
-    if (documentedRequires !== runtimeRequires) {
-      diagnostics.push(
-        createTraitDiagnostic({
-          code: "trait-requires-mismatch",
-          severity: "warning",
-          message: `Trait descriptor "${descriptor.name}" documents requires [${descriptor.requires.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeRequires.join(", ")}] in ${descriptor.sourceFile}. Keep dependency metadata aligned with runtime composition order.`,
-          sourceFile: descriptor.sourceFile,
-          descriptorName: descriptor.name,
-          bindingName: descriptor.bindingName,
-        }),
-      );
-    }
-  }
-
-  if (binding?.runtimeConsumes) {
-    const documentedConsumes = descriptor.consumes.join(",");
-    const runtimeConsumes = binding.runtimeConsumes.join(",");
-
-    if (documentedConsumes !== runtimeConsumes) {
-      diagnostics.push(
-        createTraitDiagnostic({
-          code: "trait-consumes-mismatch",
-          severity: "warning",
-          message: `Trait descriptor "${descriptor.name}" documents consumes [${descriptor.consumes.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeConsumes.join(", ")}] in ${descriptor.sourceFile}. Keep capability dependency metadata aligned with runtime expectations.`,
-          sourceFile: descriptor.sourceFile,
-          descriptorName: descriptor.name,
-          bindingName: descriptor.bindingName,
-        }),
-      );
-    }
-  }
-
-  if (binding?.runtimeState) {
-    const documentedState = descriptor.state.join(",");
-    const runtimeState = binding.runtimeState.join(",");
-
-    if (documentedState !== runtimeState) {
-      diagnostics.push(
-        createTraitDiagnostic({
-          code: "trait-state-mismatch",
-          severity: "warning",
-          message: `Trait descriptor "${descriptor.name}" documents state [${descriptor.state.join(", ")}], but createTraitDescriptor() declares [${binding.runtimeState.join(", ")}] in ${descriptor.sourceFile}. Keep state ownership metadata aligned with runtime slots.`,
-          sourceFile: descriptor.sourceFile,
-          descriptorName: descriptor.name,
-          bindingName: descriptor.bindingName,
-        }),
-      );
-    }
-  }
+  addListMismatch("trait-state-mismatch", binding?.runtimeState, descriptor.state,
+    `Trait descriptor "${descriptor.name}" documents state [${descriptor.state.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeState?.join(", ")}] in ${descriptor.sourceFile}. Keep state ownership metadata aligned with runtime slots.`);
 
   return diagnostics;
 };

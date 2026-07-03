@@ -1,4 +1,4 @@
-import type { BarritsFileKind, BarritsIntegrationGraph, BarritsSelectionFilters } from "./contracts";
+import type { BarritsFileExport, BarritsFileKind, BarritsIntegrationGraph, BarritsSelectionFilters } from "./contracts";
 import { formatTraitDiagnosticDetailLines, formatTraitOverviewLines } from "./cli-format";
 import { isBarritsExportVisibility, isBarritsFileKind } from "./guards";
 
@@ -36,156 +36,88 @@ export const IMPORTS_MANIFEST_BASENAME = "import-actions.json";
 export const IMPORTS_MODULE_BASENAME = "import-actions.generated.ts";
 export const WATCH_SNAPSHOT_BASENAME = "watch-snapshot.json";
 
+const createDefaultOptions = (childArgs: string[]): CliOptions => ({
+  command: "detect",
+  json: false,
+  write: false,
+  writeSnapshot: false,
+  mode: "named-import",
+  domains: [],
+  exports: [],
+  kinds: [],
+  fileKinds: [],
+  visibilities: [],
+  childArgs,
+  shellType: "bash",
+});
+
+const nextValue = (args: string[], i: number): string | undefined => {
+  const v = args[i + 1];
+  return v && !v.startsWith("--") ? v : undefined;
+};
+
+const isValidName = (s: string): boolean => /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(s);
+const isValidExportName = (s: string): boolean => /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(s);
+const isValidImportKind = (s: string): s is "named-import" | "namespace-access" | "alias-namespace-access" =>
+  s === "named-import" || s === "namespace-access" || s === "alias-namespace-access";
+
+const BOOLEAN_FLAGS = new Map<string, (opts: CliOptions) => void>([
+  ["--json", (o) => { o.json = true; }],
+  ["--write", (o) => { o.write = true; }],
+  ["--write-snapshot", (o) => { o.writeSnapshot = true; }],
+]);
+
+const COMMANDS = new Set<string>(["detect", "info", "watch", "dev", "imports", "build"]);
+
+const HELP_ALIASES = new Set<string>(["help", "--help", "-h"]);
+
+const VALUE_FLAGS = new Map<string, (opts: CliOptions, value: string) => void>([
+  ["--target", (o, v) => { if (v && !v.includes("..")) o.targetFile = v; }],
+  ["--snapshot", (o, v) => { if (v && !v.includes("..")) o.snapshotFile = v; }],
+  ["--domain", (o, v) => { if (v && isValidName(v)) o.domains.push(v); }],
+  ["--export", (o, v) => { if (v && isValidExportName(v)) o.exports.push(v); }],
+  ["--kind", (o, v) => { if (isValidImportKind(v)) o.kinds.push(v); }],
+  ["--file-kind", (o, v) => { if (isBarritsFileKind(v)) o.fileKinds.push(v); }],
+  ["--visibility", (o, v) => { if (isBarritsExportVisibility(v)) o.visibilities.push(v); }],
+  ["--mode", (o, v) => { if (isValidImportKind(v)) o.mode = v; }],
+]);
+
+const handleArgument = (args: string[], i: number, opts: CliOptions): number => {
+  const arg = args[i];
+
+  const booleanFlag = BOOLEAN_FLAGS.get(arg);
+  if (booleanFlag) { booleanFlag(opts); return 0; }
+
+  if (COMMANDS.has(arg)) { opts.command = arg as CliCommand; return 0; }
+
+  if (HELP_ALIASES.has(arg)) { opts.command = "help"; return 0; }
+
+  if (arg === "completion") {
+    opts.command = "completion";
+    const shellArg = nextValue(args, i);
+    if (shellArg) { opts.shellType = shellArg; return 1; }
+    return 0;
+  }
+
+  const valueFlag = VALUE_FLAGS.get(arg);
+  if (valueFlag) { valueFlag(opts, args[i + 1]); return 1; }
+
+  if (!opts.startDirectory && !arg.startsWith("--")) {
+    opts.startDirectory = arg;
+  }
+
+  return 0;
+};
+
 export const parseArguments = (argumentsList: string[]): CliOptions => {
   const separatorIndex = argumentsList.indexOf("--");
   const cliArguments = separatorIndex === -1 ? argumentsList : argumentsList.slice(0, separatorIndex);
   const childArgs = separatorIndex === -1 ? [] : argumentsList.slice(separatorIndex + 1);
 
-  const options: CliOptions = {
-    command: "detect",
-    json: false,
-    write: false,
-    writeSnapshot: false,
-    mode: "named-import",
-    domains: [],
-    exports: [],
-    kinds: [],
-    fileKinds: [],
-    visibilities: [],
-    childArgs,
-    shellType: "bash",
-  };
+  const options = createDefaultOptions(childArgs);
 
-  for (let index = 0; index < cliArguments.length; index += 1) {
-    const argument = cliArguments[index];
-
-    if (argument === "help" || argument === "--help" || argument === "-h") {
-      options.command = "help";
-      continue;
-    }
-
-    if (argument === "detect") {
-      options.command = "detect";
-      continue;
-    }
-    if (argument === "info") {
-      options.command = "info";
-      continue;
-    }
-    if (argument === "watch") {
-      options.command = "watch";
-      continue;
-    }
-    if (argument === "dev") {
-      options.command = "dev";
-      continue;
-    }
-    if (argument === "imports") {
-      options.command = "imports";
-      continue;
-    }
-    if (argument === "build") {
-      options.command = "build";
-      continue;
-    }
-    if (argument === "completion") {
-      options.command = "completion";
-      const shellArg = cliArguments[index + 1];
-      if (shellArg && !shellArg.startsWith("--")) {
-        options.shellType = shellArg;
-        index += 1;
-      }
-      continue;
-    }
-
-    if (argument === "--json") {
-      options.json = true;
-      continue;
-    }
-    if (argument === "--write") {
-      options.write = true;
-      continue;
-    }
-    if (argument === "--write-snapshot") {
-      options.writeSnapshot = true;
-      continue;
-    }
-
-    if (argument === "--target") {
-      const value = cliArguments[index + 1];
-      if (value && !value.startsWith("--") && !value.includes("..")) {
-        options.targetFile = value;
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--snapshot") {
-      const value = cliArguments[index + 1];
-      if (value && !value.startsWith("--") && !value.includes("..")) {
-        options.snapshotFile = value;
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--domain") {
-      const domain = cliArguments[index + 1];
-      if (domain && !domain.startsWith("--") && /^[a-zA-Z][a-zA-Z0-9_-]*$/.test(domain)) {
-        options.domains.push(domain);
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--export") {
-      const exportName = cliArguments[index + 1];
-      if (exportName && !exportName.startsWith("--") && /^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(exportName)) {
-        options.exports.push(exportName);
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--kind") {
-      const kind = cliArguments[index + 1];
-      if (kind === "named-import" || kind === "namespace-access" || kind === "alias-namespace-access") {
-        options.kinds.push(kind);
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--file-kind") {
-      const fileKind = cliArguments[index + 1];
-      if (fileKind && isBarritsFileKind(fileKind)) {
-        options.fileKinds.push(fileKind);
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--visibility") {
-      const visibility = cliArguments[index + 1];
-      if (visibility && isBarritsExportVisibility(visibility)) {
-        options.visibilities.push(visibility);
-      }
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--mode") {
-      const mode = cliArguments[index + 1];
-      if (mode === "named-import" || mode === "namespace-access" || mode === "alias-namespace-access") {
-        options.mode = mode;
-      }
-      index += 1;
-      continue;
-    }
-
-    if (!options.startDirectory && !argument.startsWith("--")) {
-      options.startDirectory = argument;
-    }
+  for (let i = 0; i < cliArguments.length; i += 1) {
+    i += handleArgument(cliArguments, i, options);
   }
 
   return options;
@@ -229,6 +161,51 @@ export const toGraphFingerprint = (graph: IntegrationGraph): string => {
   return JSON.stringify(graph);
 };
 
+const formatExportLabel = (file: { readonly exports: readonly BarritsFileExport[] }): string =>
+  file.exports.map((entry) => `${entry.name}:${entry.visibility}`).join(", ") || "-";
+
+const printRootFilesInfo = (rootFiles: IntegrationGraph["rootFiles"]): void => {
+  if (rootFiles.length === 0) return;
+
+  console.log("rootFiles:");
+  for (const file of rootFiles) {
+    console.log(`  - ${file.path} [${file.kind}]: ${formatExportLabel(file)}`);
+  }
+};
+
+const printDomainsInfo = (domains: IntegrationGraph["domains"]): void => {
+  if (domains.length === 0) return;
+
+  console.log("domains:");
+  for (const domain of domains) {
+    console.log(`  - ${domain.name}`);
+    for (const file of domain.files) {
+      console.log(`    ${file.path} [${file.kind}]: ${formatExportLabel(file)}`);
+    }
+  }
+};
+
+const printImportActionsInfo = (importActions: IntegrationGraph["importActions"]): void => {
+  if (importActions.length === 0) return;
+
+  console.log("importActions:");
+  for (const action of importActions.slice(0, 12)) {
+    console.log(`  - ${action.exportName} (${action.kind}): ${action.statement}`);
+  }
+  if (importActions.length > 12) {
+    console.log(`  ... ${importActions.length - 12} more`);
+  }
+};
+
+const printCollisionsInfo = (collisions: IntegrationGraph["collisions"]): void => {
+  if (collisions.length === 0) return;
+
+  console.log("collisions:");
+  for (const collision of collisions) {
+    console.log(`  - ${collision.message}`);
+  }
+};
+
 export const printInfoSummary = (graph: IntegrationGraph): void => {
   console.log(`barrits: ${graph.barritsDirectory}`);
   console.log(`projectRoot: ${graph.projectRoot}`);
@@ -243,47 +220,10 @@ export const printInfoSummary = (graph: IntegrationGraph): void => {
     console.log(line);
   }
 
-  if (graph.rootFiles.length > 0) {
-    console.log("rootFiles:");
-
-    for (const file of graph.rootFiles) {
-      const exportsLabel = file.exports.map((entry) => `${entry.name}:${entry.visibility}`).join(", ") || "-";
-      console.log(`  - ${file.path} [${file.kind}]: ${exportsLabel}`);
-    }
-  }
-
-  if (graph.domains.length > 0) {
-    console.log("domains:");
-
-    for (const domain of graph.domains) {
-      console.log(`  - ${domain.name}`);
-
-      for (const file of domain.files) {
-        const exportsLabel = file.exports.map((entry) => `${entry.name}:${entry.visibility}`).join(", ") || "-";
-        console.log(`    ${file.path} [${file.kind}]: ${exportsLabel}`);
-      }
-    }
-  }
-
-  if (graph.importActions.length > 0) {
-    console.log("importActions:");
-
-    for (const action of graph.importActions.slice(0, 12)) {
-      console.log(`  - ${action.exportName} (${action.kind}): ${action.statement}`);
-    }
-
-    if (graph.importActions.length > 12) {
-      console.log(`  ... ${graph.importActions.length - 12} more`);
-    }
-  }
-
-  if (graph.collisions.length > 0) {
-    console.log("collisions:");
-
-    for (const collision of graph.collisions) {
-      console.log(`  - ${collision.message}`);
-    }
-  }
+  printRootFilesInfo(graph.rootFiles);
+  printDomainsInfo(graph.domains);
+  printImportActionsInfo(graph.importActions);
+  printCollisionsInfo(graph.collisions);
 
   for (const line of formatTraitDiagnosticDetailLines(graph.traitDiagnostics)) {
     console.log(line);

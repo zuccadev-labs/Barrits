@@ -2,6 +2,7 @@ type UnionToIntersection<TValue> = (TValue extends unknown ? (value: TValue) => 
   ? TIntersection
   : never;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTraitDescriptor = TraitDescriptor<string, any, any>;
 
 /** Collision strategy for capability keys during trait composition. */
@@ -280,8 +281,10 @@ const assertConsumedCapabilities = (descriptors: readonly AnyTraitDescriptor[], 
   }
 };
 
-const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): string[] => {
-  const descriptorMap = new Map(descriptors.map((descriptor) => [descriptor.name, descriptor]));
+const buildDependencyCounters = (
+  descriptors: readonly AnyTraitDescriptor[],
+  descriptorMap: Map<string, AnyTraitDescriptor>,
+): { dependencyCounts: Map<string, number>; dependents: Map<string, string[]> } => {
   const dependencyCounts = new Map<string, number>();
   const dependents = new Map<string, string[]>();
 
@@ -299,6 +302,13 @@ const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): stri
     }
   }
 
+  return { dependencyCounts, dependents };
+};
+
+const executeTopologicalSort = (
+  dependencyCounts: Map<string, number>,
+  dependents: Map<string, string[]>,
+): string[] => {
   const pending = Array.from(dependencyCounts.entries())
     .filter(([, count]) => count === 0)
     .map(([name]) => name)
@@ -324,6 +334,14 @@ const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): stri
       }
     }
   }
+
+  return ordered;
+};
+
+const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): string[] => {
+  const descriptorMap = new Map(descriptors.map((descriptor) => [descriptor.name, descriptor]));
+  const { dependencyCounts, dependents } = buildDependencyCounters(descriptors, descriptorMap);
+  const ordered = executeTopologicalSort(dependencyCounts, dependents);
 
   if (ordered.length !== descriptors.length) {
     throw new Error("Trait descriptors contain a cyclic dependency graph.");
@@ -430,6 +448,32 @@ export const composeTraitDescriptors = <
   const state = options.state ?? ({} as TState);
   const conflictStrategy = options.onConflict ?? "throw";
 
+  const resolveCapabilityConflict = (
+    providedKey: string,
+    leftValue: unknown,
+    rightValue: unknown,
+    ownerTraitName: string,
+    currentDescriptorName: string,
+  ): void => {
+    if (options.resolveConflict) {
+      traits[providedKey] = options.resolveConflict(providedKey, leftValue, rightValue, ownerTraitName, currentDescriptorName);
+      return;
+    }
+
+    if (conflictStrategy === "left") {
+      return;
+    }
+
+    if (conflictStrategy === "right") {
+      traits[providedKey] = rightValue;
+      return;
+    }
+
+    throw new Error(
+      `Trait capability collision for "${providedKey}" between "${ownerTraitName}" and "${currentDescriptorName}". Declare explicit conflicts or pass a conflict strategy.`,
+    );
+  };
+
   for (const descriptorName of order) {
     const descriptor = descriptorMap.get(descriptorName);
 
@@ -453,32 +497,10 @@ export const composeTraitDescriptors = <
         continue;
       }
 
-      const leftValue = traits[providedKey];
-      const rightValue = createdTrait[providedKey];
-
-      if (Object.is(leftValue, rightValue)) {
-        continue;
+      if (!Object.is(traits[providedKey], createdTrait[providedKey])) {
+        const ownerTraitName = Object.entries(traitProviders).find(([, keys]) => keys.includes(providedKey))?.[0] ?? "unknown";
+        resolveCapabilityConflict(providedKey, traits[providedKey], createdTrait[providedKey], ownerTraitName, descriptor.name);
       }
-
-      const ownerTraitName = Object.entries(traitProviders).find(([, keys]) => keys.includes(providedKey))?.[0] ?? "unknown";
-
-      if (options.resolveConflict) {
-        traits[providedKey] = options.resolveConflict(providedKey, leftValue, rightValue, ownerTraitName, descriptor.name);
-        continue;
-      }
-
-      if (conflictStrategy === "left") {
-        continue;
-      }
-
-      if (conflictStrategy === "right") {
-        traits[providedKey] = rightValue;
-        continue;
-      }
-
-      throw new Error(
-        `Trait capability collision for "${providedKey}" between "${ownerTraitName}" and "${descriptor.name}". Declare explicit conflicts or pass a conflict strategy.`,
-      );
     }
   }
 

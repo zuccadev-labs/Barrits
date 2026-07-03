@@ -6,8 +6,12 @@
     "dev": "node ./scripts/dev-runner.mjs",
     "build": "node ./scripts/build-runner.mjs",
     "demo:validation": "node ../../../../../node_modules/tsx/dist/cli.mjs ./scripts/barrits-validation.ts",
+    "demo:openapi": "node ../../../../../node_modules/tsx/dist/cli.mjs ./scripts/openapi-demo.ts",
+    "demo:ioc": "node ../../../../../node_modules/tsx/dist/cli.mjs ./scripts/ioc-demo.ts",
+    "demo:cli-workflow": "node ../../../../../node_modules/tsx/dist/cli.mjs ./scripts/cli-workflow.ts",
     "dev:snapshot": "node ./scripts/snapshot-consumer.mjs",
     "showcase": "node ./scripts/showcase.mjs",
+    "test": "node ../../../../../node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts",
     "benchmark:algorithms": "node ../../../../../node_modules/tsx/dist/cli.mjs ../../benchmarks/algorithms/compare-large-datasets.ts"
   },
   "dependencies": {

@@ -12,10 +12,26 @@ export default defineBarritsConfig({
     traits: [
       {
         name: "runtime-node",
-        sourceFile: "traits/index.ts",
+        sourceFile: "traits/runtime-trait.ts",
         bindingName: "nodeRuntimeTrait",
         provides: ["runtime:node"],
         tags: ["runtime"],
+        runtimes: ["node"],
+      },
+      {
+        name: "user-service",
+        sourceFile: "traits/user-service.ts",
+        bindingName: "userServiceTrait",
+        provides: ["user:crud"],
+        tags: ["service", "crud"],
+        runtimes: ["node"],
+      },
+      {
+        name: "http-handler",
+        sourceFile: "traits/http-handler.ts",
+        bindingName: "httpHandlerTrait",
+        provides: ["http:request"],
+        tags: ["http-endpoint", "runtime"],
         runtimes: ["node"],
       },
     ],

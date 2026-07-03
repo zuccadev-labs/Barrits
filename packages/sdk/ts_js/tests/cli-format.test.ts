@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { formatTraitOverviewLines, formatTraitDiagnosticDetailLines } from "../src/barrits/sdk/cli-format";
 
 const makeDiagnostic = (overrides: Record<string, unknown> = {}) => ({
-  code: "trait-duplicate-name",
+  code: "trait-duplicate-name" as const,
   category: "drift" as const,
   severity: "warning" as const,
   message: "test diagnostic",

@@ -5,7 +5,16 @@
     "testFiles": [
       "packages/sdk/ts_js/tests/property-based.test.ts",
       "packages/sdk/ts_js/tests/cli-parser.test.ts",
-      "packages/sdk/ts_js/tests/cli-format.test.ts"
+      "packages/sdk/ts_js/tests/cli-format.test.ts",
+      "packages/sdk/ts_js/tests/validation.test.ts",
+      "packages/sdk/ts_js/tests/ast-cache.test.ts",
+      "packages/sdk/ts_js/tests/ast-extractor.test.ts",
+      "packages/sdk/ts_js/tests/ast-traits.test.ts",
+      "packages/sdk/ts_js/tests/ast-diagnostics.test.ts",
+      "packages/sdk/ts_js/tests/crawler-layer.test.ts",
+      "packages/sdk/ts_js/tests/graph-collisions.test.ts",
+      "packages/sdk/ts_js/tests/graph-imports.test.ts",
+      "packages/sdk/ts_js/tests/manifest.test.ts"
     ],
     "nodeArgs": [
       "--import",
@@ -20,7 +29,16 @@
   "mutate": [
     "packages/sdk/ts_js/src/barrits/sdk/guards.ts",
     "packages/sdk/ts_js/src/barrits/sdk/path.ts",
-    "packages/sdk/ts_js/src/barrits/sdk/cli-parser.ts"
+    "packages/sdk/ts_js/src/barrits/sdk/cli-parser.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/validation.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/ast/cache.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/ast/extractor.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/ast/traits.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/ast/diagnostics.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/crawler/layer.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/graph/collisions.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/graph/imports.ts",
+    "packages/sdk/ts_js/src/barrits/sdk/manifest.ts"
   ],
   "checkers": ["typescript"],
   "tsconfigFile": "packages/sdk/ts_js/tsconfig.json",

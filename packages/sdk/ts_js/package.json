@@ -1,6 +1,6 @@
 {
   "name": "@zuccadev-labs/barrits",
-  "version": "0.1.7",
+  "version": "0.1.9",
   "description": "Package-first functional automation for barrits/ domains, manifests and live watch flows.",
   "license": "MIT",
   "author": "David Euclides Zuccarini Barrueta (devzucca / zuccadev)",
@@ -94,6 +94,18 @@
     "./deno/cli": {
       "import": "./dist/adapters/deno/cli.js",
       "default": "./dist/adapters/deno/cli.js"
+    },
+    "./ioc": {
+      "types": "./dist/src/barrits/ioc/index.d.ts",
+      "import": "./dist/src/barrits/ioc/index.js",
+      "require": "./dist/src/barrits/ioc/index.cjs",
+      "default": "./dist/src/barrits/ioc/index.js"
+    },
+    "./schema/openapi": {
+      "types": "./dist/src/barrits/schema/openapi.d.ts",
+      "import": "./dist/src/barrits/schema/openapi.js",
+      "require": "./dist/src/barrits/schema/openapi.cjs",
+      "default": "./dist/src/barrits/schema/openapi.js"
     },
     "./package.json": "./package.json"
   },

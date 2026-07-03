@@ -20,7 +20,7 @@ test("trait descriptors compose in dependency order with explicit state ownershi
     provides: ["normalize"],
     create: ({ state: localState }) => ({
       normalize(value: string) {
-        localState.calls.push(`normalize:${value}`);
+        (localState as { calls: string[] }).calls.push(`normalize:${value}`);
         auditTrail.push("base");
         return value.trim().toLowerCase();
       },
@@ -34,12 +34,12 @@ test("trait descriptors compose in dependency order with explicit state ownershi
     create: ({ traits, order }) => ({
       toSlug(value: string) {
         auditTrail.push(order.join(">"));
-        return traits.normalize?.(value).replace(/\s+/g, "-") ?? value;
+        return (traits as any).normalize?.(value).replace(/\s+/g, "-") ?? value;
       },
     }),
   });
 
-  const result = composeTraitDescriptors([slugTrait, baseTrait], { state });
+  const result = composeTraitDescriptors([slugTrait, baseTrait] as any, { state }) as any;
 
   assert.deepEqual(result.order, ["base", "slug"]);
   assert.deepEqual(result.stateOwners, { calls: "base" });
@@ -95,7 +95,7 @@ test("trait descriptors reject duplicated state ownership and explicit conflicts
   });
 
   assert.throws(
-    () => composeTraitDescriptors([first, second]),
+    () => composeTraitDescriptors([first, second] as any),
     /cannot be composed with "first"|State key "session"/,
   );
 });
@@ -111,7 +111,7 @@ test("trait descriptors reject self-referential requires as a cyclic dependency"
   });
 
   assert.throws(
-    () => composeTraitDescriptors([recursive]),
+    () => composeTraitDescriptors([recursive] as any),
     /cyclic dependency graph/,
   );
 });
@@ -134,11 +134,11 @@ test("trait descriptors surface capability collisions unless the caller resolves
   });
 
   assert.throws(
-    () => composeTraitDescriptors([left, right]),
+    () => composeTraitDescriptors([left, right] as any),
     /Trait capability collision for "format"/,
   );
 
-  const resolved = composeTraitDescriptors([left, right], {
+  const resolved = composeTraitDescriptors([left, right] as any, {
     resolveConflict: (key, leftValue, rightValue, leftTraitName, rightTraitName) => {
       assert.equal(key, "format");
       assert.equal(leftTraitName, "left");
@@ -147,7 +147,7 @@ test("trait descriptors surface capability collisions unless the caller resolves
       assert.equal(typeof rightValue, "function");
       return () => "merged";
     },
-  });
+  }) as any;
 
   assert.equal(resolved.traits.format(), "merged");
 });
@@ -182,7 +182,11 @@ test("trait descriptor JSDoc metadata parses declarative tags consistently", () 
 });
 
 test("trait descriptors can be created from JSDoc metadata with explicit overrides", () => {
-  const normalizeTrait = createTraitDescriptorFromJsDoc(
+  const normalizeTrait = createTraitDescriptorFromJsDoc<
+    "normalize",
+    Record<string, string>,
+    { normalize: (value: string) => string }
+  >(
     `
     /**
      * @barrits-trait normalize
@@ -203,7 +207,11 @@ test("trait descriptors can be created from JSDoc metadata with explicit overrid
     },
   );
 
-  const slugTrait = createTraitDescriptorFromJsDoc(
+  const slugTrait = createTraitDescriptorFromJsDoc<
+    "slug",
+    object,
+    { toSlug: (value: string) => string }
+  >(
     `
     /**
      * @barrits-trait slug
@@ -217,17 +225,17 @@ test("trait descriptors can be created from JSDoc metadata with explicit overrid
       provides: ["toSlug"],
       create: ({ traits }) => ({
         toSlug(value: string) {
-          return traits.normalize?.(value).replace(/\s+/g, "-") ?? value;
+          return (traits as any).normalize?.(value).replace(/\s+/g, "-") ?? value;
         },
       }),
     },
   );
 
-  const result = composeTraitDescriptors([slugTrait, normalizeTrait], {
+  const result = composeTraitDescriptors([slugTrait, normalizeTrait] as any, {
     state: {
       session: "",
     },
-  });
+  }) as any;
 
   assert.deepEqual(result.order, ["normalize", "slug"]);
   assert.equal(result.traits.toSlug("  Hello World  "), "hello-world");

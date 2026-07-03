@@ -18,6 +18,7 @@ import {
   resolveProjectFilePath,
   stringifyBuildManifest,
   stringifyWatchSnapshot,
+  type BarritsSelectionFilters,
 } from "../../src/barrits/sdk";
 import { BarritsSpinner } from "../../src/barrits/sdk/cli-spinner";
 import { formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
@@ -32,6 +33,7 @@ import {
   hasCollisions,
   failOnCollisions,
   toGraphFingerprint,
+  type CliOptions,
   type IntegrationGraph,
   type AutomationArtifactPaths,
 } from "../../src/barrits/sdk/cli-parser";
@@ -200,135 +202,101 @@ const startWatchSession = (
   };
 };
 
-export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise<number> => {
-  const options = parseArguments(argumentsList);
-  const adapter = createNodeFileSystemAdapter();
-
-  if (options.command === "help") {
-    console.log(HELP_TEXT);
-    return 0;
-  }
-
-  if (options.command === "completion") {
-    printCompletion(options.shellType);
-    return 0;
-  }
-
-  const discovery = await findBarritsDirectory(adapter, {
-    startDirectory: options.startDirectory,
+const handleNodeImports = async (
+  options: CliOptions,
+  graph: IntegrationGraph,
+  filteredGraph: IntegrationGraph,
+  discovery: { projectRoot: string },
+  automationPaths: AutomationArtifactPaths,
+): Promise<number> => {
+  const importsGraph = filterImportActions(filteredGraph, {
+    domains: options.domains.length > 0 ? options.domains : undefined,
+    exports: options.exports.length > 0 ? options.exports : undefined,
+    kinds: options.kinds.length > 0 ? options.kinds : undefined,
   });
 
-  if (!discovery) {
-    const payload = { found: false, target: "barrits" };
-    console.error(options.json ? JSON.stringify(payload, null, 2) : "barrits directory not found.");
-    return 1;
-  }
+  if (options.write) {
+    const { importsManifestPath, importsModulePath } = automationPaths;
+    await ensureTextFile(importsManifestPath, JSON.stringify(importsGraph.importActions, null, 2));
+    await ensureTextFile(importsModulePath, createImportsModuleSource(importsGraph));
 
-  if (options.command === "detect" && options.json) {
-    console.log(JSON.stringify({ found: true, ...discovery }, null, 2));
-    return 0;
-  }
+    if (options.targetFile) {
+      const targetFilePath = options.targetFile
+        ? resolve(discovery.projectRoot, options.targetFile)
+        : resolveProjectFilePath(discovery.projectRoot, options.targetFile);
 
-  if (options.command === "detect") {
-    console.log(`barrits: ${discovery.barritsDirectory}`);
-    console.log(`projectRoot: ${discovery.projectRoot}`);
-    console.log(`strategy: ${discovery.strategy}`);
-    return 0;
-  }
+      if (!targetFilePath) {
+        throw new Error("Unable to resolve imports target file.");
+      }
 
-  const emitGraph = async (): Promise<IntegrationGraph> => {
-    return inspectBarritsIntegrations(adapter, discovery);
-  };
+      const targetSource = await readFile(targetFilePath, "utf8");
+      const nextSource = applyManagedImports(targetSource, importsGraph, options.mode);
+      await ensureTextFile(targetFilePath, nextSource);
+    }
 
-  const graph = await emitGraph();
-  const selectionFilters = toSelectionFilters(options);
-  const filteredGraph = filterIntegrationGraph(graph, selectionFilters);
-  const automationPaths = await resolveAutomationArtifactPaths(discovery.projectRoot);
-
-  if (options.command === "info") {
-    printGraph(filteredGraph, options.json);
-    return hasCollisions(graph) ? failOnCollisions(graph, options.json) : 0;
-  }
-
-  if (hasCollisions(graph)) {
-    return failOnCollisions(graph, options.json);
-  }
-
-  if (options.command === "imports") {
-    const importsGraph = filterImportActions(filteredGraph, {
-      domains: options.domains.length > 0 ? options.domains : undefined,
-      exports: options.exports.length > 0 ? options.exports : undefined,
-      kinds: options.kinds.length > 0 ? options.kinds : undefined,
-    });
-
-    if (options.write) {
-      const { importsManifestPath, importsModulePath } = automationPaths;
-      await ensureTextFile(importsManifestPath, JSON.stringify(importsGraph.importActions, null, 2));
-      await ensureTextFile(importsModulePath, createImportsModuleSource(importsGraph));
+    if (!options.json) {
+      console.log(`importsManifest: ${importsManifestPath}`);
+      console.log(`importsModule: ${importsModulePath}`);
 
       if (options.targetFile) {
-        const targetFilePath = options.targetFile
-          ? resolve(discovery.projectRoot, options.targetFile)
-          : resolveProjectFilePath(discovery.projectRoot, options.targetFile);
-
-        if (!targetFilePath) {
-          throw new Error("Unable to resolve imports target file.");
-        }
-
-        const targetSource = await readFile(targetFilePath, "utf8");
-        const nextSource = applyManagedImports(targetSource, importsGraph, options.mode);
-        await ensureTextFile(targetFilePath, nextSource);
-      }
-
-      if (!options.json) {
-        console.log(`importsManifest: ${importsManifestPath}`);
-        console.log(`importsModule: ${importsModulePath}`);
-
-        if (options.targetFile) {
-          console.log(`importsTarget: ${resolveProjectFilePath(discovery.projectRoot, options.targetFile)}`);
-          console.log(`importsMode: ${options.mode}`);
-        }
+        console.log(`importsTarget: ${resolveProjectFilePath(discovery.projectRoot, options.targetFile)}`);
+        console.log(`importsMode: ${options.mode}`);
       }
     }
-
-    printImportActions(importsGraph, options.json);
-    return 0;
   }
 
-  if (options.command === "build") {
-    const buildSpinner = new BarritsSpinner();
-    buildSpinner.start("building...");
+  printImportActions(importsGraph, options.json);
+  return 0;
+};
 
-    const { buildManifestPath } = automationPaths;
-    const buildGraph = createProjectedGraph(graph, selectionFilters);
+const handleNodeBuild = async (
+  options: CliOptions,
+  graph: IntegrationGraph,
+  selectionFilters: BarritsSelectionFilters,
+  automationPaths: AutomationArtifactPaths,
+  discovery: { projectRoot: string },
+): Promise<number> => {
+  const buildSpinner = new BarritsSpinner();
+  buildSpinner.start("building...");
 
-    buildSpinner.update("writing manifest...");
-    await ensureTextFile(buildManifestPath, await stringifyBuildManifest(buildGraph, selectionFilters));
+  const { buildManifestPath } = automationPaths;
+  const buildGraph = createProjectedGraph(graph, selectionFilters);
 
-    const manifest = await createBuildManifest(buildGraph, selectionFilters);
+  buildSpinner.update("writing manifest...");
+  await ensureTextFile(buildManifestPath, await stringifyBuildManifest(buildGraph, selectionFilters));
 
-    if (options.json) {
-      buildSpinner.stopAndClear();
-      console.log(JSON.stringify(manifest, null, 2));
-    } else {
-      buildSpinner.succeed("build complete");
-      console.log(`buildManifest: ${buildManifestPath}`);
-      console.log(`domains: ${manifest.domains.join(", ")}`);
+  const manifest = await createBuildManifest(buildGraph, selectionFilters);
 
-      for (const line of formatTraitOverviewLines(manifest)) {
-        console.log(line);
-      }
+  if (options.json) {
+    buildSpinner.stopAndClear();
+    console.log(JSON.stringify(manifest, null, 2));
+  } else {
+    buildSpinner.succeed("build complete");
+    console.log(`buildManifest: ${buildManifestPath}`);
+    console.log(`domains: ${manifest.domains.join(", ")}`);
+
+    for (const line of formatTraitOverviewLines(manifest)) {
+      console.log(line);
     }
-
-    if (options.childArgs.length > 0) {
-      return runChildCommand(options.childArgs, discovery.projectRoot, {
-        BARRITS_BUILD_MANIFEST: buildManifestPath,
-      });
-    }
-
-    return 0;
   }
 
+  if (options.childArgs.length > 0) {
+    return runChildCommand(options.childArgs, discovery.projectRoot, {
+      BARRITS_BUILD_MANIFEST: buildManifestPath,
+    });
+  }
+
+  return 0;
+};
+
+const handleNodeWatchDev = async (
+  options: CliOptions,
+  graph: IntegrationGraph,
+  discovery: { barritsDirectory: string; projectRoot: string },
+  emitGraph: () => Promise<IntegrationGraph>,
+  selectionFilters: BarritsSelectionFilters,
+  automationPaths: AutomationArtifactPaths,
+): Promise<number> => {
   const { buildManifestPath, watchSnapshotPath: defaultWatchSnapshotPath } = automationPaths;
   const watchGraph = createProjectedGraph(graph, selectionFilters);
   const watchSnapshotPath = options.snapshotFile
@@ -388,6 +356,70 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
     process.once("SIGINT", stop);
     process.once("SIGTERM", stop);
   });
+};
+
+export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise<number> => {
+  const options = parseArguments(argumentsList);
+  const adapter = createNodeFileSystemAdapter();
+
+  if (options.command === "help") {
+    console.log(HELP_TEXT);
+    return 0;
+  }
+
+  if (options.command === "completion") {
+    printCompletion(options.shellType);
+    return 0;
+  }
+
+  const discovery = await findBarritsDirectory(adapter, {
+    startDirectory: options.startDirectory,
+  });
+
+  if (!discovery) {
+    const payload = { found: false, target: "barrits" };
+    console.error(options.json ? JSON.stringify(payload, null, 2) : "barrits directory not found.");
+    return 1;
+  }
+
+  if (options.command === "detect") {
+    if (options.json) {
+      console.log(JSON.stringify({ found: true, ...discovery }, null, 2));
+    } else {
+      console.log(`barrits: ${discovery.barritsDirectory}`);
+      console.log(`projectRoot: ${discovery.projectRoot}`);
+      console.log(`strategy: ${discovery.strategy}`);
+    }
+    return 0;
+  }
+
+  const emitGraph = async (): Promise<IntegrationGraph> => {
+    return inspectBarritsIntegrations(adapter, discovery);
+  };
+
+  const graph = await emitGraph();
+  const selectionFilters = toSelectionFilters(options);
+  const filteredGraph = filterIntegrationGraph(graph, selectionFilters);
+  const automationPaths = await resolveAutomationArtifactPaths(discovery.projectRoot);
+
+  if (options.command === "info") {
+    printGraph(filteredGraph, options.json);
+    return hasCollisions(graph) ? failOnCollisions(graph, options.json) : 0;
+  }
+
+  if (hasCollisions(graph)) {
+    return failOnCollisions(graph, options.json);
+  }
+
+  if (options.command === "imports") {
+    return handleNodeImports(options, graph, filteredGraph, discovery, automationPaths);
+  }
+
+  if (options.command === "build") {
+    return handleNodeBuild(options, graph, selectionFilters, automationPaths, discovery);
+  }
+
+  return handleNodeWatchDev(options, graph, discovery, emitGraph, selectionFilters, automationPaths);
 };
 
 const isDirectExecution = (): boolean => {
