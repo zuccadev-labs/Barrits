@@ -2,6 +2,9 @@
   "tasks": {
     "dev": "deno run -A ./main.ts",
     "build": "deno run -A ../../adapters/deno/cli.ts build . -- deno run -A ./scripts/build-consumer.ts",
-    "inspect": "deno run -A ../../adapters/deno/cli.ts info ."
+    "inspect": "deno run -A ../../adapters/deno/cli.ts info .",
+    "test": "deno test -A --no-check",
+    "demo:openapi": "deno run -A ./scripts/openapi-demo.ts",
+    "demo:ioc": "deno run -A ./scripts/ioc-demo.ts"
   }
 }
