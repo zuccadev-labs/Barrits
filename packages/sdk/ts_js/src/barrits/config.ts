@@ -13,7 +13,7 @@ import { normalizeResolvedConfig } from "./internal/config_normalization";
  * [EN] Supported runtime identifiers for package-level configuration.
  * [ES] Identificadores de tiempo de ejecución soportados para la configuración a nivel de paquete.
  */
-export type BarritsRuntimeKind = "node" | "deno" | "react" | "browser" | "other";
+export type BarritsRuntimeKind = "node" | "deno" | "bun" | "react" | "browser" | "other";
 
 /** [EN] Strategy for resolving trait composition conflicts.
  *  [ES] Estrategia para resolver conflictos de composición de traits. */

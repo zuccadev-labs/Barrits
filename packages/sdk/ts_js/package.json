@@ -45,6 +45,15 @@
       "require": "./dist/src/index.cjs",
       "default": "./dist/src/index.js"
     },
+    "./bun": {
+      "types": "./dist/adapters/bun/index.d.ts",
+      "import": "./dist/adapters/bun/index.js",
+      "default": "./dist/adapters/bun/index.js"
+    },
+    "./bun/cli": {
+      "import": "./dist/adapters/bun/cli.js",
+      "default": "./dist/adapters/bun/cli.js"
+    },
     "./node": {
       "types": "./dist/adapters/node/index.d.ts",
       "import": "./dist/adapters/node/index.js",
