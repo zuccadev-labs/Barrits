@@ -9,6 +9,7 @@
     "showcase": "bun run ./src/main.ts"
   },
   "dependencies": {
-    "@zuccadev-labs/barrits": "file:../.."
+    "@zuccadev-labs/barrits": "file:../..",
+    "zod": "^4.4.3"
   }
 }

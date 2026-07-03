@@ -7,3 +7,7 @@ export const buildBunOperationalPath = (...parts: string[]): string => {
 export const inspectBunOperationalPath = (value: string) => {
   return parsePath(value);
 };
+
+export { bunRuntimeTrait, queueServiceTrait, httpHandlerTrait } from "./traits";
+export { parseBunUser } from "./validation";
+export { duplicar, triplicar } from "./logic/math";
