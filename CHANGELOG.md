@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 Todos los cambios relevantes de este repositorio se documentan aquí.
 
+## [0.1.9] - 2026-07-02
+### Fixed
+- **ESLint backlog cero: 11 `no-explicit-any` resueltos en 6 archivos runtime**: Reemplazados tipos `any` genéricos por tipos específicos en `ioc/index.ts` (Factory, instances Map), `plugins/esbuild.ts` (interfaz EsbuildBuild tipada), `schema/openapi.ts` (Record<string, unknown>), `sdk/adapters.ts` (interfaz DenoNamespace), `sdk/inspect.ts` (Map tipado con ExportedTraitBinding), y `traits/descriptor.ts` (eslint-disable documentado). Eliminado `--max-warnings 11` del lint script en CI — ahora lint corre con tolerancia cero. Validado: 0 type errors (`tsc --noEmit`), 935/935 tests pasan.
+
 ## [0.1.8] - 2026-07-02
 ### Added
 - **Test coverage para 8 módulos runtime sin cobertura previa**: 54 tests en 8 archivos nuevos cubriendo `internal/runtime/assertions.ts`, `internal/runtime/env.ts`, `routes/path/build.ts`, `routes/path/parse.ts`, `traits/compose/pipeline.ts`, `plugins/materialize.ts`, `api/domains.ts` y `api/factory.ts`. Total: 796 tests (todos pasan, 0 errores de tipo nuevos).

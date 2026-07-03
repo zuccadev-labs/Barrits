@@ -5,9 +5,20 @@ import {
   type BarritsPackageAutomationOptions,
 } from "./shared";
 
+interface EsbuildBuild {
+  onResolve(
+    options: { filter: RegExp },
+    callback: (args: { path: string }) => { path: string; namespace: string } | null,
+  ): void;
+  onLoad(
+    options: { filter: RegExp; namespace: string },
+    callback: (args: { path: string }) => Promise<{ contents: string; loader: string } | null>,
+  ): void;
+}
+
 type EsbuildPlugin = {
   name: string;
-  setup: (build: any) => void;
+  setup: (build: EsbuildBuild) => void;
 };
 
 type BarritsEsbuildPluginOptions = {

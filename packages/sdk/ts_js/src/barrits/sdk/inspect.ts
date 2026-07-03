@@ -6,7 +6,7 @@
 import { joinPath, normalizePath } from "./path";
 import { loadBarritsConfig, type BarritsExportContractConfig } from "../config";
 import { inspectLayer } from "./crawler/layer";
-import { collectExportedTraitBindings, mergeTraitDescriptors, toTraitContractDescriptor } from "./ast/traits";
+import { collectExportedTraitBindings, mergeTraitDescriptors, toTraitContractDescriptor, type ExportedTraitBinding } from "./ast/traits";
 import { collectTraitDiagnostics } from "./ast/diagnostics";
 import { collectCollisions } from "./graph/collisions";
 import { planImportActions } from "./graph/imports";
@@ -189,7 +189,7 @@ export const inspectBarritsIntegrations = async (
 
   const discoveredTraitDescriptors = collectTraitDescriptors(inspectedFiles);
   const traitDescriptors = mergeTraitDescriptors(discoveredTraitDescriptors, contractTraitDescriptors);
-  const bindingsBySourceFile = new Map<string, any>();
+  const bindingsBySourceFile = new Map<string, readonly ExportedTraitBinding[]>();
 
   for (const file of inspectedFiles) {
     if (file.kind !== "trait") continue;
