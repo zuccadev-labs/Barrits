@@ -31,7 +31,7 @@ const siftDown = <Value>(
 ): void => {
   let cursor = index;
 
-  while (true) {
+  for (;;) {
     const leftIndex = (cursor * 2) + 1;
     const rightIndex = leftIndex + 1;
     let nextIndex = cursor;

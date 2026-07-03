@@ -3,6 +3,7 @@
  * [EN] Integration graph inspection via AST crawling, trait discovery, and diagnostics collection.
  * [ES] Inspección del grafo de integración mediante crawling AST, descubrimiento de traits y recolección de diagnósticos.
  */
+import { mapConcurrent } from "./async-utils";
 import { joinPath, normalizePath } from "./path";
 import { loadBarritsConfig, type BarritsExportContractConfig } from "../config";
 import { inspectLayer } from "./crawler/layer";
@@ -143,8 +144,10 @@ export const inspectBarritsIntegrations = async (
   discovery: BarritsDiscovery,
 ): Promise<BarritsIntegrationGraph> => {
   const projectLayer = await inspectLayer(adapter, discovery.barritsDirectory, "barrits");
-  const extraLayers = await Promise.all(
-    discovery.discoveryRoots.map((root) => inspectLayer(adapter, joinPath(discovery.projectRoot, root), "barrits")),
+  const extraLayers = await mapConcurrent(
+    discovery.discoveryRoots,
+    10,
+    (root) => inspectLayer(adapter, joinPath(discovery.projectRoot, root), "barrits"),
   );
 
   const allLayers = [projectLayer, ...extraLayers];
