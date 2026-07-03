@@ -175,7 +175,7 @@ const requestLog: LatencyRecord[] = [
 const byEndpoint = groupBy(requestLog, (r) => r.path);
 console.log(`    Requests grouped by endpoint: ${Object.keys(byEndpoint).length} groups`);
 
-const sorted = orderBy(requestLog, [{ key: "latency", direction: "desc" }]);
+const sorted = orderBy(requestLog, [{ project: (r) => r.latency, direction: "desc" }]);
 console.log(`    Slowest endpoint: ${sorted[0].path} (${sorted[0].latency}ms ${sorted[0].method})`);
 
 // ---------------------------------------------------------------------------
