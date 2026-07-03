@@ -3,21 +3,27 @@
 ## Purpose
 
 This example demonstrates how Barrits serves as the orchestration core
-for a Deno-native service equivalent to a modern Parse-Server. It exercises
-the complete SDK surface: contract discovery, trait composition, manifest
-integrity verification, resilience patterns, and operational algorithms.
+for a Deno-native service. It exercises the complete SDK surface:
+contract discovery, trait composition, manifest integrity verification,
+resilience patterns, operational algorithms, OpenAPI schema generation,
+and dependency injection.
 
 ## Architecture
 
 ```
 example-deno/
 ├── barrits/                 # Visible orchestration layer
+│   ├── traits/              # Trait descriptors (runtime, domain, http)
 │   └── index.ts             # Domain-scoped operational paths
 ├── barrits.config.ts        # Root configuration with discovery roots
 ├── deno.json                # Deno task definitions
 ├── main.ts                  # Primary orchestration entrypoint
-└── scripts/
-    └── inspect.ts           # Build manifest inspection utility
+├── scripts/
+│   ├── build-consumer.ts    # Build manifest consumer
+│   ├── openapi-demo.ts      # OpenAPI v3.1 schema generation
+│   └── ioc-demo.ts          # Dependency injection demo
+└── tests/
+    └── example.test.ts      # Automated test suite (8 tests)
 ```
 
 ## What This Example Demonstrates
@@ -38,28 +44,59 @@ artifacts have not been modified between build time and deployment.
 
 The example demonstrates `retryWithBackoff` and `createCircuitBreaker`
 to protect external API calls from transient failures, which is the
-standard pattern for any Parse-Server style backend communicating with
+standard pattern for any Deno-native backend communicating with
 databases and third-party services.
 
 ### 4. Operational Algorithms
 
 Real-world usage of `topK`, `movingAverage`, `averageBy`, and time-series
-functions for processing operational metrics — the type of computation
-a Parse-Server performs when aggregating query statistics or monitoring
-request throughput.
+functions for processing operational metrics.
 
 ### 5. Validation at Service Boundaries
 
 Input validation using `isEmail`, `isUuid`, and `assertNonNullish` at
 API handler boundaries, demonstrating the zero-dependency validation
-layer that replaces external packages like `zod` or `joi` for simple
-format checks.
+layer that replaces external packages for simple format checks.
+
+### 6. Trait Composition
+
+Three traits are defined under `barrits/traits/`:
+
+- **`runtime-trait`** — Declares the Deno runtime identity (`runtime:deno`)
+- **`parse-service`** — Parse-Server style CRUD operations (`parse:crud`)
+- **`http-handler`** — HTTP request handler (`http:request`) tagged for OpenAPI
+
+### 7. OpenAPI Schema Generation
+
+The `scripts/openapi-demo.ts` script reads the trait descriptors from a
+build manifest and generates an OpenAPI v3.1 schema. Traits tagged with
+`http-endpoint` are mapped to API paths.
+
+### 8. Dependency Injection
+
+The `scripts/ioc-demo.ts` script demonstrates the `BarritsIoCContainer` —
+a lightweight DI container that registers services, wires dependencies,
+and resolves them on demand.
+
+### 9. Automated Tests
+
+Tests are in `tests/example.test.ts` and use the native `Deno.test` runner:
+
+- Trait loading and barrel re-exports
+- Parse-service CRUD operations
+- OpenAPI schema generation
+- IoC container registration and resolution
+- Main showcase execution integrity
 
 ## Execution
 
 ```bash
-deno task dev       # Execute the orchestration entrypoint
-deno task inspect   # Inspect the build manifest
+deno task dev           # Execute the orchestration entrypoint
+deno task test          # Run the automated test suite
+deno task build         # Build and inspect the contract graph
+deno task inspect       # Inspect the build manifest
+deno task demo:openapi  # Generate OpenAPI schema from trait descriptors
+deno task demo:ioc      # Run the dependency injection demo
 ```
 
 ## API Functions Used
@@ -67,6 +104,7 @@ deno task inspect   # Inspect the build manifest
 | Function | Module | Purpose |
 |---|---|---|
 | `defineBarritsPackage` | `barrits/config` | Declares the consumer runtime and watch policy |
+| `createTraitDescriptor` | `barrits/adapters/deno` | Creates trait descriptors |
 | `sha256Hex` | `barrits_lib/logic/hashing` | Computes manifest integrity checksum |
 | `deterministicStringify` | `barrits_lib/logic/hashing` | Produces reproducible JSON for checksumming |
 | `retryWithBackoff` | `barrits_lib/logic/resilience` | Retries transient failures with exponential backoff |
@@ -76,20 +114,5 @@ deno task inspect   # Inspect the build manifest
 | `assertNonNullish` | `barrits_lib/logic/validation` | Typed assertion guard for required fields |
 | `toIsoString`, `toRelativeTime` | `barrits_lib/logic/datetime` | Timestamp serialization and formatting |
 | `topK`, `movingAverage`, `averageBy` | `barrits_lib/logic/algorithms` | Operational metric aggregation |
-## How it works
-
-Barrits discovers traits automatically by scanning the consumer project for exported functions and JSDoc annotations. The flow is:
-
-1. **Trait Discovery**: Barrits walks the source tree (by default src/) and collects all exported functions, classes, and constants that are marked with @barrits-trait JSDoc tags or reside in a 	raits/ folder.
-
-2. **Dependency Graph**: For each discovered trait, Barrits analyzes its provides, consumes, and state fields to build a directed graph.
-
-3. **Validation**: The graph is checked for missing capabilities, circular dependencies, and conflicting state ownership.
-
-4. **Composition**: Traits are composed in dependency order, producing a final set of capabilities that are made available to the runtime adapters.
-
-5. **Dependency Injection**: When the application starts, Barrits creates a lightweight DI container that injects the required consumes into each trait's initializer, ensuring that each trait receives only the dependencies it declared.
-
-6. **Immutability & Safety**: All provided capabilities are frozen (Object.freeze) to prevent accidental mutation, and state is encapsulated within each trait's closure.
-
-This automatic discovery reduces boilerplate and guarantees that the runtime contract matches the source-of-truth definitions.
+| `generateOpenApiSchema` | `barrits/schema/openapi` | Generates OpenAPI v3.1 schema from traits |
+| `BarritsIoCContainer` | `barrits/ioc` | Lightweight dependency injection container |
