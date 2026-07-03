@@ -23,7 +23,7 @@
     "test": "npm run test --workspace @zuccadev-labs/barrits",
     "test:coverage": "npm run test:coverage --workspace @zuccadev-labs/barrits",
     "typecheck": "npm run typecheck --workspace @zuccadev-labs/barrits",
-    "lint": "eslint packages/sdk/ts_js/src/barrits packages/sdk/ts_js/adapters --ext .ts --max-warnings 11",
+    "lint": "eslint packages/sdk/ts_js/src/barrits packages/sdk/ts_js/adapters --ext .ts",
     "lint:fix": "eslint packages/sdk/ts_js/src/barrits packages/sdk/ts_js/adapters --ext .ts --fix",
     "format": "prettier --check packages/sdk/ts_js/src/barrits packages/sdk/ts_js/adapters",
     "benchmark:algorithms": "npm run benchmark:algorithms --workspace @zuccadev-labs/barrits",

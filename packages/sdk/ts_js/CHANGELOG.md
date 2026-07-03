@@ -3,6 +3,15 @@
 All notable changes to this SDK will be documented in this file.
 Todos los cambios relevantes para el SDK se documentan aquí.
 
+## [0.1.9] - 2026-07-03
+
+### Added
+- **`adapters/deno/mod.ts` — export trait descriptor factories**: Added `createTraitDescriptor`, `createTraitDescriptorFromJsDoc`, `composeTraitDescriptors`, and `parseTraitDescriptorJsDoc` to the Deno adapter's public API. These were previously only available through the Node adapter. Validated with 23 trait tests passing and runtime import verification via `deno eval`.
+
+- **`adapters/deno/mod.ts` — export missing utility functions**: Added re-exports for hashing (`sha256Hex`, `deterministicStringify`, `murmurHash3`), validation (`isEmail`, `isUuid`, `assertNonNullish`), datetime (`toIsoString`, `toRelativeTime`), and resilience (`retryWithBackoff`, `withTimeout`, `createCircuitBreaker`) from the Deno adapter. These were previously imported directly from internal chunks but not exposed through the adapter entrypoint. Enables Deno consumers to use the full SDK surface through a single import path.
+
+- **`example-deno` — complete Phase 1 example enhancement**: Extended the Deno reference example with 3 traits (`runtime-deno`, `parse-service`, `http-handler`), OpenAPI schema generation script, IoC container demo, 8 automated tests, updated deno.json tasks, and cleaned README. All scripts verified: `deno test -A` (8/8 passing), OpenAPI output validates v3.1.0, IoC demo resolves dependencies correctly. Fixes pre-existing issue in `main.ts` where `orderBy` used incorrect `key` parameter (changed to `project`).
+
 ## [0.1.8] - 2026-07-02
 
 ### Refactored

@@ -24,6 +24,9 @@ export {
   chunk,
   collectionAlgorithms,
   composePipeline,
+  composeTraitDescriptors,
+  createTraitDescriptor,
+  createTraitDescriptorFromJsDoc,
   depthFirstSearch,
   detectDirectedCycle,
   detectTimeSeriesGaps,
@@ -49,6 +52,7 @@ export {
   orderBy,
   paginate,
   parsePath,
+  parseTraitDescriptorJsDoc,
   partitionBy,
   quickSort,
   rankBy,
@@ -75,6 +79,27 @@ export {
 
 /** Package-level configuration helpers used by runtimes and plugins. */
 export { defineBarritsConfig, defineBarritsPackage, toBarritsAutomationOptions } from "../../src/barrits/package";
+
+/** Standard library helpers: hashing, validation, datetime, resilience. */
+export {
+  sha256Hex,
+  deterministicStringify,
+  murmurHash3,
+} from "../../src/barrits_lib/logic/hashing";
+export {
+  isEmail,
+  isUuid,
+  assertNonNullish,
+} from "../../src/barrits_lib/logic/validation";
+export {
+  toIsoString,
+  toRelativeTime,
+} from "../../src/barrits_lib/logic/datetime";
+export {
+  retryWithBackoff,
+  withTimeout,
+  createCircuitBreaker,
+} from "../../src/barrits_lib/logic/resilience";
 
 /** Runtime and watch mode types used by package-first config. */
 export type { BarritsRuntimeKind, BarritsWatchMode } from "../../src/barrits/package";

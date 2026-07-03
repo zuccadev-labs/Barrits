@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 Todos los cambios relevantes de este repositorio se documentan aquí.
 
+## [0.1.9] - 2026-07-02
+### Added
+- **Coverage reporting en CI**: Agregado step `npm run test:coverage` en `.github/workflows/ci.yml` entre tests y validación JSR, asegurando que cada push/PR genere reporte de cobertura sin bloquear el pipeline. Validado: CI workflow completo sin errores, 935/935 tests pasan.
+- **3 skills de agente para el SDK**: Creados `docs/agents/skills/barrits-testing-patterns/`, `barrits-security-audit/` y `barrits-onboarding/` con frontmatter YAML, tablas de referencia, threat model, test pyramid, y comandos de verificación ejecutables. Cada skill sigue el estándar de OpenCode y se alinea con el plan de acción forense audit item #24.
+- **example-nodejs completo con todos los casos de uso del SDK**: Convertido `example-nodejs` en el ejemplo de referencia Node.js que demuestra traits, configuración, OpenAPI, IoC, pipeline CLI, build manifest, snapshots y validación. Añadidos 3 traits (runtime-node, user-service con state ownership, http-handler con tag http-endpoint), 3 scripts demo (openapi-demo, ioc-demo, cli-workflow) y suite de tests automatizados (8 tests, `node --test`). Validado: 0 errores ESLint, 0 errores typecheck, 8/8 tests pasan en example-nodejs, 935/935 tests SDK sin regresión.
+- **Subpath exports `./ioc` y `./schema/openapi` en SDK package.json**: Agregados exports para `@zuccadev-labs/barrits/ioc` y `@zuccadev-labs/barrits/schema/openapi`, permitiendo a consumidores importar `BarritsIoCContainer` y `generateOpenApiSchema` sin deep imports internos. Estos exports se alinean con el patrón existente de subpath exports (`./node`, `./vite`, `./consume`, etc.).
+
+### Fixed
+- **ESLint backlog cero: 11 `no-explicit-any` resueltos en 6 archivos runtime**: Reemplazados tipos `any` genéricos por tipos específicos en `ioc/index.ts` (Factory, instances Map), `plugins/esbuild.ts` (interfaz EsbuildBuild tipada), `schema/openapi.ts` (Record<string, unknown>), `sdk/adapters.ts` (interfaz DenoNamespace), `sdk/inspect.ts` (Map tipado con ExportedTraitBinding), y `traits/descriptor.ts` (eslint-disable documentado). Eliminado `--max-warnings 11` del lint script en CI — ahora lint corre con tolerancia cero. Validado: 0 type errors (`tsc --noEmit`), 935/935 tests pasan.
+- **`while(true)` → `for(;;)` en 2 archivos de `barrits_lib` para resolver `no-constant-condition`**: Reemplazados `while(true)` en `logic/algorithms/graph/max-flow.ts:52` y `logic/algorithms/selection/top-k.ts:34` por `for(;;)`, patrón estándar para bucles infinitos intencionales que ESLint no marca. Eran los únicos 2 errores ESLint pre-existentes fuera del backlog. Validado: ESLint 0 errores, 0 warnings globales.
+- **`Promise.all` → `mapConcurrent` en `sdk/inspect.ts:146`**: Reemplazada iteración concurrente sin límite sobre `discovery.discoveryRoots.map(...)` con `mapConcurrent(discovery.discoveryRoots, 10, ...)`, limitando concurrencia a 10 capas simultáneas para evitar exhaustion de recursos en proyectos con cientos de roots. Consistente con el patrón usado en `crawler/layer.ts` (audit item #13).
+
 ## [0.1.8] - 2026-07-02
 ### Added
 - **Test coverage para 8 módulos runtime sin cobertura previa**: 54 tests en 8 archivos nuevos cubriendo `internal/runtime/assertions.ts`, `internal/runtime/env.ts`, `routes/path/build.ts`, `routes/path/parse.ts`, `traits/compose/pipeline.ts`, `plugins/materialize.ts`, `api/domains.ts` y `api/factory.ts`. Total: 796 tests (todos pasan, 0 errores de tipo nuevos).

@@ -49,7 +49,7 @@ export const maxFlow = <NodeId extends GraphNodeId>(
   let totalFlow = 0;
   const augmentingPaths: NodeId[][] = [];
 
-  while (true) {
+  for (;;) {
     const queue: NodeId[] = [source];
     const parents = new Map<NodeId, NodeId>();
     const visited = new Set<NodeId>([source]);

@@ -2,6 +2,7 @@ type UnionToIntersection<TValue> = (TValue extends unknown ? (value: TValue) => 
   ? TIntersection
   : never;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyTraitDescriptor = TraitDescriptor<string, any, any>;
 
 /** Collision strategy for capability keys during trait composition. */
