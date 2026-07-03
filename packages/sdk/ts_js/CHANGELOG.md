@@ -10,6 +10,8 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 
 - **`example-deno/barrits/traits/runtime-trait.ts` — Deno runtime trait**: Created the first example trait for the Deno example project. Declares `runtime-deno` with provides `["runtime:deno"]` and a `create` factory returning `getRuntimeName`. Follows the same pattern as `example-nodejs/barrits/traits/runtime-trait.ts`. Verified via `deno eval` that the trait loads and produces correct descriptor shape.
 
+- **`example-deno/scripts/openapi-demo.ts` — OpenAPI schema generation from mock manifest**: Created a standalone script that imports `generateOpenApiSchema` from the SDK source, constructs a `BarritsBuildManifest` with a single `http-handler` trait descriptor, and outputs a full OpenAPI 3.1.0 schema JSON to stdout. Demonstrates how to programmatically generate OpenAPI schemas from Barrits trait discovery metadata in Deno environments. Validated via `deno run -A scripts/openapi-demo.ts` — output confirms `openapi: "3.1.0"` and path `/http-handler`.
+
 ## [0.1.8] - 2026-07-02
 
 ### Refactored
