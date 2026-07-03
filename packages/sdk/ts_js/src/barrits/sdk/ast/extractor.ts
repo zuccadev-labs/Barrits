@@ -224,70 +224,94 @@ export type ParsedExportStatements = {
  * @param relativePath - Unmutated contextual system identifier relative file path mapping string locator strings identifier maps.
  * @returns An extracted ParsedExportStatements object mapping standard definitions and aggregating broad system namespace overrides logic dependencies map.
  */
+type ExportPushContext = {
+  readonly exportsMap: Map<string, BarritsFileExport>;
+  readonly source: string;
+  readonly relativePath: string;
+  readonly visibility: "internal" | "public";
+};
+
+const pushExport = (ctx: ExportPushContext, name: string, kind: BarritsFileExport["kind"], matchIndex: number): void => {
+  const normalizedName = name.trim();
+
+  if (!normalizedName) {
+    return;
+  }
+
+  const jsDocAccessPath = parseJsDocAccessPath(ctx.source, matchIndex);
+  const derivedAccessPath = deriveExportAccessPath(ctx.relativePath, normalizedName);
+  const accessPath = jsDocAccessPath ?? derivedAccessPath;
+  const accessStrategy = jsDocAccessPath ? "jsdoc" : accessPath === normalizedName ? "export-name" : "file-system";
+
+  ctx.exportsMap.set(normalizedName, {
+    name: normalizedName,
+    accessPath,
+    accessStrategy,
+    kind,
+    visibility: ctx.visibility,
+  });
+};
+
+const handleVariableStatement = (ctx: ExportPushContext, statement: ts.VariableStatement, matchIndex: number): void => {
+  if ((statement.declarationList.flags & ts.NodeFlags.Const) === 0) {
+    return;
+  }
+
+  for (const declaration of statement.declarationList.declarations) {
+    if (ts.isIdentifier(declaration.name)) {
+      pushExport(ctx, declaration.name.text, "const", matchIndex);
+    }
+  }
+};
+
+const handleFunctionDeclaration = (ctx: ExportPushContext, statement: ts.FunctionDeclaration, matchIndex: number): void => {
+  if (statement.name) {
+    pushExport(ctx, statement.name.text, "function", matchIndex);
+  }
+};
+
+const handleExportDeclaration = (
+  ctx: ExportPushContext,
+  statement: ts.ExportDeclaration,
+  exportAllSpecifiers: string[],
+  matchIndex: number,
+): void => {
+  if (!statement.exportClause && statement.moduleSpecifier && ts.isStringLiteralLike(statement.moduleSpecifier)) {
+    exportAllSpecifiers.push(statement.moduleSpecifier.text);
+    return;
+  }
+
+  if (!statement.exportClause || !ts.isNamedExports(statement.exportClause)) {
+    return;
+  }
+
+  for (const element of statement.exportClause.elements) {
+    pushExport(ctx, element.name.text, "reexport", matchIndex);
+  }
+};
+
 export const collectDirectExports = (source: string, relativePath: string): ParsedExportStatements => {
   const exportsMap = new Map<string, BarritsFileExport>();
   const exportAllSpecifiers: string[] = [];
   const visibility = isInternalPath(relativePath) ? "internal" : "public";
   const sourceFile = createCachedSourceFile(relativePath, source);
-
-  const pushExport = (name: string, kind: BarritsFileExport["kind"], matchIndex: number): void => {
-    const normalizedName = name.trim();
-
-    if (!normalizedName) {
-      return;
-    }
-
-    const jsDocAccessPath = parseJsDocAccessPath(source, matchIndex);
-    const derivedAccessPath = deriveExportAccessPath(relativePath, normalizedName);
-    const accessPath = jsDocAccessPath ?? derivedAccessPath;
-    const accessStrategy = jsDocAccessPath ? "jsdoc" : accessPath === normalizedName ? "export-name" : "file-system";
-
-    exportsMap.set(normalizedName, {
-      name: normalizedName,
-      accessPath,
-      accessStrategy,
-      kind,
-      visibility,
-    });
-  };
+  const ctx: ExportPushContext = { exportsMap, source, relativePath, visibility };
 
   for (const statement of sourceFile.statements) {
     const matchIndex = statement.getStart(sourceFile);
 
     if (ts.isVariableStatement(statement) && hasExportModifier(statement)) {
-      if ((statement.declarationList.flags & ts.NodeFlags.Const) === 0) {
-        continue;
-      }
-
-      for (const declaration of statement.declarationList.declarations) {
-        if (ts.isIdentifier(declaration.name)) {
-          pushExport(declaration.name.text, "const", matchIndex);
-        }
-      }
-
+      handleVariableStatement(ctx, statement, matchIndex);
       continue;
     }
 
-    if (ts.isFunctionDeclaration(statement) && hasExportModifier(statement) && statement.name) {
-      pushExport(statement.name.text, "function", matchIndex);
+    if (ts.isFunctionDeclaration(statement) && hasExportModifier(statement)) {
+      handleFunctionDeclaration(ctx, statement, matchIndex);
       continue;
     }
 
-    if (!ts.isExportDeclaration(statement)) {
-      continue;
-    }
-
-    if (!statement.exportClause && statement.moduleSpecifier && ts.isStringLiteralLike(statement.moduleSpecifier)) {
-      exportAllSpecifiers.push(statement.moduleSpecifier.text);
-      continue;
-    }
-
-    if (!statement.exportClause || !ts.isNamedExports(statement.exportClause)) {
-      continue;
-    }
-
-    for (const element of statement.exportClause.elements) {
-      pushExport(element.name.text, "reexport", matchIndex);
+    if (ts.isExportDeclaration(statement)) {
+      handleExportDeclaration(ctx, statement, exportAllSpecifiers, matchIndex);
     }
   }
 

@@ -7,15 +7,58 @@
 };
 
 const trimTrailingSlash = (value: string): string => {
-  if (value === "/") {
-    return value;
+  const trimmed = value.trimEnd();
+
+  if (trimmed === "/") {
+    return trimmed;
   }
 
-  if (/^[A-Za-z]:\/$/.test(value)) {
-    return value;
+  if (/^[A-Za-z]:\/$/.test(trimmed)) {
+    return trimmed;
   }
 
-  return value.endsWith("/") ? value.slice(0, -1) : value;
+  return trimmed.endsWith("/") ? trimmed.slice(0, -1) : trimmed;
+};
+
+const canPopSegment = (resolved: string[], isAbsolute: boolean): boolean => {
+  if (resolved.length === 0) return false;
+  if (resolved[resolved.length - 1] === "..") return false;
+  if (isAbsolute && /^[A-Za-z]:$/.test(resolved[resolved.length - 1])) return false;
+  return true;
+};
+
+const resolvePathSegments = (normalized: string): { isAbsolute: boolean; resolved: string[] } => {
+  const isAbsolute = normalized.startsWith("/") || /^[A-Za-z]:\//.test(normalized);
+  const resolved: string[] = [];
+
+  for (const segment of normalized.split("/")) {
+    if (segment === "." || segment === "") continue;
+
+    if (segment === "..") {
+      if (canPopSegment(resolved, isAbsolute)) {
+        resolved.pop();
+      } else if (!isAbsolute) {
+        resolved.push("..");
+      }
+      continue;
+    }
+
+    resolved.push(segment);
+  }
+
+  return { isAbsolute, resolved };
+};
+
+const reconstructAbsolutePath = (result: string): string => {
+  if (!result.startsWith("/") && !/^[A-Za-z]:/.test(result)) {
+    result = "/" + result;
+  }
+
+  if (/^[A-Za-z]:$/.test(result)) {
+    result = result + "/";
+  }
+
+  return result;
 };
 
 /**
@@ -29,35 +72,11 @@ export const normalizePath = (value: string): string => {
     return ".";
   }
 
-  const isAbsolute = normalized.startsWith("/") || /^[A-Za-z]:\//.test(normalized);
-  const segments = normalized.split("/");
-  const resolved: string[] = [];
-
-  for (const segment of segments) {
-    if (segment === "." || segment === "") continue;
-    if (segment === "..") {
-      if (resolved.length > 0 && resolved[resolved.length - 1] !== "..") {
-        const lastSegment = resolved[resolved.length - 1];
-        if (isAbsolute && /^[A-Za-z]:$/.test(lastSegment)) continue;
-        resolved.pop();
-      } else if (!isAbsolute) {
-        resolved.push("..");
-      }
-      continue;
-    }
-    resolved.push(segment);
-  }
-
+  const { isAbsolute, resolved } = resolvePathSegments(normalized);
   let result = resolved.join("/");
 
   if (isAbsolute) {
-    if (!result.startsWith("/") && !/^[A-Za-z]:/.test(result)) {
-      result = "/" + result;
-    }
-
-    if (/^[A-Za-z]:$/.test(result)) {
-      result = result + "/";
-    }
+    result = reconstructAbsolutePath(result);
   }
 
   if (result === "") {

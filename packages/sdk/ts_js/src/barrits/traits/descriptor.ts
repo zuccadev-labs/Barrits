@@ -280,8 +280,10 @@ const assertConsumedCapabilities = (descriptors: readonly AnyTraitDescriptor[], 
   }
 };
 
-const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): string[] => {
-  const descriptorMap = new Map(descriptors.map((descriptor) => [descriptor.name, descriptor]));
+const buildDependencyCounters = (
+  descriptors: readonly AnyTraitDescriptor[],
+  descriptorMap: Map<string, AnyTraitDescriptor>,
+): { dependencyCounts: Map<string, number>; dependents: Map<string, string[]> } => {
   const dependencyCounts = new Map<string, number>();
   const dependents = new Map<string, string[]>();
 
@@ -299,6 +301,13 @@ const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): stri
     }
   }
 
+  return { dependencyCounts, dependents };
+};
+
+const executeTopologicalSort = (
+  dependencyCounts: Map<string, number>,
+  dependents: Map<string, string[]>,
+): string[] => {
   const pending = Array.from(dependencyCounts.entries())
     .filter(([, count]) => count === 0)
     .map(([name]) => name)
@@ -324,6 +333,14 @@ const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): stri
       }
     }
   }
+
+  return ordered;
+};
+
+const orderTraitDescriptors = (descriptors: readonly AnyTraitDescriptor[]): string[] => {
+  const descriptorMap = new Map(descriptors.map((descriptor) => [descriptor.name, descriptor]));
+  const { dependencyCounts, dependents } = buildDependencyCounters(descriptors, descriptorMap);
+  const ordered = executeTopologicalSort(dependencyCounts, dependents);
 
   if (ordered.length !== descriptors.length) {
     throw new Error("Trait descriptors contain a cyclic dependency graph.");
