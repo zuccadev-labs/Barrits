@@ -3,6 +3,13 @@
 All notable changes to this SDK will be documented in this file.
 Todos los cambios relevantes para el SDK se documentan aquí.
 
+## [0.1.9] - 2026-07-03
+
+### Added
+- **`adapters/deno/mod.ts` — export trait descriptor factories**: Added `createTraitDescriptor`, `createTraitDescriptorFromJsDoc`, `composeTraitDescriptors`, and `parseTraitDescriptorJsDoc` to the Deno adapter's public API. These were previously only available through the Node adapter (`adapters/node/index.ts`) and the top-level barrel (`src/index.ts`). Enables Deno consumers to declare traits via `createTraitDescriptor` without switching to the Node entry point. Validated with 23 trait tests passing and runtime import verification via `deno eval`.
+
+- **`example-deno/barrits/traits/runtime-trait.ts` — Deno runtime trait**: Created the first example trait for the Deno example project. Declares `runtime-deno` with provides `["runtime:deno"]` and a `create` factory returning `getRuntimeName`. Follows the same pattern as `example-nodejs/barrits/traits/runtime-trait.ts`. Verified via `deno eval` that the trait loads and produces correct descriptor shape.
+
 ## [0.1.8] - 2026-07-02
 
 ### Refactored
