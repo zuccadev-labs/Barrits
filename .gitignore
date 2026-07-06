@@ -39,6 +39,10 @@ reports/
 bun.lock
 bun.lockb
 
+# Generated type declarations (tsc --emitDeclarationOnly now outputs to dist/)
+**/src/**/*.d.ts
+**/adapters/**/*.d.ts
+
 # Generated test declaration files (build artifacts from tsc --emitDeclarationOnly)
 **/tests/**/*.d.ts
 
