@@ -29,12 +29,6 @@ export type TraitRuntimeMetadata = {
     readonly provides?: readonly string[];
     readonly state?: readonly string[];
 };
-/**
- * Resolves deeply nested semantic abstract factories evaluating expression tree architectures mapped targeting capability creation.
- *
- * @param expression - Typescript logic interface binding literal root syntax expression node component dependency pointer.
- * @returns Resolves the factory literal identifier string natively mapped.
- */
 export declare const resolveTraitDescriptorFactoryFromExpression: (expression: ts.Expression | undefined) => "createTraitDescriptor" | "createTraitDescriptorFromJsDoc" | undefined;
 /**
  * Parses a TypeScript Array Literal node mapping plain text constants mapping primitive string interfaces.
@@ -44,9 +38,6 @@ export declare const readStringArrayLiteral: (expression: ts.Expression | undefi
  * Parses internal explicit argument objects targeting explicit trait mapping dependencies evaluating structural runtime property maps.
  */
 export declare const readTraitRuntimeMetadataFromCall: (expression: ts.Expression | undefined) => TraitRuntimeMetadata | undefined;
-/**
- * Sweeps the AST structure explicitly collecting export bindings matching trait payload creation routines mapping signatures recursively natively traversing explicit modifiers.
- */
 export declare const collectExportedTraitBindings: (source: string, relativePath: string) => ExportedTraitBinding[];
 /**
  * Builds physical meta-descriptor objects parsing logical block JSDocs overriding payload identifiers.

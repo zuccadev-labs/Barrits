@@ -83,13 +83,6 @@ export type ParsedExportStatements = {
     readonly exportsMap: Map<string, BarritsFileExport>;
     readonly exportAllSpecifiers: readonly string[];
 };
-/**
- * Queries abstract module components identifying named and default explicit programmatic payload exports globally mapping access keys.
- *
- * @param source - Immutable parsed plain text input.
- * @param relativePath - Unmutated contextual system identifier relative file path mapping string locator strings identifier maps.
- * @returns An extracted ParsedExportStatements object mapping standard definitions and aggregating broad system namespace overrides logic dependencies map.
- */
 export declare const collectDirectExports: (source: string, relativePath: string) => ParsedExportStatements;
 /**
  * Discovers deeply nested cross-file re-export mechanisms tracing import blocks recursively.

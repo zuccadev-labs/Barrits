@@ -35,6 +35,13 @@ reports/
 !.env.example
 !.env.*.example
 
+# Bun lockfile (project uses npm)
+bun.lock
+bun.lockb
+
+# Generated test declaration files (build artifacts from tsc --emitDeclarationOnly)
+**/tests/**/*.d.ts
+
 # Logs and transient files
 *.log
 npm-debug.log*

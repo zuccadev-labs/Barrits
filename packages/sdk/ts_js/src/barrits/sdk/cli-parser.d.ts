@@ -1,5 +1,5 @@
 import type { BarritsFileKind, BarritsIntegrationGraph, BarritsSelectionFilters } from "./contracts";
-export type CliCommand = "detect" | "help" | "info" | "watch" | "dev" | "imports" | "build";
+export type CliCommand = "detect" | "help" | "info" | "watch" | "dev" | "imports" | "build" | "completion";
 export type CliOptions = {
     command: CliCommand;
     json: boolean;
@@ -15,6 +15,7 @@ export type CliOptions = {
     snapshotFile?: string;
     targetFile?: string;
     childArgs: string[];
+    shellType: string;
 };
 export type IntegrationGraph = BarritsIntegrationGraph;
 export type AutomationArtifactPaths = {

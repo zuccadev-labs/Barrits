@@ -18,4 +18,4 @@ export type BarritsOpenApiOptions = {
  * @param manifest [EN] The discovery manifest. [ES] El manifiesto de descubrimiento.
  * @param options [EN] Generation options. [ES] Opciones de generación.
  */
-export declare const generateOpenApiSchema: (manifest: BarritsBuildManifest, options?: BarritsOpenApiOptions) => Record<string, any>;
+export declare const generateOpenApiSchema: (manifest: BarritsBuildManifest, options?: BarritsOpenApiOptions) => Record<string, unknown>;

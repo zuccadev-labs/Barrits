@@ -51,6 +51,7 @@
       "default": "./dist/adapters/bun/index.js"
     },
     "./bun/cli": {
+      "types": "./dist/adapters/bun/cli.d.ts",
       "import": "./dist/adapters/bun/cli.js",
       "default": "./dist/adapters/bun/cli.js"
     },

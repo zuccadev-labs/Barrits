@@ -3,7 +3,7 @@ import type { BarritsBuildManifest } from "../sdk/contracts";
  * [EN] Factory function type for generating capability instances.
  * [ES] Tipo de función de fábrica para generar instancias de capacidades.
  */
-export type Factory<T = any> = (container: BarritsIoCContainer) => T | Promise<T>;
+export type Factory<T = unknown> = (container: BarritsIoCContainer) => T | Promise<T>;
 /**
  * [EN] Dynamic Inversion of Control (IoC) Container powered by AST Trait discovery.
  * [ES] Contenedor dinámico de Inversión de Control (IoC) impulsado por el descubrimiento de Traits AST.
