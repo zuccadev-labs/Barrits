@@ -6,7 +6,8 @@
     "dev": "bun run ./src/main.ts",
     "build": "bun run ../../adapters/bun/cli.ts build . -- bun run ./src/main.ts",
     "inspect": "bun run ../../adapters/bun/cli.ts info .",
-    "showcase": "bun run ./src/main.ts"
+    "showcase": "bun run ./src/main.ts",
+    "test": "bun test"
   },
   "dependencies": {
     "@zuccadev-labs/barrits": "file:../..",
