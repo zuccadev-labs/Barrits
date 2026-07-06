@@ -3,7 +3,20 @@
 All notable changes to this project will be documented in this file.
 Todos los cambios relevantes de este repositorio se documentan aquí.
 
-## [0.1.9] - 2026-07-02
+## [0.1.9] - 2026-07-06
+
+### Fixed
+- **`declarationDir` en tsconfig.json — declaraciones en `dist/` en lugar de junto al source**: Configurado `compilerOptions.declarationDir: "dist"` y removidas inclusiones de `**/*.d.ts` del array `include` en `tsconfig.json`. Anteriormente, `tsc --emitDeclarationOnly` generaba archivos `.d.ts` junto a los archivos fuente en `src/` y `adapters/`, pero el `package.json` ya esperaba estos archivos en `dist/`. Este cambio alinea la salida del compilador con las rutas de exportación. Eliminados del tracking de git 151 archivos `.d.ts` obsoletos. Agregados patrones `**/src/**/*.d.ts` y `**/adapters/**/*.d.ts` a `.gitignore`. Validado: build exitoso, typecheck 0 errores, 935 tests SDK pasan, 8 tests example-nodejs pasan.
+
+- **Types faltantes para `@zuccadev-labs/barrits/bun/cli`**: Agregada entrada `"types": "./dist/adapters/bun/cli.d.ts"` en los exports de `package.json` para el subpath `./bun/cli`. Las 13 rutas `"types"` en `package.json` ahora resuelven a archivos reales en `dist/`.
+
+### Added
+- **Soporte de runtime `"bun"` + adapter `@zuccadev-labs/barrits/bun`**: Agregado `"bun"` al tipo `BarritsRuntimeKind` en `config.ts`. Creado adapter thin `adapters/bun/index.ts` que re-exporta el adapter Node y agrega `runBunCli`. Creado `adapters/bun/cli.ts` como re-export de `runNodeCli`. Agregados exports `./bun` y `./bun/cli` en `package.json`. Validado: build exitoso, typecheck 0 errores, importaciones desde `@zuccadev-labs/barrits/bun` funcionales.
+
+- **Resilience, hashing y datetime re-exportados en Bun adapter**: Agregadas re-exportaciones explícitas de `sha256Hex`, `deterministicStringify`, `murmurHash3`, `retryWithBackoff`, `withTimeout`, `createCircuitBreaker`, `toIsoString` y `toRelativeTime` en `adapters/bun/index.ts`, mirrorando el patrón del adapter Deno. Estos módulos estaban disponibles en el barrel principal del SDK pero no expuestos desde el entrypoint del adapter Bun. Validado: importaciones directas desde `@zuccadev-labs/barrits/bun` funcionales.
+
+- **example-bun: traits, validación y configuración (Tasks 1-2)**: Creado `examples/example-bun/` con 3 traits (`runtime-bun`, `queue-service` con state ownership, `http-handler` con tag `http-endpoint`), esquema Zod para validación (`parseBunUser`), barrel `barrits/index.ts`, y `barrits.config.ts` con runtime `"bun"` y 3 contracts de traits. El ejemplo replica la estructura de `example-nodejs` adaptada al ecosistema Bun (TypeScript nativo, sin `tsx`). Tech debt H1-H5 resuelto antes de continuar con Tasks 3-6. Validado: build SDK exitoso, 935 tests SDK pasan, sin regresión en example-nodejs.
+
 ### Added
 - **Coverage reporting en CI**: Agregado step `npm run test:coverage` en `.github/workflows/ci.yml` entre tests y validación JSR, asegurando que cada push/PR genere reporte de cobertura sin bloquear el pipeline. Validado: CI workflow completo sin errores, 935/935 tests pasan.
 - **3 skills de agente para el SDK**: Creados `docs/agents/skills/barrits-testing-patterns/`, `barrits-security-audit/` y `barrits-onboarding/` con frontmatter YAML, tablas de referencia, threat model, test pyramid, y comandos de verificación ejecutables. Cada skill sigue el estándar de OpenCode y se alinea con el plan de acción forense audit item #24.

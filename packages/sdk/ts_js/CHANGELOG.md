@@ -3,9 +3,20 @@
 All notable changes to this SDK will be documented in this file.
 Todos los cambios relevantes para el SDK se documentan aquí.
 
-## [0.1.9] - 2026-07-03
+## [0.1.9] - 2026-07-06
+
+### Fixed
+- **`declarationDir: "dist"` en tsconfig.json**: Configurado `compilerOptions.declarationDir` a `"dist"` para que `tsc --emitDeclarationOnly` genere archivos `.d.ts` en `dist/` en lugar de junto a los archivos fuente en `src/` y `adapters/`. Removidas las inclusiones de `**/*.d.ts` del array `include`. Eliminados del tracking de git 151 archivos `.d.ts` obsoletos. Agregados patrones `**/src/**/*.d.ts` y `**/adapters/**/*.d.ts` a `.gitignore`. Las 13 rutas `"types"` en `package.json` ahora resuelven a archivos reales en `dist/`. Validado: build exitoso, typecheck 0 errores, 935 tests pasan.
+
+- **Types faltantes para `./bun/cli` en package.json exports**: Agregada entrada `"types": "./dist/adapters/bun/cli.d.ts"` para el subpath `./bun/cli`. Anteriormente solo tenía `"import"` y `"default"` pero no `"types"`, lo que impedía la resolución correcta de tipos en consumidores TypeScript.
 
 ### Added
+- **`"bun"` runtime support**: Agregado `"bun"` al tipo `BarritsRuntimeKind` en `src/barrits/config.ts`. Habilitado como valor válido para la propiedad `runtime` en `defineBarritsConfig` y `createBarrits`.
+
+- **Bun adapter (`@zuccadev-labs/barrits/bun`)**: Creado `adapters/bun/index.ts` que re-exporta `@zuccadev-labs/barrits` completo más `createNodeFileSystemAdapter`, `readNodeBuildManifest`, `readNodeBuildManifestSummary`, `readNodeLanguageToolSnapshot`, `readNodeWatchSnapshot`, `readNodeWatchSnapshotSummary` del adapter Node; agrega `runBunCli` (delega a `runNodeCli`). Creado `adapters/bun/cli.ts` como re-export directo de `runNodeCli`. Agregados exports `./bun` y `./bun/cli` en `package.json`.
+
+- **Resilience/hashing/datetime re-exports en Bun adapter**: Agregadas re-exportaciones explícitas de `sha256Hex`, `deterministicStringify`, `murmurHash3`, `retryWithBackoff`, `withTimeout`, `createCircuitBreaker`, `toIsoString` y `toRelativeTime` desde sus módulos fuente en `barrits_lib/logic/` hacia `adapters/bun/index.ts`. Estos módulos estaban disponibles en el barrel principal del SDK pero no expuestos desde el entrypoint del adapter Bun. Consistente con el patrón establecido en el adapter Deno.
+
 - **`adapters/deno/mod.ts` — export trait descriptor factories**: Added `createTraitDescriptor`, `createTraitDescriptorFromJsDoc`, `composeTraitDescriptors`, and `parseTraitDescriptorJsDoc` to the Deno adapter's public API. These were previously only available through the Node adapter. Validated with 23 trait tests passing and runtime import verification via `deno eval`.
 
 - **`adapters/deno/mod.ts` — export missing utility functions**: Added re-exports for hashing (`sha256Hex`, `deterministicStringify`, `murmurHash3`), validation (`isEmail`, `isUuid`, `assertNonNullish`), datetime (`toIsoString`, `toRelativeTime`), and resilience (`retryWithBackoff`, `withTimeout`, `createCircuitBreaker`) from the Deno adapter. These were previously imported directly from internal chunks but not exposed through the adapter entrypoint. Enables Deno consumers to use the full SDK surface through a single import path.
