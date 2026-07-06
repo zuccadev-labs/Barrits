@@ -13,6 +13,16 @@ El acceso a la documentación de usuario se organiza mediante la siguiente jerar
 
 ## Directorio de Acceso Actual
 
+### EN (English)
+
+#### packages
+
+##### ts_js
+- **[User Index](EN/packages/ts_js/00-index.md)**
+- **[Installation](EN/packages/ts_js/01-installation.md)**
+- **[Getting Started](EN/packages/ts_js/02-getting-started.md)**
+- **[API Reference — Complete Surface](EN/packages/ts_js/09-api-reference.md)**
+
 ### ES (Español)
 
 #### packages
@@ -20,7 +30,7 @@ El acceso a la documentación de usuario se organiza mediante la siguiente jerar
 ##### ts_js
 - **[Índice de Usuario](ES/packages/ts_js/00-indice.md)**
 - **[Guía de Instalación](ES/packages/ts_js/01-instalacion.md)**
-- **[Referencia de API - Completa](ES/packages/ts_js/09_referencia-de-api.md)**
+- **[Referencia de API — Superficie Completa](ES/packages/ts_js/09-referencia-de-api.md)**
 
 ## Alcance de esta Sección
 

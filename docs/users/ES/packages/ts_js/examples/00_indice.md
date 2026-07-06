@@ -18,6 +18,7 @@ Esta carpeta documenta la cobertura oficial de `packages/sdk/ts_js/examples/`. C
 
 ## Documentos detallados
 
+- [01_mapa-general.md](01_mapa-general.md)
 - [02_nodejs-y-deno.md](02_nodejs-y-deno.md)
 - [03_frontend-vite.md](03_frontend-vite.md)
 - [04_bundlers.md](04_bundlers.md)

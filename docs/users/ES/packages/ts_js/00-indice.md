@@ -18,6 +18,7 @@ Bienvenido a la documentación para usuarios y consumidores del SDK `@zuccadev-l
 | 06 | [Comandos y Runtimes](06-comandos-y-runtimes.md) | CLI en Node.js y Deno |
 | 07 | [Manifests, Bundlers y Consumo](07-manifests-bundlers-y-consumo.md) | Lectura de artefactos e integración con bundlers |
 | 08 | [Traits y Composición](08-traits-y-composicion.md) | Descriptores declarativos de traits y composición de pipelines |
+| 09 | [Referencia de API — Superficie Completa](09-referencia-de-api.md) | Referencia consolidada de toda la superficie pública (archivo histórico) |
 | 09a | [Referencia de API — Configuración](09a-referencia-de-api-configuracion.md) | `defineBarritsPackage`, `createTraitDescriptor`, manifests |
 | 09b | [Referencia de API — Algoritmos](09b-referencia-de-api-algoritmos.md) | Colecciones, búsqueda, ordenamiento, series temporales, grafos |
 | 09c | [Referencia de API — Consume y Adapters](09c-referencia-de-api-consume-y-adapters.md) | Readers de manifests, adapters Node/Deno, plugins de bundlers |
