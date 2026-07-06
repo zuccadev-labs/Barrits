@@ -5,6 +5,9 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 
 ## [0.1.9] - 2026-07-06
 
+### Docs
+- **Cierre de gaps de documentación (Fase 2)**: Completados 7 gaps identificados en AGENTS.md: removido directorio `actions/.gitkeep` vacío sin propósito; fusionada ruta redundante `docs/package/ES/packages/ts_js/` en `docs/package/ES/`; creados ADRs 07 (Algorithm Catalogue), 08 (Bilingual Documentation), 09 (Agent Skills) en ES/EN; creada versión EN de `10-forensic-integral-audit.md`; removida sección "How it works" duplicada en 6 READMEs de ejemplos (bundlers, react, solid, svelte, tauri, vue) reemplazada con referencia centralizada; expandido example-deno-baas con `barrits.config.ts`, 3 traits (runtime, database, http-endpoint), barrel orchestration y README actualizado; agregado `.gitignore` para binarios Rust en example-tauri. Validado: índices actualizados, sin regresión en documentación existente.
+
 ### Fixed
 - **`declarationDir` en tsconfig.json — declaraciones en `dist/` en lugar de junto al source**: Configurado `compilerOptions.declarationDir: "dist"` y removidas inclusiones de `**/*.d.ts` del array `include` en `tsconfig.json`. Anteriormente, `tsc --emitDeclarationOnly` generaba archivos `.d.ts` junto a los archivos fuente en `src/` y `adapters/`, pero el `package.json` ya esperaba estos archivos en `dist/`. Este cambio alinea la salida del compilador con las rutas de exportación. Eliminados del tracking de git 151 archivos `.d.ts` obsoletos. Agregados patrones `**/src/**/*.d.ts` y `**/adapters/**/*.d.ts` a `.gitignore`. Validado: build exitoso, typecheck 0 errores, 935 tests SDK pasan, 8 tests example-nodejs pasan.
 

@@ -2,7 +2,11 @@
   "name": "@barrits-example/deno-baas",
   "version": "1.0.0",
   "tasks": {
-    "start": "deno run --unstable-kv -A main.ts"
+    "start": "deno run --unstable-kv -A main.ts",
+    "dev": "deno run --watch --unstable-kv -A main.ts",
+    "build": "deno run -A ../../adapters/deno/cli.ts build . -- deno run -A main.ts",
+    "inspect": "deno run -A ../../adapters/deno/cli.ts info .",
+    "demo:openapi": "deno run -A main.ts"
   },
   "imports": {
     "@zuccadev-labs/barrits/": "../../"

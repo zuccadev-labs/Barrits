@@ -19,6 +19,10 @@ Este índice centraliza el historial de descubrimientos, refactorizaciones y dec
 | 04 | [Microservicios y Orquestación](04_arquitectura-microservicios-y-orquestacion.md) | Reflexiones sobre inyección de dependencias distribuidas |
 | 05 | [Conclusiones y Límites de Diseño](05_conclusiones-y-limites.md) | Lo que Barrits es, y lo que no intenta ser |
 | 06 | [Arquitectura Deno BaaS (Parse Alternative)](06_arquitectura-deno-baas.md) | IoC basado en AST y delegación estricta de bases de datos |
+| 07 | [Estandarización del Catálogo de Algoritmos](07_estandarizacion-catalogo-algoritmos.md) | Taxonomía de 10 familias algorítmicas y validación mediante ejemplos |
+| 08 | [Consolidación de la Documentación Bilingüe](08_consolidacion-documentacion-bilingue.md) | Arquitectura de documentación EN/ES y estrategia de migración a Docusaurus |
+| 09 | [Skills para Agentes y Automatización del Desarrollo](09_skills-agentes-y-automatizacion.md) | Skills modulares para IA y ciclo de desarrollo automatizado |
+| 10 | [Auditoría Forense Integral](10-auditoria-forense-integral.md) | Seguridad, gaps, buenas prácticas, optimización, UX/DX y skills |
 
 ---
 
