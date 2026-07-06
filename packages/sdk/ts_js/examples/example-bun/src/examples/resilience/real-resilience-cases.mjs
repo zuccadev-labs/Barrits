@@ -1,13 +1,11 @@
-import { retryWithBackoff, createCircuitBreaker } from "@zuccadev-labs/barrits";
+// Note: retryWithBackoff and createCircuitBreaker are not yet exported from
+// the main SDK barrel. These examples serve as infrastructure stubs.
+// Once the SDK exports these, switch the import to:
+//   import { retryWithBackoff, createCircuitBreaker } from "@zuccadev-labs/barrits";
 
 export const createResilienceExamples = () => {
-  const retryResult = retryWithBackoff(
-    async () => "success",
-    { maxRetries: 3, baseDelayMs: 10 }
-  );
-  const breaker = createCircuitBreaker(
-    async () => "ok",
-    { threshold: 3, resetTimeoutMs: 100 }
-  );
-  return { retry: "retryWithBackoff works", circuitBreaker: "createCircuitBreaker works" };
+  return {
+    retry: "retryWithBackoff — stub (SDK export pending)",
+    circuitBreaker: "createCircuitBreaker — stub (SDK export pending)",
+  };
 };

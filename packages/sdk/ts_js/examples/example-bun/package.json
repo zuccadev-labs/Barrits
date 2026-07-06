@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "bun run ./src/main.ts",
-    "build": "bun run ../../adapters/node/cli.ts build . -- bun run ./src/main.ts",
-    "inspect": "bun run ../../adapters/node/cli.ts info .",
+    "build": "bun run ../../adapters/bun/cli.ts build . -- bun run ./src/main.ts",
+    "inspect": "bun run ../../adapters/bun/cli.ts info .",
     "showcase": "bun run ./src/main.ts"
   },
   "dependencies": {

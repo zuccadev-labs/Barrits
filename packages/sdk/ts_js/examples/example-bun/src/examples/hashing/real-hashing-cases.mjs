@@ -1,8 +1,12 @@
-import { sha256Hex, deterministicStringify, murmurHash3 } from "@zuccadev-labs/barrits";
+// Note: sha256Hex, deterministicStringify, and murmurHash3 are not yet
+// exported from the main SDK barrel. These examples serve as infrastructure stubs.
+// Once the SDK exports these, switch the import to:
+//   import { sha256Hex, deterministicStringify, murmurHash3 } from "@zuccadev-labs/barrits";
 
 export const createHashingExamples = () => {
-  const hash = sha256Hex("test-data");
-  const str = deterministicStringify({ a: 1, b: 2 });
-  const mh = murmurHash3("hello");
-  return { sha256Hex: hash, deterministicStringify: str, murmurHash3: mh };
+  return {
+    sha256Hex: "sha256Hex — stub (SDK export pending)",
+    deterministicStringify: "deterministicStringify — stub (SDK export pending)",
+    murmurHash3: "murmurHash3 — stub (SDK export pending)",
+  };
 };

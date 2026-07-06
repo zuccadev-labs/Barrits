@@ -1,45 +1,18 @@
-import {
-  averageBy,
-  defineBarritsPackage,
-  movingAverage,
-  orderBy,
-  topK,
-} from "@zuccadev-labs/barrits";
+import { createBarrits } from "@zuccadev-labs/barrits";
+import { createOperationalShowcase } from "./examples/index.mjs";
 
-import { buildBunOperationalPath, inspectBunOperationalPath } from "../barrits/index.ts";
+export const boot = async () => {
+  const system = await createBarrits();
+  if (system.corpAgent) {
+    console.log("[Bun] Root api instance successfully instantiated dynamically under 'corpAgent'.");
+  }
 
-const throughputSeries = [18, 20, 25, 19, 31, 28, 35, 33];
+  const showcase = createOperationalShowcase();
+  const keys = Object.keys(showcase);
+  console.log(`[Bun] Showcase loaded with ${keys.length} families: ${keys.join(", ")}`);
+  return showcase;
+};
 
-const barritsPackage = defineBarritsPackage({
-  runtime: "other",
-  watch: "manual",
-  debugCommands: true,
-});
-
-const sortedRecords = orderBy(
-  [
-    { domain: "metrics", score: 91 },
-    { domain: "observability", score: 97 },
-    { domain: "contracts", score: 89 },
-  ],
-  [{ project: (record) => record.score, direction: "desc" }],
-);
-
-const operationalPath = buildBunOperationalPath("ops", "daily", "throughput.json");
-
-console.log(
-  JSON.stringify(
-    {
-      runtime: "bun",
-      package: barritsPackage,
-      movingAverage: movingAverage(throughputSeries, 3),
-      average: averageBy(throughputSeries, (value) => value),
-      topThroughput: topK(throughputSeries, 3),
-      sortedRecords,
-      operationalPath,
-      parsedPath: inspectBunOperationalPath(operationalPath),
-    },
-    null,
-    2,
-  ),
-);
+// Execute on run
+const result = await boot();
+console.log(JSON.stringify(result, null, 2));

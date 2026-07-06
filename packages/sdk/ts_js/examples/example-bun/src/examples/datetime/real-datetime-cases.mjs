@@ -1,7 +1,11 @@
-import { toIsoString, toRelativeTime } from "@zuccadev-labs/barrits";
+// Note: toIsoString and toRelativeTime are not yet exported from the main
+// SDK barrel. These examples serve as infrastructure stubs.
+// Once the SDK exports these, switch the import to:
+//   import { toIsoString, toRelativeTime } from "@zuccadev-labs/barrits";
 
 export const createDatetimeExamples = () => {
-  const iso = toIsoString(new Date("2026-07-03"));
-  const relative = toRelativeTime(new Date(Date.now() - 3600000));
-  return { toIsoString: iso, toRelativeTime: relative };
+  return {
+    toIsoString: "toIsoString — stub (SDK export pending)",
+    toRelativeTime: "toRelativeTime — stub (SDK export pending)",
+  };
 };
