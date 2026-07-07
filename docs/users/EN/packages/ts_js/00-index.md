@@ -27,6 +27,7 @@ This index lists all user-facing documentation for the TypeScript and JavaScript
 | 09c | [API Reference — Consume and Adapters](09c-api-reference-consume-and-adapters.md) | Manifest readers, Node/Deno adapters, bundler plugins |
 | 09d | [API Reference — Traits and Composition](09d-api-reference-traits-and-composition.md) | Trait descriptors, composition, and advanced typing |
 | 10 | [Deno BaaS Core (IoC, Schema)](10-deno-baas-core.md) | Dynamic IoC Container and OpenAPI primitives |
+| 11 | [Migration Guide 0.1.x → 0.2.x](11-migration-0.1-to-0.2.md) | Breaking changes, new exports, and upgrade steps |
 
 ---
 

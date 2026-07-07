@@ -3,26 +3,31 @@
 All notable changes to this project will be documented in this file.
 Todos los cambios relevantes de este repositorio se documentan aquí.
 
-## [Unreleased]
+## [0.2.0] - 2026-07-07
+
+### ⚠️ Migration Notice
+This version introduces 11 new public exports, Bun runtime support, and a consolidated declaration output directory.
+See the **[Migration Guide 0.1.x → 0.2.x](docs/users/EN/packages/ts_js/11-migration-0.1-to-0.2.md)** (EN) / **[Guía de Migración](docs/users/ES/packages/ts_js/11_migracion-0.1-a-0.2.md)** (ES) for full details.
 
 ### Added
-- **Tests para example-deno-baas**: Creado `tests/example-deno-baas.test.ts` con 11 tests Deno cubriendo: 4 de contratos de traits (runtimeTrait, databaseServiceTrait, httpEndpointTrait — shape, initialize, tags), 1 de barrel re-exports, 2 de path builders (`buildBaaSPath`, `buildApiPath`), 1 de OpenAPI schema generation, 3 de IoC container (registro/resolución simple, dependencias en cadena, error de dependencia no resuelta), 1 de `defineBarritsPackage` y 1 de ejecución completa de `main.ts`. Agregado task `"test": "deno test -A --no-check"` en `deno.json`. Validado: estructura de traits planos (sin `createTraitDescriptor`), imports desde `../../../src/barrits/`.
-
-- **Fix: resilience/hashing/datetime stubs en example-bun reemplazados con implementaciones reales**: Los 3 stubs (`resilience`, `hashing`, `datetime`) estaban desactualizados — el adapter Bun sí exporta todas las funciones desde `barrits_lib/logic/` pero `src/barrits/logic/index.ts` y `src/barrits/api/flat.ts` no re-exportaban resilience/hashing/datetime. Fix: añadidos imports+exports en la cadena de barrels del SDK. Reemplazados los 3 `.mjs` stubs con implementaciones reales que importan desde `@zuccadev-labs/barrits`. `createOperationalShowcase` ahora es async (por `createResilienceExamples`). Actualizados `showcase.mjs` y `main.ts` con `await`.
-
+- **11 new public exports from the SDK barrel chain**: Resilience patterns (`retryWithBackoff`, `withTimeout`, `createCircuitBreaker`), hashing utilities (`sha256Hex`, `murmurHash3`, `deterministicStringify`), and datetime utilities (`toIsoString`, `fromIsoString`, `diffMs`, `addMs`, `toRelativeTime`). Previously internal-only or requiring deep imports, now available from `@zuccadev-labs/barrits`. Re-exported through `src/barrits/logic/index.ts` (named + convenience object) and `src/barrits/api/flat.ts` (flat public surface). Validated: `tsc --noEmit` 0 errors, all example tests pass.
+- **Bun runtime support**: Added `"bun"` to `BarritsRuntimeKind`. New subpath `@zuccadev-labs/barrits/bun` with Bun-specific adapter (`runBunCli`). New adapter at `adapters/bun/`.
 - **Skill ecosystem bridge — 6 SKILL.md narrativos para skills .opencode existentes**: Creados `docs/agents/skills/barrits-architecture-decision-records/`, `barrits-automation-showcase/`, `barrits-development-workflow/`, `barrits-emergency-release/`, `barrits-integration-points/`, `barrits-llm-protocols/` — cada uno con SKILL.md completo (YAML frontmatter, when-to-use, workflow, acceptance criteria, references). Los 6 `.opencode/skills/<name>/skill.jsonc` ahora tienen contraparte narrativa en `docs/agents/skills/`.
-
 - **Skill ecosystem bridge — 3 skill.jsonc para skills docs/agents existentes**: Creados `.opencode/skills/barrits-cross-runtime-validation/skill.jsonc`, `barrits-package-first-implementation/skill.jsonc`, `barrits-release-orchestration/skill.jsonc` con 3 prompts detallados cada uno. Los 3 `docs/agents/skills/<name>/SKILL.md` ahora tienen registro OpenCode en `.opencode/skills/`.
-
 - **4 Specialist Roles SKILL.md empresariales**: Creados `docs/agents/skills/barrits-platform-architect/SKILL.md` (trait governance, cross-package discovery, API surface evolution), `barrits-runtime-quality/SKILL.md` (adapter validation, CI matrix, performance baselines), `barrits-release-manager/SKILL.md` (release governance, prerelease/stable/hotfix workflows, publication verification), `barrits-incident-commander/SKILL.md` (incident levels P0-P3, triage workflow, rollback procedure, post-incident reports). Todos con frontmatter YAML, acceptance criteria, references.
-
-- **Tests automatizados para 6 ejemplos que carecían de cobertura**: Example-react (6 tests: barrits config, barrel exports, Vite plugin, dist build, auto-build-manifest, auth trait), example-vue (5 tests: config, Vite plugin, duplicar, dist build, manifest), example-solid (5 tests: config, barrel duplicar, Vite plugin, dist build, manifest), example-svelte (5 tests: config, duplicar, Vite plugin, dist build, manifest), example-tauri (6 tests: config, Vite config text, dist build, tauri.conf.json, Cargo.toml, main.ts imports por texto), bundlers (11 tests: config, math barrel, Vite/esbuild/Rollup/Webpack config + dist output, manifest). Todos los tests usan `tsx --test` (Node.js test runner con TypeScript loader), con `pathToFileURL` para compatibilidad Windows. Agregado script `"test"` en cada `package.json`. Validado: 38/38 tests pasan en los 6 ejemplos, 0 fallos.
-
-### Fixed
-- **`logic` namespace object incompleto**: El objeto `logic` en `src/barrits/logic/index.ts` (convenience namespace del SDK) no incluía las funciones de resilience (`retryWithBackoff`, `withTimeout`, `createCircuitBreaker`), hashing (`sha256Hex`, `murmurHash3`, `deterministicStringify`) ni datetime (`toIsoString`, `fromIsoString`, `diffMs`, `addMs`, `toRelativeTime`). Las named re-exports funcionaban correctamente, pero el acceso vía `logic.retryWithBackoff`, `logic.sha256Hex`, `logic.toIsoString` etc. devolvía `undefined`. Detectado durante auditoría forense post-commit. Añadidas las 11 funciones faltantes al objeto `logic`. Validado: `tsc --noEmit` 0 errores, tests 38/38 pasan.
+- **Tests automatizados para 6 ejemplos que carecían de cobertura**: Example-react (6 tests), example-vue (5 tests), example-solid (5 tests), example-svelte (5 tests), example-tauri (6 tests), bundlers (11 tests). Todos los tests usan `tsx --test` con `pathToFileURL` para compatibilidad Windows. Agregado script `"test"` en cada `package.json`. Validado: 38/38 tests pasan en los 6 ejemplos, 0 fallos.
+- **Tests para example-deno-baas**: 11 tests Deno cubriendo traits contracts, barrel re-exports, path builders, OpenAPI schema, IoC container, `defineBarritsPackage`, y ejecución de `main.ts`.
+- **Migration guide documentation**: Added `docs/users/EN/packages/ts_js/11-migration-0.1-to-0.2.md` and `docs/users/ES/packages/ts_js/11_migracion-0.1-a-0.2.md` documenting all breaking changes, new exports, and upgrade steps.
 
 ### Changed
+- **Version bump `0.1.9` → `0.2.0`**: Reflects expanded public API surface (11 new exports), Bun runtime support, and declaration output restructuring. SemVer minor bump justified by additive-only changes with no removed exports.
+- **`declarationDir` in tsconfig.json set to `dist/`**: Type declarations now generated in `dist/` instead of adjacent to source. 151 stale `.d.ts` files removed from git tracking. `**/src/**/*.d.ts` and `**/adapters/**/*.d.ts` gitignored. Aligns compiler output with package.json export paths.
 - **docs/agents/README.md actualizado**: Inventory refleja que los 6 skills "solo .opencode" ahora tienen SKILL.md, los 3 "solo docs/agents" ahora tienen skill.jsonc, y los 4 Specialist Roles pasaron de 🟡 Planned a ✅ Implementado.
+
+### Fixed
+- **`logic` namespace object incompleto**: El objeto `logic` (convenience namespace) no incluía las 11 funciones de resilience, hashing ni datetime. Las named re-exports funcionaban correctamente, pero el acceso vía `logic.retryWithBackoff`, `logic.sha256Hex`, `logic.toIsoString` etc. devolvía `undefined`. Detectado durante auditoría forense. Añadidas las 11 funciones faltantes.
+- **Resilience/hashing/datetime stubs en example-bun reemplazados con implementaciones reales**: Los 3 stubs estaban desactualizados. Reemplazados con imports reales desde `@zuccadev-labs/barrits` vía fix de export chain. `createOperationalShowcase` ahora es async.
+- **Types missing for `@zuccadev-labs/barrits/bun/cli`**: Added `"types"` entry in package.json exports for the bun/cli subpath. All 13 `"types"` paths now resolve to real files in `dist/`.
 
 ## [0.1.9] - 2026-07-06
 
