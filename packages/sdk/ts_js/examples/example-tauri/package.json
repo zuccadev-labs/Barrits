@@ -6,7 +6,8 @@
     "dev": "node ../../../../../node_modules/vite/bin/vite.js",
     "build": "node ../../../../../node_modules/vite/bin/vite.js build",
     "tauri:dev": "node ../../../../../node_modules/@tauri-apps/cli/tauri.js dev",
-    "tauri:build": "node ../../../../../node_modules/@tauri-apps/cli/tauri.js build"
+    "tauri:build": "node ../../../../../node_modules/@tauri-apps/cli/tauri.js build",
+    "test": "node ../../../../../node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.11.0",

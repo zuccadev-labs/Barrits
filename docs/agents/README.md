@@ -14,8 +14,8 @@ This folder documents the complete agent skill ecosystem for Barrits. Skills are
 | `testing-patterns` | `barrits-testing-patterns` | Test conventions, property-based tests, mutation testing | ✅ Implementado |
 | `security-audit` | `barrits-security-audit` | Threat model, vulnerability scanning, supply chain audit | ✅ Implementado |
 | `onboarding` | `barrits-onboarding` | Developer setup, project structure, first contribution | ✅ Implementado |
-| `emergency-release` | — | Hotfix process, security patch, rollback | ✅ Implementado (solo .opencode) |
-| `development-workflow` | — | Commit conventions, branch strategy, PR process | ✅ Implementado (solo .opencode) |
+| `emergency-release` | `barrits-emergency-release` | Hotfix process, security patch, rollback | ✅ Implementado |
+| `development-workflow` | `barrits-development-workflow` | Commit conventions, branch strategy, PR process | ✅ Implementado |
 
 ### Tier 2 — Maintainer Workflows (Planned)
 
@@ -30,23 +30,23 @@ This folder documents the complete agent skill ecosystem for Barrits. Skills are
 
 | OpenCode Skill | Narrative Doc | Domain | Status |
 |:---|---|:---|---|
-| `integration-points` | — | Bundler plugin configuration (Vite, esbuild, Rollup, Webpack) | ✅ Implementado (solo .opencode) |
-| `llm-protocols` | — | AI agent protocols, documentation standards, coding conventions | ✅ Implementado (solo .opencode) |
-| `architecture-decision-records` | — | ADR creation, template, lifecycle management | ✅ Implementado (solo .opencode) |
-| `automation-showcase` | — | Live demonstrations of SDK features via CLI | ✅ Implementado (solo .opencode) |
+| `integration-points` | `barrits-integration-points` | Bundler plugin configuration (Vite, esbuild, Rollup, Webpack) | ✅ Implementado |
+| `llm-protocols` | `barrits-llm-protocols` | AI agent protocols, documentation standards, coding conventions | ✅ Implementado |
+| `architecture-decision-records` | `barrits-architecture-decision-records` | ADR creation, template, lifecycle management | ✅ Implementado |
+| `automation-showcase` | `barrits-automation-showcase` | Live demonstrations of SDK features via CLI | ✅ Implementado |
 | `barrits-package-consumer-onboarding` | — | Consumer-side integration: import guide, API surface, best practices | ✅ Implementado |
-| `barrits-cross-runtime-validation` | — | Cross-runtime validation strategy (Node.js, Deno, Bun) | ✅ Implementado (solo docs/agents) |
-| `barrits-package-first-implementation` | — | Implementation using package-first APIs, manifests, adapters, traits | ✅ Implementado (solo docs/agents) |
-| `barrits-release-orchestration` | — | Release governance, versioning, npm + JSR publication | ✅ Implementado (solo docs/agents) |
+| `barrits-cross-runtime-validation` | `barrits-cross-runtime-validation` | Cross-runtime validation strategy (Node.js, Deno, Bun) | ✅ Implementado |
+| `barrits-package-first-implementation` | `barrits-package-first-implementation` | Implementation using package-first APIs, manifests, adapters, traits | ✅ Implementado |
+| `barrits-release-orchestration` | `barrits-release-orchestration` | Release governance, versioning, npm + JSR publication | ✅ Implementado |
 
 ### Specialist Agent Roles (Enterprise)
 
 | Role | Purpose | Status |
 |:---|---|:---:|
-| `barrits-platform-architect` | Architectural oversight: trait design, cross-package discovery, monorepo layout | 🟡 Planned |
-| `barrits-runtime-quality` | Cross-runtime quality: adapter validation, CI matrix, example certification | 🟡 Planned |
-| `barrits-release-manager` | Release orchestration: version alignment, changelog governance, registry publication | 🟡 Planned |
-| `barrits-incident-commander` | Incident response: troubleshooting, root-cause analysis, rollback leadership | 🟡 Planned |
+| `barrits-platform-architect` | Architectural oversight: trait design, cross-package discovery, monorepo layout | ✅ Implementado |
+| `barrits-runtime-quality` | Cross-runtime quality: adapter validation, CI matrix, example certification | ✅ Implementado |
+| `barrits-release-manager` | Release orchestration: version alignment, changelog governance, registry publication | ✅ Implementado |
+| `barrits-incident-commander` | Incident response: troubleshooting, root-cause analysis, rollback leadership | ✅ Implementado |
 
 ## Format Reference
 

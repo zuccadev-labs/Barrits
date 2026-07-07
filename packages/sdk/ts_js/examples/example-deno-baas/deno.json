@@ -6,6 +6,7 @@
     "dev": "deno run --watch --unstable-kv -A main.ts",
     "build": "deno run -A ../../adapters/deno/cli.ts build . -- deno run -A main.ts",
     "inspect": "deno run -A ../../adapters/deno/cli.ts info .",
+    "test": "deno test -A --no-check",
     "demo:openapi": "deno run -A main.ts"
   },
   "imports": {

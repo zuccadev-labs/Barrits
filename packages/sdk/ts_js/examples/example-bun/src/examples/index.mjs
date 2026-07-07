@@ -9,7 +9,7 @@ import { createResilienceExamples } from "./resilience/real-resilience-cases.mjs
 import { createHashingExamples } from "./hashing/real-hashing-cases.mjs";
 import { createDatetimeExamples } from "./datetime/real-datetime-cases.mjs";
 
-export const createOperationalShowcase = () => {
+export const createOperationalShowcase = async () => {
   const timeSeriesExamples = createTimeSeriesExamples();
 
   return {
@@ -21,7 +21,7 @@ export const createOperationalShowcase = () => {
     sort: createSortExamples(),
     timeseries: timeSeriesExamples.timeseries,
     window: createWindowExamples(),
-    resilience: createResilienceExamples(),
+    resilience: await createResilienceExamples(),
     hashing: createHashingExamples(),
     datetime: createDatetimeExamples(),
   };

@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 Todos los cambios relevantes de este repositorio se documentan aquí.
 
+## [Unreleased]
+
+### Added
+- **Tests para example-deno-baas**: Creado `tests/example-deno-baas.test.ts` con 11 tests Deno cubriendo: 4 de contratos de traits (runtimeTrait, databaseServiceTrait, httpEndpointTrait — shape, initialize, tags), 1 de barrel re-exports, 2 de path builders (`buildBaaSPath`, `buildApiPath`), 1 de OpenAPI schema generation, 3 de IoC container (registro/resolución simple, dependencias en cadena, error de dependencia no resuelta), 1 de `defineBarritsPackage` y 1 de ejecución completa de `main.ts`. Agregado task `"test": "deno test -A --no-check"` en `deno.json`. Validado: estructura de traits planos (sin `createTraitDescriptor`), imports desde `../../../src/barrits/`.
+
+- **Fix: resilience/hashing/datetime stubs en example-bun reemplazados con implementaciones reales**: Los 3 stubs (`resilience`, `hashing`, `datetime`) estaban desactualizados — el adapter Bun sí exporta todas las funciones desde `barrits_lib/logic/` pero `src/barrits/logic/index.ts` y `src/barrits/api/flat.ts` no re-exportaban resilience/hashing/datetime. Fix: añadidos imports+exports en la cadena de barrels del SDK. Reemplazados los 3 `.mjs` stubs con implementaciones reales que importan desde `@zuccadev-labs/barrits`. `createOperationalShowcase` ahora es async (por `createResilienceExamples`). Actualizados `showcase.mjs` y `main.ts` con `await`.
+
+- **Skill ecosystem bridge — 6 SKILL.md narrativos para skills .opencode existentes**: Creados `docs/agents/skills/barrits-architecture-decision-records/`, `barrits-automation-showcase/`, `barrits-development-workflow/`, `barrits-emergency-release/`, `barrits-integration-points/`, `barrits-llm-protocols/` — cada uno con SKILL.md completo (YAML frontmatter, when-to-use, workflow, acceptance criteria, references). Los 6 `.opencode/skills/<name>/skill.jsonc` ahora tienen contraparte narrativa en `docs/agents/skills/`.
+
+- **Skill ecosystem bridge — 3 skill.jsonc para skills docs/agents existentes**: Creados `.opencode/skills/barrits-cross-runtime-validation/skill.jsonc`, `barrits-package-first-implementation/skill.jsonc`, `barrits-release-orchestration/skill.jsonc` con 3 prompts detallados cada uno. Los 3 `docs/agents/skills/<name>/SKILL.md` ahora tienen registro OpenCode en `.opencode/skills/`.
+
+- **4 Specialist Roles SKILL.md empresariales**: Creados `docs/agents/skills/barrits-platform-architect/SKILL.md` (trait governance, cross-package discovery, API surface evolution), `barrits-runtime-quality/SKILL.md` (adapter validation, CI matrix, performance baselines), `barrits-release-manager/SKILL.md` (release governance, prerelease/stable/hotfix workflows, publication verification), `barrits-incident-commander/SKILL.md` (incident levels P0-P3, triage workflow, rollback procedure, post-incident reports). Todos con frontmatter YAML, acceptance criteria, references.
+
+- **Tests automatizados para 6 ejemplos que carecían de cobertura**: Example-react (6 tests: barrits config, barrel exports, Vite plugin, dist build, auto-build-manifest, auth trait), example-vue (5 tests: config, Vite plugin, duplicar, dist build, manifest), example-solid (5 tests: config, barrel duplicar, Vite plugin, dist build, manifest), example-svelte (5 tests: config, duplicar, Vite plugin, dist build, manifest), example-tauri (6 tests: config, Vite config text, dist build, tauri.conf.json, Cargo.toml, main.ts imports por texto), bundlers (11 tests: config, math barrel, Vite/esbuild/Rollup/Webpack config + dist output, manifest). Todos los tests usan `tsx --test` (Node.js test runner con TypeScript loader), con `pathToFileURL` para compatibilidad Windows. Agregado script `"test"` en cada `package.json`. Validado: 38/38 tests pasan en los 6 ejemplos, 0 fallos.
+
+### Changed
+- **docs/agents/README.md actualizado**: Inventory refleja que los 6 skills "solo .opencode" ahora tienen SKILL.md, los 3 "solo docs/agents" ahora tienen skill.jsonc, y los 4 Specialist Roles pasaron de 🟡 Planned a ✅ Implementado.
+
 ## [0.1.9] - 2026-07-06
 
 ### Added

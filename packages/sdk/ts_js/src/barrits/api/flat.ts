@@ -96,6 +96,20 @@ export {
   upperBound,
   windowAlgorithms,
   windowDelta,
+  // Resilience patterns
+  retryWithBackoff,
+  withTimeout,
+  createCircuitBreaker,
+  // Hashing utilities
+  sha256Hex,
+  murmurHash3,
+  deterministicStringify,
+  // Datetime utilities
+  toIsoString,
+  fromIsoString,
+  diffMs,
+  addMs,
+  toRelativeTime,
 } from "../logic";
 
 /**

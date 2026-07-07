@@ -55,6 +55,20 @@ import {
   arithmetic,
   restar,
   sumar,
+  // Resilience patterns
+  retryWithBackoff,
+  withTimeout,
+  createCircuitBreaker,
+  // Hashing utilities
+  sha256Hex,
+  murmurHash3,
+  deterministicStringify,
+  // Datetime utilities
+  toIsoString,
+  fromIsoString,
+  diffMs,
+  addMs,
+  toRelativeTime,
 } from "../../barrits_lib/logic";
 
 export { arithmetic, restar, sumar };
@@ -112,6 +126,20 @@ export {
   topK,
   uniqueBy,
   upperBound,
+  // Resilience patterns
+  retryWithBackoff,
+  withTimeout,
+  createCircuitBreaker,
+  // Hashing utilities
+  sha256Hex,
+  murmurHash3,
+  deterministicStringify,
+  // Datetime utilities
+  toIsoString,
+  fromIsoString,
+  diffMs,
+  addMs,
+  toRelativeTime,
 };
 
 /**

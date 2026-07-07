@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "node ../../../../../node_modules/vite/bin/vite.js",
-    "build": "node ../../../../../node_modules/vite/bin/vite.js build"
+    "build": "node ../../../../../node_modules/vite/bin/vite.js build",
+    "test": "node ../../../../../node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts"
   },
   "dependencies": {
     "@zuccadev-labs/barrits": "file:../..",

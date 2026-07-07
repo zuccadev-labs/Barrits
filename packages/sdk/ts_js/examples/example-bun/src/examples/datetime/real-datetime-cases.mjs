@@ -1,11 +1,19 @@
-// Note: toIsoString and toRelativeTime are not yet exported from the main
-// SDK barrel. These examples serve as infrastructure stubs.
-// Once the SDK exports these, switch the import to:
-//   import { toIsoString, toRelativeTime } from "@zuccadev-labs/barrits";
+import { toIsoString, toRelativeTime } from "@zuccadev-labs/barrits";
+
+/**
+ * [EN] Datetime manipulation examples for Bun runtime.
+ * Demonstrates ISO 8601 formatting and locale-aware relative time.
+ * [ES] Ejemplos de manipulación de fechas para runtime Bun.
+ */
 
 export const createDatetimeExamples = () => {
+  const now = new Date();
+  const iso = toIsoString(now);
+  const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000);
+  const relative = toRelativeTime(twoHoursAgo);
+
   return {
-    toIsoString: "toIsoString — stub (SDK export pending)",
-    toRelativeTime: "toRelativeTime — stub (SDK export pending)",
+    toIsoString: iso,
+    toRelativeTime: relative,
   };
 };

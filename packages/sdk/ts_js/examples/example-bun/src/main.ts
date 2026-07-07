@@ -7,7 +7,7 @@ export const boot = async () => {
     console.log("[Bun] Root api instance successfully instantiated dynamically under 'corpAgent'.");
   }
 
-  const showcase = createOperationalShowcase();
+  const showcase = await createOperationalShowcase();
   const keys = Object.keys(showcase);
   console.log(`[Bun] Showcase loaded with ${keys.length} families: ${keys.join(", ")}`);
   return showcase;

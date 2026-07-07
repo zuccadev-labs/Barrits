@@ -1,12 +1,18 @@
-// Note: sha256Hex, deterministicStringify, and murmurHash3 are not yet
-// exported from the main SDK barrel. These examples serve as infrastructure stubs.
-// Once the SDK exports these, switch the import to:
-//   import { sha256Hex, deterministicStringify, murmurHash3 } from "@zuccadev-labs/barrits";
+import { sha256Hex, deterministicStringify, murmurHash3 } from "@zuccadev-labs/barrits";
+
+/**
+ * [EN] Hashing and integrity examples for Bun runtime.
+ * Demonstrates SHA-256, MurmurHash3, and deterministic JSON stringification.
+ * [ES] Ejemplos de hashing e integridad para runtime Bun.
+ */
 
 export const createHashingExamples = () => {
+  const payload = { b: 2, a: 1, c: [3, 1, 2] };
+  const deterministic = deterministicStringify(payload);
+
   return {
-    sha256Hex: "sha256Hex — stub (SDK export pending)",
-    deterministicStringify: "deterministicStringify — stub (SDK export pending)",
-    murmurHash3: "murmurHash3 — stub (SDK export pending)",
+    sha256Hex: sha256Hex("hello, barrits on Bun"),
+    deterministicStringify: deterministic,
+    murmurHash3: murmurHash3(deterministic),
   };
 };
