@@ -1,16 +1,31 @@
 {
   "name": "automation-showcase",
-  "description": "Automation showcase: demonstrate Barrits SDK features with live examples.",
+  "description": "Live demonstrations of Barrits SDK features: discovery pipeline, import generation, manifest creation, trait composition, and cross-runtime CLI usage.",
   "prompts": [
     {
       "name": "showcase-discovery",
-      "description": "Demonstrate the discovery and inspection pipeline.",
-      "prompt": "Run: cd packages/sdk/ts_js && npx tsx adapters/node/cli.ts info to show integration graph. Use --json flag for structured output. Explain domains, exports, trait descriptors, and diagnostics."
+      "description": "Demonstrate the discovery and inspection pipeline with domain/export/file-kind/visibility filters.",
+      "prompt": "Run: cd packages/sdk/ts_js && npx tsx adapters/node/cli.ts info to show integration graph. Use --json flag for structured output. Explain domains, exports, trait descriptors, and diagnostics. Try filters: --domain <name>, --export <name>, --kind function|interface|type, --visibility public|internal."
     },
     {
       "name": "showcase-imports",
-      "description": "Demonstrate import action generation.",
-      "prompt": "Run: cd packages/sdk/ts_js && npx tsx adapters/node/cli.ts imports to show generated import statements and their kinds (named-import, namespace-access, alias-namespace-access)."
+      "description": "Demonstrate import action generation with all import kinds.",
+      "prompt": "Run: cd packages/sdk/ts_js && npx tsx adapters/node/cli.ts imports to show generated import statements and their kinds (named-import, namespace-access, alias-namespace-access). Explain how the AST crawler discovers import patterns."
+    },
+    {
+      "name": "showcase-manifest",
+      "description": "Generate and inspect a build manifest with cryptographic integrity checks.",
+      "prompt": "Run: cd packages/sdk/ts_js && npx tsx adapters/node/cli.ts build. Then read the generated .barrits/manifest.json. Explain: checksum (SHA-256), generatedAt timestamp, projected imports, and how deterministicStringify ensures byte-for-byte reproducibility across OS."
+    },
+    {
+      "name": "showcase-traits",
+      "description": "Walk through trait composition using existing example traits.",
+      "prompt": "Navigate to packages/sdk/ts_js/examples/example-nodejs/ and inspect barrits/traits/*.ts. Show: createTraitDescriptor, @barrits-provides/@barrits-consumes JSDoc annotations, composePipeline, and how mergeTraits resolves conflicts."
+    },
+    {
+      "name": "showcase-cross-runtime",
+      "description": "Compare CLI output across Node.js, Deno, and Bun.",
+      "prompt": "Run the same command across runtimes: cd packages/sdk/ts_js && npx tsx adapters/node/cli.ts info vs cd packages/sdk/ts_js/examples/example-deno && deno task barrits:info vs cd packages/sdk/ts_js/examples/example-bun && bun run src/main.ts. Compare output structure and performance."
     }
   ]
 }

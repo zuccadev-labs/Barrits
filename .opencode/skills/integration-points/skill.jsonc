@@ -1,16 +1,21 @@
 {
   "name": "integration-points",
-  "description": "Integration with build tools: Vite, esbuild, Rollup, Webpack, and bundler plugins.",
+  "description": "Integration with build tools: Vite, esbuild, Rollup, Webpack bundler plugins and package-first configuration. Use when configuring bundler plugins or setting up package-first automation in a consumer project.",
   "prompts": [
     {
       "name": "add-bundler-plugin",
-      "description": "Wire up a bundler plugin to a consumer project.",
-      "prompt": "Import the appropriate plugin from @zuccadev-labs/barrits/<bundler> (vite, esbuild, rollup, webpack). Configure with automationDirectory and manifestPath options. See packages/sdk/ts_js/examples/ for reference configurations."
+      "description": "Wire up a bundler plugin (Vite/esbuild/Rollup/Webpack) in a consumer project with full configuration.",
+      "prompt": "Import the appropriate plugin from @zuccadev-labs/barrits/<bundler> (vite, esbuild, rollup, webpack). Configure with: { automationDirectory: '.barrits', manifestPath: '.barrits/manifest.json' }. Vite: add to plugins array in vite.config.ts. esbuild: add to plugins in build config. Rollup: add to plugins array. Webpack: add to plugins as new BarritsWebpackPlugin({...}). See packages/sdk/ts_js/examples/bundlers/ for reference configurations. After setup, run the build and verify the plugin outputs are generated in automationDirectory."
     },
     {
       "name": "configure-package-first",
-      "description": "Configure package-first automation mode.",
-      "prompt": "Add a barrits.config.mjs file at project root. Export defineBarritsConfig({ autoManifest: true, automationDirectory: '.cache/barrits' }). The plugins will auto-discover and generate manifests."
+      "description": "Set up package-first automation mode with barrits.config.mjs for auto-discovery.",
+      "prompt": "Create barrits.config.mjs at project root: import { defineBarritsConfig } from '@zuccadev-labs/barrits'; export default defineBarritsConfig({ runtime: '<node|deno|bun|react|vue|solid|svelte>', autoManifest: true, automationDirectory: '.cache/barrits', discoveryRoots: ['src'] }). Then add @barrits-trait/@barrits-provides JSDoc annotations to your source files. Run 'npx barrits detect' then 'npx barrits build' to generate artifacts. The plugins will auto-discover and serve generated manifests."
+    },
+    {
+      "name": "verify-plugin-output",
+      "description": "Verify that bundler plugin integration produces correct automation artifacts.",
+      "prompt": "After build: 1) Check .barrits/ or .cache/barrits/ directory exists. 2) Verify manifest.json has valid JSON with checksum field. 3) Check any virtual imports (virtual:barrits or similar) resolve correctly. 4) Confirm no filesystem errors in build output. 5) For Vite specifically, check that HMR works with the plugin enabled."
     }
   ]
 }

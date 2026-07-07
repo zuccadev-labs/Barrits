@@ -1,16 +1,26 @@
 {
   "name": "testing-patterns",
-  "description": "Testing conventions and test-writing patterns for the Barrits SDK.",
+  "description": "Testing conventions, test-writing patterns, and quality gates for the Barrits SDK. Covers node:test runner, property-based testing with fast-check, mutation testing with Stryker, and integration tests across runtimes.",
   "prompts": [
     {
       "name": "run-tests",
-      "description": "Run the SDK test suite via tsx --test with the glob pattern tests/**/*.test.ts",
-      "command": "cd packages/sdk/ts_js && npm test"
+      "description": "Run the full SDK test suite or a specific test file with the node:test runner.",
+      "prompt": "Full suite: cd packages/sdk/ts_js && npm test (935+ tests via tsx --test, glob tests/**/*.test.ts). Single file: node ../../node_modules/tsx/dist/cli.mjs --test tests/<module>.test.ts. Coverage: npm run test:coverage. Mutation: npx stryker run from root. For slow CI environments, use --test-concurrency=1 to avoid async race conditions in integration tests."
     },
     {
-      "name": "write-test",
-      "description": "Create a new test file following existing patterns: use node:test (assert/strict, describe/it), import the module under test from source, use temporary directories under os.tmpdir() for integration tests.",
-      "prompt": "Write tests for <MODULE_PATH> following the existing pattern in tests/. Use node:test runner, not jest or vitest. Import from ../../src/barrits/sdk/<module>. For integration tests, use mkdtempSync from node:fs and os.tmpdir()."
+      "name": "write-unit-test",
+      "description": "Create a new unit test file following existing patterns with node:test runner.",
+      "prompt": "Create tests/<module>.test.ts. Use: import { describe, it } from 'node:test'; import * as assert from 'node:assert/strict'; import { <function> } from '../src/barrits/sdk/<module>'. Test structure: pure function tests (input → output), edge cases (empty/null/undefined inputs), invariants (idempotency, determinism). For property-based tests: import fc from 'fast-check' and use fc.assert(fc.property(...)). Name tests with describe('<Module>') / it('<should do something>'). See tests/ for reference patterns."
+    },
+    {
+      "name": "write-integration-test",
+      "description": "Create an integration test that exercises CLI commands or filesystem operations.",
+      "prompt": "Use temporary directories: import { mkdtemp, rm } from 'node:fs/promises'; import { tmpdir } from 'node:os'; import { join } from 'node:path'. Create temp dir with mkdtemp(join(tmpdir(), 'barrits-test-')). Spawn real CLI processes: import { spawn } from 'node:child_process'. Assert on stdout, exit codes, and generated artifacts. Clean up with rm(tmpDir, { recursive: true, force: true }) in afterEach or after. Reference tests/cli/*.test.ts for patterns."
+    },
+    {
+      "name": "check-mutation-coverage",
+      "description": "Run mutation testing with Stryker and interpret the results.",
+      "prompt": "Run: npx stryker run from root (or cd packages/sdk/ts_js && npx stryker run). Current baseline: ~69.51% mutation score. Break threshold: 50%, High threshold: 80%. Review stryker.config.json for configuration. If score drops below 50%, identify survived mutants and add tests. Focus on pure logic functions (algorithms, validation, hashing, datetime) for highest mutation ROI."
     }
   ]
 }

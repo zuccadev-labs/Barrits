@@ -1,16 +1,26 @@
 {
   "name": "llm-protocols",
-  "description": "LLM agent protocols, documentation standards, and AI-friendly coding practices for the Barrits project.",
+  "description": "LLM agent protocols, documentation standards, AI-friendly coding practices, and JSDoc conventions for the Barrits project. Use when writing code for LLM consumption, applying JSDoc standards, or setting up agent context.",
   "prompts": [
     {
       "name": "read-project-context",
-      "description": "Load full project context for LLM-assisted development.",
-      "prompt": "Read llms.txt and llms-full.txt from project root for comprehensive context: architecture, key files, API surface, and conventions. For deep module context, read the @module JSDoc and index.ts barrel exports."
+      "description": "Load the canonical repository context for LLM-assisted development.",
+      "prompt": "Read REPOSITORY_CONTEXT.md from project root for comprehensive context: architecture, key files, API surface, and conventions. For deep module context, read the @module JSDoc and index.ts barrel exports. Check AGENTS.md for operational rules and Phase status. Use docs/agents/skills/<skill-name>/SKILL.md for workflow-specific deep dives."
     },
     {
       "name": "jsdoc-standard",
-      "description": "Apply the project's JSDoc standard: bilingual [EN]/[ES] with @param, @returns where applicable.",
-      "prompt": "Follow the existing JSDoc pattern: /** @module */ at file top with [EN] and [ES] description. For exported functions, include [EN]/[ES] description. Use @param and @returns for complex signatures. Keep comments concise and factual."
+      "description": "Apply the project's bilingual JSDoc standard with [EN]/[ES] descriptions, @param, @returns, and @barrits-* annotations.",
+      "prompt": "Follow the existing JSDoc pattern: /** @module */ at file top with [EN] and [ES] description. For exported functions, include [EN]/[ES] description above @param and @returns. Use @param <name> - [EN] description. [ES] description. Use @returns [EN]/[ES] for non-void returns. For trait descriptors, add @barrits-trait, @barrits-provides <name>, and optionally @barrits-consumes <name>. Order: [EN] first, then [ES]. Keep under 120 chars per line. Reference docs/agents/skills/barrits-jsdoc-authoring/ for detailed conventions."
+    },
+    {
+      "name": "code-with-llms",
+      "description": "Guidelines for writing code that AI agents can effectively understand and modify.",
+      "prompt": "1) Use explicit named exports, no default exports. 2) Keep functions small and single-responsibility. 3) Add JSDoc comments on all public API surfaces. 4) Use descriptive variable names (avoid single-letter except in math contexts). 5) Prefer pure functions over side effects. 6) Add type annotations — TypeScript inference is good but explicit types help LLM reasoning. 7) Keep barrel files (index.ts) flat and explicit. 8) Avoid magic numbers and strings — use constants."
+    },
+    {
+      "name": "skill-format-reference",
+      "description": "Reference for creating or updating .opencode/skills/ and docs/agents/skills/ files.",
+      "prompt": "OpenCode skills have two layers: 1) .opencode/skills/<name>/skill.jsonc — JSONC with name, description, and prompts array. Each prompt has name, description, and prompt (detailed instruction). 2) docs/agents/skills/<name>/SKILL.md — YAML frontmatter (name, description) + markdown narrative with sections: Context, Workflow, Examples, Acceptance Criteria, References. The .opencode entry should reference its narrative SKILL.md counterpart in prompt text. See docs/agents/README.md for full inventory."
     }
   ]
 }

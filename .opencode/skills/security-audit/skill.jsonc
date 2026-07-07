@@ -1,21 +1,26 @@
 {
   "name": "security-audit",
-  "description": "Security audit workflow for identifying and fixing vulnerabilities in the Barrits codebase.",
+  "description": "Security audit workflow for identifying and fixing vulnerabilities in the Barrits codebase. Covers path traversal, injection attacks, permission boundaries, supply chain risks, and OIDC credential security.",
   "prompts": [
     {
       "name": "audit-path-traversal",
-      "description": "Search for unvalidated path resolution patterns across adapters and SDK modules.",
-      "prompt": "Search for path traversal vulnerabilities: look for path.resolve, joinPath, resolveDenoPath, normalizePath patterns that handle user-supplied path segments. Verify .. segments are resolved and absolute paths are rejected."
+      "description": "Search for unvalidated path resolution patterns across adapters and SDK modules that could allow directory traversal.",
+      "prompt": "Search for path traversal vulnerabilities: grep for path.resolve, joinPath, resolveDenoPath, normalizePath patterns that handle user-supplied path segments. Verify: 1) '..' segments are resolved and rejected if they escape the base directory. 2) Absolute paths are rejected in discovery context unless explicitly expected. 3) adapter.readTextFile is used instead of raw readFile. 4) normalizePath + prefix check is applied to resolved paths. Key files: adapters/node/cli.ts, adapters/deno/cli.ts, src/barrits/sdk/discovery.ts. Reference docs/agents/skills/barrits-security-audit/ for threat model."
     },
     {
       "name": "audit-dynamic-exec",
-      "description": "Search for Function(), eval(), or new Function() constructor usages.",
-      "prompt": "Grep for Function(, eval(, new Function across packages/sdk/ts_js/src. Verify all dynamic imports use direct import() and not Function-wrapped wrappers."
+      "description": "Search for arbitrary code execution vectors: Function(), eval(), dynamic import() without allowlist.",
+      "prompt": "Grep for 'Function(', 'eval(', 'new Function' across packages/sdk/ts_js/src. Verify: 1) All dynamic import() uses an allowlist of known specifiers. 2) No Function-wrapped wrapper around import(). 3) spawn uses shell: false (PowerShell default). Key files: adapters/node/cli.ts, src/barrits/sdk/adapters.ts. For child process: verify CHILD_TIMEOUT_MS env var (default 600000ms), SIGTERM on timeout, no direct SIGKILL."
     },
     {
       "name": "audit-input-validation",
-      "description": "Review all CLI argument and JSON.parse call sites for validation guards.",
-      "prompt": "Check cli-parser.ts for unvalidated --target/--snapshot/--domain/--export values. Check plugins/shared.ts for JSON.parse without size limit. Verify all external inputs are validated before processing."
+      "description": "Review all CLI argument, JSON.parse, and configuration file call sites for input validation guards.",
+      "prompt": "Check: 1) cli-parser.ts for unvalidated --target, --snapshot, --domain, --export values — they should be validated against known values or patterns. 2) plugins/shared.ts for JSON.parse without size limit — use parseJsonSource with size limit. 3) All config file reads (barrits.config.ts, package.json) validate the structure before use. 4) Any user-supplied project name or identifier is sanitized. Supply chain: verify npm ci in CI (not npm install), package-lock.json committed, dependabot.yml configured for weekly updates."
+    },
+    {
+      "name": "audit-oidc-credentials",
+      "description": "Verify Trusted Publishing (OIDC) is enforced and no static tokens leak in CI/CD.",
+      "prompt": "Check .github/workflows/ for: 1) npm publish uses --provenance flag (OIDC). 2) JSR publish uses trusted publishing, not JSR_TOKEN secret. 3) No NPM_TOKEN or JSR_TOKEN stored as plain repository secrets — they should be environment-level if absolutely needed. 4) Release workflow uses id-token: write permission. 5) No hardcoded credentials in workflow YAML files."
     }
   ]
 }
