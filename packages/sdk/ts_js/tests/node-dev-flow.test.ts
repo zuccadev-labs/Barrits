@@ -2,15 +2,16 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { createRequire } from "node:module";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { createAutomationProjectFixture, writeProjectFile } from "./helpers/fixtures";
 import { runCommand } from "./helpers/process";
 
+const _require = createRequire(import.meta.url);
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const workspaceRoot = resolve(repositoryRoot, "..", "..", "..");
-const tsxCliPath = join(workspaceRoot, "node_modules", "tsx", "dist", "cli.mjs");
+const tsxCliPath = _require.resolve("tsx/cli");
 const nodeAdapterPath = pathToFileURL(join(repositoryRoot, "dist", "adapters", "node", "index.js")).href;
 const nodeCliPath = join(repositoryRoot, "adapters", "node", "cli.ts");
 

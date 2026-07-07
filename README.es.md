@@ -115,6 +115,22 @@ flowchart LR
   F --> I
 ```
 
+```mermaid
+flowchart TD
+  R[Monorepo barrits] --> S[packages/sdk/ts_js]
+  S --> C1[src]
+  S --> C2[adapters]
+  S --> C3[tests]
+  S --> C4[benchmarks]
+  S --> C5[examples]
+  R --> D[docs]
+  D --> D1[users]
+  D --> D2[development]
+  D --> D3[investigations]
+  D --> D4[agents]
+  D --> D5[package]
+```
+
 ---
 
 ## Principios de Diseño
@@ -171,7 +187,7 @@ Para política de disclosure y detalles de endurecimiento: [SECURITY.md](SECURIT
 │   ├── src/                   # Core portable (orquestación, traits, lógica)
 │   ├── adapters/              # Adapters runtime Node.js y Deno
 │   ├── examples/              # Ejemplos de integración por entorno
-│   ├── tests/                 # Suite de tests completa (65 tests)
+│       ├── tests/                 # Suite de tests completa (946+ tests)
 │   └── benchmarks/            # Benchmarks de rendimiento
 └── docs/                      # Documentación por propósito
     ├── users/                 # Instalación, uso, referencia de API
