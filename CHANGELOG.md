@@ -18,6 +18,9 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 
 - **Tests automatizados para 6 ejemplos que carecían de cobertura**: Example-react (6 tests: barrits config, barrel exports, Vite plugin, dist build, auto-build-manifest, auth trait), example-vue (5 tests: config, Vite plugin, duplicar, dist build, manifest), example-solid (5 tests: config, barrel duplicar, Vite plugin, dist build, manifest), example-svelte (5 tests: config, duplicar, Vite plugin, dist build, manifest), example-tauri (6 tests: config, Vite config text, dist build, tauri.conf.json, Cargo.toml, main.ts imports por texto), bundlers (11 tests: config, math barrel, Vite/esbuild/Rollup/Webpack config + dist output, manifest). Todos los tests usan `tsx --test` (Node.js test runner con TypeScript loader), con `pathToFileURL` para compatibilidad Windows. Agregado script `"test"` en cada `package.json`. Validado: 38/38 tests pasan en los 6 ejemplos, 0 fallos.
 
+### Fixed
+- **`logic` namespace object incompleto**: El objeto `logic` en `src/barrits/logic/index.ts` (convenience namespace del SDK) no incluía las funciones de resilience (`retryWithBackoff`, `withTimeout`, `createCircuitBreaker`), hashing (`sha256Hex`, `murmurHash3`, `deterministicStringify`) ni datetime (`toIsoString`, `fromIsoString`, `diffMs`, `addMs`, `toRelativeTime`). Las named re-exports funcionaban correctamente, pero el acceso vía `logic.retryWithBackoff`, `logic.sha256Hex`, `logic.toIsoString` etc. devolvía `undefined`. Detectado durante auditoría forense post-commit. Añadidas las 11 funciones faltantes al objeto `logic`. Validado: `tsc --noEmit` 0 errores, tests 38/38 pasan.
+
 ### Changed
 - **docs/agents/README.md actualizado**: Inventory refleja que los 6 skills "solo .opencode" ahora tienen SKILL.md, los 3 "solo docs/agents" ahora tienen skill.jsonc, y los 4 Specialist Roles pasaron de 🟡 Planned a ✅ Implementado.
 
