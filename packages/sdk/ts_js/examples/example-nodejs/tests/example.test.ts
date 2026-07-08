@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 
 const rootDir = resolve(import.meta.dirname, "..");
-const tsx = resolve(rootDir, "..", "..", "..", "..", "..", "node_modules", "tsx", "dist", "cli.mjs");
+const tsx = resolve(rootDir, "..", "..", "node_modules", "tsx", "dist", "cli.mjs");
 
 const run = (script: string): string => {
   const result = spawnSync(process.execPath, [tsx, script], {
