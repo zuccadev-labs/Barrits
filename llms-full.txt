@@ -100,7 +100,7 @@ barrits/
 - **Assertions**: `node:assert/strict` (strict mode)
 - **Coverage**: Not yet configured (planned: c8 or node --experimental-test-coverage)
 - **Known flaky tests**: 2 Deno tests (deno-dev-watch) — Deno not fully reliable on Windows
-- **Total**: 65 tests, 63 pass, 2 flaky
+- **Total**: 964 tests (883 SDK + 81 example tests across 11 examples)
 
 ## Key Constraints
 - `typescript@^6.0.3` in devDependencies (moved from dependencies — was bloating consumer installs)

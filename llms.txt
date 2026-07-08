@@ -12,6 +12,14 @@ This file provides essential context for LLM-assisted development on the Barrits
 - ADRs: docs/investigations/adr/
 - Forensic audit: docs/investigations/ES/packages/ts_js/10-auditoria-forense-integral.md
 
+## Quick Start
+- Requirements: Node.js >=18 (v22+), Deno >=2.x, Bun >=1.3 (optional)
+- Setup: `git clone <repo> && npm install` (root workspace installs SDK deps automatically)
+- Build: `cd packages/sdk/ts_js && npm run build`
+- Test: `cd packages/sdk/ts_js && npm test` (964 tests total)
+- Typecheck: `cd packages/sdk/ts_js && npx tsc --noEmit` (0 errors expected)
+- Explore examples: `cd packages/sdk/ts_js/examples/` — 11 examples covering Node, Deno, Bun, React, Solid, Svelte, Vue, Tauri, and bundlers (Vite, esbuild, Rollup, Webpack)
+
 ## Architecture
 - Monorepo with npm workspaces
 - Primary SDK at packages/sdk/ts_js/
