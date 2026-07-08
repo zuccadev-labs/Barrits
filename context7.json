@@ -1,0 +1,27 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "Barrits",
+  "description": "Package-first functional automation for TypeScript/JavaScript monorepos — AST-level discovery graph, sealed build manifests, trait-oriented contracts.",
+  "branch": "dev",
+  "folders": ["docs", "packages/sdk/ts_js"],
+  "excludeFolders": ["node_modules", "dist", ".stryker-tmp", ".git", "**/target"],
+  "excludeFiles": ["CHANGELOG.md", "LICENSE", "CODE_OF_CONDUCT.md"],
+  "rules": [
+    "Use named exports, no default exports",
+    "Bilingual documentation: [EN] / [ES] in all JSDoc and markdown",
+    "Conventional commits: feat:, fix:, refactor:, chore:, docs:",
+    "Use @barrits-trait JSDoc annotations for trait discovery and composition",
+    "Create barrits.config.ts at project root for build configuration",
+    "Run npm test after changes to validate 946+ tests pass"
+  ],
+  "previousVersions": [
+    { "tag": "v0.1.7", "title": "version 0.1.7" },
+    { "tag": "v0.1.6", "title": "version 0.1.6" },
+    { "tag": "v0.1.5", "title": "version 0.1.5" },
+    { "tag": "v0.1.4", "title": "version 0.1.4" },
+    { "tag": "v0.1.3", "title": "version 0.1.3" },
+    { "tag": "v0.1.2", "title": "version 0.1.2" },
+    { "tag": "v0.1.1", "title": "version 0.1.1" },
+    { "tag": "v0.1.0", "title": "version 0.1.0" }
+  ]
+}
