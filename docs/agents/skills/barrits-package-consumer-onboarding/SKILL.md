@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-package-consumer-onboarding
 description: Use this skill when onboarding a team that wants to consume @zuccadev-labs/barrits in their project. Covers installation, configuration, API surface exploration, and integration patterns.
+opencode_skill: .opencode/skills/package-consumer-onboarding/skill.jsonc
 ---
 
 # Barrits Package Consumer Onboarding
@@ -135,3 +136,4 @@ Full working examples are available in the repository:
 - `packages/sdk/ts_js/README.md` — SDK package documentation
 - `packages/sdk/ts_js/ARCHITECTURE.md` — Enterprise architecture reference
 - `docs/users/` — End-user documentation (EN/ES)
+

@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-platform-architect
 description: Enterprise architectural oversight for the Barrits SDK platform: trait design patterns, cross-package discovery, monorepo layout strategy, and API surface governance.
+opencode_skill: .opencode/skills/platform-architect/skill.jsonc
 ---
 
 # Barrits Platform Architect
@@ -94,3 +95,4 @@ All architectural decisions must be recorded as ADRs:
 - Trait system: `docs/agents/skills/barrits-package-first-implementation/SKILL.md`
 - API surface: `packages/sdk/ts_js/src/barrits/api/`
 - Discovery source: `packages/sdk/ts_js/src/barrits/sdk/`
+

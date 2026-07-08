@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-incident-commander
 description: Enterprise incident response for the Barrits SDK: troubleshooting, root-cause analysis, rollback leadership, and post-incident documentation. Use when a production issue is reported or a regression is detected.
+opencode_skill: .opencode/skills/incident-commander/skill.jsonc
 ---
 
 # Barrits Incident Commander
@@ -145,3 +146,4 @@ Action: <rollback, fix deployed, monitoring>
 - Emergency release: `docs/agents/skills/barrits-emergency-release/SKILL.md`
 - Security audit: `docs/agents/skills/barrits-security-audit/SKILL.md`
 - ADR template: `docs/investigations/adr/TEMPLATE.md`
+

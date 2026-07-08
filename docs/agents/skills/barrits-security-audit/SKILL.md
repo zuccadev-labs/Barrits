@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-security-audit
 description: Use this skill when performing security reviews, identifying vulnerabilities, or hardening the Barrits SDK. Covers path traversal, injection, permission boundaries, and supply chain risks.
+opencode_skill: .opencode/skills/security-audit/skill.jsonc
 ---
 
 # Barrits Security Audit
@@ -48,3 +49,4 @@ npm audit
 # Path traversal drill
 node ../../node_modules/tsx/dist/cli.mjs adapters/node/cli.ts info --target ../etc/passwd
 ```
+

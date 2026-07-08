@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-automation-showcase
 description: Live demonstrations of Barrits SDK features across all runtimes. Use when running or explaining the discovery pipeline, import generation, manifest creation, trait composition, and cross-runtime CLI capabilities.
+opencode_skill: .opencode/skills/automation-showcase/skill.jsonc
 ---
 
 # Barrits Automation Showcase
@@ -102,3 +103,4 @@ Compare: output structure, performance characteristics, and runtime-specific ada
 - Deno CLI: `packages/sdk/ts_js/adapters/deno/cli.ts`
 - Examples directory: `packages/sdk/ts_js/examples/`
 - `.opencode/skills/automation-showcase/skill.jsonc`
+

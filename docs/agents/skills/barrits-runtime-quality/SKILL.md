@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-runtime-quality
 description: Enterprise cross-runtime quality assurance for the Barrits SDK: adapter validation, CI matrix management, example certification, and performance benchmarking across Node.js, Deno, and Bun.
+opencode_skill: .opencode/skills/runtime-quality/skill.jsonc
 ---
 
 # Barrits Runtime Quality
@@ -119,3 +120,4 @@ jobs:
 - Example directory: `packages/sdk/ts_js/examples/`
 - CI workflows: `.github/workflows/`
 - Validation skill: `docs/agents/skills/barrits-cross-runtime-validation/SKILL.md`
+

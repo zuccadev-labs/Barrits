@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-emergency-release
 description: Emergency release process for hotfixes and critical security patches outside the normal release cycle. Use when a critical vulnerability or blocking bug requires immediate publication.
+opencode_skill: .opencode/skills/emergency-release/skill.jsonc
 ---
 
 # Barrits Emergency Release
@@ -123,3 +124,4 @@ If a hotfix introduces a worse issue:
 - `packages/sdk/ts_js/package.json`
 - `packages/sdk/ts_js/jsr.json`
 - Normal release: `docs/agents/skills/barrits-maintainer-full-cycle/SKILL.md`
+

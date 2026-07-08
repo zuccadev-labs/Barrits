@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-integration-points
 description: Integration with build tools: Vite, esbuild, Rollup, Webpack bundler plugins and package-first configuration. Use when configuring bundler plugins or setting up package-first automation in a consumer project.
+opencode_skill: .opencode/skills/integration-points/skill.jsonc
 ---
 
 # Barrits Integration Points
@@ -115,3 +116,4 @@ After integration:
 - Reference configurations: `packages/sdk/ts_js/examples/bundlers/`
 - Plugin source: `packages/sdk/ts_js/src/barrits/plugins/`
 - `.opencode/skills/integration-points/skill.jsonc`
+

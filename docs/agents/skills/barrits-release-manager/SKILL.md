@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-release-manager
 description: Enterprise release management for the Barrits SDK: version alignment, changelog governance, OIDC-based publication to npm and JSR, and post-release verification across registries.
+opencode_skill: .opencode/skills/release-manager/skill.jsonc
 ---
 
 # Barrits Release Manager
@@ -93,7 +94,7 @@ gh release list --limit 1
 
 | Document | Location |
 | :------- | :------- |
-| Release readiness checklist | `docs/package/ES/05_release-readiness.md` |
+| Release readiness checklist | `docs/package/ES/05_listo-para-lanzamiento.md` |
 | Publication guide | `docs/package/ES/03_publication.md` |
 | CI/CD governance | `docs/package/ES/07_ci-cd-governance.md` |
 | Changelog template | `CHANGELOG.md` |
@@ -114,3 +115,4 @@ gh release list --limit 1
 - Full maintenance cycle: `docs/agents/skills/barrits-maintainer-full-cycle/SKILL.md`
 - Emergency release: `docs/agents/skills/barrits-emergency-release/SKILL.md`
 - Release orchestration: `.opencode/skills/barrits-release-orchestration/skill.jsonc`
+

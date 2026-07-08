@@ -1,6 +1,7 @@
 ---
 name: barrits-cross-runtime-validation
 description: Use this skill when validating Barrits behavior across Node.js, Deno, and Bun. Ensure consistency between internal services, adapters, and public API consumption in real-world integration scenarios.
+opencode_skill: .opencode/skills/barrits-cross-runtime-validation/skill.jsonc
 ---
 
 # Barrits Cross-Runtime Validation
