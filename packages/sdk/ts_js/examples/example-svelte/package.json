@@ -5,11 +5,11 @@
   "scripts": {
     "dev": "node ../../../../../node_modules/vite/bin/vite.js",
     "build": "node ../../../../../node_modules/vite/bin/vite.js build",
-    "test": "node ../../../../../node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts"
+    "test": "node ../../node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts"
   },
   "dependencies": {
     "@zuccadev-labs/barrits": "file:../..",
-    "svelte": "^5.55.7"
+    "svelte": "^5.56.4"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.1.2",

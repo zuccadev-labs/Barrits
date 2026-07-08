@@ -74,6 +74,20 @@ const EXPECTED_PROPERTIES = [
   "topK",
   "uniqueBy",
   "upperBound",
+  // Resilience patterns
+  "retryWithBackoff",
+  "withTimeout",
+  "createCircuitBreaker",
+  // Hashing utilities
+  "sha256Hex",
+  "murmurHash3",
+  "deterministicStringify",
+  // Datetime utilities
+  "toIsoString",
+  "fromIsoString",
+  "diffMs",
+  "addMs",
+  "toRelativeTime",
 ];
 
 describe("logic namespace object (barrits.logic)", () => {

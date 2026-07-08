@@ -5,6 +5,18 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 
 ## [0.2.0] - 2026-07-07
 
+### Changed
+- **Dependabot dependency bumps**: `@types/node` `^25.6.0` → `^26.1.0`, `tsx` `^4.22.4` → `^4.23.0`, `@emnapi/core` `^1.10.0` → `^1.11.2`, `@emnapi/runtime` `^1.10.0` → `^1.11.2`, `@vitejs/plugin-react` `^6.0.1` → `^6.0.3`, `rollup` `^4.60.4` → `^4.62.2`, `webpack` `^5.106.2` → `^5.108.3`, `webpack-cli` `^7.0.2` → `^7.1.0`, `react` `^19.2.6` → `^19.2.7`, `react-dom` `^19.2.6` → `^19.2.7`, `react-router-dom` `^7.15.1` → `^7.18.1`, `solid-js` `^1.9.13` → `^1.9.14`, `svelte` `^5.55.7` → `^5.56.4`, `@tauri-apps/api` `^2.11.0` → `^2.11.1`, `@tauri-apps/cli` `^2.11.1` → `^2.11.4`, `vue` `^3.5.34` → `^3.5.39`. Applied via Dependabot PRs #100 and #101. Validated: 946 tests pass, 0 failures.
+
+### Fixed
+- **`logic.test.ts` expected property count desincronizado**: El test del namespace `barrits.logic` esperaba 56 propiedades pero el objeto exporta 67 desde que se añadieron los 11 nuevos exports (resilience, hashing, datetime) en el commit `6562384`. Actualizado `EXPECTED_PROPERTIES` para incluir `retryWithBackoff`, `withTimeout`, `createCircuitBreaker`, `sha256Hex`, `murmurHash3`, `deterministicStringify`, `toIsoString`, `fromIsoString`, `diffMs`, `addMs`, `toRelativeTime`. Causa raíz de la falla en GitHub Actions (run #28875048226).
+- **Tests `node-dev-flow.test.ts` y `node-cli-info.test.ts` con ruta tsx obsoleta**: La ruta `join(workspaceRoot, "node_modules", "tsx", "dist", "cli.mjs")` dejó de funcionar porque `tsx@4.23.0` cambió la estructura de `exports` en su `package.json` (el CLI ahora se exporta como `./cli` en lugar de `./dist/cli.mjs`). Reemplazado por `createRequire(import.meta.url).resolve("tsx/cli")` para resolución robusta independiente de la ubicación física del paquete.
+- **SDK package.json — rutas tsx**: `../../../node_modules/tsx/dist/cli.mjs` reemplazado por `./node_modules/tsx/dist/cli.mjs` en todos los scripts del SDK (dev, benchmark:algorithms, test, test:coverage, barrits:dev, barrits:build). El `npm install` con workspaces ya no hoista tsx al root, por lo que las rutas relativas al root quedaron rotas.
+- **Example package.json — rutas tsx**: 7 ejemplos (nodejs, react, solid, svelte, vue, tauri, bundlers) usaban la ruta `../../../../../node_modules/tsx/dist/cli.mjs` que resuelve fuera del repositorio. Corregido a `../../node_modules/tsx/dist/cli.mjs` apuntando al node_modules local del SDK.
+- **Dist reconstruido**: El build `tsup + tsc --emitDeclarationOnly` se ejecutó para incluir los 11 nuevos exports de logic en el dist. Anteriormente el dist solo tenía 56 exports; ahora tiene 67, alineado con la fuente.
+- **README.md y README.es.md**: Actualizado el conteo de tests de 65 a 946+ en la sección "Repository Structure". Corregida indentación del árbol ASCII que se rompió durante la actualización.
+- **README.es.md**: Agregado segundo diagrama mermaid (estructura del monorepo) para paridad con la versión EN.
+
 ### ⚠️ Migration Notice
 This version introduces 11 new public exports, Bun runtime support, and a consolidated declaration output directory.
 See the **[Migration Guide 0.1.x → 0.2.x](docs/users/EN/packages/ts_js/11-migration-0.1-to-0.2.md)** (EN) / **[Guía de Migración](docs/users/ES/packages/ts_js/11_migracion-0.1-a-0.2.md)** (ES) for full details.

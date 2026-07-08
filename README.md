@@ -184,7 +184,7 @@ For disclosure policy and repository hardening details: [SECURITY.md](SECURITY.m
 │   ├── src/                   # Portable core (orchestration, traits, logic)
 │   ├── adapters/              # Node.js and Deno runtime adapters
 │   ├── examples/              # Real integration examples by environment
-│   ├── tests/                 # Full test suite (65 tests)
+│   ├── tests/                 # Full test suite (946+ tests)
 │   └── benchmarks/            # Performance benchmarks
 └── docs/                      # Documentation by purpose
     ├── users/                 # Installation, usage, API reference
