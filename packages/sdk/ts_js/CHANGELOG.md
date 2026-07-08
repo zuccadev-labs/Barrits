@@ -8,10 +8,13 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 ### Fixed
 - **`logic.test.ts` property count out of sync**: The `barrits.logic` namespace test expected 56 properties but the object now exports 67 since the 11 new resilience/hashing/datetime exports were added. Updated `EXPECTED_PROPERTIES` array. This was the root cause of the GitHub Actions failure (run #28875048226).
 - **`node-dev-flow.test.ts` and `node-cli-info.test.ts` — tsx path resolution**: The hardcoded path `join(workspaceRoot, "node_modules", "tsx", "dist", "cli.mjs")` broke after `tsx@4.23.0` changed its package.json exports (CLI now exported as `./cli` instead of `./dist/cli.mjs`). Replaced with `createRequire(import.meta.url).resolve("tsx/cli")` for robust resolution.
+- **SDK package.json — all tsx script paths**: Replaced `../../../node_modules/tsx/dist/cli.mjs` with `./node_modules/tsx/dist/cli.mjs` across all scripts (dev, benchmark:algorithms, test, test:coverage, barrits:dev, barrits:build). Hoisting changes from `npm install` moved tsx into SDK's local node_modules.
+- **Example package.json — tsx paths in 7 examples**: Fixed broken `../../../../../node_modules/tsx/dist/cli.mjs` (resolves outside repo) to `../../node_modules/tsx/dist/cli.mjs` (SDK's local node_modules).
+- **Dist rebuilt**: Ran `tsup` and `tsc --emitDeclarationOnly` to include the 11 new logic exports in the built output. Dist now correctly exports 67 properties vs previously 56.
+- **README tree structure indent**: Fixed broken ASCII tree indentation for the `tests/` entry (was inadvertently nested under `examples/`).
 
 ### Changed
 - **Dependency bumps from Dependabot PRs #100/#101**: `@types/node` `^25.6.0` → `^26.1.0`, `tsx` `^4.22.4` → `^4.23.0`. Updated root monorepo and example package.json files with matching bumps for `@emnapi/core`, `@emnapi/runtime`, `@vitejs/plugin-react`, `rollup`, `webpack`, `webpack-cli`, `react`, `react-dom`, `react-router-dom`, `solid-js`, `svelte`, `@tauri-apps/api`, `@tauri-apps/cli`, and `vue`.
-
 - **README test count**: Updated from 65 to 946+ in both EN and ES READMEs.
 - **README.es.md**: Added monorepo structure mermaid diagram for parity with EN version.
 

@@ -187,7 +187,7 @@ Para política de disclosure y detalles de endurecimiento: [SECURITY.md](SECURIT
 │   ├── src/                   # Core portable (orquestación, traits, lógica)
 │   ├── adapters/              # Adapters runtime Node.js y Deno
 │   ├── examples/              # Ejemplos de integración por entorno
-│       ├── tests/                 # Suite de tests completa (946+ tests)
+│   ├── tests/                 # Suite de tests completa (946+ tests)
 │   └── benchmarks/            # Benchmarks de rendimiento
 └── docs/                      # Documentación por propósito
     ├── users/                 # Instalación, uso, referencia de API
