@@ -153,6 +153,10 @@ const getCommandDescription = (command: string): string => {
   return descriptions[command] ?? "";
 };
 
+/**
+ * [EN] Generates a shell completion script (bash/zsh/fish) for the Barrits CLI.
+ * [ES] Genera un script de completado de shell (bash/zsh/fish) para la CLI de Barrits.
+ */
 export const generateCompletionScript = (shell: string): string => {
   switch (shell) {
     case "bash": {
@@ -170,6 +174,10 @@ export const generateCompletionScript = (shell: string): string => {
   }
 };
 
+/**
+ * [EN] Prints a shell completion script for the given shell to stdout.
+ * [ES] Imprime un script de completado de shell para el shell indicado en stdout.
+ */
 export const printCompletion = (shell: string): void => {
   console.log(generateCompletionScript(shell));
 };

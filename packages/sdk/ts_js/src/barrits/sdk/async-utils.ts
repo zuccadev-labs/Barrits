@@ -1,3 +1,7 @@
+/**
+ * [EN] Maps an array of items concurrently with a bounded concurrency limit.
+ * [ES] Mapea un array de elementos de forma concurrente con un límite de concurrencia acotado.
+ */
 export const mapConcurrent = async <T, U>(
   items: readonly T[],
   concurrency: number,

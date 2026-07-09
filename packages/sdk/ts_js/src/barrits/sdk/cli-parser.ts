@@ -2,8 +2,10 @@ import type { BarritsFileExport, BarritsFileKind, BarritsIntegrationGraph, Barri
 import { formatTraitDiagnosticDetailLines, formatTraitOverviewLines } from "./cli-format";
 import { isBarritsExportVisibility, isBarritsFileKind } from "./guards";
 
+/** [EN] CLI sub-commands available in the Barrits CLI. [ES] Subcomandos de CLI disponibles en la CLI de Barrits. */
 export type CliCommand = "detect" | "help" | "info" | "watch" | "dev" | "imports" | "build" | "completion";
 
+/** [EN] Parsed CLI options with defaults applied. [ES] Opciones de CLI analizadas con valores predeterminados aplicados. */
 export type CliOptions = {
   command: CliCommand;
   json: boolean;
@@ -22,8 +24,10 @@ export type CliOptions = {
   shellType: string;
 };
 
+/** [EN] Alias for the Barrits integration graph type used across CLI handlers. [ES] Alias para el tipo de grafo de integración de Barrits utilizado en los manejadores de CLI. */
 export type IntegrationGraph = BarritsIntegrationGraph;
 
+/** [EN] File paths for automation artifacts (manifests, imports, snapshots). [ES] Rutas de archivo para artefactos de automatización (manifiestos, importaciones, snapshots). */
 export type AutomationArtifactPaths = {
   buildManifestPath: string;
   importsManifestPath: string;
@@ -31,9 +35,13 @@ export type AutomationArtifactPaths = {
   watchSnapshotPath: string;
 };
 
+/** [EN] Default basename for the build manifest JSON file. [ES] Nombre base predeterminado para el archivo JSON del manifiesto de compilación. */
 export const BUILD_MANIFEST_BASENAME = "build-manifest.json";
+/** [EN] Default basename for the import actions manifest JSON file. [ES] Nombre base predeterminado para el archivo JSON del manifiesto de acciones de importación. */
 export const IMPORTS_MANIFEST_BASENAME = "import-actions.json";
+/** [EN] Default basename for the generated import actions TypeScript module. [ES] Nombre base predeterminado para el módulo TypeScript generado de acciones de importación. */
 export const IMPORTS_MODULE_BASENAME = "import-actions.generated.ts";
+/** [EN] Default basename for the watch snapshot JSON file. [ES] Nombre base predeterminado para el archivo JSON del snapshot de observación. */
 export const WATCH_SNAPSHOT_BASENAME = "watch-snapshot.json";
 
 const createDefaultOptions = (childArgs: string[]): CliOptions => ({
@@ -109,6 +117,10 @@ const handleArgument = (args: string[], i: number, opts: CliOptions): number => 
   return 0;
 };
 
+/**
+ * [EN] Parses raw CLI argument strings into a typed CliOptions object.
+ * [ES] Analiza cadenas de argumentos CLI sin procesar en un objeto CliOptions tipado.
+ */
 export const parseArguments = (argumentsList: string[]): CliOptions => {
   const separatorIndex = argumentsList.indexOf("--");
   const cliArguments = separatorIndex === -1 ? argumentsList : argumentsList.slice(0, separatorIndex);
@@ -123,6 +135,10 @@ export const parseArguments = (argumentsList: string[]): CliOptions => {
   return options;
 };
 
+/**
+ * [EN] Converts CLI options into Barrits selection filters used for graph filtering.
+ * [ES] Convierte opciones de CLI en filtros de selección de Barrits utilizados para el filtrado de grafos.
+ */
 export const toSelectionFilters = (options: CliOptions): BarritsSelectionFilters => {
   return {
     domains: options.domains.length > 0 ? options.domains : undefined,
@@ -133,16 +149,28 @@ export const toSelectionFilters = (options: CliOptions): BarritsSelectionFilters
   };
 };
 
+/**
+ * [EN] Checks whether the integration graph contains any export collisions.
+ * [ES] Verifica si el grafo de integración contiene alguna colisión de exportaciones.
+ */
 export const hasCollisions = (graph: IntegrationGraph): boolean => {
   return graph.collisions.length > 0;
 };
 
+/**
+ * [EN] Prints all collision messages from the integration graph to stderr.
+ * [ES] Imprime todos los mensajes de colisión del grafo de integración en stderr.
+ */
 export const printCollisions = (graph: IntegrationGraph): void => {
   for (const collision of graph.collisions) {
     console.error(collision.message);
   }
 };
 
+/**
+ * [EN] Returns a non-zero exit code if the graph has collisions; prints collision details.
+ * [ES] Retorna un código de salida distinto de cero si el grafo tiene colisiones; imprime los detalles de las colisiones.
+ */
 export const failOnCollisions = (graph: IntegrationGraph, json: boolean): number => {
   if (!hasCollisions(graph)) {
     return 0;
@@ -157,6 +185,10 @@ export const failOnCollisions = (graph: IntegrationGraph, json: boolean): number
   return 1;
 };
 
+/**
+ * [EN] Computes a deterministic fingerprint for the integration graph (used for change detection).
+ * [ES] Calcula una huella digital determinista para el grafo de integración (usada para detección de cambios).
+ */
 export const toGraphFingerprint = (graph: IntegrationGraph): string => {
   return JSON.stringify(graph);
 };
@@ -206,6 +238,10 @@ const printCollisionsInfo = (collisions: IntegrationGraph["collisions"]): void =
   }
 };
 
+/**
+ * [EN] Prints a human-readable summary of the integration graph to stdout.
+ * [ES] Imprime un resumen legible del grafo de integración en stdout.
+ */
 export const printInfoSummary = (graph: IntegrationGraph): void => {
   console.log(`barrits: ${graph.barritsDirectory}`);
   console.log(`projectRoot: ${graph.projectRoot}`);
@@ -230,6 +266,10 @@ export const printInfoSummary = (graph: IntegrationGraph): void => {
   }
 };
 
+/**
+ * [EN] Prints the integration graph in JSON or human-readable format based on the json flag.
+ * [ES] Imprime el grafo de integración en formato JSON o legible según el indicador json.
+ */
 export const printGraph = (graph: IntegrationGraph, json: boolean): void => {
   if (json) {
     console.log(JSON.stringify(graph, null, 2));
@@ -239,6 +279,10 @@ export const printGraph = (graph: IntegrationGraph, json: boolean): void => {
   printInfoSummary(graph);
 };
 
+/**
+ * [EN] Prints the import actions from the integration graph in JSON or text format.
+ * [ES] Imprime las acciones de importación del grafo de integración en formato JSON o texto.
+ */
 export const printImportActions = (graph: IntegrationGraph, json: boolean): void => {
   if (json) {
     console.log(JSON.stringify(graph.importActions, null, 2));

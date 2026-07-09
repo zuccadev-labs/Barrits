@@ -39,6 +39,10 @@ const isTerminal = (): boolean => {
   return false;
 };
 
+/**
+ * [EN] A terminal spinner widget for long-running CLI tasks (supports Deno and Node runtimes).
+ * [ES] Un widget de spinner de terminal para tareas CLI de larga duración (soporta runtimes Deno y Node).
+ */
 export class BarritsSpinner {
   private frames: string[];
   private interval: number;
@@ -47,11 +51,19 @@ export class BarritsSpinner {
   private text = "";
   private _isSpinning = false;
 
+  /**
+   * [EN] Creates a new BarritsSpinner with optional custom frames and interval.
+   * [ES] Crea un nuevo BarritsSpinner con frames e intervalo opcionales personalizados.
+   */
   constructor(frames: string[] = DEFAULT_FRAMES, interval = 80) {
     this.frames = frames;
     this.interval = interval;
   }
 
+  /**
+   * [EN] Returns whether the spinner is currently animating.
+   * [ES] Retorna si el spinner está actualmente animando.
+   */
   get isSpinning(): boolean {
     return this._isSpinning;
   }
@@ -80,6 +92,10 @@ export class BarritsSpinner {
     this.writeStderr("\r\x1b[K");
   }
 
+  /**
+   * [EN] Starts the spinner animation with the given text.
+   * [ES] Inicia la animación del spinner con el texto indicado.
+   */
   start(text: string): void {
     if (this._isSpinning) {
       return;
@@ -99,6 +115,10 @@ export class BarritsSpinner {
     this.render();
   }
 
+  /**
+   * [EN] Updates the displayed text while the spinner is active.
+   * [ES] Actualiza el texto mostrado mientras el spinner está activo.
+   */
   update(text: string): void {
     this.text = text;
     if (this._isSpinning && isTerminal()) {
@@ -108,10 +128,18 @@ export class BarritsSpinner {
     }
   }
 
+  /**
+   * [EN] Stops the spinner with a success symbol.
+   * [ES] Detiene el spinner con un símbolo de éxito.
+   */
   succeed(text?: string): void {
     this.stopWithFinal(text ?? this.text, "✔");
   }
 
+  /**
+   * [EN] Stops the spinner with a failure symbol.
+   * [ES] Detiene el spinner con un símbolo de fallo.
+   */
   fail(text?: string): void {
     this.stopWithFinal(text ?? this.text, "✖");
   }
@@ -134,6 +162,10 @@ export class BarritsSpinner {
     }
   }
 
+  /**
+   * [EN] Stops the spinner and clears the line without a final symbol.
+   * [ES] Detiene el spinner y limpia la línea sin un símbolo final.
+   */
   stopAndClear(): void {
     if (!this._isSpinning) {
       return;
