@@ -3,6 +3,15 @@
 All notable changes to this SDK will be documented in this file.
 Todos los cambios relevantes para el SDK se documentan aquí.
 
+## [Unreleased]
+
+### Added
+- **Comprehensive JSDoc coverage for all public SDK exports**: Added JSDoc to all undocumented exports across 11 source files to raise JSR symbol documentation coverage from ~65% to **100.0%** (1063/1063 symbols), targeting a 5/5 JSR documentation score. Files documented: `cli-parser.ts` (4 types, 4 basename consts, 9 functions), `validation.ts` (4 types, 11 const sets, 20 validation functions), `summarization.ts` (4 exports), `ast/extractor.ts`, `ast/traits.ts`, `async-utils.ts`, `cli-spinner.ts` (8 method-level JSDoc), `completion.ts` (2 exports), `plugins/webpack.ts` (5 JSDoc additions + 3 type exports + WebpackCompiler type JSDoc). Coverage verified via custom TypeScript Compiler API script over all 146 source files in the JSR publish scope (`src/` + `adapters/deno/`). Validated: `tsc --noEmit` 0 errors, 946 core SDK tests pass, ESLint 0 errors.
+
+### Fixed
+- **Stale `.d.ts` file removed**: Deleted `src/index.d.ts` — a stale declaration artifact from a previous build configuration that no longer corresponds to any source file.
+- **JSR provenance attestation unblocked**: Removed `environment: jsr` from the `publish-jsr` job in `.github/workflows/release.yml`. The environment restriction was blocking OIDC token generation required for JSR provenance attestation. The `id-token: write` permission at the workflow level is sufficient for provenance.
+
 ## [0.2.1] - 2026-07-08
 
 ### Added
