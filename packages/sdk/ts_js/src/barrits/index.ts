@@ -22,3 +22,15 @@ export * from "./package";
  */
 export * from "./sdk/adapters";
 export * from "./sdk/logger";
+
+/**
+ * [EN] Re-exports all SDK contract types for deno doc --lint compliance.
+ * [ES] Re-exporta todos los tipos de contrato del SDK para conformidad con deno doc --lint.
+ */
+export type * from "./sdk/contracts";
+
+/**
+ * [EN] Re-exports config types referenced by BarritsContractsConfig (not re-exported by ./package).
+ * [ES] Re-exporta tipos de configuración referenciados por BarritsContractsConfig (no re-exportados por ./package).
+ */
+export type { BarritsTraitContractConfig, BarritsExportContractConfig } from "./config";

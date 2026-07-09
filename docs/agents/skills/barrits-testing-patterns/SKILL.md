@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-testing-patterns
 description: Use this skill when writing or reviewing tests for Barrits SDK. Covers property-based testing with fast-check, mutation testing with Stryker, integration tests across runtimes, and structural testing patterns.
+opencode_skill: .opencode/skills/testing-patterns/skill.jsonc
 ---
 
 # Barrits Testing Patterns
@@ -54,3 +55,4 @@ npx stryker run
 # Single test file
 node ../../node_modules/tsx/dist/cli.mjs --test tests/<file>.test.ts
 ```
+

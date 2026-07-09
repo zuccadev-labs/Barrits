@@ -352,11 +352,204 @@ Namespaced access to all graph utilities.
 
 ---
 
+## Resilience Patterns
+
+Enterprise fault-tolerance patterns for distributed systems. These utilities handle transient failures from network partitions, rate limiting, and dependency outages.
+
+### `retryWithBackoff(operation, options?)`
+
+Executes an async operation with exponential backoff retry logic and jitter.
+
+```ts
+import { retryWithBackoff } from "@zuccadev-labs/barrits";
+
+const data = await retryWithBackoff(
+  () => fetch("https://api.example.com/data").then(r => r.json()),
+  { maxRetries: 5, initialDelayMs: 500, isRetryable: (err) => err instanceof TypeError },
+);
+```
+
+Options include `maxRetries` (default 3), `initialDelayMs` (default 200), `backoffFactor` (default 2), `maxDelayMs` (default 30000), and `isRetryable` predicate. A jitter factor prevents thundering-herd effects in multi-instance deployments.
+
+### `withTimeout(operation, timeoutMs, label?)`
+
+Wraps a promise with a timeout deadline for SLA enforcement.
+
+```ts
+import { withTimeout } from "@zuccadev-labs/barrits";
+
+const result = await withTimeout(
+  fetch("https://slow-api.example.com/data"),
+  5000,
+  "slow-api fetch",
+);
+```
+
+Rejects with a descriptive `TimeoutError` if the operation does not complete within the specified milliseconds.
+
+### `createCircuitBreaker(options?)`
+
+Creates a three-state circuit breaker (closed → open → half-open → closed) for dependency protection.
+
+```ts
+import { createCircuitBreaker } from "@zuccadev-labs/barrits";
+
+const breaker = createCircuitBreaker({ failureThreshold: 3, resetTimeoutMs: 10000 });
+
+const data = await breaker.call(() => fetch("/api/data").then(r => r.json()));
+breaker.getState(); // "closed", "open", or "half-open"
+breaker.reset();    // manually reset to closed
+```
+
+The circuit opens after `failureThreshold` consecutive failures, rejects immediately while open, and tests recovery after `resetTimeoutMs` in half-open state with `successThreshold` (default 1) successful calls before closing.
+
+### `resilienceAlgorithms`
+
+Namespaced access to all resilience utilities.
+
+```ts
+import { resilienceAlgorithms } from "@zuccadev-labs/barrits";
+resilienceAlgorithms.retryWithBackoff(op);
+```
+
+---
+
+## Hashing and Integrity
+
+Cryptographic and non-cryptographic hash functions for build manifest sealing, content-addressable caching, and distributed partition assignment.
+
+### `sha256Hex(input)`
+
+Computes the SHA-256 hash of a UTF-8 string and returns a 64-character lowercase hexadecimal digest. Uses the Web Crypto API — no external dependencies. Available in Deno, Node.js 18+, Bun, and browsers.
+
+```ts
+import { sha256Hex } from "@zuccadev-labs/barrits";
+
+const checksum = await sha256Hex(JSON.stringify({ version: "0.2.0" }));
+// "a3f2...d8e1" (64 hex chars)
+```
+
+### `murmurHash3(input, seed?)`
+
+Computes a non-cryptographic 32-bit MurmurHash3 digest. Approximately 10x faster than SHA-256. Ideal for hash-based partitioning, consistent hashing rings, and Bloom filters.
+
+```ts
+import { murmurHash3 } from "@zuccadev-labs/barrits";
+
+const partition = murmurHash3("user:12345", 0) % 16;
+// Deterministically assigns user to partition [0-15]
+```
+
+Takes an optional 32-bit unsigned integer `seed` (defaults to 0). Returns a 32-bit unsigned integer.
+
+### `deterministicStringify(value, indent?)`
+
+Produces a deterministic JSON string with lexicographic key sorting. Unlike `JSON.stringify`, structurally identical objects always produce identical output regardless of insertion order.
+
+```ts
+import { deterministicStringify } from "@zuccadev-labs/barrits";
+
+const a = { z: 1, a: 2, m: { b: 3, a: 4 } };
+const b = { a: 2, m: { a: 4, b: 3 }, z: 1 };
+
+deterministicStringify(a) === deterministicStringify(b); // true
+```
+
+Essential for reproducible checksums and content-addressable caching across distributed build systems.
+
+### `hashingAlgorithms`
+
+Namespaced access to all hashing utilities.
+
+```ts
+import { hashingAlgorithms } from "@zuccadev-labs/barrits";
+hashingAlgorithms.sha256Hex(data);
+```
+
+---
+
+## Datetime Utilities
+
+Immutable, timezone-aware date and time manipulation functions. All operations produce new objects rather than mutating inputs, following referential transparency.
+
+### `toIsoString(input)`
+
+Normalizes Date objects, numeric timestamps (Unix ms), or ISO 8601 strings to a standardized UTC ISO 8601 string.
+
+```ts
+import { toIsoString } from "@zuccadev-labs/barrits";
+
+toIsoString(new Date("2026-04-21T14:30:00Z"));
+// "2026-04-21T14:30:00.000Z"
+
+toIsoString(1776960600000);
+// Equivalent ISO string for that timestamp
+```
+
+Throws `RangeError` for invalid date inputs.
+
+### `fromIsoString(input)`
+
+Safely parses an ISO 8601 string into a `Date` object. Returns `null` instead of creating an `Invalid Date`, preventing invalid date propagation through service layers.
+
+```ts
+import { fromIsoString } from "@zuccadev-labs/barrits";
+
+const date = fromIsoString("2026-04-21T14:30:00.000Z");
+// Date object, or null if parsing fails
+```
+
+### `diffMs(start, end)`
+
+Computes the millisecond difference between two dates (`end - start`).
+
+```ts
+import { diffMs } from "@zuccadev-labs/barrits";
+
+const start = new Date("2026-04-21T00:00:00Z");
+const end = new Date("2026-04-22T00:00:00Z");
+diffMs(start, end); // 86400000 (24 hours)
+```
+
+### `addMs(date, milliseconds)`
+
+Returns a new `Date` offset by the specified milliseconds. Negative values subtract. The original date is never mutated.
+
+```ts
+import { addMs } from "@zuccadev-labs/barrits";
+
+const later = addMs(new Date("2026-04-21T14:30:00Z"), 3600000);
+// "2026-04-21T15:30:00.000Z"
+```
+
+### `toRelativeTime(date, locale?)`
+
+Formats a Date as a human-readable relative time string (e.g., "2 hours ago", "in 3 days"). Uses `Intl.RelativeTimeFormat` for locale-aware formatting. Defaults to `"en"`.
+
+```ts
+import { toRelativeTime } from "@zuccadev-labs/barrits";
+
+const twoHoursAgo = new Date(Date.now() - 7200000);
+toRelativeTime(twoHoursAgo);       // "2 hours ago"
+toRelativeTime(twoHoursAgo, "es"); // "hace 2 horas"
+```
+
+### `datetimeAlgorithms`
+
+Namespaced access to all datetime utilities.
+
+```ts
+import { datetimeAlgorithms } from "@zuccadev-labs/barrits";
+datetimeAlgorithms.toIsoString(date);
+```
+
+---
+
 ## Aggregated Catalogs
 
 ### `algorithms`
 
-Exposes the full algorithm catalog for dynamic navigation or grouped exploration.
+Exposes the full algorithm catalog (including resilience, hashing, and datetime) for dynamic navigation or grouped exploration.
 
 ```ts
 import { algorithms } from "@zuccadev-labs/barrits";
@@ -365,12 +558,15 @@ algorithms.sort.orderBy(items, criteria);
 
 ### `logic`
 
-Namespaced grouping of algorithms, arithmetic, and functional families.
+Namespaced grouping of algorithms, arithmetic, resilience, hashing, datetime, and functional families.
 
 ```ts
 import { logic } from "@zuccadev-labs/barrits";
 logic.orderBy(items, criteria);
 logic.searchAlgorithms.binarySearch(sorted, target);
+logic.retryWithBackoff(op);         // resilience
+logic.sha256Hex(manifest);          // hashing
+logic.toIsoString(new Date());      // datetime
 ```
 
 ---

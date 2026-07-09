@@ -6,7 +6,7 @@ Esta guía detalla el protocolo secuencial para la ejecución del lanzamiento in
 
 Antes de modificar la versión del paquete, se deben certificar los siguientes controles:
 
-1.  Validación completa de la lista de verificación en [05_release-readiness.md](05_release-readiness.md).
+1.  Validación completa de la lista de verificación en [05_listo-para-lanzamiento.md](05_listo-para-lanzamiento.md).
 2.  Vinculación técnica del paquete en JSR con el repositorio de GitHub.
 3.  Configuración de "Trusted Publishing" en npm para el flujo `release.yml`.
 4.  Existencia de los entornos (Environments) `npm` y `jsr`.

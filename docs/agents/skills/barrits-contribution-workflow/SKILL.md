@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-contribution-workflow
 description: Use this skill when handling external contributions to Barrits: PR review, CI validation, merge criteria, and changelog attribution.
+opencode_skill: .opencode/skills/contribution-workflow/skill.jsonc
 ---
 
 # Barrits Contribution Workflow
@@ -78,3 +79,4 @@ Add an entry under `[Unreleased]` in `CHANGELOG.md`:
 - `.opencode/skills/development-workflow/` — Commit conventions and branch strategy
 - `docs/development/` — Internal development guides (EN/ES)
 - `AGENTS.md` — Repository operational rules for agents
+

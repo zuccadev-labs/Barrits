@@ -1,21 +1,26 @@
-{
+﻿{
   "name": "architecture-decision-records",
   "description": "Architecture Decision Record (ADR) creation, review, and lifecycle management following the project template. Use when documenting architectural decisions, investigating trade-offs, or recording design rationale.",
+  "seeAlso": "docs/agents/skills/barrits-architecture-decision-records/SKILL.md",
   "prompts": [
     {
       "name": "create-adr",
       "description": "Create a new ADR following the project's ADR template with full context, decision, consequences, and implementation.",
+  "seeAlso": "docs/agents/skills/barrits-architecture-decision-records/SKILL.md",
       "prompt": "Use the template at docs/investigations/adr/TEMPLATE.md. Create a new file docs/investigations/adr/<NNNN>-<kebab-case-title>.md. Include: title, status (proposed/accepted/deprecated/superseded), context, decision, consequences (positive/negative/neutral), and implementation (key files changed, migration path if any). For high-level ADRs, place in docs/investigations/EN/packages/ts_js/ (EN) and docs/investigations/ES/packages/ts_js/ (ES) with matching index entries."
     },
     {
       "name": "review-adr",
       "description": "Review an existing ADR for completeness, consistency, and alignment with current architecture.",
+  "seeAlso": "docs/agents/skills/barrits-architecture-decision-records/SKILL.md",
       "prompt": "Read the ADR from docs/investigations/ (check both EN and ES versions). Verify: 1) Status reflects current reality (proposed/accepted/deprecated/superseded), 2) Context describes the problem fully, 3) Decision is specific and actionable, 4) Consequences are honest (positive and negative), 5) Implementation section references actual files. Update if needed."
     },
     {
       "name": "supersede-adr",
       "description": "Mark an ADR as superseded by a new decision, linking to the replacement.",
+  "seeAlso": "docs/agents/skills/barrits-architecture-decision-records/SKILL.md",
       "prompt": "Update the superseded ADR's status to 'superseded' and add a 'Superseded by' section linking to the new ADR. Create the new ADR referencing what changed and why."
     }
   ]
 }
+

@@ -22,4 +22,4 @@ export const barrits = {
  * [EN] Short alias of the Barrits domain namespace (brt).
  * [ES] Alias corto del espacio de nombres de Barrits (brt).
  */
-export const brt = barrits;
+export const brt: typeof barrits = barrits;

@@ -41,6 +41,16 @@ See the **[Migration Guide 0.1.x → 0.2.x](docs/users/EN/packages/ts_js/11-migr
 - **Resilience/hashing/datetime stubs en example-bun reemplazados con implementaciones reales**: Los 3 stubs estaban desactualizados. Reemplazados con imports reales desde `@zuccadev-labs/barrits` vía fix de export chain. `createOperationalShowcase` ahora es async.
 - **Types missing for `@zuccadev-labs/barrits/bun/cli`**: Added `"types"` entry in package.json exports for the bun/cli subpath. All 13 `"types"` paths now resolve to real files in `dist/`.
 
+### Docs
+- **Dev documentation indexes — comprehensive cleanup**: Fixed `docs/development/EN/packages/ts_js/00-index.md` and `docs/development/ES/packages/ts_js/00_indice.md` to correctly reference document 07 as "intentionally-skipped" (ADR 07 exists only in ES). Fixed broken links in `docs/development/README.md` EN section. Added missing reference to `01_mapa-general.md` in the ES examples index (`docs/users/ES/packages/ts_js/00-indice.md`). Validated: all indexes self-consistent, no broken links.
+- **SDK Deno adapter JSDoc, README version pin, examples deduplication**: Added comprehensive JSDoc to all public functions in `adapters/deno/filesystem.ts` and `adapters/deno/tooling.ts`. Fixed SDK README version pin from `0.1.9` to `0.2.0` (aligns with current published version). Removed duplicate "How it works" section from `packages/sdk/ts_js/examples/README.md` (content already covered in central examples documentation). Validated: typecheck 0 errors, all examples build correctly.
+
+### Fixed
+- **JSDoc coverage for all public SDK surfaces**: Added bilingual EN/ES JSDoc (`@param`, `@returns`, `@throws`, `@example`, `@since`) to all public functions in `sdk/consume.ts`, `sdk/logger.ts`, `sdk/summarization.ts`, and `sdk/adapters.ts`. Replaced individual contract type re-exports with `export type *` in `consume.ts` for cleaner type surface. Added missing contract and config type exports to `src/barrits/index.ts` and `src/barrits/package.ts`. Fixed `brt` type alias (`typeof barrits`) in `api/domains.ts` to resolve correctly. Validated: `tsc --noEmit` 0 errors, all 946 tests pass, unblocks `deno doc --lint` compliance for downstream Deno consumers.
+
+### Chore
+- **Root `.gitignore` — add `**/deno.lock`**: Added `**/deno.lock` pattern to root `.gitignore` to prevent Deno lockfiles from being accidentally committed. Multiple examples and development workflows generate `deno.lock` locally and it is not intended for version control.
+
 ## [0.1.9] - 2026-07-06
 
 ### Added

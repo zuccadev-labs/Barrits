@@ -140,6 +140,13 @@ const withOptionalFilters = <T extends object>(
   };
 };
 
+/**
+ * [EN] Creates a human-readable summary from a Barrits build manifest.
+ * [ES] Crea un resumen legible a partir de un manifiesto de compilación de Barrits.
+ *
+ * @param manifest - [EN] Parsed build manifest or null. [ES] Manifiesto de compilación analizado o nulo.
+ * @returns [EN] A consumed state summary with aggregated diagnostics. [ES] Un resumen de estado consumido con diagnósticos agregados.
+ */
 export const createBuildManifestSummary = (manifest: BarritsBuildManifest | null): BarritsConsumedStateSummary => {
   if (!manifest) {
     return {
@@ -166,6 +173,13 @@ export const createBuildManifestSummary = (manifest: BarritsBuildManifest | null
   );
 };
 
+/**
+ * [EN] Creates a human-readable summary from a Barrits watch snapshot.
+ * [ES] Crea un resumen legible a partir de un snapshot de observación de Barrits.
+ *
+ * @param snapshot - [EN] Parsed watch snapshot or null. [ES] Snapshot de observación analizado o nulo.
+ * @returns [EN] A consumed state summary with aggregated diagnostics. [ES] Un resumen de estado consumido con diagnósticos agregados.
+ */
 export const createWatchSnapshotSummary = (snapshot: BarritsWatchSnapshot | null): BarritsConsumedStateSummary => {
   if (!snapshot) {
     return {
@@ -193,6 +207,13 @@ export const createWatchSnapshotSummary = (snapshot: BarritsWatchSnapshot | null
   );
 };
 
+/**
+ * [EN] Creates a detailed language tool snapshot from a Barrits watch snapshot.
+ * [ES] Crea un snapshot detallado de herramienta de lenguaje a partir de un snapshot de observación de Barrits.
+ *
+ * @param snapshot - [EN] Parsed watch snapshot. [ES] Snapshot de observación analizado.
+ * @returns [EN] A language tool snapshot with full domain, diagnostic, and collision data. [ES] Un snapshot de herramienta de lenguaje con datos completos de dominio, diagnóstico y colisión.
+ */
 export const createLanguageToolSnapshot = (snapshot: BarritsWatchSnapshot): BarritsLanguageToolSnapshot => {
   const traitDiagnosticAggregate = createTraitDiagnosticAggregate(snapshot.graph.traitDiagnostics) ?? {
     counts: createEmptyTraitDiagnosticCounts(),

@@ -19,7 +19,7 @@ Esta sección se centra exclusivamente en la gobernanza de lanzamientos (release
 3.  **[02_versionado-y-releases.md](02_versionado-y-releases.md)**: Gestión de Versiones y SemVer.
 4.  **[03_secrets-actions-y-entornos.md](03_secrets-actions-y-entornos.md)**: Infraestructura de CI y Seguridad.
 5.  **[04_variables-de-entorno.md](04_variables-de-entorno.md)**: Referencia técnica de variables.
-6.  **[05_release-readiness.md](05_release-readiness.md)**: Checklist de preparación final.
+6.  **[05_listo-para-lanzamiento.md](05_listo-para-lanzamiento.md)**: Checklist de preparación final.
 7.  **[06_configuracion-jsr-y-github-actions.md](06_configuracion-jsr-y-github-actions.md)**: Vínculo técnico JSR-GitHub.
 8.  **[07_primera-publicacion-paso-a-paso.md](07_primera-publicacion-paso-a-paso.md)**: Protocolo de lanzamiento.
-9.  **[08_cicd-pipeline-and-branch-strategy.md](08_cicd-pipeline-and-branch-strategy.md)**: Pipeline de CI/CD y modelo de ramas.
+9.  **[08_cicd-pipeline-y-estrategia-de-ramas.md](08_cicd-pipeline-y-estrategia-de-ramas.md)**: Pipeline de CI/CD y modelo de ramas.

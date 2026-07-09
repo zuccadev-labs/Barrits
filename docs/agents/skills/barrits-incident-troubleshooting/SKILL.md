@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-incident-troubleshooting
 description: Use this skill when debugging incidents, build failures, test regressions, or runtime errors in the Barrits SDK. Covers diagnostic collection, error classification, and resolution paths.
+opencode_skill: .opencode/skills/incident-troubleshooting/skill.jsonc
 ---
 
 # Barrits Incident Troubleshooting
@@ -94,3 +95,4 @@ Then fix forward on `dev` and re-release.
 - `docs/agents/skills/barrits-testing-patterns/` — Understanding the test suite structure
 - `.opencode/skills/security-audit/` — For security-related incidents
 - `.opencode/skills/emergency-release/` — For hotfix release procedure
+

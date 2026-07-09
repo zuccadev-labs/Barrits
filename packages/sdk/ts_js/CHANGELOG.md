@@ -17,6 +17,10 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 - **Dependency bumps from Dependabot PRs #100/#101**: `@types/node` `^25.6.0` → `^26.1.0`, `tsx` `^4.22.4` → `^4.23.0`. Updated root monorepo and example package.json files with matching bumps for `@emnapi/core`, `@emnapi/runtime`, `@vitejs/plugin-react`, `rollup`, `webpack`, `webpack-cli`, `react`, `react-dom`, `react-router-dom`, `solid-js`, `svelte`, `@tauri-apps/api`, `@tauri-apps/cli`, and `vue`.
 - **README test count**: Updated from 65 to 946+ in both EN and ES READMEs.
 - **README.es.md**: Added monorepo structure mermaid diagram for parity with EN version.
+- **README example fix — fictional `resolve<any>()` replaced with real IoC API**: The "How does it work in practice?" example previously used `resolve<any>("Database")`, which is not part of the public API. Replaced with a two-step example showing JSDoc trait declaration (Step 1) and `BarritsIoCContainer` usage with `container.resolve()` (Step 2). The `@barrits-trait` tag now includes a required name value (`user-service`) matching the parser's expectations.
+- **README — added Supported JSDoc Tags reference table**: Documents all 9 supported `@barrits-*` JSDoc tags (`trait`, `summary`, `consumes`, `provides`, `state`, `requires`, `conflicts`, `tags`, `runtime`) with descriptions and usage examples. Closes documentation gap for 4 previously undocumented tags (`@barrits-requires`, `@barrits-conflicts`, `@barrits-tags`, `@barrits-runtime`).
+- **README — added Migration Guide v0.1.x → v0.2.0**: New section documenting new exports (resilience, hashing, datetime), new API subpaths (IoC, OpenAPI, Bun adapter), Deno adapter full surface, and internal changes (992+ tests, 100% coverage, typecheck in CI, dist consolidation, internal refactors).
+- **`09b-api-reference-algorithms.md` (EN/ES) — added three new algorithm families**: Documented Resilience Patterns (`retryWithBackoff`, `withTimeout`, `createCircuitBreaker`), Hashing and Integrity (`sha256Hex`, `murmurHash3`, `deterministicStringify`), and Datetime Utilities (`toIsoString`, `fromIsoString`, `diffMs`, `addMs`, `toRelativeTime`). Each includes signature, description, usage examples, and namespaced access. Updated `algorithms` and `logic` catalog descriptions to reference the new families. Validated: 992 tests pass, 0 typecheck errors, 0 lint errors in src/ and adapters/.
 
 ## [0.1.9] - 2026-07-06
 
@@ -37,6 +41,14 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 - **`adapters/deno/mod.ts` — export missing utility functions**: Added re-exports for hashing (`sha256Hex`, `deterministicStringify`, `murmurHash3`), validation (`isEmail`, `isUuid`, `assertNonNullish`), datetime (`toIsoString`, `toRelativeTime`), and resilience (`retryWithBackoff`, `withTimeout`, `createCircuitBreaker`) from the Deno adapter. These were previously imported directly from internal chunks but not exposed through the adapter entrypoint. Enables Deno consumers to use the full SDK surface through a single import path.
 
 - **`example-deno` — complete Phase 1 example enhancement**: Extended the Deno reference example with 3 traits (`runtime-deno`, `parse-service`, `http-handler`), OpenAPI schema generation script, IoC container demo, 8 automated tests, updated deno.json tasks, and cleaned README. All scripts verified: `deno test -A` (8/8 passing), OpenAPI output validates v3.1.0, IoC demo resolves dependencies correctly. Fixes pre-existing issue in `main.ts` where `orderBy` used incorrect `key` parameter (changed to `project`).
+
+### Fixed
+- **JSDoc coverage for all public SDK surfaces**: Added bilingual EN/ES JSDoc (`@param`, `@returns`, `@throws`, `@example`, `@since`) to all public functions in `sdk/consume.ts`, `sdk/logger.ts`, `sdk/summarization.ts`, and `sdk/adapters.ts`. Replaced individual contract type re-exports with `export type *` in `consume.ts` for cleaner type surface. Added missing contract and config type exports to `src/barrits/index.ts` and `src/barrits/package.ts`. Fixed `brt` type alias typing in `api/domains.ts`. Validated: `tsc --noEmit` 0 errors, all 946 tests pass, unblocks `deno doc --lint` compliance.
+- **Deno adapter JSDoc coverage**: Added JSDoc to all public functions in `adapters/deno/filesystem.ts` and `adapters/deno/tooling.ts`. Enables `deno doc --lint` compliance for Deno consumers.
+
+### Docs
+- **README version pin fix**: Updated SDK README version from `0.1.9` to `0.2.0` to reflect current published version.
+- **Examples README deduplication**: Removed redundant "How it works" section from `examples/README.md` (content already covered in central examples documentation).
 
 ## [0.1.8] - 2026-07-02
 

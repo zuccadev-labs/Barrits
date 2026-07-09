@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-maintainer-full-cycle
 description: Use this skill when performing a full maintenance cycle on the Barrits SDK: version bump, changelog update, build verification, and publication to npm and JSR.
+opencode_skill: .opencode/skills/maintainer-full-cycle/skill.jsonc
 ---
 
 # Barrits Maintainer — Full Cycle
@@ -118,3 +119,4 @@ npx jsr info @zuccadev-labs/barrits
 - `docs/agents/skills/barrits-release-orchestration/` — Release orchestration deep-dive
 - `.opencode/skills/development-workflow/` — Commit and branch conventions
 - `.opencode/skills/emergency-release/` — Hotfix process for critical patches
+

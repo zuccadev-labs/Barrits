@@ -6,7 +6,7 @@ This guide details the sequential protocol for executing the initial public rele
 
 Before modifying the package version, the following controls must be certified:
 
-1.  Full validation of the checklist in [05_release-readiness.md](05_release-readiness.md).
+1.  Full validation of the checklist in [05-release-readiness.md](05-release-readiness.md).
 2.  Technical linkage of the JSR package with the GitHub repository.
 3.  "Trusted Publishing" configuration in npm for the `release.yml` flow.
 4.  Existence of the `npm` and `jsr` environments.

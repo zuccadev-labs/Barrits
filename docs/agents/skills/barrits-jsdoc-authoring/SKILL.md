@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-jsdoc-authoring
 description: Use this skill when writing or reviewing JSDoc comments in the Barrits SDK. Covers bilingual [EN]/[ES] conventions, @module, @param, @returns, @barrits-* annotations, and trait descriptors.
+opencode_skill: .opencode/skills/jsdoc-authoring/skill.jsonc
 ---
 
 # Barrits JSDoc Authoring
@@ -102,3 +103,4 @@ npm run lint
 - `docs/development/EN/packages/ts_js/04-jsdoc-and-documentation-standards.md` — Full JSDoc standards document
 - `packages/sdk/ts_js/src/barrits/traits/` — Trait implementation reference
 - `packages/sdk/ts_js/examples/` — Example trait usage patterns
+

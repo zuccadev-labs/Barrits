@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-llm-protocols
 description: LLM agent protocols, documentation standards, AI-friendly coding practices, and JSDoc conventions for the Barrits project. Use when writing code for LLM consumption, applying JSDoc standards, or setting up agent context.
+opencode_skill: .opencode/skills/llm-protocols/skill.jsonc
 ---
 
 # Barrits LLM Protocols
@@ -112,3 +113,4 @@ The project uses two skill layers:
 - JSDoc deep-dive: `docs/agents/skills/barrits-jsdoc-authoring/SKILL.md`
 - Skill inventory: `docs/agents/README.md`
 - `.opencode/skills/llm-protocols/skill.jsonc`
+

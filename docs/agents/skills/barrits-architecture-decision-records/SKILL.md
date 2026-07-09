@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-architecture-decision-records
 description: Architecture Decision Record (ADR) creation, review, and lifecycle management following the Barrits project template. Use when documenting architectural decisions, investigating trade-offs, or recording design rationale.
+opencode_skill: .opencode/skills/architecture-decision-records/skill.jsonc
 ---
 
 # Barrits Architecture Decision Records
@@ -74,3 +75,4 @@ proposed → accepted → deprecated → superseded
 - Bilingual index EN: `docs/investigations/EN/packages/ts_js/00-index.md`
 - Bilingual index ES: `docs/investigations/ES/packages/ts_js/00_indice.md`
 - `.opencode/skills/architecture-decision-records/skill.jsonc`
+

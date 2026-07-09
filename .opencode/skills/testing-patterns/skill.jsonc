@@ -1,26 +1,32 @@
-{
+﻿{
   "name": "testing-patterns",
   "description": "Testing conventions, test-writing patterns, and quality gates for the Barrits SDK. Covers node:test runner, property-based testing with fast-check, mutation testing with Stryker, and integration tests across runtimes.",
+  "seeAlso": "docs/agents/skills/barrits-testing-patterns/SKILL.md",
   "prompts": [
     {
       "name": "run-tests",
       "description": "Run the full SDK test suite or a specific test file with the node:test runner.",
+  "seeAlso": "docs/agents/skills/barrits-testing-patterns/SKILL.md",
       "prompt": "Full suite: cd packages/sdk/ts_js && npm test (935+ tests via tsx --test, glob tests/**/*.test.ts). Single file: node ../../node_modules/tsx/dist/cli.mjs --test tests/<module>.test.ts. Coverage: npm run test:coverage. Mutation: npx stryker run from root. For slow CI environments, use --test-concurrency=1 to avoid async race conditions in integration tests."
     },
     {
       "name": "write-unit-test",
       "description": "Create a new unit test file following existing patterns with node:test runner.",
+  "seeAlso": "docs/agents/skills/barrits-testing-patterns/SKILL.md",
       "prompt": "Create tests/<module>.test.ts. Use: import { describe, it } from 'node:test'; import * as assert from 'node:assert/strict'; import { <function> } from '../src/barrits/sdk/<module>'. Test structure: pure function tests (input → output), edge cases (empty/null/undefined inputs), invariants (idempotency, determinism). For property-based tests: import fc from 'fast-check' and use fc.assert(fc.property(...)). Name tests with describe('<Module>') / it('<should do something>'). See tests/ for reference patterns."
     },
     {
       "name": "write-integration-test",
       "description": "Create an integration test that exercises CLI commands or filesystem operations.",
+  "seeAlso": "docs/agents/skills/barrits-testing-patterns/SKILL.md",
       "prompt": "Use temporary directories: import { mkdtemp, rm } from 'node:fs/promises'; import { tmpdir } from 'node:os'; import { join } from 'node:path'. Create temp dir with mkdtemp(join(tmpdir(), 'barrits-test-')). Spawn real CLI processes: import { spawn } from 'node:child_process'. Assert on stdout, exit codes, and generated artifacts. Clean up with rm(tmpDir, { recursive: true, force: true }) in afterEach or after. Reference tests/cli/*.test.ts for patterns."
     },
     {
       "name": "check-mutation-coverage",
       "description": "Run mutation testing with Stryker and interpret the results.",
+  "seeAlso": "docs/agents/skills/barrits-testing-patterns/SKILL.md",
       "prompt": "Run: npx stryker run from root (or cd packages/sdk/ts_js && npx stryker run). Current baseline: ~69.51% mutation score. Break threshold: 50%, High threshold: 80%. Review stryker.config.json for configuration. If score drops below 50%, identify survived mutants and add tests. Focus on pure logic functions (algorithms, validation, hashing, datetime) for highest mutation ROI."
     }
   ]
 }
+

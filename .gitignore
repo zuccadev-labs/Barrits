@@ -39,6 +39,9 @@ reports/
 bun.lock
 bun.lockb
 
+# Deno lockfile (generated, not tracked)
+**/deno.lock
+
 # Generated type declarations (tsc --emitDeclarationOnly now outputs to dist/)
 **/src/**/*.d.ts
 **/adapters/**/*.d.ts
@@ -75,4 +78,6 @@ agent.md
 AGENTS.md
 agent.md
 
-context7.json
+# context7.json — Project-level Context7 indexer configuration
+# Uncomment below to exclude from version control if using local-only indexing
+# context7.json

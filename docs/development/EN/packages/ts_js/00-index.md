@@ -10,7 +10,8 @@ This directory centralizes the technical documentation regarding the internal de
 4.  **[04-validation-and-publication.md](04-validation-and-publication.md)**: Validation baseline, smoke test strategy, and dual distribution governance (npm/JSR).
 5.  **[05-discovery-inspection-and-contracts.md](05-discovery-inspection-and-contracts.md)**: Explanation of the AST extraction engine, manifests, and snapshots.
 6.  **[06-tooling-publication-and-platforms.md](06-tooling-publication-and-platforms.md)**: Cross-platform validation and distribution constraints.
-7.  **[08-phase1-extension-examples.md](08-phase1-extension-examples.md)**: SDK example extension plan across all runtimes (Deno, Bun, frameworks, bundlers).
+7.  **[07-intentionally-skipped.md](07-intentionally-skipped.md)**: Number intentionally omitted — content absorbed by adjacent documents 06 and 08.
+8.  **[08-phase1-extension-examples.md](08-phase1-extension-examples.md)**: SDK example extension plan across all runtimes (Deno, Bun, frameworks, bundlers).
 
 ## Editorial Standards
 

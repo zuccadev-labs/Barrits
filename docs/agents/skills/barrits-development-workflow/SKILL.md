@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-development-workflow
 description: Standard development workflow for the Barrits SDK: conventional commits, branch strategy, PR creation, and changelog governance. Use when starting features, committing changes, or preparing pull requests.
+opencode_skill: .opencode/skills/development-workflow/skill.jsonc
 ---
 
 # Barrits Development Workflow
@@ -121,3 +122,4 @@ Edit `CHANGELOG.md` at the project root. Add entry under `[Unreleased]`:
 - GitHub CLI: `gh` commands
 - CHANGELOG: `CHANGELOG.md` at project root
 - `.opencode/skills/development-workflow/skill.jsonc`
+

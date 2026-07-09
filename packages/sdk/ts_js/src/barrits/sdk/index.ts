@@ -4,11 +4,14 @@
  * [ES] Módulo barrel público del SDK que re-exporta todos los primitivos, tipos y adaptadores de Barrits para uso del consumidor.
  */
 export type {
+  BarritsBaseContext,
+  BarritsConsumedTraitDescriptor,
+  BarritsConsumedStateSummary,
   BarritsDiscovery,
   BarritsDiscoveryStrategy,
   BarritsBuildManifest,
-  BarritsConsumedStateSummary,
   BarritsDomainIntegration,
+  BarritsExportAccessStrategy,
   BarritsExportCollision,
   BarritsExportKind,
   BarritsExportVisibility,
@@ -21,6 +24,8 @@ export type {
   BarritsImportActionKind,
   BarritsImportFilters,
   BarritsTraitDescriptorInspection,
+  BarritsTraitDiagnostic,
+  BarritsTraitDiagnosticAggregate,
   BarritsSourceLayer,
   BarritsLanguageToolDomain,
   BarritsLanguageToolSnapshot,

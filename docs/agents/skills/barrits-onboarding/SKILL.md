@@ -1,6 +1,7 @@
----
+﻿---
 name: barrits-onboarding
 description: Use this skill when onboarding new developers to the Barrits SDK. Provides setup instructions, architecture overview, development workflow, and contribution guidelines.
+opencode_skill: .opencode/skills/onboarding/skill.jsonc
 ---
 
 # Barrits Onboarding
@@ -65,3 +66,4 @@ barrits/
 - **Adapter pattern**: Runtime-specific code in `adapters/`, shared logic in `src/`
 - **Trait composition**: IoC container with `createTraitDescriptor` + `mergeTraits`
 - **No runtime deps**: All dependencies are dev-only; SDK is zero-dependency at runtime
+

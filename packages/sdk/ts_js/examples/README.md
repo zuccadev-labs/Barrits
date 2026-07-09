@@ -5,7 +5,6 @@
 This directory contains executable reference implementations demonstrating
 the integration of the Barrits SDK across multiple runtimes, frameworks,
 and build systems. Each example is a self-contained project that can be
-and build systems. Each example is a self-contained project that can be
 executed independently.
 
 > [!NOTE]
