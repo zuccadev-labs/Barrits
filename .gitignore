@@ -39,6 +39,9 @@ reports/
 bun.lock
 bun.lockb
 
+# Deno lockfile (generated, not tracked)
+**/deno.lock
+
 # Generated type declarations (tsc --emitDeclarationOnly now outputs to dist/)
 **/src/**/*.d.ts
 **/adapters/**/*.d.ts
