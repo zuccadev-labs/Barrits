@@ -42,6 +42,14 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 
 - **`example-deno` — complete Phase 1 example enhancement**: Extended the Deno reference example with 3 traits (`runtime-deno`, `parse-service`, `http-handler`), OpenAPI schema generation script, IoC container demo, 8 automated tests, updated deno.json tasks, and cleaned README. All scripts verified: `deno test -A` (8/8 passing), OpenAPI output validates v3.1.0, IoC demo resolves dependencies correctly. Fixes pre-existing issue in `main.ts` where `orderBy` used incorrect `key` parameter (changed to `project`).
 
+### Fixed
+- **JSDoc coverage for all public SDK surfaces**: Added bilingual EN/ES JSDoc (`@param`, `@returns`, `@throws`, `@example`, `@since`) to all public functions in `sdk/consume.ts`, `sdk/logger.ts`, `sdk/summarization.ts`, and `sdk/adapters.ts`. Replaced individual contract type re-exports with `export type *` in `consume.ts` for cleaner type surface. Added missing contract and config type exports to `src/barrits/index.ts` and `src/barrits/package.ts`. Fixed `brt` type alias typing in `api/domains.ts`. Validated: `tsc --noEmit` 0 errors, all 946 tests pass, unblocks `deno doc --lint` compliance.
+- **Deno adapter JSDoc coverage**: Added JSDoc to all public functions in `adapters/deno/filesystem.ts` and `adapters/deno/tooling.ts`. Enables `deno doc --lint` compliance for Deno consumers.
+
+### Docs
+- **README version pin fix**: Updated SDK README version from `0.1.9` to `0.2.0` to reflect current published version.
+- **Examples README deduplication**: Removed redundant "How it works" section from `examples/README.md` (content already covered in central examples documentation).
+
 ## [0.1.8] - 2026-07-02
 
 ### Refactored
