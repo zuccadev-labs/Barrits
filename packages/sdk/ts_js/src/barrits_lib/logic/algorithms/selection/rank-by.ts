@@ -6,8 +6,11 @@ import { createOrderComparator, orderBy } from "../sort";
  * [ES] Definición de tipo para RankedValue.
  */
 export type RankedValue<Value> = {
+  /** [EN] The original value. [ES] El valor original. */
   readonly value: Value;
+  /** [EN] Rank (shared rank for ties). [ES] Rango (mismo rango para empates). */
   readonly rank: number;
+  /** [EN] Ordinal position (1-indexed, unique). [ES] Posición ordinal (basada en 1, única). */
   readonly ordinal: number;
 };
 

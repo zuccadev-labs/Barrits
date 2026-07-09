@@ -3,7 +3,9 @@
  * [ES] Definición de tipo para PartitionResult.
  */
 export type PartitionResult<Value> = {
+  /** [EN] Elements that passed the predicate. [ES] Elementos que pasaron el predicado. */
   readonly matched: Value[];
+  /** [EN] Elements that did not pass the predicate. [ES] Elementos que no pasaron el predicado. */
   readonly rejected: Value[];
 };
 

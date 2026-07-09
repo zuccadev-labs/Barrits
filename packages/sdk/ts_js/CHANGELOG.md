@@ -3,6 +3,14 @@
 All notable changes to this SDK will be documented in this file.
 Todos los cambios relevantes para el SDK se documentan aquí.
 
+## [0.2.1] - 2026-07-08
+
+### Added
+- **JSDoc documentation for all public type properties across 37 source files**: Completed comprehensive JSDoc coverage for every property in public interfaces, types, and enums across the entire SDK surface. This includes contract types (`consumables`, `graph`, `manifest`, `snapshot`, `traits`), config types, CLI types, plugin options, runtime assertions, IoC types, OpenAPI schema types, and all internal type definitions. Every property now has bilingual (EN/ES) JSDoc with `@param`, `@returns`, `@example` where applicable. Validated: `tsc --noEmit` passes (0 errors), all 946 tests pass (0 failures).
+
+### Changed
+- **Version bump**: 0.2.0 → 0.2.1 across package.json and jsr.json.
+
 ## [0.2.0] - 2026-07-07
 
 ### Fixed

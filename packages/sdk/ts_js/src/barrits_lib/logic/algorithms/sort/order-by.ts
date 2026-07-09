@@ -6,8 +6,11 @@ import { chainComparators, createCompareBy, defaultCompare } from "../internal/c
  * [ES] Definición de tipo para OrderCriterion.
  */
 export type OrderCriterion<Value, Result = unknown> = {
+  /** [EN] Projection function to extract the sort key. [ES] Función de proyección para extraer la clave de ordenamiento. */
   readonly project: (value: Value) => Result;
+  /** [EN] Sort direction (ascending or descending). [ES] Dirección de ordenamiento (ascendente o descendente). */
   readonly direction?: SortDirection;
+  /** [EN] Custom comparison function. [ES] Función de comparación personalizada. */
   readonly compare?: CompareFunction<Result>;
 };
 

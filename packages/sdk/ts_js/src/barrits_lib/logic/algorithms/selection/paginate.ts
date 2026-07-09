@@ -3,7 +3,9 @@
  * [ES] Definición de tipo para PaginationOptions.
  */
 export type PaginationOptions = {
+  /** [EN] Page number (1-indexed). [ES] Número de página (basado en 1). */
   readonly page: number;
+  /** [EN] Number of items per page. [ES] Número de elementos por página. */
   readonly pageSize: number;
 };
 
@@ -12,12 +14,19 @@ export type PaginationOptions = {
  * [ES] Definición de tipo para PaginatedResult.
  */
 export type PaginatedResult<Value> = {
+  /** [EN] Items for the current page. [ES] Elementos de la página actual. */
   readonly items: Value[];
+  /** [EN] Current page number. [ES] Número de página actual. */
   readonly page: number;
+  /** [EN] Number of items per page. [ES] Número de elementos por página. */
   readonly pageSize: number;
+  /** [EN] Total number of items across all pages. [ES] Número total de elementos en todas las páginas. */
   readonly totalItems: number;
+  /** [EN] Total number of pages. [ES] Número total de páginas. */
   readonly totalPages: number;
+  /** [EN] Whether there is a next page. [ES] Indica si hay una página siguiente. */
   readonly hasNextPage: boolean;
+  /** [EN] Whether there is a previous page. [ES] Indica si hay una página anterior. */
   readonly hasPreviousPage: boolean;
 };
 

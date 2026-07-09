@@ -6,9 +6,13 @@ import { sortTimeSeries } from "../sort-time-series";
  * [ES] Representa un punto en un análisis de drawdown (caída desde el máximo).
  */
 export type DrawdownPoint = {
+  /** [EN] Point timestamp. [ES] Marca de tiempo del punto. */
   readonly timestamp: number;
+  /** [EN] Current value at the point. [ES] Valor actual en el punto. */
   readonly value: number;
+  /** [EN] Peak value up to this point. [ES] Valor máximo hasta este punto. */
   readonly peak: number;
+  /** [EN] Drawdown percentage (negative or zero). [ES] Porcentaje de drawdown (negativo o cero). */
   readonly drawdown: number;
 };
 

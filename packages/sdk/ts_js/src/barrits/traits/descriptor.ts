@@ -87,10 +87,14 @@ export type TraitDescriptorMetadata = {
   readonly runtimes: readonly string[];
 };
 
-/** Optional composition controls for state initialization and collision handling. */
+/** [EN] Optional composition controls for state initialization and collision handling.
+ *  [ES] Controles opcionales de composición para inicialización de estado y manejo de colisiones. */
 export type ComposeTraitDescriptorsOptions<TState extends object> = {
+  /** [EN] Initial state values. [ES] Valores de estado inicial. */
   readonly state?: TState;
+  /** [EN] Conflict resolution strategy. [ES] Estrategia de resolución de conflictos. */
   readonly onConflict?: TraitConflictStrategy;
+  /** [EN] Custom conflict resolver function. [ES] Función personalizada de resolución de conflictos. */
   readonly resolveConflict?: (
     key: string,
     leftValue: unknown,
@@ -100,14 +104,22 @@ export type ComposeTraitDescriptorsOptions<TState extends object> = {
   ) => unknown;
 };
 
-/** Deterministic trait composition result consumed by runtime tooling and diagnostics. */
+/** [EN] Deterministic trait composition result consumed by runtime tooling and diagnostics.
+ *  [ES] Resultado de composición determinista de traits consumido por herramientas de runtime y diagnósticos. */
 export type ComposedTraitDescriptorsResult<TState extends object, TTraits extends object> = {
+  /** [EN] Ordered list of trait names. [ES] Lista ordenada de nombres de traits. */
   readonly order: readonly string[];
+  /** [EN] Composed state values. [ES] Valores de estado compuestos. */
   readonly state: TState;
+  /** [EN] Composed trait instances. [ES] Instancias de traits compuestas. */
   readonly traits: TTraits;
+  /** [EN] Names of all descriptors. [ES] Nombres de todos los descriptores. */
   readonly descriptors: readonly string[];
+  /** [EN] Map of state key to owning trait name. [ES] Mapa de clave de estado a nombre del trait propietario. */
   readonly stateOwners: Readonly<Record<string, string>>;
+  /** [EN] Map of trait name to its providers. [ES] Mapa de nombre de trait a sus proveedores. */
   readonly traitProviders: Readonly<Record<string, readonly string[]>>;
+  /** [EN] Map of trait name to its metadata. [ES] Mapa de nombre de trait a sus metadatos. */
   readonly traitMetadata: Readonly<Record<string, TraitDescriptorMetadata>>;
 };
 

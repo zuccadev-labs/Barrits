@@ -54,7 +54,9 @@ const createDisjointSet = <NodeId extends GraphNodeId>(nodes: readonly NodeId[])
  * [ES] Estructura de resultado para algoritmos de Árbol de Recubrimiento Mínimo.
  */
 export type MinimumSpanningTreeResult<NodeId extends GraphNodeId = GraphNodeId> = {
+  /** [EN] Edges included in the MST. [ES] Aristas incluidas en el MST. */
   readonly edges: GraphEdge<NodeId>[];
+  /** [EN] Sum of all edge weights in the MST. [ES] Suma de todos los pesos de aristas en el MST. */
   readonly totalWeight: number;
 };
 
