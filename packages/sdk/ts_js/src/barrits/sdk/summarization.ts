@@ -23,10 +23,18 @@ import {
   type MutableTraitDiagnosticCodeCounts,
 } from "./validation";
 
+/**
+ * [EN] Maps import actions to their string statement representations.
+ * [ES] Mapea las acciones de importación a sus representaciones de declaración de cadena.
+ */
 export const mapImportStatements = (importActions: readonly BarritsImportAction[]): string[] => {
   return importActions.map((action) => action.statement);
 };
 
+/**
+ * [EN] Sorts and normalizes an optional trait descriptor array into a deterministic list.
+ * [ES] Ordena y normaliza un array opcional de descriptores de traits en una lista determinista.
+ */
 export const mapTraitDescriptors = (
   descriptors: readonly BarritsConsumedTraitDescriptor[] | undefined,
 ): BarritsConsumedTraitDescriptor[] => {
@@ -39,6 +47,10 @@ export const mapTraitDescriptors = (
   });
 };
 
+/**
+ * [EN] Sorts and normalizes an optional trait diagnostic array into a deterministic list ordered by severity, code, and source file.
+ * [ES] Ordena y normaliza un array opcional de diagnósticos de traits en una lista determinista ordenada por severidad, código y archivo fuente.
+ */
 export const mapTraitDiagnostics = (diagnostics: readonly BarritsTraitDiagnostic[] | undefined): BarritsTraitDiagnostic[] => {
   return [...(diagnostics ?? [])].sort((left, right) => {
     if (left.severity === right.severity) {
@@ -53,6 +65,10 @@ export const mapTraitDiagnostics = (diagnostics: readonly BarritsTraitDiagnostic
   });
 };
 
+/**
+ * [EN] Aggregates trait diagnostics into categorized counts and per-descriptor breakdowns.
+ * [ES] Agrega diagnósticos de traits en conteos categorizados y desgloses por descriptor.
+ */
 export const createTraitDiagnosticAggregate = (
   diagnostics: readonly BarritsTraitDiagnostic[] | undefined,
 ): BarritsTraitDiagnosticAggregate | undefined => {

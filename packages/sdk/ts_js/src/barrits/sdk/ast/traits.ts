@@ -66,6 +66,10 @@ const resolveBinaryExpression = (expression: ts.BinaryExpression | ts.Conditiona
   return resolveTraitDescriptorFactoryFromExpression(expression.whenTrue) ?? resolveTraitDescriptorFactoryFromExpression(expression.whenFalse);
 };
 
+/**
+ * [EN] Resolves a trait descriptor factory name from a TypeScript call expression AST node.
+ * [ES] Resuelve el nombre de una fábrica de descriptores de traits desde un nodo AST de expresión de llamada TypeScript.
+ */
 export const resolveTraitDescriptorFactoryFromExpression = (
   expression: ts.Expression | undefined,
 ): "createTraitDescriptor" | "createTraitDescriptorFromJsDoc" | undefined => {
@@ -216,6 +220,10 @@ const collectConstVariableTraitBindings = (
   return bindings;
 };
 
+/**
+ * [EN] Collects all exported trait bindings (const, function, class) from a source file's AST.
+ * [ES] Recolecta todos los bindings de traits exportados (const, function, class) desde el AST de un archivo fuente.
+ */
 export const collectExportedTraitBindings = (source: string, relativePath: string): ExportedTraitBinding[] => {
   const sourceFile = createCachedSourceFile(relativePath, source);
   const bindings: ExportedTraitBinding[] = [];

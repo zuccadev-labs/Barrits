@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { ensureManifestModuleFile } from "./materialize";
 import { loadManifestForPackage, resolveManifestPath, type BarritsPackageAutomationOptions } from "./shared";
 
-type WebpackCompiler = {
+export type WebpackCompiler = {
   context: string;
   options: {
     resolve?: {
@@ -20,10 +20,15 @@ type WebpackCompiler = {
   };
 };
 
-type WebpackPlugin = {
+/** [EN] Webpack plugin interface used by BarritsWebpackPlugin. [ES] Interfaz de plugin de Webpack utilizada por BarritsWebpackPlugin. */
+export type WebpackPlugin = {
   apply: (compiler: WebpackCompiler) => void;
 };
 
+/**
+ * [EN] Configuration options for the Barrits Webpack plugin.
+ * [ES] Opciones de configuración para el plugin de Webpack de Barrits.
+ */
 export type BarritsWebpackPluginOptions = {
   manifestPath?: string;
   package?: BarritsPackageAutomationOptions;
@@ -34,11 +39,19 @@ export type BarritsWebpackPluginOptions = {
 const DEFAULT_VIRTUAL_MODULE_ID = "barrits-manifest";
 const DEFAULT_GENERATED_MODULE_PATH = ".barrits/webpack-manifest.generated.mjs";
 
+/**
+ * [EN] Webpack plugin that generates and injects the Barrits build manifest as a virtual module.
+ * [ES] Plugin de Webpack que genera e inyecta el manifiesto de compilación de Barrits como un módulo virtual.
+ */
 export class BarritsWebpackPlugin implements WebpackPlugin {
   private readonly packageOptions?: BarritsPackageAutomationOptions;
   private readonly virtualModuleId: string;
   private readonly generatedModulePath: string;
 
+  /**
+   * [EN] Creates a new BarritsWebpackPlugin instance.
+   * [ES] Crea una nueva instancia de BarritsWebpackPlugin.
+   */
   constructor(options: BarritsWebpackPluginOptions = {}) {
     const manifestPath = resolveManifestPath(options.manifestPath ?? options.package?.manifestPath);
     this.packageOptions = options.package ? { ...options.package, manifestPath } : manifestPath ? { manifestPath } : undefined;
@@ -46,6 +59,10 @@ export class BarritsWebpackPlugin implements WebpackPlugin {
     this.generatedModulePath = options.generatedModulePath ?? DEFAULT_GENERATED_MODULE_PATH;
   }
 
+  /**
+   * [EN] Applies the plugin to the Webpack compiler, registering hooks for manifest generation.
+   * [ES] Aplica el plugin al compilador de Webpack, registrando hooks para la generación del manifiesto.
+   */
   apply(compiler: WebpackCompiler): void {
     const resolvedGeneratedModulePath = resolve(compiler.context, this.generatedModulePath);
     const ensureGeneratedModule = async (): Promise<void> => {
@@ -64,6 +81,10 @@ export class BarritsWebpackPlugin implements WebpackPlugin {
   }
 }
 
+/**
+ * [EN] Factory function that creates a BarritsWebpackPlugin instance.
+ * [ES] Función de fábrica que crea una instancia de BarritsWebpackPlugin.
+ */
 export const barritsWebpackPlugin = (options: BarritsWebpackPluginOptions = {}): BarritsWebpackPlugin => {
   return new BarritsWebpackPlugin(options);
 };

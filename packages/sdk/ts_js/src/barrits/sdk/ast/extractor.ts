@@ -290,6 +290,10 @@ const handleExportDeclaration = (
   }
 };
 
+/**
+ * [EN] Collects all direct exports (named, default, re-exports) from a source file's AST in one pass.
+ * [ES] Recolecta todas las exportaciones directas (nombradas, por defecto, re-exportaciones) desde el AST de un archivo fuente en una pasada.
+ */
 export const collectDirectExports = (source: string, relativePath: string): ParsedExportStatements => {
   const exportsMap = new Map<string, BarritsFileExport>();
   const exportAllSpecifiers: string[] = [];
