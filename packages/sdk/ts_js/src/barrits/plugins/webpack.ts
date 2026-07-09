@@ -3,6 +3,7 @@ import { resolve } from "node:path";
 import { ensureManifestModuleFile } from "./materialize";
 import { loadManifestForPackage, resolveManifestPath, type BarritsPackageAutomationOptions } from "./shared";
 
+/** [EN] Webpack compiler interface used by BarritsWebpackPlugin. [ES] Interfaz de compilador de Webpack utilizada por BarritsWebpackPlugin. */
 export type WebpackCompiler = {
   context: string;
   options: {
