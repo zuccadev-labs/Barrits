@@ -10,6 +10,11 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 
 ### Changed
 - **Version bump**: 0.2.0 → 0.2.1 across package.json and jsr.json.
+- **Pre-release audit**: Verified all dependencies resolve to latest stable versions within specified ranges. Confirmed 0 vulnerabilities via `npm audit` across all workspaces (SDK + 10 examples). JSR dry-run (`deno publish --dry-run`) completed successfully with only expected dynamic import warnings.
+
+### Security
+- **npm audit — 0 vulnerabilities**: Full audit across root monorepo and all 8 example workspaces. All dependencies within specified caret ranges resolve to latest compatible versions.
+- **JSR publish dry-run — passed**: `deno publish --dry-run` validates the full JSR publish surface. The two `unanalyzable-dynamic-import` warnings are expected by design (dynamic adapter loading in `config.ts` and `adapters.ts`).
 
 ## [0.2.0] - 2026-07-07
 
