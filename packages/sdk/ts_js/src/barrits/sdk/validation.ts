@@ -9,15 +9,21 @@ import { isBarritsExportVisibility, isBarritsFileKind } from "./guards";
 
 /** [EN] Mutable aggregate counts for trait diagnostics (total, errors, warnings). [ES] Conteos agregados mutables para diagnósticos de traits (total, errores, advertencias). */
 export type MutableTraitDiagnosticCounts = {
+  /** [EN] Total. [ES] Total. */
   total: number;
+  /** [EN] Error count. [ES] Error conteo. */
   errorCount: number;
+  /** [EN] Warning count. [ES] Advertencia conteo. */
   warningCount: number;
 };
 
 /** [EN] Mutable counts per trait diagnostic category (drift, impossible, non-verifiable). [ES] Conteos mutables por categoría de diagnóstico de traits (drift, impossible, non-verifiable). */
 export type MutableTraitDiagnosticCategoryCounts = {
+  /** [EN] Drift. [ES] Drift. */
   drift: number;
+  /** [EN] Impossible. [ES] Impossible. */
   impossible: number;
+  /** [EN] "non verifiable". [ES] "non verifiable". */
   "non-verifiable": number;
 };
 
@@ -26,10 +32,15 @@ export type MutableTraitDiagnosticCodeCounts = Record<BarritsTraitDiagnosticCode
 
 /** [EN] Mutable variant of BarritsSelectionFilters used during config parsing and merging. [ES] Variante mutable de BarritsSelectionFilters utilizada durante el análisis y la fusión de configuraciones. */
 export type MutableSelectionFilters = {
+  /** [EN] Domains. [ES] Dominios. */
   domains?: string[];
+  /** [EN] Exports. [ES] Exportaciones. */
   exports?: string[];
+  /** [EN] File kinds. [ES] Archivo tipos. */
   fileKinds?: BarritsSelectionFilters["fileKinds"];
+  /** [EN] Visibilities. [ES] Visibilidades. */
   visibilities?: BarritsSelectionFilters["visibilities"];
+  /** [EN] Kinds. [ES] Tipos. */
   kinds?: BarritsSelectionFilters["kinds"];
 };
 

@@ -5,6 +5,25 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-07-09
+
+### Fixed
+- **JSR provenance attestation (SLSA)**: The `publish-jsr` job in `.github/workflows/release.yml` now publishes with `jsr publish --provenance`, and declares an explicit `permissions: id-token: write` at the job level. This makes JSR's "Has provenance" scoring factor flip from `0/1` (missing) to `1/1`, because the package is now published from a verifiable CI/CD workflow with a public transparency log entry.
+- **Real JSR symbol documentation coverage**: The previous v0.2.2 audit over-counted documentation — its tool treated `re-export` statements as documented and never inspected object-type-literal / interface members. JSR's actual scoring (replicated via `deno doc --json` + the published doc page) counts every exported member as a symbol. A corrected analyzer found **131+ undocumented members** (object-type-literal properties, interface members, class members, and nested/intersection members). Added **172 bilingual (EN/ES) JSDoc comments** to members across 15 files: `ioc/index.ts`, `plugins/shared.ts`, `plugins/webpack.ts`, `sdk/ast/extractor.ts`, `sdk/ast/traits.ts`, `sdk/cli-parser.ts`, `sdk/cli-spinner.ts`, `sdk/contracts.ts`, `sdk/crawler/layer.ts`, `sdk/validation.ts`, `traits/compose/merge.ts`, `traits/descriptor.ts`, and `barrits_lib/logic/algorithms/**`. Re-verification with a JSR-replica analyzer reports **0 undocumented exported members**.
+
+### Changed
+- **Version bump**: 0.2.2 → 0.2.3 across `package.json` (root + SDK) and `jsr.json`.
+- **Audit tooling**: Added `devtools/check-jsr-exported-docs.mjs`, `devtools/analyze-deno-doc-all.mjs`, `devtools/jsr-doc-audit.mjs`, `devtools/find-undocumented-members.mjs`, and `devtools/fix-undocumented-members.mjs` to reproduce JSR's symbol-documentation scoring before publish.
+
+### Validation
+- `tsc --noEmit`: 0 errors.
+- Core SDK tests: 946 passing (0 fail).
+- ESLint: 0 warnings, 0 errors.
+- `deno publish --dry-run`: passed (only expected dynamic-import warnings).
+- JSR-replica doc analyzer: 0 undocumented exported symbols across all entry points.
+
+> Note: The v0.2.2 changelog entry overstated coverage (100%) based on the flawed audit tool. This release corrects that with the accurate measurement and the missing member-level documentation.
+
 ## [0.2.2] - 2026-07-09
 
 ### Added

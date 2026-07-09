@@ -8,9 +8,13 @@ import { upperBound } from "./upper-bound";
  * [ES] Definición de tipo para SortedRangeMatch.
  */
 export type SortedRangeMatch = {
+  /** [EN] Found. [ES] Encontrado. */
   readonly found: boolean;
+  /** [EN] Start index. [ES] Inicio índice. */
   readonly startIndex: number;
+  /** [EN] End index. [ES] Fin índice. */
   readonly endIndex: number;
+  /** [EN] Count. [ES] Conteo. */
   readonly count: number;
 };
 

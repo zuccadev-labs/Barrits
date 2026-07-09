@@ -10,9 +10,13 @@ export type TraitConflictStrategy = "throw" | "left" | "right";
 
 /** Context object passed to each trait factory during composition. */
 export type TraitDescriptorContext<TState extends object, TResolvedTraits extends object, TName extends string> = {
+  /** [EN] Descriptor name. [ES] Descriptor nombre. */
   readonly descriptorName: TName;
+  /** [EN] Order. [ES] Orden. */
   readonly order: readonly string[];
+  /** [EN] State. [ES] Estado. */
   readonly state: TState;
+  /** [EN] Traits. [ES] Traits. */
   readonly traits: Partial<TResolvedTraits>;
 };
 
@@ -22,68 +26,115 @@ export type TraitDescriptor<
   TState extends object = Record<string, never>,
   TProvides extends object = Record<string, never>,
 > = {
+  /** [EN] Name. [ES] Nombre. */
   readonly name: TName;
+  /** [EN] Summary. [ES] Resumen. */
   readonly summary?: string;
+  /** [EN] Requires. [ES] Requiere. */
   readonly requires: readonly string[];
+  /** [EN] Conflicts. [ES] Conflictos. */
   readonly conflicts: readonly string[];
+  /** [EN] State. [ES] Estado. */
   readonly state: readonly string[];
+  /** [EN] Consumes. [ES] Consume. */
   readonly consumes: readonly string[];
+  /** [EN] Provides. [ES] Proporciona. */
   readonly provides: readonly (keyof TProvides & string)[];
+  /** [EN] Tags. [ES] Etiquetas. */
   readonly tags: readonly string[];
+  /** [EN] Runtimes. [ES] Entorno de ejecución. */
   readonly runtimes: readonly string[];
+  /** [EN] Create. [ES] Crear. */
   readonly create: (context: TraitDescriptorContext<TState, TProvides, TName>) => TProvides;
 };
 
 /** Authoring input accepted by `createTraitDescriptor`. */
 export type TraitDescriptorInput<TName extends string, TState extends object, TProvides extends object> = {
+  /** [EN] Name. [ES] Nombre. */
   readonly name: TName;
+  /** [EN] Summary. [ES] Resumen. */
   readonly summary?: string;
+  /** [EN] Requires. [ES] Requiere. */
   readonly requires?: readonly string[];
+  /** [EN] Conflicts. [ES] Conflictos. */
   readonly conflicts?: readonly string[];
+  /** [EN] State. [ES] Estado. */
   readonly state?: readonly string[];
+  /** [EN] Consumes. [ES] Consume. */
   readonly consumes?: readonly string[];
+  /** [EN] Provides. [ES] Proporciona. */
   readonly provides?: readonly (keyof TProvides & string)[];
+  /** [EN] Tags. [ES] Etiquetas. */
   readonly tags?: readonly string[];
+  /** [EN] Runtimes. [ES] Entorno de ejecución. */
   readonly runtimes?: readonly string[];
+  /** [EN] Create. [ES] Crear. */
   readonly create: (context: TraitDescriptorContext<TState, TProvides, TName>) => TProvides;
 };
 
 /** Metadata projection parsed from declarative JSDoc `@barrits-*` tags. */
 export type TraitDescriptorJsDocMetadata = {
+  /** [EN] Name. [ES] Nombre. */
   readonly name?: string;
+  /** [EN] Summary. [ES] Resumen. */
   readonly summary?: string;
+  /** [EN] Requires. [ES] Requiere. */
   readonly requires: readonly string[];
+  /** [EN] Conflicts. [ES] Conflictos. */
   readonly conflicts: readonly string[];
+  /** [EN] State. [ES] Estado. */
   readonly state: readonly string[];
+  /** [EN] Consumes. [ES] Consume. */
   readonly consumes: readonly string[];
+  /** [EN] Provides. [ES] Proporciona. */
   readonly provides: readonly string[];
+  /** [EN] Tags. [ES] Etiquetas. */
   readonly tags: readonly string[];
+  /** [EN] Runtimes. [ES] Entorno de ejecución. */
   readonly runtimes: readonly string[];
 };
 
 /** Mixed input for JSDoc-derived trait descriptors with explicit override fields. */
 export type TraitDescriptorFromJsDocInput<TName extends string, TState extends object, TProvides extends object> = {
+  /** [EN] Name. [ES] Nombre. */
   readonly name?: TName;
+  /** [EN] Summary. [ES] Resumen. */
   readonly summary?: string;
+  /** [EN] Requires. [ES] Requiere. */
   readonly requires?: readonly string[];
+  /** [EN] Conflicts. [ES] Conflictos. */
   readonly conflicts?: readonly string[];
+  /** [EN] State. [ES] Estado. */
   readonly state?: readonly string[];
+  /** [EN] Consumes. [ES] Consume. */
   readonly consumes?: readonly string[];
+  /** [EN] Provides. [ES] Proporciona. */
   readonly provides?: readonly (keyof TProvides & string)[];
+  /** [EN] Tags. [ES] Etiquetas. */
   readonly tags?: readonly string[];
+  /** [EN] Runtimes. [ES] Entorno de ejecución. */
   readonly runtimes?: readonly string[];
+  /** [EN] Create. [ES] Crear. */
   readonly create: (context: TraitDescriptorContext<TState, TProvides, TName>) => TProvides;
 };
 
 /** Stable metadata recorded for each trait in composition results and diagnostics. */
 export type TraitDescriptorMetadata = {
+  /** [EN] Summary. [ES] Resumen. */
   readonly summary?: string;
+  /** [EN] Requires. [ES] Requiere. */
   readonly requires: readonly string[];
+  /** [EN] Conflicts. [ES] Conflictos. */
   readonly conflicts: readonly string[];
+  /** [EN] State. [ES] Estado. */
   readonly state: readonly string[];
+  /** [EN] Consumes. [ES] Consume. */
   readonly consumes: readonly string[];
+  /** [EN] Provides. [ES] Proporciona. */
   readonly provides: readonly string[];
+  /** [EN] Tags. [ES] Etiquetas. */
   readonly tags: readonly string[];
+  /** [EN] Runtimes. [ES] Entorno de ejecución. */
   readonly runtimes: readonly string[];
 };
 

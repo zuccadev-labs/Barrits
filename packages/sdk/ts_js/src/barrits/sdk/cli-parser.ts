@@ -7,20 +7,35 @@ export type CliCommand = "detect" | "help" | "info" | "watch" | "dev" | "imports
 
 /** [EN] Parsed CLI options with defaults applied. [ES] Opciones de CLI analizadas con valores predeterminados aplicados. */
 export type CliOptions = {
+  /** [EN] Command. [ES] Comando. */
   command: CliCommand;
+  /** [EN] Json. [ES] Json. */
   json: boolean;
+  /** [EN] Write. [ES] Escritura. */
   write: boolean;
+  /** [EN] Mode. [ES] Modo. */
   mode: "named-import" | "namespace-access" | "alias-namespace-access";
+  /** [EN] Domains. [ES] Dominios. */
   domains: string[];
+  /** [EN] Exports. [ES] Exportaciones. */
   exports: string[];
+  /** [EN] Kinds. [ES] Tipos. */
   kinds: Array<"named-import" | "namespace-access" | "alias-namespace-access">;
+  /** [EN] File kinds. [ES] Archivo tipos. */
   fileKinds: BarritsFileKind[];
+  /** [EN] Visibilities. [ES] Visibilidades. */
   visibilities: Array<"public" | "internal">;
+  /** [EN] Write snapshot. [ES] Escritura snapshot. */
   writeSnapshot: boolean;
+  /** [EN] Start directory. [ES] Inicio directorio. */
   startDirectory?: string;
+  /** [EN] Snapshot file. [ES] Snapshot archivo. */
   snapshotFile?: string;
+  /** [EN] Target file. [ES] Target archivo. */
   targetFile?: string;
+  /** [EN] Child args. [ES] Child args. */
   childArgs: string[];
+  /** [EN] Shell type. [ES] Shell tipo. */
   shellType: string;
 };
 
@@ -29,9 +44,13 @@ export type IntegrationGraph = BarritsIntegrationGraph;
 
 /** [EN] File paths for automation artifacts (manifests, imports, snapshots). [ES] Rutas de archivo para artefactos de automatización (manifiestos, importaciones, snapshots). */
 export type AutomationArtifactPaths = {
+  /** [EN] Build manifest path. [ES] Build manifiesto ruta. */
   buildManifestPath: string;
+  /** [EN] Imports manifest path. [ES] Importaciones manifiesto ruta. */
   importsManifestPath: string;
+  /** [EN] Imports module path. [ES] Importaciones module ruta. */
   importsModulePath: string;
+  /** [EN] Watch snapshot path. [ES] Watch snapshot ruta. */
   watchSnapshotPath: string;
 };
 

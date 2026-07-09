@@ -5,17 +5,26 @@ import { loadManifestForPackage, resolveManifestPath, type BarritsPackageAutomat
 
 /** [EN] Webpack compiler interface used by BarritsWebpackPlugin. [ES] Interfaz de compilador de Webpack utilizada por BarritsWebpackPlugin. */
 export type WebpackCompiler = {
+  /** [EN] Context. [ES] Contexto. */
   context: string;
+  /** [EN] Options. [ES] Opciones. */
   options: {
+    /** [EN] Resolve. [ES] Resolve. */
     resolve?: {
+      /** [EN] Alias. [ES] Alias. */
       alias?: Record<string, string>;
     };
   };
+  /** [EN] Hooks. [ES] Hooks. */
   hooks: {
+    /** [EN] Before run. [ES] Before run. */
     beforeRun: {
+      /** [EN] Tap promise. [ES] Tap promise. */
       tapPromise: (name: string, callback: () => Promise<void>) => void;
     };
+    /** [EN] Watch run. [ES] Watch run. */
     watchRun: {
+      /** [EN] Tap promise. [ES] Tap promise. */
       tapPromise: (name: string, callback: () => Promise<void>) => void;
     };
   };
@@ -23,6 +32,7 @@ export type WebpackCompiler = {
 
 /** [EN] Webpack plugin interface used by BarritsWebpackPlugin. [ES] Interfaz de plugin de Webpack utilizada por BarritsWebpackPlugin. */
 export type WebpackPlugin = {
+  /** [EN] Apply. [ES] Aplicar. */
   apply: (compiler: WebpackCompiler) => void;
 };
 
@@ -31,9 +41,13 @@ export type WebpackPlugin = {
  * [ES] Opciones de configuración para el plugin de Webpack de Barrits.
  */
 export type BarritsWebpackPluginOptions = {
+  /** [EN] Manifest path. [ES] Manifiesto ruta. */
   manifestPath?: string;
+  /** [EN] Package. [ES] Paquete. */
   package?: BarritsPackageAutomationOptions;
+  /** [EN] Virtual module id. [ES] Virtual module id. */
   virtualModuleId?: string;
+  /** [EN] Generated module path. [ES] Generated module ruta. */
   generatedModulePath?: string;
 };
 
@@ -45,8 +59,11 @@ const DEFAULT_GENERATED_MODULE_PATH = ".barrits/webpack-manifest.generated.mjs";
  * [ES] Plugin de Webpack que genera e inyecta el manifiesto de compilación de Barrits como un módulo virtual.
  */
 export class BarritsWebpackPlugin implements WebpackPlugin {
+  /** [EN] Package options. [ES] Paquete opciones. */
   private readonly packageOptions?: BarritsPackageAutomationOptions;
+  /** [EN] Virtual module id. [ES] Virtual module id. */
   private readonly virtualModuleId: string;
+  /** [EN] Generated module path. [ES] Generated module ruta. */
   private readonly generatedModulePath: string;
 
   /**

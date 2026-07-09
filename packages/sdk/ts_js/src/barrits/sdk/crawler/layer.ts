@@ -116,9 +116,13 @@ export const inspectFile = async (
  * [ES] Definición de tipo para InspectedLayer.
  */
 export type InspectedLayer = {
+  /** [EN] Source layer. [ES] Fuente capa. */
   readonly sourceLayer: BarritsSourceLayer;
+  /** [EN] Root files. [ES] Raíz archivos. */
   readonly rootFiles: readonly BarritsFileIntegration[];
+  /** [EN] Domains. [ES] Dominios. */
   readonly domains: readonly BarritsDomainIntegration[];
+  /** [EN] Files. [ES] Archivos. */
   readonly files: readonly BarritsFileIntegration[];
 };
 

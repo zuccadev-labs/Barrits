@@ -4,7 +4,9 @@ export type RuntimeFileSystemEntryType = "file" | "directory";
 /** [EN] Entry metadata for a runtime filesystem.
  *  [ES] Metadatos de entrada para un sistema de archivos en runtime. */
 export type RuntimeFileSystemEntry = {
+  /** [EN] Name. [ES] Nombre. */
   readonly name: string;
+  /** [EN] Type. [ES] Tipo. */
   readonly type: RuntimeFileSystemEntryType;
 };
 
@@ -314,18 +316,31 @@ export type BarritsExportCollision = {
 /** [EN] Full integration graph of a Barrits project, including domains, traits and collisions.
  *  [ES] Grafo de integración completo de un proyecto Barrits, incluyendo dominios, traits y colisiones. */
 export type BarritsIntegrationGraph = BarritsBaseContext & {
+  /** [EN] Root files. [ES] Raíz archivos. */
   readonly rootFiles: readonly BarritsFileIntegration[];
+  /** [EN] Domains. [ES] Dominios. */
   readonly domains: readonly BarritsDomainIntegration[];
+  /** [EN] Library root files. [ES] Library raíz archivos. */
   readonly libraryRootFiles: readonly BarritsFileIntegration[];
+  /** [EN] Library domains. [ES] Library dominios. */
   readonly libraryDomains: readonly BarritsDomainIntegration[];
+  /** [EN] Files count. [ES] Archivos conteo. */
   readonly filesCount: number;
+  /** [EN] Exports count. [ES] Exportaciones conteo. */
   readonly exportsCount: number;
+  /** [EN] Public exports count. [ES] Public exportaciones conteo. */
   readonly publicExportsCount: number;
+  /** [EN] Internal exports count. [ES] Internal exportaciones conteo. */
   readonly internalExportsCount: number;
+  /** [EN] Barrels count. [ES] Barrels conteo. */
   readonly barrelsCount: number;
+  /** [EN] Trait descriptors. [ES] Trait descriptor. */
   readonly traitDescriptors: readonly BarritsTraitDescriptorInspection[];
+  /** [EN] Trait diagnostics. [ES] Trait diagnostics. */
   readonly traitDiagnostics: readonly BarritsTraitDiagnostic[];
+  /** [EN] Import actions. [ES] Importación actions. */
   readonly importActions: readonly BarritsImportAction[];
+  /** [EN] Collisions. [ES] Collisions. */
   readonly collisions: readonly BarritsExportCollision[];
 };
 
@@ -374,6 +389,7 @@ export type BarritsGraphFilters = {
  * [ES] Definición de tipo para BarritsSelectionFilters.
  */
 export type BarritsSelectionFilters = BarritsGraphFilters & {
+  /** [EN] Kinds. [ES] Tipos. */
   readonly kinds?: readonly BarritsImportActionKind[];
 };
 
@@ -400,10 +416,15 @@ export type BarritsBuildManifest = {
   /** [EN] Integrity checksum. [ES] Checksum de integridad. */
   readonly checksum: string;
 } & BarritsBaseContext & {
+    /** [EN] Files count. [ES] Archivos conteo. */
     readonly filesCount: number;
+    /** [EN] Exports count. [ES] Exportaciones conteo. */
     readonly exportsCount: number;
+    /** [EN] Public exports count. [ES] Public exportaciones conteo. */
     readonly publicExportsCount: number;
+    /** [EN] Internal exports count. [ES] Internal exportaciones conteo. */
     readonly internalExportsCount: number;
+    /** [EN] Barrels count. [ES] Barrels conteo. */
     readonly barrelsCount: number;
     /** [EN] List of discovered domains. [ES] Lista de dominios descubiertos. */
     readonly domains: readonly string[];

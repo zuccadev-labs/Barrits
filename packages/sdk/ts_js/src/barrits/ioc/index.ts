@@ -11,8 +11,11 @@ export type Factory<T = unknown> = (container: BarritsIoCContainer) => T | Promi
  * [ES] Contenedor dinámico de Inversión de Control (IoC) impulsado por el descubrimiento de Traits AST.
  */
 export class BarritsIoCContainer {
+  /** [EN] Instances. [ES] Instances. */
   private readonly instances = new Map<string, unknown>();
+  /** [EN] Factories. [ES] Factories. */
   private readonly factories = new Map<string, Factory>();
+  /** [EN] Manifest. [ES] Manifiesto. */
   private readonly manifest?: BarritsBuildManifest;
 
   /**

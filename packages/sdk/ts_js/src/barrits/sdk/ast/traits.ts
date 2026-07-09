@@ -11,15 +11,25 @@ import type { BarritsTraitContractConfig } from "../../config";
  * [ES] Definición de tipo para ExportedTraitBinding.
  */
 export type ExportedTraitBinding = {
+  /** [EN] Binding kind. [ES] Binding tipo. */
   readonly bindingKind: "const" | "function" | "class";
+  /** [EN] Binding name. [ES] Binding nombre. */
   readonly bindingName: string;
+  /** [EN] Match index. [ES] Match índice. */
   readonly matchIndex: number;
+  /** [EN] Runtime conflicts. [ES] Entorno de ejecución conflictos. */
   readonly runtimeConflicts?: readonly string[];
+  /** [EN] Factory. [ES] Factory. */
   readonly factory?: "createTraitDescriptor" | "createTraitDescriptorFromJsDoc";
+  /** [EN] Runtime consumes. [ES] Entorno de ejecución consume. */
   readonly runtimeConsumes?: readonly string[];
+  /** [EN] Runtime name. [ES] Entorno de ejecución nombre. */
   readonly runtimeName?: string;
+  /** [EN] Runtime requires. [ES] Entorno de ejecución requiere. */
   readonly runtimeRequires?: readonly string[];
+  /** [EN] Runtime provides. [ES] Entorno de ejecución proporciona. */
   readonly runtimeProvides?: readonly string[];
+  /** [EN] Runtime state. [ES] Entorno de ejecución estado. */
   readonly runtimeState?: readonly string[];
 };
 
@@ -28,11 +38,17 @@ export type ExportedTraitBinding = {
  * [ES] Definición de tipo para TraitRuntimeMetadata.
  */
 export type TraitRuntimeMetadata = {
+  /** [EN] Conflicts. [ES] Conflictos. */
   readonly conflicts?: readonly string[];
+  /** [EN] Consumes. [ES] Consume. */
   readonly consumes?: readonly string[];
+  /** [EN] Name. [ES] Nombre. */
   readonly name?: string;
+  /** [EN] Requires. [ES] Requiere. */
   readonly requires?: readonly string[];
+  /** [EN] Provides. [ES] Proporciona. */
   readonly provides?: readonly string[];
+  /** [EN] State. [ES] Estado. */
   readonly state?: readonly string[];
 };
 

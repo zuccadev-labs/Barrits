@@ -213,7 +213,9 @@ export const hasExportModifier = (node: ts.Node): boolean => {
  * [ES] Definición de tipo para ParsedExportStatements.
  */
 export type ParsedExportStatements = {
+  /** [EN] Exports map. [ES] Exportaciones map. */
   readonly exportsMap: Map<string, BarritsFileExport>;
+  /** [EN] Export all specifiers. [ES] Exportación all specifiers. */
   readonly exportAllSpecifiers: readonly string[];
 };
 

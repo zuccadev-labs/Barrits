@@ -10,9 +10,13 @@ import type { BarritsBuildManifest, RuntimeFileSystemAdapter, RuntimeFileSystemE
  * [ES] Definición de tipo para BarritsPackageAutomationOptions.
  */
 export type BarritsPackageAutomationOptions = {
+  /** [EN] Project root. [ES] Proyecto raíz. */
   projectRoot?: string;
+  /** [EN] Manifest path. [ES] Manifiesto ruta. */
   manifestPath?: string;
+  /** [EN] Auto manifest. [ES] Auto manifiesto. */
   autoManifest?: boolean;
+  /** [EN] Automation directory. [ES] Automatización directorio. */
   automationDirectory?: string;
 };
 

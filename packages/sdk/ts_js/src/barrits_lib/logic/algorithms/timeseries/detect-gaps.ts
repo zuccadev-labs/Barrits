@@ -6,8 +6,11 @@ import type { TimeSeriesPoint } from "./types";
  * [ES] Definición de tipo para TimeGap.
  */
 export type TimeGap = {
+  /** [EN] From. [ES] Desde. */
   readonly from: number;
+  /** [EN] To. [ES] Hasta. */
   readonly to: number;
+  /** [EN] Duration ms. [ES] Duración ms. */
   readonly durationMs: number;
 };
 

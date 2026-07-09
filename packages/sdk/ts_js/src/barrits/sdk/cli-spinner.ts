@@ -44,11 +44,17 @@ const isTerminal = (): boolean => {
  * [ES] Un widget de spinner de terminal para tareas CLI de larga duración (soporta runtimes Deno y Node).
  */
 export class BarritsSpinner {
+  /** [EN] Frames. [ES] Frames. */
   private frames: string[];
+  /** [EN] Interval. [ES] Interval. */
   private interval: number;
+  /** [EN] Current frame. [ES] Current frame. */
   private currentFrame = 0;
+  /** [EN] Timer. [ES] Timer. */
   private timer: ReturnType<typeof setInterval> | undefined;
+  /** [EN] Text. [ES] Text. */
   private text = "";
+  /** [EN] Is spinning. [ES] Is spinning. */
   private _isSpinning = false;
 
   /**
@@ -68,6 +74,7 @@ export class BarritsSpinner {
     return this._isSpinning;
   }
 
+  /** [EN] Write stderr. [ES] Escritura stderr. */
   private writeStderr(text: string): void {
     try {
       if (isDeno()) {
@@ -84,10 +91,12 @@ export class BarritsSpinner {
     }
   }
 
+  /** [EN] Render. [ES] Render. */
   private render(): void {
     this.writeStderr(`\r${this.frames[this.currentFrame]} ${this.text}`);
   }
 
+  /** [EN] Clear line. [ES] Clear line. */
   private clearLine(): void {
     this.writeStderr("\r\x1b[K");
   }
@@ -144,6 +153,7 @@ export class BarritsSpinner {
     this.stopWithFinal(text ?? this.text, "✖");
   }
 
+  /** [EN] Stop with final. [ES] Stop with final. */
   private stopWithFinal(text: string, symbol: string): void {
     if (!this._isSpinning) {
       return;

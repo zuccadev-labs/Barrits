@@ -7,7 +7,9 @@ export type MergeTraitsConflictStrategy = "throw" | "left" | "right";
  * Options that control conflict behavior while merging trait capability objects.
  */
 export type MergeTraitsOptions = {
+  /** [EN] On conflict. [ES] En conflicto. */
   onConflict?: MergeTraitsConflictStrategy;
+  /** [EN] Resolve conflict. [ES] Resolve conflicto. */
   resolveConflict?: (key: string, leftValue: unknown, rightValue: unknown) => unknown;
 };
 
