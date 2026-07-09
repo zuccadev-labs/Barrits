@@ -32,12 +32,16 @@ Bienvenido a la documentación para usuarios y consumidores del SDK `@zuccadev-l
 
 En el repositorio, dentro de `packages/sdk/ts_js/examples/`, encontrarás proyectos listos para ejecutar que demuestran la integración de Barrits en diversos entornos:
 
-- `example-vite-react/`: Integración con Vite y React, demostrando el empaquetado de traits en el frontend.
-- `example-esbuild/`: Configuración ultra-rápida utilizando el plugin de esbuild.
-- `example-rollup/`: Empaquetado de librerías usando Rollup y Barrits.
-- `example-webpack/`: Integración tradicional utilizando el plugin de Webpack.
-- `example-node-cli/`: Scripting y automatización en Node.js.
-- `example-deno-baas/`: Demuestra el Contenedor IoC dinámico y el Generador de OpenAPI para construir backends.
+- `example-nodejs/`: Scripting, showcase y benchmarking en Node.js.
+- `example-deno/`: Consumo package-first en Deno/JSR.
+- `example-deno-baas/`: Contenedor IoC dinámico y generación de OpenAPI para backends.
+- `example-bun/`: Contrato package-first con scripts de alto rendimiento en Bun.
+- `example-react/`: Integración con Vite + React y empaquetado de traits en frontend.
+- `example-vue/`: Discovery bajo `src/barrits/` con Vite + Vue.
+- `example-solid/`: Validación del mismo contrato en Solid.
+- `example-svelte/`: Cobertura package-first en Svelte.
+- `example-tauri/`: Consumo seguro de artefactos desde aplicaciones de escritorio.
+- `bundlers/`: Integración directa con esbuild, Rollup, Vite y Webpack.
 
 Cada ejemplo cuenta con su propio `README.md` con instrucciones de ejecución (`npm run dev`, `deno run`, etc.).
 

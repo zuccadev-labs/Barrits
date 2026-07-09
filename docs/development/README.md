@@ -24,15 +24,15 @@ Para acceder a la documentación específica de un SDK, se recomienda seguir est
 - **[Dependencies and Surfaces](EN/packages/ts_js/03-dependencies-and-surfaces.md)**
 - **[Validation and Publication](EN/packages/ts_js/04-validation-and-publication.md)**
 - **[Discovery, Inspection, and Contracts](EN/packages/ts_js/05-discovery-inspection-and-contracts.md)**
-- **[Tooling, Publication, and Platforms](EN/packages/ts_js/06-tooling-publication-and-platforms.md)
-- **[Phase 1 Extension — Examples](EN/packages/ts_js/08-phase1-extension-examples.md)****
+- **[Tooling, Publication, and Platforms](EN/packages/ts_js/06-tooling-publication-and-platforms.md)**
+- **[Phase 1 Extension — Examples](EN/packages/ts_js/08-phase1-extension-examples.md)**
 
 ### ES (Español)
 
 #### packages
 
 ##### ts_js
-- **[Índice de Desarrollo](ES/packages/ts_js/00-indice.md)**
+- **[Índice de Desarrollo](ES/packages/ts_js/00_indice.md)**
 - **[Arquitectura de Carpetas](ES/packages/ts_js/01_arquitectura-de-carpetas.md)**
 - **[Flujos Operativos](ES/packages/ts_js/02_flujos-operativos.md)**
 - **[Dependencias y Superficies](ES/packages/ts_js/03_dependencias-y-superficies.md)**
