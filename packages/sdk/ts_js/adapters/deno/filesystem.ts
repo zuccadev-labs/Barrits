@@ -17,6 +17,12 @@ const getDenoRuntime = (): DenoRuntime => {
   return runtime;
 };
 
+/**
+ * [EN] Creates a filesystem adapter using the native Deno runtime APIs.
+ * [ES] Crea un adaptador de sistema de archivos usando las APIs nativas de Deno.
+ *
+ * @returns [EN] A RuntimeFileSystemAdapter backed by Deno's file system. [ES] Un RuntimeFileSystemAdapter respaldado por el sistema de archivos de Deno.
+ */
 export const createDenoFileSystemAdapter = (): RuntimeFileSystemAdapter => {
   const runtime = getDenoRuntime();
 
