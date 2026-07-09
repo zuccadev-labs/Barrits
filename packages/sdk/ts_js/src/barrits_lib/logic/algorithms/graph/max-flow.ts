@@ -5,7 +5,9 @@ import type { GraphEdge, GraphNodeId } from "./types";
  * [ES] Estructura de resultado para algoritmos de flujo máximo.
  */
 export type MaxFlowResult<NodeId extends GraphNodeId = GraphNodeId> = {
+  /** [EN] Maximum flow value. [ES] Valor del flujo máximo. */
   readonly value: number;
+  /** [EN] Paths used to augment the flow. [ES] Caminos utilizados para aumentar el flujo. */
   readonly augmentingPaths: NodeId[][];
 };
 

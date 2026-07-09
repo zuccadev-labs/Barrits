@@ -11,10 +11,15 @@ export type RuntimeFileSystemEntry = {
 /** [EN] Deterministic adapter for filesystem operations across different runtimes.
  *  [ES] Adaptador determinístico para operaciones de archivos en diferentes runtimes. */
 export type RuntimeFileSystemAdapter = {
+  /** [EN] Returns current working directory. [ES] Devuelve el directorio de trabajo actual. */
   cwd: () => string | Promise<string>;
+  /** [EN] Checks if a directory exists at the given path. [ES] Comprueba si existe un directorio en la ruta dada. */
   directoryExists: (path: string) => Promise<boolean>;
+  /** [EN] Lists subdirectories in the given path. [ES] Lista los subdirectorios en la ruta dada. */
   listDirectories: (path: string) => Promise<string[]>;
+  /** [EN] Lists all entries in the given path. [ES] Lista todas las entradas en la ruta dada. */
   listEntries: (path: string) => Promise<RuntimeFileSystemEntry[]>;
+  /** [EN] Reads a text file at the given path. [ES] Lee un archivo de texto en la ruta dada. */
   readTextFile: (path: string) => Promise<string>;
 };
 
@@ -25,10 +30,15 @@ export type BarritsDiscoveryStrategy = "current-directory" | "direct-child" | "r
 /** [EN] Common infrastructure context shared across discovery, graph, and manifest.
  *  [ES] Contexto de infraestructura com\u00fan compartido entre el descubrimiento, el grafo y el manifiesto. */
 export type BarritsBaseContext = {
+  /** [EN] Project root directory. [ES] Directorio raíz del proyecto. */
   readonly projectRoot: string;
+  /** [EN] Barrits directory path. [ES] Ruta del directorio Barrits. */
   readonly barritsDirectory: string;
+  /** [EN] Barrits library directory (optional). [ES] Directorio de la biblioteca Barrits (opcional). */
   readonly barritsLibDirectory?: string;
+  /** [EN] Discovery strategy used. [ES] Estrategia de descubrimiento utilizada. */
   readonly strategy: BarritsDiscoveryStrategy;
+  /** [EN] Roots scanned for discovery. [ES] Raíces escaneadas para el descubrimiento. */
   readonly discoveryRoots: readonly string[];
 };
 
@@ -87,18 +97,31 @@ export type BarritsFileExport = {
 /** [EN] Static inspection data for a Barrits Trait descriptor.
  *  [ES] Datos de inspección estática para un descriptor de Trait de Barrits. */
 export type BarritsTraitDescriptorInspection = {
+  /** [EN] Unique trait name. [ES] Nombre único del trait. */
   readonly name: string;
+  /** [EN] Source file path. [ES] Ruta del archivo fuente. */
   readonly sourceFile: string;
+  /** [EN] Exported binding name. [ES] Nombre del binding exportado. */
   readonly bindingName: string;
+  /** [EN] Kind of binding. [ES] Tipo de binding. */
   readonly bindingKind: "const" | "function" | "class";
+  /** [EN] Factory method used for discovery. [ES] Método de factoría utilizado para el descubrimiento. */
   readonly factory?: "createTraitDescriptor" | "createTraitDescriptorFromJsDoc";
+  /** [EN] Brief summary. [ES] Breve resumen. */
   readonly summary?: string;
+  /** [EN] Required trait dependencies. [ES] Dependencias de trait requeridas. */
   readonly requires: readonly string[];
+  /** [EN] Conflicting trait names. [ES] Nombres de traits en conflicto. */
   readonly conflicts: readonly string[];
+  /** [EN] State keys provided. [ES] Claves de estado proporcionadas. */
   readonly state: readonly string[];
+  /** [EN] Capabilities consumed. [ES] Capacidades consumidas. */
   readonly consumes: readonly string[];
+  /** [EN] Capabilities provided. [ES] Capacidades proporcionadas. */
   readonly provides: readonly string[];
+  /** [EN] Organizational tags. [ES] Etiquetas organizativas. */
   readonly tags: readonly string[];
+  /** [EN] Target runtimes. [ES] Tiempos de ejecución objetivo. */
   readonly runtimes: readonly string[];
 };
 
@@ -152,8 +175,11 @@ export type BarritsTraitDiagnostic = {
 
 /** [EN] Summary counts for a set of diagnostics. [ES] Conteos resumidos para un conjunto de diagnósticos. */
 export type BarritsTraitDiagnosticCounts = {
+  /** [EN] Total count of diagnostics. [ES] Conteo total de diagnósticos. */
   readonly total: number;
+  /** [EN] Number of error-level diagnostics. [ES] Número de diagnósticos de nivel error. */
   readonly errorCount: number;
+  /** [EN] Number of warning-level diagnostics. [ES] Número de diagnósticos de nivel warning. */
   readonly warningCount: number;
 };
 
@@ -172,12 +198,19 @@ export type BarritsTraitDiagnosticCodeCounts = Record<BarritsTraitDiagnosticCode
 /** [EN] Aggregated diagnostic metrics for a specific trait descriptor.
  *  [ES] Métricas de diagnóstico agregadas para un descriptor de trait específico. */
 export type BarritsTraitDiagnosticDescriptorAggregate = {
+  /** [EN] Name of the target descriptor. [ES] Nombre del descriptor objetivo. */
   readonly descriptorName: string;
+  /** [EN] Source file path. [ES] Ruta del archivo fuente. */
   readonly sourceFile: string;
+  /** [EN] Binding identifier (optional). [ES] Identificador del binding (opcional). */
   readonly bindingName?: string;
+  /** [EN] Summary counts. [ES] Conteos resumidos. */
   readonly counts: BarritsTraitDiagnosticCounts;
+  /** [EN] Counts grouped by category. [ES] Conteos agrupados por categoría. */
   readonly byCategory: BarritsTraitDiagnosticCategoryCounts;
+  /** [EN] Counts grouped by code. [ES] Conteos agrupados por código. */
   readonly byCode: BarritsTraitDiagnosticCodeCounts;
+  /** [EN] List of diagnostic codes present. [ES] Lista de códigos de diagnóstico presentes. */
   readonly codes: readonly BarritsTraitDiagnosticCode[];
 };
 
@@ -186,9 +219,13 @@ export type BarritsTraitDiagnosticDescriptorAggregate = {
  * [ES] Definición de tipo para BarritsTraitDiagnosticAggregate.
  */
 export type BarritsTraitDiagnosticAggregate = {
+  /** [EN] Summary counts. [ES] Conteos resumidos. */
   readonly counts: BarritsTraitDiagnosticCounts;
+  /** [EN] Counts grouped by category. [ES] Conteos agrupados por categoría. */
   readonly byCategory: BarritsTraitDiagnosticCategoryCounts;
+  /** [EN] Counts grouped by code. [ES] Conteos agrupados por código. */
   readonly byCode: BarritsTraitDiagnosticCodeCounts;
+  /** [EN] Per-descriptor aggregates. [ES] Agregados por descriptor. */
   readonly byDescriptor: readonly BarritsTraitDiagnosticDescriptorAggregate[];
 };
 
@@ -197,18 +234,31 @@ export type BarritsTraitDiagnosticAggregate = {
  * [ES] Definición de tipo para BarritsConsumedTraitDescriptor.
  */
 export type BarritsConsumedTraitDescriptor = {
+  /** [EN] Unique trait name. [ES] Nombre único del trait. */
   readonly name: string;
+  /** [EN] Source file path. [ES] Ruta del archivo fuente. */
   readonly sourceFile: string;
+  /** [EN] Exported binding name. [ES] Nombre del binding exportado. */
   readonly bindingName: string;
+  /** [EN] Kind of binding. [ES] Tipo de binding. */
   readonly bindingKind: "const" | "function" | "class";
+  /** [EN] Factory method used for discovery. [ES] Método de factoría utilizado para el descubrimiento. */
   readonly factory?: "createTraitDescriptor" | "createTraitDescriptorFromJsDoc";
+  /** [EN] Brief summary. [ES] Breve resumen. */
   readonly summary?: string;
+  /** [EN] Required trait dependencies. [ES] Dependencias de trait requeridas. */
   readonly requires: readonly string[];
+  /** [EN] Conflicting trait names. [ES] Nombres de traits en conflicto. */
   readonly conflicts: readonly string[];
+  /** [EN] State keys provided. [ES] Claves de estado proporcionadas. */
   readonly state: readonly string[];
+  /** [EN] Capabilities consumed. [ES] Capacidades consumidas. */
   readonly consumes: readonly string[];
+  /** [EN] Capabilities provided. [ES] Capacidades proporcionadas. */
   readonly provides: readonly string[];
+  /** [EN] Organizational tags. [ES] Etiquetas organizativas. */
   readonly tags: readonly string[];
+  /** [EN] Target runtimes. [ES] Tiempos de ejecución objetivo. */
   readonly runtimes: readonly string[];
 };
 
@@ -217,11 +267,17 @@ export type BarritsConsumedTraitDescriptor = {
  * [ES] Definición de tipo para BarritsFileIntegration.
  */
 export type BarritsFileIntegration = {
+  /** [EN] File path relative to project root. [ES] Ruta del archivo relativa a la raíz del proyecto. */
   readonly path: string;
+  /** [EN] Whether the file is a barrel index file. [ES] Indica si el archivo es un barrel index. */
   readonly isIndex: boolean;
+  /** [EN] Architectural classification of the file. [ES] Clasificación arquitectónica del archivo. */
   readonly kind: BarritsFileKind;
+  /** [EN] Source layer (library vs project code). [ES] Capa de origen (biblioteca vs código del proyecto). */
   readonly sourceLayer: BarritsSourceLayer;
+  /** [EN] List of exported symbols. [ES] Lista de símbolos exportados. */
   readonly exports: readonly BarritsFileExport[];
+  /** [EN] Trait descriptors declared in this file. [ES] Descriptores de trait declarados en este archivo. */
   readonly traitDescriptors: readonly BarritsTraitDescriptorInspection[];
 };
 
@@ -290,8 +346,11 @@ export type BarritsImportWriteMode = BarritsImportActionKind;
  * [ES] Definición de tipo para BarritsImportFilters.
  */
 export type BarritsImportFilters = {
+  /** [EN] Filter by domain names. [ES] Filtrar por nombres de dominio. */
   readonly domains?: readonly string[];
+  /** [EN] Filter by export names. [ES] Filtrar por nombres de exportación. */
   readonly exports?: readonly string[];
+  /** [EN] Filter by import action kinds. [ES] Filtrar por tipos de acción de importación. */
   readonly kinds?: readonly BarritsImportActionKind[];
 };
 
@@ -300,9 +359,13 @@ export type BarritsImportFilters = {
  * [ES] Definición de tipo para BarritsGraphFilters.
  */
 export type BarritsGraphFilters = {
+  /** [EN] Filter by domain names. [ES] Filtrar por nombres de dominio. */
   readonly domains?: readonly string[];
+  /** [EN] Filter by export names. [ES] Filtrar por nombres de exportación. */
   readonly exports?: readonly string[];
+  /** [EN] Filter by file architectural kinds. [ES] Filtrar por tipos arquitectónicos de archivo. */
   readonly fileKinds?: readonly BarritsFileKind[];
+  /** [EN] Filter by export visibility level. [ES] Filtrar por nivel de visibilidad de exportación. */
   readonly visibilities?: readonly BarritsExportVisibility[];
 };
 
@@ -361,9 +424,13 @@ export type BarritsBuildManifest = {
  * [ES] Definición de tipo para BarritsWatchSnapshot.
  */
 export type BarritsWatchSnapshot = {
+  /** [EN] Generation timestamp. [ES] Marca de tiempo de generación. */
   readonly generatedAt: string;
+  /** [EN] Watch mode. [ES] Modo de observación. */
   readonly mode: "watch" | "dev";
+  /** [EN] Full integration graph snapshot. [ES] Snapshot completo del grafo de integración. */
   readonly graph: BarritsIntegrationGraph;
+  /** [EN] Active selection filters. [ES] Filtros de selección activos. */
   readonly filters?: BarritsSelectionFilters;
 };
 
@@ -372,15 +439,25 @@ export type BarritsWatchSnapshot = {
  * [ES] Definición de tipo para BarritsConsumedStateSummary.
  */
 export type BarritsConsumedStateSummary = {
+  /** [EN] Generation timestamp (null if not yet generated). [ES] Marca de tiempo de generación (null si no generado). */
   readonly generatedAt: string | null;
+  /** [EN] Operational mode. [ES] Modo operativo. */
   readonly mode?: "watch" | "dev";
+  /** [EN] Discovery strategy used. [ES] Estrategia de descubrimiento utilizada. */
   readonly strategy: string;
+  /** [EN] Discovered domain names. [ES] Nombres de dominio descubiertos. */
   readonly domains: readonly string[];
+  /** [EN] Generated import statements for proxy consumption. [ES] Sentencias de importación generadas para consumo de proxy. */
   readonly importStatements: readonly string[];
+  /** [EN] Consumed trait descriptors. [ES] Descriptores de traits consumidos. */
   readonly traitDescriptors: readonly BarritsConsumedTraitDescriptor[];
+  /** [EN] Global diagnostics (optional). [ES] Diagnósticos globales (opcional). */
   readonly traitDiagnostics?: readonly BarritsTraitDiagnostic[];
+  /** [EN] Aggregated diagnostic metrics (optional). [ES] Métricas de diagnóstico agregadas (opcional). */
   readonly traitDiagnosticAggregate?: BarritsTraitDiagnosticAggregate;
+  /** [EN] Count of unresolved export collisions. [ES] Conteo de colisiones de exportación no resueltas. */
   readonly collisionsCount?: number;
+  /** [EN] Active selection filters. [ES] Filtros de selección activos. */
   readonly filters?: BarritsSelectionFilters;
 };
 
@@ -389,8 +466,11 @@ export type BarritsConsumedStateSummary = {
  * [ES] Definición de tipo para BarritsLanguageToolDomain.
  */
 export type BarritsLanguageToolDomain = {
+  /** [EN] Domain name. [ES] Nombre del dominio. */
   readonly name: string;
+  /** [EN] Number of files in the domain. [ES] Número de archivos en el dominio. */
   readonly filesCount: number;
+  /** [EN] Names of exported symbols. [ES] Nombres de los símbolos exportados. */
   readonly exportNames: readonly string[];
 };
 
@@ -399,15 +479,26 @@ export type BarritsLanguageToolDomain = {
  * [ES] Definición de tipo para BarritsLanguageToolSnapshot.
  */
 export type BarritsLanguageToolSnapshot = {
+  /** [EN] Generation timestamp. [ES] Marca de tiempo de generación. */
   readonly generatedAt: string;
+  /** [EN] Operational mode. [ES] Modo operativo. */
   readonly mode: "watch" | "dev";
+  /** [EN] Discovery strategy used. [ES] Estrategia de descubrimiento utilizada. */
   readonly strategy: string;
+  /** [EN] Domain entries in the snapshot. [ES] Entradas de dominio en el snapshot. */
   readonly domains: readonly BarritsLanguageToolDomain[];
+  /** [EN] Consumed trait descriptors. [ES] Descriptores de traits consumidos. */
   readonly traitDescriptors: readonly BarritsConsumedTraitDescriptor[];
+  /** [EN] Global diagnostics. [ES] Diagnósticos globales. */
   readonly traitDiagnostics: readonly BarritsTraitDiagnostic[];
+  /** [EN] Aggregated diagnostic metrics. [ES] Métricas de diagnóstico agregadas. */
   readonly traitDiagnosticAggregate: BarritsTraitDiagnosticAggregate;
+  /** [EN] Planned import actions. [ES] Acciones de importación planificadas. */
   readonly importActions: readonly BarritsImportAction[];
+  /** [EN] Generated import statements. [ES] Sentencias de importación generadas. */
   readonly importStatements: readonly string[];
+  /** [EN] Unresolved export collisions. [ES] Colisiones de exportación no resueltas. */
   readonly collisions: readonly BarritsExportCollision[];
+  /** [EN] Active selection filters. [ES] Filtros de selección activos. */
   readonly filters?: BarritsSelectionFilters;
 };

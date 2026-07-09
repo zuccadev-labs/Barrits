@@ -138,18 +138,31 @@ export type BarritsRootConfig = {
  * [ES] Configuración de tiempo de ejecución completamente resuelta consumida internamente por Barrits.
  */
 export type ResolvedBarritsConfig = {
+  /** [EN] Target runtime kind. [ES] Tipo de runtime objetivo. */
   runtime: BarritsRuntimeKind;
+  /** [EN] Watch policy for automation. [ES] Política de observación para automatización. */
   watch: BarritsWatchMode;
+  /** [EN] Enable debug logs. [ES] Habilitar logs de depuración. */
   debugCommands: boolean;
+  /** [EN] Project root directory. [ES] Directorio raíz del proyecto. */
   projectRoot: string;
+  /** [EN] Explicit path to build manifest (optional). [ES] Ruta explícita al manifiesto de build (opcional). */
   manifestPath?: string;
+  /** [EN] Enable automatic manifest generation. [ES] Habilitar generación automática de manifiesto. */
   autoManifest: boolean;
+  /** [EN] Automation storage directory. [ES] Directorio de almacenamiento de automatización. */
   automationDirectory: string;
+  /** [EN] Roots to scan for JSDoc contracts. [ES] Raíces para escanear contratos JSDoc. */
   discoveryRoots: readonly string[];
+  /** [EN] Strategy for trait conflict resolution. [ES] Estrategia para resolución de conflictos de traits. */
   traitConflictStrategy: BarritsTraitConflictStrategy;
+  /** [EN] Manual contract definitions (optional). [ES] Definiciones manuales de contratos (opcional). */
   contracts?: BarritsContractsConfig;
+  /** [EN] Path to the resolved config file (optional). [ES] Ruta al archivo de configuración resuelto (opcional). */
   configFilePath?: string;
+  /** [EN] Optional main entry point override. [ES] Anulación opcional del punto de entrada principal. */
   main?: () => Promise<void> | void;
+  /** [EN] Optional custom namespace. [ES] Espacio de nombres personalizado opcional. */
   namespace?: string;
 };
 
