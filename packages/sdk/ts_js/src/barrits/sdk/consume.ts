@@ -152,30 +152,84 @@ const parseWatchSnapshotPayload = (source: string): BarritsWatchSnapshot => {
   ) as BarritsWatchSnapshot;
 };
 
+/**
+ * [EN] Parses a JSON string into a validated BarritsBuildManifest.
+ * [ES] Analiza una cadena JSON en un BarritsBuildManifest validado.
+ *
+ * @param source - [EN] Raw JSON string. [ES] Cadena JSON sin procesar.
+ * @returns [EN] A validated build manifest. [ES] Un manifiesto de compilación validado.
+ */
 export const parseBuildManifest = (source: string): BarritsBuildManifest => {
   return parseBuildManifestPayload(source);
 };
 
+/**
+ * [EN] Parses a JSON string into a validated BarritsWatchSnapshot.
+ * [ES] Analiza una cadena JSON en un BarritsWatchSnapshot validado.
+ *
+ * @param source - [EN] Raw JSON string. [ES] Cadena JSON sin procesar.
+ * @returns [EN] A validated watch snapshot. [ES] Un snapshot de observación validado.
+ */
 export const parseWatchSnapshot = (source: string): BarritsWatchSnapshot => {
   return parseWatchSnapshotPayload(source);
 };
 
+/**
+ * [EN] Reads and parses a build manifest from a file path using a provided text reader.
+ * [ES] Lee y analiza un manifiesto de compilación desde una ruta de archivo usando un lector de texto proporcionado.
+ *
+ * @param filePath - [EN] Absolute path to the manifest file. [ES] Ruta absoluta al archivo de manifiesto.
+ * @param readTextFile - [EN] Async function to read a file's text content. [ES] Función asíncrona para leer el contenido de texto de un archivo.
+ * @returns [EN] A validated build manifest. [ES] Un manifiesto de compilación validado.
+ */
 export const readBuildManifest = async (filePath: string, readTextFile: ReadTextFile): Promise<BarritsBuildManifest> => {
   return parseBuildManifest(await readTextFile(filePath));
 };
 
+/**
+ * [EN] Reads a build manifest from disk and produces a consumed state summary.
+ * [ES] Lee un manifiesto de compilación desde el disco y produce un resumen de estado consumido.
+ *
+ * @param filePath - [EN] Absolute path to the manifest file. [ES] Ruta absoluta al archivo de manifiesto.
+ * @param readTextFile - [EN] Async function to read a file's text content. [ES] Función asíncrona para leer el contenido de texto de un archivo.
+ * @returns [EN] A consumed state summary with aggregated diagnostics. [ES] Un resumen de estado consumido con diagnósticos agregados.
+ */
 export const readBuildManifestSummary = async (filePath: string, readTextFile: ReadTextFile): Promise<BarritsConsumedStateSummary> => {
   return createBuildManifestSummary(await readBuildManifest(filePath, readTextFile));
 };
 
+/**
+ * [EN] Reads and parses a watch snapshot from a file path using a provided text reader.
+ * [ES] Lee y analiza un snapshot de observación desde una ruta de archivo usando un lector de texto proporcionado.
+ *
+ * @param filePath - [EN] Absolute path to the snapshot file. [ES] Ruta absoluta al archivo de snapshot.
+ * @param readTextFile - [EN] Async function to read a file's text content. [ES] Función asíncrona para leer el contenido de texto de un archivo.
+ * @returns [EN] A validated watch snapshot. [ES] Un snapshot de observación validado.
+ */
 export const readWatchSnapshot = async (filePath: string, readTextFile: ReadTextFile): Promise<BarritsWatchSnapshot> => {
   return parseWatchSnapshot(await readTextFile(filePath));
 };
 
+/**
+ * [EN] Reads a watch snapshot from disk and produces a consumed state summary.
+ * [ES] Lee un snapshot de observación desde el disco y produce un resumen de estado consumido.
+ *
+ * @param filePath - [EN] Absolute path to the snapshot file. [ES] Ruta absoluta al archivo de snapshot.
+ * @param readTextFile - [EN] Async function to read a file's text content. [ES] Función asíncrona para leer el contenido de texto de un archivo.
+ * @returns [EN] A consumed state summary with aggregated diagnostics. [ES] Un resumen de estado consumido con diagnósticos agregados.
+ */
 export const readWatchSnapshotSummary = async (filePath: string, readTextFile: ReadTextFile): Promise<BarritsConsumedStateSummary> => {
   return createWatchSnapshotSummary(await readWatchSnapshot(filePath, readTextFile));
 };
 
+/**
+ * [EN] Reads a watch snapshot from disk and produces a detailed language tool snapshot.
+ * [ES] Lee un snapshot de observación desde el disco y produce un snapshot detallado de herramienta de lenguaje.
+ *
+ * @param filePath - [EN] Absolute path to the snapshot file. [ES] Ruta absoluta al archivo de snapshot.
+ * @param readTextFile - [EN] Async function to read a file's text content. [ES] Función asíncrona para leer el contenido de texto de un archivo.
+ * @returns [EN] A language tool snapshot with full domain, diagnostic, and collision data. [ES] Un snapshot de herramienta de lenguaje con datos completos de dominio, diagnóstico y colisión.
+ */
 export const readLanguageToolSnapshot = async (filePath: string, readTextFile: ReadTextFile): Promise<BarritsLanguageToolSnapshot> => {
   return createLanguageToolSnapshot(await readWatchSnapshot(filePath, readTextFile));
 };
