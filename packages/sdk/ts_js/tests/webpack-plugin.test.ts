@@ -29,7 +29,7 @@ test("webpack plugin materializes a manifest module and aliases it", async () =>
   let beforeRunCallback: (() => Promise<void>) | undefined;
   const compiler = {
     context: tempDirectory,
-    options: {},
+    options: {} as { resolve?: { alias?: Record<string, string> } },
     hooks: {
       beforeRun: {
         tapPromise: (_name: string, callback: () => Promise<void>) => {
@@ -82,7 +82,7 @@ test("webpack plugin also accepts package-first automation options", async () =>
   let beforeRunCallback: (() => Promise<void>) | undefined;
   const compiler = {
     context: tempDirectory,
-    options: {},
+    options: {} as { resolve?: { alias?: Record<string, string> } },
     hooks: {
       beforeRun: {
         tapPromise: (_name: string, callback: () => Promise<void>) => {

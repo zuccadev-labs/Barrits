@@ -1,0 +1,32 @@
+﻿{
+  "name": "development-workflow",
+  "description": "Standard development workflow: conventional commits, branch strategy, PR creation, and changelog governance. Use when starting features, committing changes, or preparing pull requests.",
+  "seeAlso": "docs/agents/skills/barrits-development-workflow/SKILL.md",
+  "prompts": [
+    {
+      "name": "start-feature",
+      "description": "Create a new feature branch from dev with proper naming convention.",
+  "seeAlso": "docs/agents/skills/barrits-development-workflow/SKILL.md",
+      "prompt": "Run: git checkout dev && git pull && git checkout -b <type>/<description>. Use types: feat/ for features, fix/ for bugs, refactor/ for refactoring, docs/ for documentation, chore/ for tooling. Example: feat/cross-runtime-summarization or fix/manifest-checksum-ordering."
+    },
+    {
+      "name": "commit-changes",
+      "description": "Commit staged changes with conventional commit message and CHANGELOG update.",
+  "seeAlso": "docs/agents/skills/barrits-development-workflow/SKILL.md",
+      "prompt": "After changes are staged (git add), use: git commit -m '<type>(<scope>): <description>'. Scopes: sdk, adapters, docs, examples, release, ci, deps. Update CHANGELOG.md under [Unreleased] before committing. Run npm test (Husky pre-commit hook) and verify it passes. If pre-commit hook blocks due to known flaky test, use git commit --no-verify and document."
+    },
+    {
+      "name": "create-pr",
+      "description": "Create a GitHub PR from the current branch into dev with conventional title and body.",
+  "seeAlso": "docs/agents/skills/barrits-development-workflow/SKILL.md",
+      "prompt": "Run: gh pr create --base dev --head <current-branch> --title '<type>(<scope>): <description>' --body '## Summary\n<what changed>\n\n## Motivation\n<why>\n\n## Verification\n- [ ] npm run typecheck — 0 errors\n- [ ] npm run lint — 0 errors/warnings\n- [ ] npm test — all passing\n- [ ] Examples build successfully\n\nCloses #<issue>' --reviewer <reviewer>. If no reviewer, omit --reviewer."
+    },
+    {
+      "name": "update-changelog",
+      "description": "Add a changelog entry under [Unreleased] with the correct category.",
+  "seeAlso": "docs/agents/skills/barrits-development-workflow/SKILL.md",
+      "prompt": "Edit CHANGELOG.md at root. Add entry under [Unreleased] in the appropriate section: ### Added (new features), ### Fixed (bug fixes), ### Changed (refactoring/behavior changes), ### Docs (documentation), ### Chore (tooling/CI). Format: '- Description of change ([#NNN](https://github.com/zuccadev-labs/barrits/pull/NNN))'. Reference descriptive docs/agents/skills/ SKILL.md when applicable."
+    }
+  ]
+}
+

@@ -1,0 +1,50 @@
+@startuml Barrits - Adapter Components
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Component Diagram - Runtime Adapters
+
+Boundary(contract, "RuntimeFileSystemAdapter Interface") {
+  Component(fs_cwd, "cwd()", "TypeScript")
+  Component(fs_exists, "directoryExists(path)", "TypeScript")
+  Component(fs_dirs, "listDirectories(path)", "TypeScript")
+  Component(fs_entries, "listEntries(path)", "TypeScript")
+  Component(fs_read, "readTextFile(path)", "TypeScript")
+}
+
+System_Boundary(node_adapter, "Node.js Adapter (adapters/node)") {
+  Component(node_fs, "NodeFileSystemAdapter", "TypeScript / node:fs", "Implements RuntimeFileSystemAdapter using Node.js fs/promises and fs module")
+  Component(node_cli, "Node CLI", "TypeScript", "Full CLI implementation: detect, info, watch, dev, build, imports, completion")
+  Component(node_tooling, "Node Tooling", "TypeScript", "readNodeBuildManifestSummary, readNodeLanguageToolSnapshot")
+  Component(node_entry, "Node Entry (index.ts)", "TypeScript", "Re-exports SDK + createNodeFileSystemAdapter, read/manifest/snapshot helpers")
+}
+
+System_Boundary(deno_adapter, "Deno Adapter (adapters/deno)") {
+  Component(deno_fs, "DenoFileSystemAdapter", "TypeScript / Deno APIs", "Implements RuntimeFileSystemAdapter using Deno.readTextFile, Deno.readDir, etc.")
+  Component(deno_cli, "Deno CLI", "TypeScript", "CLI implementation: detect, info, watch, dev, build, imports, completion (uses Deno.Command)")
+  Component(deno_tooling, "Deno Tooling", "TypeScript", "readDenoBuildManifestSummary, readDenoLanguageToolSnapshot")
+  Component(deno_entry, "Deno Entry (mod.ts)", "TypeScript", "Re-exports SDK + createDenoFileSystemAdapter, read/manifest/snapshot helpers")
+}
+
+System_Boundary(fallback, "In-Package Fallback (sdk/adapters.ts)") {
+  Component(fallback_node_fs, "NodeFileSystemAdapter (class)", "TypeScript", "Fallback implementation using dynamic import of node:fs")
+  Component(fallback_deno_fs, "DenoFileSystemAdapter (class)", "TypeScript", "Fallback implementation using globalThis.Deno API")
+}
+
+Rel(node_fs, fs_cwd, "Implements")
+Rel(node_fs, fs_exists, "Implements")
+Rel(node_fs, fs_dirs, "Implements")
+Rel(node_fs, fs_entries, "Implements")
+Rel(node_fs, fs_read, "Implements")
+Rel(deno_fs, fs_cwd, "Implements")
+Rel(deno_fs, fs_exists, "Implements")
+Rel(deno_fs, fs_dirs, "Implements")
+Rel(deno_fs, fs_entries, "Implements")
+Rel(deno_fs, fs_read, "Implements")
+Rel(fallback_node_fs, node_fs, "Same contract")
+Rel(fallback_deno_fs, deno_fs, "Same contract")
+Rel(node_cli, node_fs, "Uses for file operations")
+Rel(deno_cli, deno_fs, "Uses for file operations")
+
+@enduml

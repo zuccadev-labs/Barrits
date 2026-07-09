@@ -1,10 +1,5 @@
 import { getCurrentWorkingDirectory } from "./runtime";
-import type {
-  BarritsRootConfig,
-  BarritsRuntimeKind,
-  BarritsWatchMode,
-  ResolvedBarritsConfig,
-} from "../config";
+import type { BarritsRootConfig, BarritsRuntimeKind, BarritsWatchMode, ResolvedBarritsConfig } from "../config";
 
 /** Default folder where Barrits stores generated automation artifacts. */
 const DEFAULT_AUTOMATION_DIRECTORY = ".barrits";

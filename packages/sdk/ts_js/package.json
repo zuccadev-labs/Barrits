@@ -1,6 +1,6 @@
 {
   "name": "@zuccadev-labs/barrits",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Package-first functional automation for barrits/ domains, manifests and live watch flows.",
   "license": "MIT",
   "author": "David Euclides Zuccarini Barrueta (devzucca / zuccadev)",
@@ -44,6 +44,16 @@
       "import": "./dist/src/index.js",
       "require": "./dist/src/index.cjs",
       "default": "./dist/src/index.js"
+    },
+    "./bun": {
+      "types": "./dist/adapters/bun/index.d.ts",
+      "import": "./dist/adapters/bun/index.js",
+      "default": "./dist/adapters/bun/index.js"
+    },
+    "./bun/cli": {
+      "types": "./dist/adapters/bun/cli.d.ts",
+      "import": "./dist/adapters/bun/cli.js",
+      "default": "./dist/adapters/bun/cli.js"
     },
     "./node": {
       "types": "./dist/adapters/node/index.d.ts",
@@ -95,6 +105,18 @@
       "import": "./dist/adapters/deno/cli.js",
       "default": "./dist/adapters/deno/cli.js"
     },
+    "./ioc": {
+      "types": "./dist/src/barrits/ioc/index.d.ts",
+      "import": "./dist/src/barrits/ioc/index.js",
+      "require": "./dist/src/barrits/ioc/index.cjs",
+      "default": "./dist/src/barrits/ioc/index.js"
+    },
+    "./schema/openapi": {
+      "types": "./dist/src/barrits/schema/openapi.d.ts",
+      "import": "./dist/src/barrits/schema/openapi.js",
+      "require": "./dist/src/barrits/schema/openapi.cjs",
+      "default": "./dist/src/barrits/schema/openapi.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -105,22 +127,24 @@
     "access": "public"
   },
   "sideEffects": false,
-  "dependencies": {
-    "typescript": "^6.0.3"
-  },
   "scripts": {
-    "dev": "node ../../../node_modules/tsx/dist/cli.mjs watch src/index.ts",
+    "dev": "node ./node_modules/tsx/dist/cli.mjs watch src/index.ts",
     "build": "node ../../../node_modules/tsup/dist/cli-default.js && node ../../../node_modules/typescript/lib/tsc.js --emitDeclarationOnly",
-    "benchmark:algorithms": "node ../../../node_modules/tsx/dist/cli.mjs benchmarks/algorithms/compare-large-datasets.ts",
-    "test": "node ../../../node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts",
+    "benchmark:algorithms": "node ./node_modules/tsx/dist/cli.mjs benchmarks/algorithms/compare-large-datasets.ts",
+    "test": "node ./node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts",
+    "test:coverage": "node --experimental-test-coverage ./node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts",
     "typecheck": "node ../../../node_modules/typescript/lib/tsc.js --noEmit",
+    "docs": "node ../../../node_modules/typedoc/bin/typedoc",
+    "docs:serve": "node ../../../node_modules/typedoc/bin/typedoc --watch",
     "publish:jsr:dry-run": "deno publish --dry-run --allow-dirty --config jsr.json",
-    "barrits:dev": "node ../../../node_modules/tsx/dist/cli.mjs adapters/node/cli.ts dev -- node -e \"console.log('barrits dev session')\"",
-    "barrits:build": "node ../../../node_modules/tsx/dist/cli.mjs adapters/node/cli.ts build -- node -e \"console.log(process.env.BARRITS_BUILD_MANIFEST || '')\""
+    "barrits:dev": "node ./node_modules/tsx/dist/cli.mjs adapters/node/cli.ts dev -- node -e \"console.log('barrits dev session')\"",
+    "barrits:build": "node ./node_modules/tsx/dist/cli.mjs adapters/node/cli.ts build -- node -e \"console.log(process.env.BARRITS_BUILD_MANIFEST || '')\""
   },
   "devDependencies": {
-    "@types/node": "^25.6.0",
+    "@types/node": "^26.1.0",
     "tsup": "^8.5.1",
-    "tsx": "^4.21.0"
+    "tsx": "^4.23.0",
+    "typedoc": "^0.28.19",
+    "typescript": "^6.0.3"
   }
 }

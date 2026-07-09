@@ -7,8 +7,11 @@ This directory centralizes the technical documentation regarding the internal de
 1.  **[01-folder-architecture.md](01-folder-architecture.md)**: Definition of the directory hierarchy and its structural responsibilities.
 2.  **[02-operational-flows.md](02-operational-flows.md)**: Detailed description of the build, monitoring, and validation processes.
 3.  **[03-dependencies-and-surfaces.md](03-dependencies-and-surfaces.md)**: Mapping of external dependencies and subpath exposure configuration.
-4.  **[05-discovery-inspection-and-contracts.md](05-discovery-inspection-and-contracts.md)**: Explanation of the AST extraction engine, manifests, and snapshots.
-5.  **[06-tooling-publication-and-platforms.md](06-tooling-publication-and-platforms.md)**: Cross-platform validation and distribution constraints.
+4.  **[04-validation-and-publication.md](04-validation-and-publication.md)**: Validation baseline, smoke test strategy, and dual distribution governance (npm/JSR).
+5.  **[05-discovery-inspection-and-contracts.md](05-discovery-inspection-and-contracts.md)**: Explanation of the AST extraction engine, manifests, and snapshots.
+6.  **[06-tooling-publication-and-platforms.md](06-tooling-publication-and-platforms.md)**: Cross-platform validation and distribution constraints.
+7.  **[07-intentionally-skipped.md](07-intentionally-skipped.md)**: Number intentionally omitted — content absorbed by adjacent documents 06 and 08.
+8.  **[08-phase1-extension-examples.md](08-phase1-extension-examples.md)**: SDK example extension plan across all runtimes (Deno, Bun, frameworks, bundlers).
 
 ## Editorial Standards
 

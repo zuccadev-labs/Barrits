@@ -13,6 +13,20 @@ Para acceder a la documentación específica de un SDK, se recomienda seguir est
 
 ## Directorio de Acceso Actual
 
+### EN (English)
+
+#### packages
+
+##### ts_js
+- **[Development Index](EN/packages/ts_js/00-index.md)**
+- **[Folder Architecture](EN/packages/ts_js/01-folder-architecture.md)**
+- **[Operational Flows](EN/packages/ts_js/02-operational-flows.md)**
+- **[Dependencies and Surfaces](EN/packages/ts_js/03-dependencies-and-surfaces.md)**
+- **[Validation and Publication](EN/packages/ts_js/04-validation-and-publication.md)**
+- **[Discovery, Inspection, and Contracts](EN/packages/ts_js/05-discovery-inspection-and-contracts.md)**
+- **[Tooling, Publication, and Platforms](EN/packages/ts_js/06-tooling-publication-and-platforms.md)**
+- **[Phase 1 Extension — Examples](EN/packages/ts_js/08-phase1-extension-examples.md)**
+
 ### ES (Español)
 
 #### packages
@@ -22,8 +36,10 @@ Para acceder a la documentación específica de un SDK, se recomienda seguir est
 - **[Arquitectura de Carpetas](ES/packages/ts_js/01_arquitectura-de-carpetas.md)**
 - **[Flujos Operativos](ES/packages/ts_js/02_flujos-operativos.md)**
 - **[Dependencias y Superficies](ES/packages/ts_js/03_dependencias-y-superficies.md)**
+- **[Validación y Publicación](ES/packages/ts_js/04_validacion-y-publicacion.md)**
 - **[Descubrimiento e Inspección](ES/packages/ts_js/05_descubrimiento-inspeccion-y-contratos.md)**
 - **[Tooling y Plataformas](ES/packages/ts_js/06_tooling-publicacion-y-plataformas.md)**
+- **[Extensión Fase 1 — Ejemplos](ES/packages/ts_js/08_extension-fase1-examples.md)**
 
 ## Alcance Técnico
 

@@ -1,8 +1,8 @@
 /**
  * @module
- * [EN] Industrial telemetry and logging system for Barrits. 
+ * [EN] Industrial telemetry and logging system for Barrits.
  * Provides a standard, pluggable interface for observability across all runtimes.
- * [ES] Sistema de telemetría y registro industrial para Barrits. 
+ * [ES] Sistema de telemetría y registro industrial para Barrits.
  * Proporciona una interfaz estándar y conectable para la observabilidad en todos los entornos de ejecución.
  */
 
@@ -44,35 +44,53 @@ const LOG_LEVEL_PRIORITY: Record<BarritsLogLevel, number> = {
  * Siguiendo SRP: Esta clase solo maneja el formato de los logs y el filtrado por niveles.
  */
 export class DefaultBarritsLogger implements BarritsLogger {
+  /**
+   * [EN] Creates a new default logger with an optional log level.
+   * [ES] Crea un nuevo logger predeterminado con un nivel de log opcional.
+   *
+   * @param level - [EN] Minimum log level to output. Defaults to "info". [ES] Nivel mínimo de log a mostrar. Por defecto "info".
+   */
   constructor(public level: BarritsLogLevel = "info") {}
 
+  /**
+   * [EN] Checks whether a given log level should be output.
+   * [ES] Comprueba si un nivel de log determinado debe mostrarse.
+   */
   private shouldLog(targetLevel: BarritsLogLevel): boolean {
     return LOG_LEVEL_PRIORITY[targetLevel] >= LOG_LEVEL_PRIORITY[this.level];
   }
 
+  /**
+   * [EN] Formats a log message with timestamp and level prefix.
+   * [ES] Formatea un mensaje de log con marca de tiempo y prefijo de nivel.
+   */
   private format(level: string, message: string): string {
     const timestamp = new Date().toISOString();
     return `[${timestamp}] [BARRITS] [${level.toUpperCase()}] ${message}`;
   }
 
+  /** [EN] Logs a debug message. [ES] Registra un mensaje de depuración. */
   debug(message: string, ...args: unknown[]): void {
     if (this.shouldLog("debug")) {
       console.debug(this.format("debug", message), ...args);
     }
   }
 
+  /** [EN] Logs an info message. [ES] Registra un mensaje informativo. */
   info(message: string, ...args: unknown[]): void {
     if (this.shouldLog("info")) {
       console.info(this.format("info", message), ...args);
     }
   }
 
+  /** [EN] Logs a warning message. [ES] Registra un mensaje de advertencia. */
   warn(message: string, ...args: unknown[]): void {
     if (this.shouldLog("warn")) {
       console.warn(this.format("warn", message), ...args);
     }
   }
 
+  /** [EN] Logs an error message. [ES] Registra un mensaje de error. */
   error(message: string, ...args: unknown[]): void {
     if (this.shouldLog("error")) {
       console.error(this.format("error", message), ...args);

@@ -59,7 +59,7 @@ export default defineBarritsConfig({
 });
 ```
 
-Aparece en: [05_automatizacion-y-configuracion.md](05_automatizacion-y-configuracion.md).
+Aparece en: [05-automatizacion-y-configuracion.md](05-automatizacion-y-configuracion.md).
 
 ---
 
@@ -69,7 +69,7 @@ Carga la configuración del proyecto desde disco.
 
 Resuelve: tooling, CLI o automatizaciones pueden resolver la configuración sin duplicar la lógica de lectura.
 
-Aparece en: [06_comandos-y-runtimes.md](06_comandos-y-runtimes.md).
+Aparece en: [06-comandos-y-runtimes.md](06-comandos-y-runtimes.md).
 
 ---
 
@@ -79,7 +79,7 @@ Localiza el archivo de configuración del proyecto (`barrits.config.*`).
 
 Resuelve: discovery controlado antes de cargar o resolver la configuración.
 
-Aparece en: [05_automatizacion-y-configuracion.md](05_automatizacion-y-configuracion.md).
+Aparece en: [05-automatizacion-y-configuracion.md](05-automatizacion-y-configuracion.md).
 
 ---
 
@@ -207,7 +207,7 @@ const result = composePipeline(
 );
 ```
 
-Aparece en: [08_traits-y-composicion.md](08_traits-y-composicion.md).
+Aparece en: [08-traits-y-composicion.md](08-traits-y-composicion.md).
 
 ### `composeTraitDescriptors(input)`
 
@@ -232,7 +232,7 @@ export const authTrait = createTraitDescriptor({
 });
 ```
 
-Aparece en: [08_traits-y-composicion.md](08_traits-y-composicion.md).
+Aparece en: [08-traits-y-composicion.md](08-traits-y-composicion.md).
 
 ### `createTraitDescriptorFromJsDoc(jsDoc, descriptor)`
 
@@ -262,7 +262,7 @@ Parsea JSDoc de traits en metadata estructurada.
 
 Fusiona traits en un único resultado consolidado.
 
-Aparece en: [08_traits-y-composicion.md](08_traits-y-composicion.md).
+Aparece en: [08-traits-y-composicion.md](08-traits-y-composicion.md).
 
 ---
 

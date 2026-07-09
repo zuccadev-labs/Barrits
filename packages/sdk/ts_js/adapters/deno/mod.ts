@@ -11,89 +11,113 @@ export { barrits, brt } from "../../src/barrits/api/domains";
 
 /** Flat algorithm and functional API exports for direct Deno consumption. */
 export {
-	aggregateAlgorithms,
-	algorithms,
-	annualizedVolatility,
-	arithmetic,
-	averageBy,
-	binarySearch,
-	breadthFirstSearch,
-	bucketByInterval,
-	buildAdjacencyList,
-	buildPath,
-	chunk,
-	collectionAlgorithms,
-	composePipeline,
-	depthFirstSearch,
-	detectDirectedCycle,
-	detectTimeSeriesGaps,
-	differenceSeries,
-	dijkstraShortestPath,
-	exponentialMovingAverage,
-	findSortedRange,
-	graphAlgorithms,
-	groupBy,
-	histogramBy,
-	indexBy,
-	insertSorted,
-	linearSearch,
-	lowerBound,
-	maxBy,
-	maxDrawdown,
-	maxFlow,
-	mergeTraits,
-	minBy,
-	minimumSpanningTree,
-	movingAverage,
-	movingAverageSeries,
-	orderBy,
-	paginate,
-	parsePath,
-	partitionBy,
-	quickSort,
-	rankBy,
-	resampleSeries,
-	restar,
-	returnsSeries,
-	rollingSum,
-	searchAlgorithms,
-	selectionAlgorithms,
-	slidingWindow,
-	sortAlgorithms,
-	sortTimeSeries,
-	stableSortBy,
-	sumBy,
-	sumar,
-	timeSeriesAlgorithms,
-	topK,
-	topologicalSort,
-	uniqueBy,
-	upperBound,
-	windowAlgorithms,
-	windowDelta,
+  aggregateAlgorithms,
+  algorithms,
+  annualizedVolatility,
+  arithmetic,
+  averageBy,
+  binarySearch,
+  breadthFirstSearch,
+  bucketByInterval,
+  buildAdjacencyList,
+  buildPath,
+  chunk,
+  collectionAlgorithms,
+  composePipeline,
+  composeTraitDescriptors,
+  createTraitDescriptor,
+  createTraitDescriptorFromJsDoc,
+  depthFirstSearch,
+  detectDirectedCycle,
+  detectTimeSeriesGaps,
+  differenceSeries,
+  dijkstraShortestPath,
+  exponentialMovingAverage,
+  findSortedRange,
+  graphAlgorithms,
+  groupBy,
+  histogramBy,
+  indexBy,
+  insertSorted,
+  linearSearch,
+  lowerBound,
+  maxBy,
+  maxDrawdown,
+  maxFlow,
+  mergeTraits,
+  minBy,
+  minimumSpanningTree,
+  movingAverage,
+  movingAverageSeries,
+  orderBy,
+  paginate,
+  parsePath,
+  parseTraitDescriptorJsDoc,
+  partitionBy,
+  quickSort,
+  rankBy,
+  resampleSeries,
+  restar,
+  returnsSeries,
+  rollingSum,
+  searchAlgorithms,
+  selectionAlgorithms,
+  slidingWindow,
+  sortAlgorithms,
+  sortTimeSeries,
+  stableSortBy,
+  sumBy,
+  sumar,
+  timeSeriesAlgorithms,
+  topK,
+  topologicalSort,
+  uniqueBy,
+  upperBound,
+  windowAlgorithms,
+  windowDelta,
 } from "../../src/barrits/api/flat";
 
 /** Package-level configuration helpers used by runtimes and plugins. */
+export { defineBarritsConfig, defineBarritsPackage, toBarritsAutomationOptions } from "../../src/barrits/package";
+
+/** Standard library helpers: hashing, validation, datetime, resilience. */
 export {
-	defineBarritsConfig,
-	defineBarritsPackage,
-	toBarritsAutomationOptions,
-} from "../../src/barrits/package";
+  sha256Hex,
+  deterministicStringify,
+  murmurHash3,
+} from "../../src/barrits_lib/logic/hashing";
+export {
+  isEmail,
+  isUuid,
+  assertNonNullish,
+} from "../../src/barrits_lib/logic/validation";
+export {
+  toIsoString,
+  toRelativeTime,
+} from "../../src/barrits_lib/logic/datetime";
+export {
+  retryWithBackoff,
+  withTimeout,
+  createCircuitBreaker,
+} from "../../src/barrits_lib/logic/resilience";
 
 /** Runtime and watch mode types used by package-first config. */
-export type {
-	BarritsRuntimeKind,
-	BarritsWatchMode,
-} from "../../src/barrits/package";
+export type { BarritsRuntimeKind, BarritsWatchMode } from "../../src/barrits/package";
 
 /** File system adapter implementation backed by Deno APIs. */
 export { createDenoFileSystemAdapter } from "./filesystem";
 
 /** Deno-specific readers for build manifests and watch snapshots. */
-export { readDenoBuildManifest, readDenoBuildManifestSummary, readDenoLanguageToolSnapshot, readDenoWatchSnapshot, readDenoWatchSnapshotSummary } from "./tooling";
+export {
+  readDenoBuildManifest,
+  readDenoBuildManifestSummary,
+  readDenoLanguageToolSnapshot,
+  readDenoWatchSnapshot,
+  readDenoWatchSnapshotSummary,
+} from "./tooling";
 
 /** Lazy CLI runner used by runtime wrappers and integration tests. */
 export const runDenoCli = async (argumentsList?: string[]): Promise<number> => {
-	const cliModule = await import("./cli");
-	return cliModule.runDenoCli(argumentsList);
+  const cliModule = await import("./cli");
+  return cliModule.runDenoCli(argumentsList);
 };

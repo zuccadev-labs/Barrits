@@ -4,16 +4,17 @@
   "type": "module",
   "scripts": {
     "dev": "node ../../../../../node_modules/vite/bin/vite.js",
-    "build": "node ../../../../../node_modules/vite/bin/vite.js build"
+    "build": "node ../../../../../node_modules/vite/bin/vite.js build",
+    "test": "node ../../node_modules/tsx/dist/cli.mjs --test tests/**/*.test.ts"
   },
   "dependencies": {
     "@zuccadev-labs/barrits": "file:../..",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "react-router-dom": "^7.15.1"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-router-dom": "^7.18.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^6.0.2",
-    "vite": "^8.0.13"
+    "@vitejs/plugin-react": "^6.0.3",
+    "vite": "^8.1.3"
   }
 }

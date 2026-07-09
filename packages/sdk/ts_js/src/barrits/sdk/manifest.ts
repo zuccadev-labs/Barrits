@@ -2,20 +2,18 @@
  * @module
  * [EN] Manifest creation and serialization utilities for Barrits.
  * [ES] Utilidades de creación y serialización de manifiestos para Barrits.
- */import type { BarritsBuildManifest, BarritsIntegrationGraph, BarritsSelectionFilters, BarritsWatchSnapshot } from "./contracts";
+ */ import type { BarritsBuildManifest, BarritsIntegrationGraph, BarritsSelectionFilters, BarritsWatchSnapshot } from "./contracts";
 import { filterImportActions } from "./imports";
 import { filterIntegrationGraph } from "./query";
 
 const hasSelectionFilters = (filters: BarritsSelectionFilters | undefined): filters is BarritsSelectionFilters => {
   return Boolean(
-    filters
-    && (
-      filters.domains?.length
-      || filters.exports?.length
-      || filters.fileKinds?.length
-      || filters.visibilities?.length
-      || filters.kinds?.length
-    ),
+    filters &&
+    (filters.domains?.length ||
+      filters.exports?.length ||
+      filters.fileKinds?.length ||
+      filters.visibilities?.length ||
+      filters.kinds?.length),
   );
 };
 
@@ -23,10 +21,7 @@ const hasSelectionFilters = (filters: BarritsSelectionFilters | undefined): filt
  * [EN] Implementation of Create projected graph.
  * [ES] Implementación de Create projected graph.
  */
-export const createProjectedGraph = (
-  graph: BarritsIntegrationGraph,
-  filters: BarritsSelectionFilters = {},
-): BarritsIntegrationGraph => {
+export const createProjectedGraph = (graph: BarritsIntegrationGraph, filters: BarritsSelectionFilters = {}): BarritsIntegrationGraph => {
   const filteredGraph = filterIntegrationGraph(graph, filters);
 
   return filterImportActions(filteredGraph, {
@@ -36,25 +31,25 @@ export const createProjectedGraph = (
   });
 };
 
-const generateChecksum = (data: string): string => {
-  let hash = 0x811c9dc5;
-  for (let i = 0; i < data.length; i++) {
-    hash ^= data.charCodeAt(i);
-    hash = (hash * 0x01000193) >>> 0;
-  }
-  return `sha256-barrits-${Math.abs(hash).toString(16).padStart(8, "0")}`;
+const generateChecksum = async (data: string): Promise<string> => {
+  const encoder = new TextEncoder();
+  const dataBuffer = encoder.encode(data);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", dataBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `sha256-barrits-${hashHex}`;
 };
 
 /**
  * [EN] Implementation of Create build manifest.
  * [ES] Implementación de Create build manifest.
  */
-export const createBuildManifest = (
+export const createBuildManifest = async (
   graph: BarritsIntegrationGraph,
   filters?: BarritsSelectionFilters,
-): BarritsBuildManifest => {
+): Promise<BarritsBuildManifest> => {
   const generatedAt = new Date().toISOString();
-  
+
   const sortedTraits = [...graph.traitDescriptors].sort((left, right) => left.name.localeCompare(right.name));
   const sortedActions = [...graph.importActions].sort((left, right) => left.exportName.localeCompare(right.exportName));
 
@@ -65,15 +60,15 @@ export const createBuildManifest = (
     graph.discoveryRoots.join(","),
     graph.filesCount.toString(),
     graph.exportsCount.toString(),
-    sortedTraits.map(t => t.name).join(","),
-    sortedActions.map(i => i.exportName).join(";")
+    sortedTraits.map((t) => t.name).join(","),
+    sortedActions.map((i) => i.exportName).join(";"),
   ].join("|");
 
   return {
     generatedAt,
-    checksum: generateChecksum(payloadTokens),
+    checksum: await generateChecksum(payloadTokens),
     ...(() => {
-      const { rootFiles, domains, libraryRootFiles, libraryDomains, ...base } = graph;
+      const { rootFiles: _rootFiles, domains: _domains, libraryRootFiles: _libraryRootFiles, libraryDomains: _libraryDomains, ...base } = graph;
       return base;
     })(),
     domains: graph.domains.map((domain) => domain.name),
@@ -89,11 +84,8 @@ export const createBuildManifest = (
  * [EN] Implementation of Stringify build manifest.
  * [ES] Implementación de Stringify build manifest.
  */
-export const stringifyBuildManifest = (
-  graph: BarritsIntegrationGraph,
-  filters?: BarritsSelectionFilters,
-): string => {
-  return JSON.stringify(createBuildManifest(graph, filters), null, 2);
+export const stringifyBuildManifest = async (graph: BarritsIntegrationGraph, filters?: BarritsSelectionFilters): Promise<string> => {
+  return JSON.stringify(await createBuildManifest(graph, filters), null, 2);
 };
 
 /**

@@ -14,13 +14,13 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "rootDir": "."
+    "rootDir": ".",
+    "declarationDir": "dist"
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.d.ts",
     "adapters/**/*.ts",
-    "adapters/**/*.d.ts",
+    "tests/**/*.ts",
     "tsup.config.ts"
   ]
 }

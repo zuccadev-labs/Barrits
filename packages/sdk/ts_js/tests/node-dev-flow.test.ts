@@ -2,15 +2,16 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
+import { createRequire } from "node:module";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { createAutomationProjectFixture, writeProjectFile } from "./helpers/fixtures";
 import { runCommand } from "./helpers/process";
 
+const _require = createRequire(import.meta.url);
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const workspaceRoot = resolve(repositoryRoot, "..", "..", "..");
-const tsxCliPath = join(workspaceRoot, "node_modules", "tsx", "dist", "cli.mjs");
+const tsxCliPath = _require.resolve("tsx/cli");
 const nodeAdapterPath = pathToFileURL(join(repositoryRoot, "dist", "adapters", "node", "index.js")).href;
 const nodeCliPath = join(repositoryRoot, "adapters", "node", "cli.ts");
 
@@ -67,7 +68,7 @@ test("node dev flow runs a child consumer with manifest and snapshot outputs", a
   );
 
   assert.equal(result.exitCode, 0);
-  assert.match(result.stdout, /watching for changes in barrits\//);
+  assert.match(result.stderr, /starting dev session/);
   assert.doesNotMatch(result.stderr, /missing-dev-environment/);
 
   const payloadLine = result.stdout

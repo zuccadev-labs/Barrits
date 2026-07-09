@@ -20,11 +20,7 @@ export type RuntimeFileSystemAdapter = {
 
 /** [EN] Strategy used to discover the Barrits project root and library directories.
  *  [ES] Estrategia utilizada para descubrir la raíz del proyecto Barrits y los directorios de la biblioteca. */
-export type BarritsDiscoveryStrategy =
-  | "current-directory"
-  | "direct-child"
-  | "recursive-child"
-  | "ancestor-child";
+export type BarritsDiscoveryStrategy = "current-directory" | "direct-child" | "recursive-child" | "ancestor-child";
 
 /** [EN] Common infrastructure context shared across discovery, graph, and manifest.
  *  [ES] Contexto de infraestructura com\u00fan compartido entre el descubrimiento, el grafo y el manifiesto. */
@@ -341,24 +337,24 @@ export type BarritsBuildManifest = {
   /** [EN] Integrity checksum. [ES] Checksum de integridad. */
   readonly checksum: string;
 } & BarritsBaseContext & {
-  readonly filesCount: number;
-  readonly exportsCount: number;
-  readonly publicExportsCount: number;
-  readonly internalExportsCount: number;
-  readonly barrelsCount: number;
-  /** [EN] List of discovered domains. [ES] Lista de dominios descubiertos. */
-  readonly domains: readonly string[];
-  /** [EN] Flattened trait descriptors. [ES] Descriptores de traits aplanados. */
-  readonly traitDescriptors: readonly BarritsConsumedTraitDescriptor[];
-  /** [EN] Global diagnostics. [ES] Diagnósticos globales. */
-  readonly traitDiagnostics: readonly BarritsTraitDiagnostic[];
-  /** [EN] Planned actions. [ES] Acciones planificadas. */
-  readonly importActions: readonly BarritsImportAction[];
-  /** [EN] Unresolved collisions. [ES] Colisiones no resueltas. */
-  readonly collisions: readonly BarritsExportCollision[];
-  /** [EN] Active filters. [ES] Filtros activos. */
-  readonly filters?: BarritsSelectionFilters;
-};
+    readonly filesCount: number;
+    readonly exportsCount: number;
+    readonly publicExportsCount: number;
+    readonly internalExportsCount: number;
+    readonly barrelsCount: number;
+    /** [EN] List of discovered domains. [ES] Lista de dominios descubiertos. */
+    readonly domains: readonly string[];
+    /** [EN] Flattened trait descriptors. [ES] Descriptores de traits aplanados. */
+    readonly traitDescriptors: readonly BarritsConsumedTraitDescriptor[];
+    /** [EN] Global diagnostics. [ES] Diagnósticos globales. */
+    readonly traitDiagnostics: readonly BarritsTraitDiagnostic[];
+    /** [EN] Planned actions. [ES] Acciones planificadas. */
+    readonly importActions: readonly BarritsImportAction[];
+    /** [EN] Unresolved collisions. [ES] Colisiones no resueltas. */
+    readonly collisions: readonly BarritsExportCollision[];
+    /** [EN] Active filters. [ES] Filtros activos. */
+    readonly filters?: BarritsSelectionFilters;
+  };
 
 /**
  * [EN] Type definition for BarritsWatchSnapshot.

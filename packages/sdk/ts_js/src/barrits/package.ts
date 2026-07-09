@@ -1,17 +1,19 @@
 import type { BarritsPackageAutomationOptions } from "./plugins/shared";
-import {
-  DEFAULT_AUTOMATION_DIRECTORY,
-  type BarritsRootConfig,
-  type BarritsRuntimeKind,
-  type BarritsWatchMode,
-} from "./config";
+import { type BarritsRootConfig, type BarritsRuntimeKind, type BarritsWatchMode } from "./config";
 import { normalizePackageOptions } from "./internal/config_normalization";
 
-export type { BarritsRootConfig, BarritsRuntimeKind, BarritsWatchMode } from "./config";
-export { BARRITS_CONFIG_FILENAMES, DEFAULT_AUTOMATION_DIRECTORY, defineBarritsConfig, findBarritsConfigFile, loadBarritsConfig, resolveBarritsConfig } from "./config";
+export type { BarritsContractsConfig, BarritsRootConfig, BarritsRuntimeKind, BarritsTraitConflictStrategy, BarritsWatchMode, ResolvedBarritsConfig } from "./config";
+export {
+  BARRITS_CONFIG_FILENAMES,
+  DEFAULT_AUTOMATION_DIRECTORY,
+  defineBarritsConfig,
+  findBarritsConfigFile,
+  loadBarritsConfig,
+  resolveBarritsConfig,
+} from "./config";
 
-/** 
- * [EN] Public alias for package-first root configuration accepted by Barrits. 
+/**
+ * [EN] Public alias for package-first root configuration accepted by Barrits.
  * [ES] Alias público para la configuración raíz de Barrits basada en paquetes.
  */
 export type BarritsPackageOptions = BarritsRootConfig;
@@ -44,9 +46,7 @@ type ResolvedBarritsPackageOptions = {
  * @param options - [EN] Optional root configuration passed by the consumer project. [ES] Configuración raíz opcional pasada por el proyecto consumidor.
  * @returns [EN] Normalized package options consumed by Barrits automation and adapters. [ES] Opciones de paquete normalizadas consumidas por la automatización y adaptadores de Barrits.
  */
-export const defineBarritsPackage = (
-  options: BarritsPackageOptions = {},
-): ResolvedBarritsPackageOptions => {
+export const defineBarritsPackage = (options: BarritsPackageOptions = {}): ResolvedBarritsPackageOptions => {
   return normalizePackageOptions(options);
 };
 
@@ -57,9 +57,7 @@ export const defineBarritsPackage = (
  * @param options - [EN] Optional root package options. [ES] Opciones de paquete raíz opcionales.
  * @returns [EN] Automation options with watch-aware manifest behavior. [ES] Opciones de automatización con comportamiento de manifiesto consciente del modo watch.
  */
-export const toBarritsAutomationOptions = (
-  options: BarritsPackageOptions = {},
-): BarritsPackageAutomationOptions => {
+export const toBarritsAutomationOptions = (options: BarritsPackageOptions = {}): BarritsPackageAutomationOptions => {
   const normalizedOptions = defineBarritsPackage(options);
 
   return {

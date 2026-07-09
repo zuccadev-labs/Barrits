@@ -39,23 +39,55 @@ Barrits automatically reads those tags (Traits) from the Abstract Syntax Tree (A
 
 ### How does it work in practice?
 
+**Step 1 — Declare a Trait via JSDoc**
+
 ```ts
 /**
- * @barrits-trait
+ * @barrits-trait user-service
  * @barrits-consumes database
  * @barrits-provides user
- * @barrits-state Database
+ * @barrits-summary Retrieves a user by ID from the database
  */
 export async function getUser(id: string) {
-  const db = await resolve<any>("Database");
-  return await db.get(["users", id]);
+  // The implementation is auto-wired by the IoC container.
+  // See Step 2 for how dependencies are resolved at runtime.
 }
 ```
 
-With these three lines of JSDoc, Barrits understands that this function:
-1. **Needs** a database connection (auto-injected via IoC).
-2. **Provides** the "user" capability for other modules to consume.
-3. **Requires** persistent state via the Database (securely connected with zero configuration).
+With these JSDoc tags, Barrits understands that this function:
+1. Is a **trait** named `user-service`.
+2. **Consumes** the `database` capability.
+3. **Provides** the `user` capability for other modules.
+4. Generates an AST manifest entry used by the orchestrator for auto-wiring.
+
+**Step 2 — Auto-wire at Runtime**
+
+```ts
+import { BarritsIoCContainer } from "@zuccadev-labs/barrits/ioc";
+
+const container = new BarritsIoCContainer();
+
+// Register capabilities
+container.register("database", async () => createDatabaseConnection());
+
+// Resolve dependencies — the manifest from Step 1
+// tells the container what each trait needs and provides.
+const db = await container.resolve<Database>("database");
+```
+
+### Supported JSDoc Tags
+
+| Tag | Description | Example |
+| :--- | :--- | :--- |
+| `@barrits-trait <name>` | Declares an exported function/const/class as a Trait. **Required** for trait discovery. | `@barrits-trait user-service` |
+| `@barrits-summary <text>` | Human-readable summary of the trait's purpose. | `@barrits-summary Retrieves a user by ID` |
+| `@barrits-consumes <caps>` | Capabilities this trait depends on from other traits. | `@barrits-consumes database` |
+| `@barrits-provides <caps>` | Capabilities this trait exposes to other consumers. | `@barrits-provides user` |
+| `@barrits-state <slots>` | Stateful resources (databases, caches) this trait manages. | `@barrits-state Database` |
+| `@barrits-requires <caps>` | Dependencies required for composition validation. | `@barrits-requires normalize slug` |
+| `@barrits-conflicts <caps>` | Capabilities incompatible with this trait. | `@barrits-conflicts legacySlug` |
+| `@barrits-tags <tags>` | Arbitrary tags for categorization and filtering. | `@barrits-tags routing formatting` |
+| `@barrits-runtime <runtimes>` | Compatible runtimes (`node`, `browser`, `deno`, `bun`, `universal`). | `@barrits-runtime node browser` |
 
 ---
 
@@ -158,6 +190,49 @@ flowchart TD
 
 ---
 
+## Migration Guide: v0.1.x → v0.2.0
+
+This release is **fully backward-compatible** with v0.1.x. No breaking changes were introduced.
+
+### What's New in v0.2.0
+
+| Area | Addition | Import Path |
+| :--- | :--- | :--- |
+| **Resilience patterns** | `retryWithBackoff`, `withTimeout`, `createCircuitBreaker` | `@zuccadev-labs/barrits` or `barrits.logic` |
+| **Hashing utilities** | `sha256Hex`, `murmurHash3`, `deterministicStringify` | `@zuccadev-labs/barrits` or `barrits.logic` |
+| **Datetime utilities** | `toIsoString`, `fromIsoString`, `diffMs`, `addMs`, `toRelativeTime` | `@zuccadev-labs/barrits` or `barrits.logic` |
+| **Bun runtime** | Full Bun adapter — `@zuccadev-labs/barrits/bun` | `./bun`, `./bun/cli` |
+| **IoC Container** | `BarritsIoCContainer` for runtime dependency injection | `@zuccadev-labs/barrits/ioc` |
+| **OpenAPI Generator** | Auto-generate Swagger v3.1 schemas from trait metadata | `@zuccadev-labs/barrits/schema/openapi` |
+
+### New API Subpaths
+
+```ts
+// IoC Container (new in v0.2.0)
+import { BarritsIoCContainer } from "@zuccadev-labs/barrits/ioc";
+
+// OpenAPI Schema Generation (new in v0.2.0)
+import { generateOpenApiSchema } from "@zuccadev-labs/barrits/schema/openapi";
+
+// Bun Adapter (new in v0.2.0)
+import { runBunCli } from "@zuccadev-labs/barrits/bun";
+```
+
+### Deno Adapter — Full Surface
+
+The Deno adapter (`@zuccadev-labs/barrits/deno`) now exports the complete SDK surface, including trait descriptor factories (`createTraitDescriptor`, `createTraitDescriptorFromJsDoc`, `composeTraitDescriptors`) and the new utility families (hashing, validation, datetime, resilience).
+
+### What Changed Internally
+
+- **Test coverage**: 992+ tests (was 946), 100% source file coverage (50/50 modules).
+- **TypeScript checks**: Test files now included in `tsc --noEmit` validation (0 errors).
+- **Dist declaration output**: Consolidated to `dist/` directory — removed 151 stale `.d.ts` files from source tree.
+- **Refactored internals**: diagnostics, CLI parser, collisions resolver, imports planner — zero behavioral change.
+
+For the full changelog see [packages/sdk/ts_js/CHANGELOG.md](packages/sdk/ts_js/CHANGELOG.md).
+
+---
+
 ## Security Posture
 
 Verifiable controls in this repository:
@@ -184,7 +259,7 @@ For disclosure policy and repository hardening details: [SECURITY.md](SECURITY.m
 │   ├── src/                   # Portable core (orchestration, traits, logic)
 │   ├── adapters/              # Node.js and Deno runtime adapters
 │   ├── examples/              # Real integration examples by environment
-│   ├── tests/                 # Full test suite (65 tests)
+│   ├── tests/                 # Full test suite (992+ tests)
 │   └── benchmarks/            # Performance benchmarks
 └── docs/                      # Documentation by purpose
     ├── users/                 # Installation, usage, API reference

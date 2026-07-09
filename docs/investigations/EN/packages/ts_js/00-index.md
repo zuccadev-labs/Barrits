@@ -19,6 +19,10 @@ This index centralizes the history of discoveries, refactorings, and technical d
 | 04 | [Microservices and Orchestration](04-microservices-and-orchestration.md) | Reflections on distributed dependency injection |
 | 05 | [Conclusions and Design Limits](05-conclusions-and-limits.md) | What Barrits is, and what it does not try to be |
 | 06 | [Deno BaaS Architecture (Parse Alternative)](06-deno-baas-architecture.md) | AST-based IoC and Strict Database Delegation |
+| 07 | [Algorithm Catalogue Standardization](07-algorithm-catalogue-standardization.md) | 10-family algorithm taxonomy and example-based validation |
+| 08 | [Bilingual Documentation Consolidation](08-bilingual-documentation-consolidation.md) | EN/ES documentation architecture and Docusaurus migration strategy |
+| 09 | [Agent Skills and Development Automation](09-agent-skills-and-automation.md) | Modular AI skills and automated development cycle |
+| 10 | [Comprehensive Forensic Audit](10-forensic-integral-audit.md) | Security, gaps, best practices, optimization, UX/DX, and skills |
 
 ---
 

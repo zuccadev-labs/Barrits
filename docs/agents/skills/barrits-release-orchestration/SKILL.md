@@ -1,6 +1,7 @@
 ---
 name: barrits-release-orchestration
 description: Use this skill when preparing and executing Barrits releases for npm, JSR, and GitHub. Follow the formal corporate governance for versioning, branch management, and OIDC-based publication.
+opencode_skill: .opencode/skills/barrits-release-orchestration/skill.jsonc
 ---
 
 # Barrits Release Orchestration
@@ -24,7 +25,7 @@ Release procedures and CI/CD governance are documented in detail within the foll
 1. **Version Alignment**: Synchronize `package.json` and `jsr.json` versions.
 2. **Integration Verification**: Ensure a green pipeline on the target branch (`dev` or `main`).
 3. **Security Audit**: Validate `npm audit` and dependency reviews are clean.
-4. **Release Readiness**: Verify the checklist in `docs/package/ES/05_release-readiness.md`.
+4. **Release Readiness**: Verify the checklist in `docs/package/ES/05_listo-para-lanzamiento.md`.
 
 ## Execution Workflow
 

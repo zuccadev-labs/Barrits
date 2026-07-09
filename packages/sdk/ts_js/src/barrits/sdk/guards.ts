@@ -26,5 +26,3 @@ export const isBarritsFileKind = (value: string): value is BarritsFileKind => {
 export const isBarritsExportVisibility = (value: string): value is BarritsExportVisibility => {
   return EXPORT_VISIBILITIES.has(value as BarritsExportVisibility);
 };
-
-

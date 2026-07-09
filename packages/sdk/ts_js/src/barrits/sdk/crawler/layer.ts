@@ -1,12 +1,13 @@
 import { joinPath } from "../path";
 import { isInternalPath, relativeFromBase, extractExports } from "../ast/extractor";
 import { collectTraitDescriptorMetadata } from "../ast/traits";
-import type { 
-  BarritsFileKind, 
-  BarritsFileIntegration, 
-  BarritsDomainIntegration, 
-  BarritsSourceLayer, 
-  RuntimeFileSystemAdapter 
+import { mapConcurrent } from "../async-utils";
+import type {
+  BarritsFileKind,
+  BarritsFileIntegration,
+  BarritsDomainIntegration,
+  BarritsSourceLayer,
+  RuntimeFileSystemAdapter,
 } from "../contracts";
 
 const IGNORED_DIRECTORIES = new Set([".git", "node_modules", "dist", "build", ".next", ".turbo"]);
@@ -57,10 +58,7 @@ export const toRelativeFilePath = (barritsDirectory: string, filePath: string): 
 /**
  * Collects a recursive inventory of applicable module paths bypassing ignored sub-directories.
  */
-export const collectFiles = async (
-  adapter: RuntimeFileSystemAdapter,
-  rootDirectory: string,
-): Promise<string[]> => {
+export const collectFiles = async (adapter: RuntimeFileSystemAdapter, rootDirectory: string): Promise<string[]> => {
   const files: string[] = [];
   const queue: string[] = [rootDirectory];
 
@@ -109,9 +107,7 @@ export const inspectFile = async (
     kind: classifyFileKind(relativePath),
     sourceLayer,
     exports: await extractExports(adapter, barritsDirectory, relativePath, source),
-    traitDescriptors: classifyFileKind(relativePath) === "trait"
-      ? collectTraitDescriptorMetadata(source, relativePath)
-      : [],
+    traitDescriptors: classifyFileKind(relativePath) === "trait" ? collectTraitDescriptorMetadata(source, relativePath) : [],
   };
 };
 
@@ -202,9 +198,7 @@ export const inspectLayer = async (
   }
 
   const files = await collectFiles(adapter, directory);
-  const inspectedFiles = await Promise.all(
-    files.map((filePath) => inspectFile(adapter, directory, filePath, sourceLayer)),
-  );
+  const inspectedFiles = await mapConcurrent(files, 10, (filePath) => inspectFile(adapter, directory, filePath, sourceLayer));
 
   return buildLayer(directory, inspectedFiles, sourceLayer);
 };

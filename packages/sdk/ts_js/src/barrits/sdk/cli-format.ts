@@ -1,11 +1,13 @@
 /**
  * @module
- * [EN] Placeholder module description.
- * [ES] Descripción de marcador de posición del módulo.
+ * [EN] CLI output formatting utilities for trait overviews and diagnostic summaries.
+ * [ES] Utilidades de formato de salida CLI para resúmenes de traits y diagnósticos.
  */
 import type { BarritsBuildManifest, BarritsIntegrationGraph, BarritsTraitDiagnostic } from "./contracts";
 
-type TraitDiagnosticCarrier = Pick<BarritsIntegrationGraph, "traitDescriptors" | "traitDiagnostics"> | Pick<BarritsBuildManifest, "traitDescriptors" | "traitDiagnostics">;
+type TraitDiagnosticCarrier =
+  | Pick<BarritsIntegrationGraph, "traitDescriptors" | "traitDiagnostics">
+  | Pick<BarritsBuildManifest, "traitDescriptors" | "traitDiagnostics">;
 
 const countTraitDiagnosticSeverities = (diagnostics: readonly BarritsTraitDiagnostic[]) => {
   const errorCount = diagnostics.filter((diagnostic) => diagnostic.severity === "error").length;

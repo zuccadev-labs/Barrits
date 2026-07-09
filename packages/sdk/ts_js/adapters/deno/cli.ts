@@ -3,12 +3,37 @@
  * Deno CLI for Barrits discovery, inspection, imports, watch, and build automation.
  */
 
-import { applyManagedImports, createBuildManifest, createImportsModuleSource, createProjectedGraph, filterImportActions, filterIntegrationGraph, findBarritsDirectory, inspectBarritsIntegrations, isBarritsExportVisibility, isBarritsFileKind, resolveProjectFilePath, stringifyBuildManifest, stringifyWatchSnapshot, type BarritsFileKind, type BarritsSelectionFilters } from "../../src/barrits/sdk";
-import { formatTraitDiagnosticDetailLines, formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
+import {
+  applyManagedImports,
+  createBuildManifest,
+  createImportsModuleSource,
+  createProjectedGraph,
+  filterImportActions,
+  filterIntegrationGraph,
+  findBarritsDirectory,
+  inspectBarritsIntegrations,
+  resolveProjectFilePath,
+  stringifyBuildManifest,
+  stringifyWatchSnapshot,
+  type BarritsSelectionFilters,
+} from "../../src/barrits/sdk";
+import { BarritsSpinner } from "../../src/barrits/sdk/cli-spinner";
+import { formatTraitOverviewLines } from "../../src/barrits/sdk/cli-format";
 import { resolveBarritsConfig } from "../../src/barrits/package";
 import { createDenoFileSystemAdapter } from "./filesystem";
-
-type CliCommand = "detect" | "help" | "info" | "watch" | "dev" | "imports" | "build";
+import {
+  parseArguments,
+  toSelectionFilters,
+  printGraph,
+  printImportActions,
+  hasCollisions,
+  failOnCollisions,
+  toGraphFingerprint,
+  type CliOptions,
+  type IntegrationGraph,
+  type AutomationArtifactPaths,
+} from "../../src/barrits/sdk/cli-parser";
+import { printCompletion } from "../../src/barrits/sdk/completion";
 
 type DenoGlobals = {
   args: string[];
@@ -22,7 +47,10 @@ type DenoGlobals = {
   Command: new (
     command: string,
     options?: { args?: string[]; cwd?: string; env?: Record<string, string>; stdin?: "inherit"; stdout?: "inherit"; stderr?: "inherit" },
-  ) => { output: () => Promise<{ code: number }> };
+  ) => {
+    output: () => Promise<{ code: number }>;
+    spawn: () => { status: Promise<{ code: number }>; kill: (signal?: string) => void };
+  };
 };
 
 const dirname = (filePath: string): string => {
@@ -37,9 +65,8 @@ const dirname = (filePath: string): string => {
 };
 
 const resolveDenoPath = (...segments: string[]): string => {
-  return segments
-    .filter(Boolean)
-    .reduce((currentPath, segment) => {
+  const resolved = segments.filter(Boolean).reduce(
+    (currentPath, segment) => {
       const normalizedSegment = segment.replace(/\\/g, "/");
 
       if (/^(?:[A-Za-z]:\/|\/)/.test(normalizedSegment)) {
@@ -47,7 +74,41 @@ const resolveDenoPath = (...segments: string[]): string => {
       }
 
       return `${currentPath.replace(/\/+$/g, "")}/${normalizedSegment.replace(/^\/+/, "")}`;
-    }, getDenoGlobals().cwd().replace(/\\/g, "/"));
+    },
+    getDenoGlobals().cwd().replace(/\\/g, "/"),
+  );
+
+  const isPosixAbsolute = resolved.startsWith("/");
+  const driveLetterMatch = resolved.match(/^([A-Za-z]:\/)/);
+  const isWindowsAbsolute = driveLetterMatch !== null;
+
+  const parts = resolved.replace(/^[A-Za-z]:\//, "").split("/");
+  const normalized: string[] = [];
+
+  for (const part of parts) {
+    if (part === "." || part === "") continue;
+    if (part === "..") {
+      if (normalized.length > 0 && normalized[normalized.length - 1] !== "..") {
+        const lastSegment = normalized[normalized.length - 1];
+        if (isWindowsAbsolute && /^[A-Za-z]:$/.test(lastSegment)) continue;
+        normalized.pop();
+      } else if (!isPosixAbsolute && !isWindowsAbsolute) {
+        normalized.push("..");
+      }
+      continue;
+    }
+    normalized.push(part);
+  }
+
+  let result = normalized.join("/");
+
+  if (isPosixAbsolute) {
+    result = `/${result}`;
+  } else if (isWindowsAbsolute && driveLetterMatch) {
+    result = `${driveLetterMatch[1]}${result}`;
+  }
+
+  return result;
 };
 
 const getDenoGlobals = (): DenoGlobals => {
@@ -69,146 +130,12 @@ Usage:
   deno run -A jsr:@barrits/sdk/cli imports [path] [--json] [--write] [--target file] [--mode named-import|namespace-access|alias-namespace-access] [--domain name] [--export name] [--kind kind]
   deno run -A jsr:@barrits/sdk/cli build [path] [--json] [--domain name] [--export name] [--file-kind kind] [--visibility public|internal] [--kind kind] [-- command]
   deno run -A jsr:@barrits/sdk/cli dev [path] [--json] [--domain name] [--export name] [--file-kind kind] [--visibility public|internal] [--kind kind] [--write-snapshot] [--snapshot file] [-- command]
+  deno run -A jsr:@barrits/sdk/cli completion <bash|zsh|fish>
   deno run -A jsr:@barrits/sdk/cli help
 
 Description:
   Detects the barrits directory, inspects its integrations and can watch changes automatically.
 `;
-
-type IntegrationGraph = Awaited<ReturnType<typeof inspectBarritsIntegrations>>;
-
-const BUILD_MANIFEST_BASENAME = "build-manifest.json";
-const IMPORTS_MANIFEST_BASENAME = "import-actions.json";
-const IMPORTS_MODULE_BASENAME = "import-actions.generated.ts";
-const WATCH_SNAPSHOT_BASENAME = "watch-snapshot.json";
-
-type AutomationArtifactPaths = {
-  buildManifestPath: string;
-  importsManifestPath: string;
-  importsModulePath: string;
-  watchSnapshotPath: string;
-};
-
-const toSelectionFilters = (options: ReturnType<typeof parseArguments>): BarritsSelectionFilters => {
-  return {
-    domains: options.domains.length > 0 ? options.domains : undefined,
-    exports: options.exports.length > 0 ? options.exports : undefined,
-    kinds: options.kinds.length > 0 ? options.kinds : undefined,
-    fileKinds: options.fileKinds.length > 0 ? options.fileKinds : undefined,
-    visibilities: options.visibilities.length > 0 ? options.visibilities : undefined,
-  };
-};
-
-const printInfoSummary = (graph: IntegrationGraph): void => {
-  console.log(`barrits: ${graph.barritsDirectory}`);
-  console.log(`projectRoot: ${graph.projectRoot}`);
-  console.log(`strategy: ${graph.strategy}`);
-  console.log(`files: ${graph.filesCount}`);
-  console.log(`exports: ${graph.exportsCount}`);
-  console.log(`publicExports: ${graph.publicExportsCount}`);
-  console.log(`internalExports: ${graph.internalExportsCount}`);
-  console.log(`barrels: ${graph.barrelsCount}`);
-
-  for (const line of formatTraitOverviewLines(graph)) {
-    console.log(line);
-  }
-
-  if (graph.rootFiles.length > 0) {
-    console.log("rootFiles:");
-
-    for (const file of graph.rootFiles) {
-      const exportsLabel = file.exports.map((entry) => `${entry.name}:${entry.visibility}`).join(", ") || "-";
-      console.log(`  - ${file.path} [${file.kind}]: ${exportsLabel}`);
-    }
-  }
-
-  if (graph.domains.length > 0) {
-    console.log("domains:");
-
-    for (const domain of graph.domains) {
-      console.log(`  - ${domain.name}`);
-
-      for (const file of domain.files) {
-        const exportsLabel = file.exports.map((entry) => `${entry.name}:${entry.visibility}`).join(", ") || "-";
-        console.log(`    ${file.path} [${file.kind}]: ${exportsLabel}`);
-      }
-    }
-  }
-
-  if (graph.importActions.length > 0) {
-    console.log("importActions:");
-
-    for (const action of graph.importActions.slice(0, 12)) {
-      console.log(`  - ${action.exportName} (${action.kind}): ${action.statement}`);
-    }
-
-    if (graph.importActions.length > 12) {
-      console.log(`  ... ${graph.importActions.length - 12} more`);
-    }
-  }
-
-  if (graph.collisions.length > 0) {
-    console.log("collisions:");
-
-    for (const collision of graph.collisions) {
-      console.log(`  - ${collision.message}`);
-    }
-  }
-
-  for (const line of formatTraitDiagnosticDetailLines(graph.traitDiagnostics)) {
-    console.log(line);
-  }
-};
-
-const printCollisions = (graph: IntegrationGraph): void => {
-  for (const collision of graph.collisions) {
-    console.error(collision.message);
-  }
-};
-
-const hasCollisions = (graph: IntegrationGraph): boolean => {
-  return graph.collisions.length > 0;
-};
-
-const failOnCollisions = (graph: IntegrationGraph, json: boolean): number => {
-  if (!hasCollisions(graph)) {
-    return 0;
-  }
-
-  if (json) {
-    console.error(JSON.stringify({ collisions: graph.collisions }, null, 2));
-  } else {
-    printCollisions(graph);
-  }
-
-  return 1;
-};
-
-const toGraphFingerprint = (graph: IntegrationGraph): string => {
-  return JSON.stringify(graph);
-};
-
-const printGraph = (graph: IntegrationGraph, json: boolean): void => {
-  if (json) {
-    console.log(JSON.stringify(graph, null, 2));
-    return;
-  }
-
-  printInfoSummary(graph);
-};
-
-const printImportActions = (graph: IntegrationGraph, json: boolean): void => {
-  if (json) {
-    console.log(JSON.stringify(graph.importActions, null, 2));
-    return;
-  }
-
-  console.log(`imports: ${graph.importActions.length}`);
-
-  for (const action of graph.importActions) {
-    console.log(`- ${action.exportName} (${action.kind}) -> ${action.statement}`);
-  }
-};
 
 const ensureTextFile = async (filePath: string, content: string): Promise<void> => {
   const runtime = getDenoGlobals();
@@ -221,36 +148,201 @@ const resolveAutomationArtifactPaths = async (projectRoot: string): Promise<Auto
   const automationRoot = resolveDenoPath(projectRoot, configuration.automationDirectory);
 
   return {
-    buildManifestPath: resolveDenoPath(automationRoot, BUILD_MANIFEST_BASENAME),
-    importsManifestPath: resolveDenoPath(automationRoot, IMPORTS_MANIFEST_BASENAME),
-    importsModulePath: resolveDenoPath(automationRoot, IMPORTS_MODULE_BASENAME),
-    watchSnapshotPath: resolveDenoPath(automationRoot, WATCH_SNAPSHOT_BASENAME),
+    buildManifestPath: resolveDenoPath(automationRoot, "build-manifest.json"),
+    importsManifestPath: resolveDenoPath(automationRoot, "import-actions.json"),
+    importsModulePath: resolveDenoPath(automationRoot, "import-actions.generated.ts"),
+    watchSnapshotPath: resolveDenoPath(automationRoot, "watch-snapshot.json"),
   };
 };
 
-const runChildCommand = async (
-  childArgs: string[],
-  cwd: string,
-  envVars: Record<string, string>,
+const handleDenoImports = async (
+  options: CliOptions,
+  filteredGraph: IntegrationGraph,
+  discovery: { projectRoot: string },
+  automationPaths: AutomationArtifactPaths,
 ): Promise<number> => {
+  const importsGraph = filterImportActions(filteredGraph, {
+    domains: options.domains.length > 0 ? options.domains : undefined,
+    exports: options.exports.length > 0 ? options.exports : undefined,
+    kinds: options.kinds.length > 0 ? options.kinds : undefined,
+  });
+
+  if (options.write) {
+    const { importsManifestPath, importsModulePath } = automationPaths;
+    await ensureTextFile(importsManifestPath, JSON.stringify(importsGraph.importActions, null, 2));
+    await ensureTextFile(importsModulePath, createImportsModuleSource(importsGraph));
+
+    if (options.targetFile) {
+      const runtime = getDenoGlobals();
+      const targetFilePath = options.targetFile
+        ? resolveDenoPath(discovery.projectRoot, options.targetFile)
+        : resolveProjectFilePath(discovery.projectRoot, options.targetFile);
+
+      if (!targetFilePath) {
+        throw new Error("Unable to resolve imports target file.");
+      }
+
+      const targetSource = await runtime.readTextFile(targetFilePath);
+      const nextSource = applyManagedImports(targetSource, importsGraph, options.mode);
+      await ensureTextFile(targetFilePath, nextSource);
+    }
+
+    if (!options.json) {
+      console.log(`importsManifest: ${importsManifestPath}`);
+      console.log(`importsModule: ${importsModulePath}`);
+
+      if (options.targetFile) {
+        console.log(`importsTarget: ${resolveProjectFilePath(discovery.projectRoot, options.targetFile)}`);
+        console.log(`importsMode: ${options.mode}`);
+      }
+    }
+  }
+
+  printImportActions(importsGraph, options.json);
+  return 0;
+};
+
+const handleDenoBuild = async (
+  options: CliOptions,
+  graph: IntegrationGraph,
+  selectionFilters: BarritsSelectionFilters,
+  automationPaths: AutomationArtifactPaths,
+  discovery: { projectRoot: string },
+): Promise<number> => {
+  const buildSpinner = new BarritsSpinner();
+  buildSpinner.start("building...");
+
+  const { buildManifestPath } = automationPaths;
+  const buildGraph = createProjectedGraph(graph, selectionFilters);
+
+  buildSpinner.update("writing manifest...");
+  await ensureTextFile(buildManifestPath, await stringifyBuildManifest(buildGraph, selectionFilters));
+
+  const manifest = await createBuildManifest(buildGraph, selectionFilters);
+
+  if (options.json) {
+    buildSpinner.stopAndClear();
+    console.log(JSON.stringify(manifest, null, 2));
+  } else {
+    buildSpinner.succeed("build complete");
+    console.log(`buildManifest: ${buildManifestPath}`);
+    console.log(`domains: ${manifest.domains.join(", ")}`);
+
+    for (const line of formatTraitOverviewLines(manifest)) {
+      console.log(line);
+    }
+  }
+
+  if (options.childArgs.length > 0) {
+    return runChildCommand(options.childArgs, discovery.projectRoot, {
+      BARRITS_BUILD_MANIFEST: buildManifestPath,
+    });
+  }
+
+  return 0;
+};
+
+const handleDenoWatchDev = async (
+  options: CliOptions,
+  graph: IntegrationGraph,
+  discovery: { barritsDirectory: string; projectRoot: string },
+  emitGraph: () => Promise<IntegrationGraph>,
+  selectionFilters: BarritsSelectionFilters,
+  automationPaths: AutomationArtifactPaths,
+): Promise<number> => {
+  const { buildManifestPath, watchSnapshotPath: defaultWatchSnapshotPath } = automationPaths;
+  const watchGraph = createProjectedGraph(graph, selectionFilters);
+  const watchSnapshotPath = options.snapshotFile
+    ? resolveDenoPath(discovery.projectRoot, options.snapshotFile)
+    : options.writeSnapshot
+      ? defaultWatchSnapshotPath
+      : undefined;
+  await ensureTextFile(buildManifestPath, await stringifyBuildManifest(watchGraph, selectionFilters));
+
+  if (watchSnapshotPath) {
+    await ensureTextFile(
+      watchSnapshotPath,
+      stringifyWatchSnapshot(watchGraph, options.command === "dev" ? "dev" : "watch", selectionFilters),
+    );
+  }
+
+  printGraph(watchGraph, options.json);
+
+  const startupSpinner = new BarritsSpinner();
+  startupSpinner.start(options.command === "dev" ? "starting dev session..." : "watching for changes in barrits/ ...");
+
+  const session = startWatchSession(discovery, emitGraph, {
+    json: options.json,
+    onGraph: async (nextGraph) => {
+      const nextProjectedGraph = createProjectedGraph(nextGraph, selectionFilters);
+      await ensureTextFile(buildManifestPath, await stringifyBuildManifest(nextProjectedGraph, selectionFilters));
+
+      if (watchSnapshotPath) {
+        await ensureTextFile(
+          watchSnapshotPath,
+          stringifyWatchSnapshot(nextProjectedGraph, options.command === "dev" ? "dev" : "watch", selectionFilters),
+        );
+      }
+    },
+  });
+  session.setInitialGraph(watchGraph);
+
+  if (options.command === "dev" && options.childArgs.length > 0) {
+    startupSpinner.succeed("dev session started");
+    const watchPromise = session.run();
+    try {
+      const exitCode = await runChildCommand(options.childArgs, discovery.projectRoot, {
+        BARRITS_BUILD_MANIFEST: buildManifestPath,
+        ...(watchSnapshotPath ? { BARRITS_WATCH_SNAPSHOT: watchSnapshotPath } : {}),
+        BARRITS_DEV_MODE: "1",
+      });
+      return exitCode;
+    } finally {
+      session.close();
+      await watchPromise;
+    }
+  }
+
+  startupSpinner.succeed("watching for changes in barrits/ ...");
+
+  await session.run();
+
+  return 0;
+};
+
+const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record<string, string>): Promise<number> => {
   if (childArgs.length === 0) {
     return 0;
   }
 
   const runtime = getDenoGlobals();
+  const denoEnv = runtime.env.toObject();
+  const rawTimeout = denoEnv["BARRITS_CHILD_TIMEOUT_MS"];
+  const timeoutMs = rawTimeout ? Number(rawTimeout) : 600_000;
   const [command, ...args] = childArgs;
   const child = new runtime.Command(command, {
     args,
     cwd,
     env: {
-      ...runtime.env.toObject(),
+      ...denoEnv,
       ...envVars,
     },
     stdin: "inherit",
     stdout: "inherit",
     stderr: "inherit",
   });
-  const result = await child.output();
+
+  const process = child.spawn();
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const result = await Promise.race([
+    process.status.then((s) => { clearTimeout(timeoutId); return s; }),
+    new Promise<{ code: number }>((resolve, reject) => {
+      timeoutId = setTimeout(() => {
+        process.kill("SIGTERM");
+        reject(new Error(`Child process timed out after ${timeoutMs}ms`));
+      }, timeoutMs);
+    }),
+  ]);
   return result.code;
 };
 
@@ -311,164 +403,6 @@ const startWatchSession = (
   };
 };
 
-const parseArguments = (argumentsList: string[]) => {
-  const separatorIndex = argumentsList.indexOf("--");
-  const cliArguments = separatorIndex === -1 ? argumentsList : argumentsList.slice(0, separatorIndex);
-  const childArgs = separatorIndex === -1 ? [] : argumentsList.slice(separatorIndex + 1);
-
-  let command: CliCommand = "detect";
-  let json = false;
-  let write = false;
-  let writeSnapshot = false;
-  let mode: "named-import" | "namespace-access" | "alias-namespace-access" = "named-import";
-  const domains: string[] = [];
-  const exports: string[] = [];
-  const kinds: Array<"named-import" | "namespace-access" | "alias-namespace-access"> = [];
-  const fileKinds: BarritsFileKind[] = [];
-  const visibilities: Array<"public" | "internal"> = [];
-  let startDirectory: string | undefined;
-  let snapshotFile: string | undefined;
-  let targetFile: string | undefined;
-
-  for (let index = 0; index < cliArguments.length; index += 1) {
-    const argument = cliArguments[index];
-
-    if (argument === "help" || argument === "--help" || argument === "-h") {
-      command = "help";
-      continue;
-    }
-
-    if (argument === "detect") {
-      command = "detect";
-      continue;
-    }
-
-    if (argument === "info") {
-      command = "info";
-      continue;
-    }
-
-    if (argument === "watch") {
-      command = "watch";
-      continue;
-    }
-
-    if (argument === "dev") {
-      command = "dev";
-      continue;
-    }
-
-    if (argument === "imports") {
-      command = "imports";
-      continue;
-    }
-
-    if (argument === "build") {
-      command = "build";
-      continue;
-    }
-
-    if (argument === "--json") {
-      json = true;
-      continue;
-    }
-
-    if (argument === "--write") {
-      write = true;
-      continue;
-    }
-
-    if (argument === "--write-snapshot") {
-      writeSnapshot = true;
-      continue;
-    }
-
-    if (argument === "--target") {
-      targetFile = cliArguments[index + 1];
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--snapshot") {
-      snapshotFile = cliArguments[index + 1];
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--domain") {
-      const domain = cliArguments[index + 1];
-
-      if (domain) {
-        domains.push(domain);
-      }
-
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--export") {
-      const exportName = cliArguments[index + 1];
-
-      if (exportName) {
-        exports.push(exportName);
-      }
-
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--kind") {
-      const kind = cliArguments[index + 1];
-
-      if (kind === "named-import" || kind === "namespace-access" || kind === "alias-namespace-access") {
-        kinds.push(kind);
-      }
-
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--file-kind") {
-      const fileKind = cliArguments[index + 1];
-
-      if (fileKind && isBarritsFileKind(fileKind)) {
-        fileKinds.push(fileKind);
-      }
-
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--visibility") {
-      const visibility = cliArguments[index + 1];
-
-      if (visibility && isBarritsExportVisibility(visibility)) {
-        visibilities.push(visibility);
-      }
-
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--mode") {
-      const nextMode = cliArguments[index + 1];
-
-      if (nextMode === "named-import" || nextMode === "namespace-access" || nextMode === "alias-namespace-access") {
-        mode = nextMode;
-      }
-
-      index += 1;
-      continue;
-    }
-
-    if (!startDirectory && !argument.startsWith("--")) {
-      startDirectory = argument;
-    }
-  }
-
-  return { command, json, write, writeSnapshot, mode, domains, exports, kinds, fileKinds, visibilities, startDirectory, snapshotFile, targetFile, childArgs };
-};
-
 /**
  * Runs the Barrits CLI command pipeline inside Deno.
  *
@@ -484,6 +418,11 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
     return 0;
   }
 
+  if (options.command === "completion") {
+    printCompletion(options.shellType);
+    return 0;
+  }
+
   const discovery = await findBarritsDirectory(adapter, {
     startDirectory: options.startDirectory,
   });
@@ -494,15 +433,14 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
     return 1;
   }
 
-  if (options.command === "detect" && options.json) {
-    console.log(JSON.stringify({ found: true, ...discovery }, null, 2));
-    return 0;
-  }
-
   if (options.command === "detect") {
-    console.log(`barrits: ${discovery.barritsDirectory}`);
-    console.log(`projectRoot: ${discovery.projectRoot}`);
-    console.log(`strategy: ${discovery.strategy}`);
+    if (options.json) {
+      console.log(JSON.stringify({ found: true, ...discovery }, null, 2));
+    } else {
+      console.log(`barrits: ${discovery.barritsDirectory}`);
+      console.log(`projectRoot: ${discovery.projectRoot}`);
+      console.log(`strategy: ${discovery.strategy}`);
+    }
     return 0;
   }
 
@@ -525,127 +463,21 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
   }
 
   if (options.command === "imports") {
-    const importsGraph = filterImportActions(filteredGraph, {
-      domains: options.domains.length > 0 ? options.domains : undefined,
-      exports: options.exports.length > 0 ? options.exports : undefined,
-      kinds: options.kinds.length > 0 ? options.kinds : undefined,
-    });
-
-    if (options.write) {
-      const { importsManifestPath, importsModulePath } = automationPaths;
-      await ensureTextFile(importsManifestPath, JSON.stringify(importsGraph.importActions, null, 2));
-      await ensureTextFile(importsModulePath, createImportsModuleSource(importsGraph));
-
-      if (options.targetFile) {
-        const runtime = getDenoGlobals();
-        const targetFilePath = options.targetFile ? resolveDenoPath(discovery.projectRoot, options.targetFile) : resolveProjectFilePath(discovery.projectRoot, options.targetFile);
-
-        if (!targetFilePath) {
-          throw new Error("Unable to resolve imports target file.");
-        }
-
-        const targetSource = await runtime.readTextFile(targetFilePath);
-        const nextSource = applyManagedImports(targetSource, importsGraph, options.mode);
-        await ensureTextFile(targetFilePath, nextSource);
-      }
-
-      if (!options.json) {
-        console.log(`importsManifest: ${importsManifestPath}`);
-        console.log(`importsModule: ${importsModulePath}`);
-
-        if (options.targetFile) {
-          console.log(`importsTarget: ${resolveProjectFilePath(discovery.projectRoot, options.targetFile)}`);
-          console.log(`importsMode: ${options.mode}`);
-        }
-      }
-    }
-
-    printImportActions(importsGraph, options.json);
-    return 0;
+    return handleDenoImports(options, filteredGraph, discovery, automationPaths);
   }
 
   if (options.command === "build") {
-    const { buildManifestPath } = automationPaths;
-    const buildGraph = createProjectedGraph(graph, selectionFilters);
-    await ensureTextFile(buildManifestPath, stringifyBuildManifest(buildGraph, selectionFilters));
-
-    const manifest = createBuildManifest(buildGraph, selectionFilters);
-
-    if (options.json) {
-      console.log(JSON.stringify(manifest, null, 2));
-    } else {
-      console.log(`buildManifest: ${buildManifestPath}`);
-      console.log(`domains: ${manifest.domains.join(", ")}`);
-
-      for (const line of formatTraitOverviewLines(manifest)) {
-        console.log(line);
-      }
-    }
-
-    if (options.childArgs.length > 0) {
-      return runChildCommand(options.childArgs, discovery.projectRoot, {
-        BARRITS_BUILD_MANIFEST: buildManifestPath,
-      });
-    }
-
-    return 0;
+    return handleDenoBuild(options, graph, selectionFilters, automationPaths, discovery);
   }
 
-  const { buildManifestPath, watchSnapshotPath: defaultWatchSnapshotPath } = automationPaths;
-  const watchGraph = createProjectedGraph(graph, selectionFilters);
-  const watchSnapshotPath = options.snapshotFile
-    ? resolveDenoPath(discovery.projectRoot, options.snapshotFile)
-    : (options.writeSnapshot ? defaultWatchSnapshotPath : undefined);
-  await ensureTextFile(buildManifestPath, stringifyBuildManifest(watchGraph, selectionFilters));
-
-  if (watchSnapshotPath) {
-    await ensureTextFile(
-      watchSnapshotPath,
-      stringifyWatchSnapshot(watchGraph, options.command === "dev" ? "dev" : "watch", selectionFilters),
-    );
-  }
-
-  printGraph(watchGraph, options.json);
-
-  if (!options.json) {
-    console.log("watching for changes in barrits/ ...");
-  }
-
-  const session = startWatchSession(discovery, emitGraph, {
-    json: options.json,
-    onGraph: async (nextGraph) => {
-      const nextProjectedGraph = createProjectedGraph(nextGraph, selectionFilters);
-      await ensureTextFile(buildManifestPath, stringifyBuildManifest(nextProjectedGraph, selectionFilters));
-
-      if (watchSnapshotPath) {
-        await ensureTextFile(
-          watchSnapshotPath,
-          stringifyWatchSnapshot(nextProjectedGraph, options.command === "dev" ? "dev" : "watch", selectionFilters),
-        );
-      }
-    },
-  });
-  session.setInitialGraph(watchGraph);
-
-  if (options.command === "dev" && options.childArgs.length > 0) {
-    const watchPromise = session.run();
-    const exitCode = await runChildCommand(options.childArgs, discovery.projectRoot, {
-      BARRITS_BUILD_MANIFEST: buildManifestPath,
-      ...(watchSnapshotPath ? { BARRITS_WATCH_SNAPSHOT: watchSnapshotPath } : {}),
-      BARRITS_DEV_MODE: "1",
-    });
-    session.close();
-    await watchPromise;
-    return exitCode;
-  }
-
-  await session.run();
-
-  return 0;
+  return handleDenoWatchDev(options, graph, discovery, emitGraph, selectionFilters, automationPaths);
 };
 
 if (import.meta.main) {
   void runDenoCli().then((exitCode) => {
     getDenoGlobals().exit(exitCode);
+  }).catch((error: unknown) => {
+    console.error(error instanceof Error ? error.message : String(error));
+    getDenoGlobals().exit(1);
   });
 }

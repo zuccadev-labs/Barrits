@@ -14,7 +14,7 @@ Este directorio constituye la guía operativa para la preparación, validación 
 2.  **[02_versionado-y-releases.md](02_versionado-y-releases.md)**: Establecimiento de la estrategia de versionado (SemVer), gestión de tags y ciclos de release.
 3.  **[03_secrets-actions-y-entornos.md](03_secrets-actions-y-entornos.md)**: Documentación de secretos de seguridad, entornos (environments) y flujos de trabajo de GitHub Actions.
 4.  **[04_variables-de-entorno.md](04_variables-de-entorno.md)**: Guía de configuración de variables y mapa de referencia del archivo `.env` local.
-5.  **[05_release-readiness.md](05_release-readiness.md)**: Lista de verificación (checklist) técnica final previa al primer lanzamiento oficial.
+5.  **[05_listo-para-lanzamiento.md](05_listo-para-lanzamiento.md)**: Lista de verificación (checklist) técnica final previa al primer lanzamiento oficial.
 6.  **[06_configuracion-jsr-y-github-actions.md](06_configuracion-jsr-y-github-actions.md)**: Detalle del vínculo técnico entre JSR y GitHub Actions mediante el protocolo OIDC.
 7.  **[07_primera-publicacion-paso-a-paso.md](07_primera-publicacion-paso-a-paso.md)**: Protocolo secuencial para la ejecución de la release inicial y actualizaciones posteriores.
-8.  **[08_cicd-pipeline-and-branch-strategy.md](08_cicd-pipeline-and-branch-strategy.md)**: Documentación del pipeline de integración continua y la estrategia corporativa de ramificación.
+8.  **[08_cicd-pipeline-y-estrategia-de-ramas.md](08_cicd-pipeline-y-estrategia-de-ramas.md)**: Documentación del pipeline de integración continua y la estrategia corporativa de ramificación.

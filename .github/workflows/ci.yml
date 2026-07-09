@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  schedule:
+    - cron: "0 0 * * *"
   push:
     branches:
       - main
@@ -31,7 +33,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -55,6 +57,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Lint
+        run: npm run lint
+
       - name: Typecheck
         run: npm run typecheck
 
@@ -63,6 +68,9 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Coverage report
+        run: npm run test:coverage
 
       - name: Validate JSR surface
         run: npm run publish:jsr:dry-run

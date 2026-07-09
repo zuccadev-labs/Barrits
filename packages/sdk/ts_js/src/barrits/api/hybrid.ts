@@ -11,4 +11,4 @@ export { barrits, brt } from "./domains";
 /**
  * Factory and initialization APIs for dynamic contexts.
  */
-export * from "./factory";
+export * from "./factory";

@@ -1,6 +1,7 @@
 ---
 name: barrits-package-first-implementation
 description: Use this skill when implementing or refactoring TypeScript/JavaScript features using @zuccadev-labs/barrits package-first APIs, manifests, adapters, traits, and built-in algorithms. Follow the industrialized core architecture using specialized internal services for normalization and orchestration.
+opencode_skill: .opencode/skills/barrits-package-first-implementation/skill.jsonc
 ---
 
 # Barrits Package-First Implementation

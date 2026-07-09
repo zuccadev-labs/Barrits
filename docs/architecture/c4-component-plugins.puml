@@ -1,0 +1,58 @@
+@startuml Barrits - Plugin Components
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Component Diagram - Build Plugins
+
+System_Boundary(shared, "Plugin Shared Infrastructure (plugins/shared.ts)") {
+  Component(shared_config, "BarritsPackageAutomationOptions", "TypeScript", "Common options type for all plugins")
+  Component(shared_fs, "createPluginFileSystemAdapter", "TypeScript", "Creates Node.js filesystem adapter for plugin use")
+  Component(shared_resolve, "resolveAutomationOptions", "TypeScript", "Resolves barrits.config options for plugin context")
+  Component(shared_manifest_src, "createManifestModuleSource", "TypeScript", "Generates virtual module source code from manifest")
+  Component(shared_load, "loadManifest", "TypeScript", "Loads and caches build manifest for plugin pipeline")
+}
+
+System_Boundary(materialize, "Manifest Materialization (plugins/materialize.ts)") {
+  Component(ensure_manifest, "ensureManifestModuleFile", "TypeScript", "Writes manifest module file to disk for webpack/rollup")
+}
+
+System_Boundary(plugins_section, "Plugin Implementations") {
+  Component(vite, "barritsVitePlugin", "TypeScript", "Vite plugin: hooks into build/transform, provides virtual:barrits module")
+  Component(esbuild, "barritsEsbuildPlugin", "TypeScript", "esbuild plugin: hooks into build/onResolve/onLoad")
+  Component(rollup, "barritsRollupPlugin", "TypeScript", "Rollup plugin: hooks into buildStart/resolveId/load")
+  Component(webpack, "BarritsWebpackPlugin", "TypeScript", "Webpack plugin class: hooks into apply/resolve/load")
+}
+
+System_Ext(vite_ext, "Vite", "Bundler & dev server")
+System_Ext(esbuild_ext, "esbuild", "Extremely fast bundler")
+System_Ext(rollup_ext, "Rollup", "Module bundler")
+System_Ext(webpack_ext, "Webpack", "Static module bundler")
+
+Rel(vite, shared_config, "Uses options type")
+Rel(vite, shared_fs, "Uses filesystem adapter")
+Rel(vite, shared_resolve, "Uses option resolution")
+Rel(vite, shared_manifest_src, "Uses virtual module source")
+Rel(vite, shared_load, "Loads manifest")
+Rel(esbuild, shared_config, "")
+Rel(esbuild, shared_fs, "")
+Rel(esbuild, shared_resolve, "")
+Rel(esbuild, shared_manifest_src, "")
+Rel(esbuild, shared_load, "")
+Rel(rollup, shared_config, "")
+Rel(rollup, shared_fs, "")
+Rel(rollup, shared_resolve, "")
+Rel(rollup, shared_manifest_src, "")
+Rel(rollup, ensure_manifest, "Writes manifest file")
+Rel(webpack, shared_config, "")
+Rel(webpack, shared_fs, "")
+Rel(webpack, shared_resolve, "")
+Rel(webpack, shared_manifest_src, "")
+Rel(webpack, ensure_manifest, "Writes manifest file")
+
+Rel(vite, vite_ext, "Runs inside Vite")
+Rel(esbuild, esbuild_ext, "Runs inside esbuild")
+Rel(rollup, rollup_ext, "Runs inside Rollup")
+Rel(webpack, webpack_ext, "Runs inside Webpack")
+
+@enduml

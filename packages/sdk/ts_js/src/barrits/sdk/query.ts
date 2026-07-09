@@ -1,7 +1,7 @@
 /**
  * @module
- * [EN] Placeholder module description.
- * [ES] Descripción de marcador de posición del módulo.
+ * [EN] Integration graph filtering, collision detection, and project path resolution queries.
+ * [ES] Filtrado del grafo de integración, detección de colisiones y resolución de rutas de proyecto.
  */
 import type {
   BarritsConsumedTraitDescriptor,
@@ -64,23 +64,19 @@ const filterFiles = (
       return [];
     }
 
-    return [{
-      ...file,
-      exports,
-    }];
+    return [
+      {
+        ...file,
+        exports,
+      },
+    ];
   });
 };
 
-const collectGraphMetrics = (
-  rootFiles: readonly BarritsFileIntegration[],
-  domains: readonly BarritsDomainIntegration[],
-) => {
+const collectGraphMetrics = (rootFiles: readonly BarritsFileIntegration[], domains: readonly BarritsDomainIntegration[]) => {
   const files = [...rootFiles, ...domains.flatMap((domain) => domain.files)];
   const exportsCount = files.reduce((count, file) => count + file.exports.length, 0);
-  const publicExportsCount = files.reduce(
-    (count, file) => count + file.exports.filter((entry) => entry.visibility === "public").length,
-    0,
-  );
+  const publicExportsCount = files.reduce((count, file) => count + file.exports.filter((entry) => entry.visibility === "public").length, 0);
 
   return {
     filesCount: files.length,
@@ -89,6 +85,28 @@ const collectGraphMetrics = (
     internalExportsCount: exportsCount - publicExportsCount,
     barrelsCount: files.filter((file) => file.kind === "barrel" || file.kind === "root").length,
   };
+};
+
+const filterDomains = (
+  domains: readonly BarritsDomainIntegration[],
+  domainFilter: Set<string> | null,
+  fileKindFilter: Set<string> | null,
+  exportFilter: Set<string> | null,
+  visibilityFilter: Set<string> | null,
+): BarritsDomainIntegration[] => {
+  return domains.flatMap((domain) => {
+    if (domainFilter && !domainFilter.has(domain.name)) {
+      return [];
+    }
+
+    const files = filterFiles(domain.files, { fileKindFilter, exportFilter, visibilityFilter });
+
+    if (files.length === 0 && (fileKindFilter || exportFilter || visibilityFilter)) {
+      return [];
+    }
+
+    return [{ ...domain, files }];
+  });
 };
 
 const filterCollisions = (
@@ -136,10 +154,7 @@ const filterTraitDescriptors = (
   return descriptors.filter((descriptor) => visibleFiles.has(descriptor.sourceFile));
 };
 
-const filterTraitDiagnostics = (
-  diagnostics: readonly BarritsTraitDiagnostic[],
-  visibleFiles: Set<string>,
-): BarritsTraitDiagnostic[] => {
+const filterTraitDiagnostics = (diagnostics: readonly BarritsTraitDiagnostic[], visibleFiles: Set<string>): BarritsTraitDiagnostic[] => {
   return diagnostics.filter((diagnostic) => visibleFiles.has(diagnostic.sourceFile));
 };
 
@@ -147,54 +162,19 @@ const filterTraitDiagnostics = (
  * [EN] Implementation of Filter integration graph.
  * [ES] Implementación de Filter integration graph.
  */
-export const filterIntegrationGraph = (
-  graph: BarritsIntegrationGraph,
-  filters: BarritsGraphFilters = {},
-): BarritsIntegrationGraph => {
+export const filterIntegrationGraph = (graph: BarritsIntegrationGraph, filters: BarritsGraphFilters = {}): BarritsIntegrationGraph => {
   const domainFilter = filters.domains ? new Set(filters.domains) : null;
   const exportFilter = filters.exports ? new Set(filters.exports) : null;
   const fileKindFilter = filters.fileKinds ? new Set(filters.fileKinds) : null;
   const visibilityFilter = filters.visibilities ? new Set(filters.visibilities) : null;
   const shouldKeepRootFiles = !domainFilter || domainFilter.has("root");
 
-  const rootFiles = shouldKeepRootFiles
-    ? filterFiles(graph.rootFiles, { fileKindFilter, exportFilter, visibilityFilter })
-    : [];
+  const rootFiles = shouldKeepRootFiles ? filterFiles(graph.rootFiles, { fileKindFilter, exportFilter, visibilityFilter }) : [];
   const libraryRootFiles = shouldKeepRootFiles
     ? filterFiles(graph.libraryRootFiles, { fileKindFilter, exportFilter, visibilityFilter })
     : [];
-  const domains = graph.domains.flatMap((domain) => {
-    if (domainFilter && !domainFilter.has(domain.name)) {
-      return [];
-    }
-
-    const files = filterFiles(domain.files, { fileKindFilter, exportFilter, visibilityFilter });
-
-    if (files.length === 0 && (fileKindFilter || exportFilter || visibilityFilter)) {
-      return [];
-    }
-
-    return [{
-      ...domain,
-      files,
-    }];
-  });
-  const libraryDomains = graph.libraryDomains.flatMap((domain) => {
-    if (domainFilter && !domainFilter.has(domain.name)) {
-      return [];
-    }
-
-    const files = filterFiles(domain.files, { fileKindFilter, exportFilter, visibilityFilter });
-
-    if (files.length === 0 && (fileKindFilter || exportFilter || visibilityFilter)) {
-      return [];
-    }
-
-    return [{
-      ...domain,
-      files,
-    }];
-  });
+  const domains = filterDomains(graph.domains, domainFilter, fileKindFilter, exportFilter, visibilityFilter);
+  const libraryDomains = filterDomains(graph.libraryDomains, domainFilter, fileKindFilter, exportFilter, visibilityFilter);
   const metrics = collectGraphMetrics(rootFiles, domains);
   const visibleTraitFiles = collectVisibleTraitDescriptorFiles(rootFiles, domains, graph.traitDescriptors);
   const importActionFilters: BarritsImportFilters = {
@@ -220,10 +200,7 @@ export const filterIntegrationGraph = (
  * [EN] Implementation of Resolve project file path.
  * [ES] Implementación de Resolve project file path.
  */
-export const resolveProjectFilePath = (
-  projectRoot: string,
-  filePath: string | undefined,
-): string | undefined => {
+export const resolveProjectFilePath = (projectRoot: string, filePath: string | undefined): string | undefined => {
   if (!filePath) {
     return undefined;
   }

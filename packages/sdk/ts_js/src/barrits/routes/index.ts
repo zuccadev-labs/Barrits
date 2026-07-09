@@ -5,7 +5,7 @@ export { buildPath, parsePath, path };
 /**
  * [EN] Routing helpers namespace exposed under `barrits.routes`.
  * Contains utilities for building, parsing and managing resource paths.
- * 
+ *
  * [ES] Espacio de nombres de ayudantes de enrutamiento expuesto bajo `barrits.routes`.
  * Contiene utilidades para construir, parsear y gestionar rutas de recursos.
  */

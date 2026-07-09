@@ -1,0 +1,44 @@
+@startuml Barrits - Containers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Container Diagram - Barrits TS/JS SDK
+
+Person(developer, "Developer", "Writes package-first automation code")
+
+System_Boundary(barrits, "Barrits TS/JS SDK") {
+  Container(cli, "CLI Application", "Node.js / Deno", "Entry point for barrits/brt commands: detect, info, watch, dev, build, imports, completion")
+
+  Container(sdk_core, "SDK Core Library", "TypeScript", "Public API: discovery, inspection, manifest generation, import management, summarization, guards, path utilities")
+
+  Container(lib, "Barrits Lib", "TypeScript", "Domain-agnostic utility library: algorithms, arithmetic, datetime, hashing, resilience, strings, validation")
+
+  Container(adapters, "Runtime Adapters", "Node.js / Deno", "Cross-runtime filesystem abstraction (RuntimeFileSystemAdapter) with Node.js and Deno implementations")
+
+  Container(plugins, "Build Plugins", "TypeScript", "Integration plugins for Vite, esbuild, Rollup, and Webpack bundlers")
+
+  Container(traits, "Trait System", "TypeScript", "Descriptor-based portable traits with JSDoc metadata, dependency resolution, conflict detection, and composition")
+
+  Container(ioc, "IoC Container", "TypeScript", "Auto-wiring dependency injection container from build manifest")
+
+  Container(schema, "OpenAPI Schema", "TypeScript", "OpenAPI v3.1 schema generation from BarritsBuildManifest")
+}
+
+System_Ext(node_runtime, "Node.js", "v18+ runtime")
+System_Ext(deno_runtime, "Deno", "v2.x runtime")
+System_Ext(bun_runtime, "Bun", "v1.x runtime")
+
+Rel(developer, cli, "Runs commands")
+Rel(cli, sdk_core, "Uses SDK API for automation")
+Rel(sdk_core, lib, "Consumes utility functions")
+Rel(sdk_core, adapters, "Reads/writes files via adapter interface")
+Rel(sdk_core, traits, "Validates and processes trait descriptors")
+Rel(sdk_core, ioc, "Auto-wires services from manifest")
+Rel(sdk_core, schema, "Generates OpenAPI specs from manifest")
+Rel(plugins, sdk_core, "Integrates with build pipeline")
+Rel(adapters, node_runtime, "NodeFileSystemAdapter uses node:fs")
+Rel(adapters, deno_runtime, "DenoFileSystemAdapter uses Deno APIs")
+Rel(adapters, bun_runtime, "Bun via Node.js compat layer")
+
+@enduml

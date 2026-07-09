@@ -1,0 +1,26 @@
+﻿{
+  "name": "emergency-release",
+  "description": "Emergency release process for hotfixes and critical security patches outside the normal release cycle. Use when a critical vulnerability or blocking bug requires immediate publication.",
+  "seeAlso": "docs/agents/skills/barrits-emergency-release/SKILL.md",
+  "prompts": [
+    {
+      "name": "security-hotfix",
+      "description": "Process for releasing a critical security fix directly to main and propagating to dev.",
+  "seeAlso": "docs/agents/skills/barrits-emergency-release/SKILL.md",
+      "prompt": "1) git checkout main && git pull && git checkout -b hotfix/<security-description>. 2) Apply fix with conventional commit: fix(security): <description>. 3) Update CHANGELOG.md under [Unreleased] > Fixed. 4) Create PR into main with 'hotfix' label: gh pr create --base main --head <branch> --label hotfix. 5) After merge, bump version: cd packages/sdk/ts_js && npm version patch --no-git-tag-version. 6) Sync jsr.json version. 7) Commit and tag: git add -A && git commit -m 'chore(release): v<version>' && git tag v<version> && git push && git push --tags. 8) Cherry-pick into dev: git checkout dev && git cherry-pick main~1 && git push origin dev. 9) Verify publication: npm view @zuccadev-labs/barrits version."
+    },
+    {
+      "name": "critical-bug-fix",
+      "description": "Process for releasing an urgent non-security bug fix that blocks consumers.",
+  "seeAlso": "docs/agents/skills/barrits-emergency-release/SKILL.md",
+      "prompt": "Same as security-hotfix but without security-specific steps. Branch from main, fix, PR into main with 'hotfix' label, version bump (patch), release, cherry-pick to dev. Key difference: can skip npm audit if urgency requires, but document the exception."
+    },
+    {
+      "name": "rollback",
+      "description": "Roll back a released version if the hotfix introduces a worse issue.",
+  "seeAlso": "docs/agents/skills/barrits-emergency-release/SKILL.md",
+      "prompt": "1) npm unpublish @zuccadev-labs/barrits@<bad-version> (only within 72h). 2) git revert HEAD on main. 3) git push origin main. 4) git checkout dev && git revert <cherry-pick-hash> && git push origin dev. 5) Document in CHANGELOG: '- Rolled back v<bad-version> due to <reason>'. 6) Create a new hotfix branch from main to re-attempt the fix properly."
+    }
+  ]
+}
+

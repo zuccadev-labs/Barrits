@@ -1,0 +1,3 @@
+node_modules/
+.barrits/
+bun.lock

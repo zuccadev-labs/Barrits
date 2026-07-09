@@ -29,9 +29,9 @@ Seleccione el área adecuada según su necesidad técnica:
 - **Investigations**: [EN/packages/ts_js/00-index.md](investigations/EN/packages/ts_js/00-index.md)
 
 #### Español (ES)
-- **Usuarios**: [ES/packages/ts_js/00_indice.md](users/ES/packages/ts_js/00_indice.md)
-- **Desarrollo**: [ES/packages/ts_js/00_indice.md](development/ES/packages/ts_js/00_indice.md)
-- **Investigaciones**: [ES/packages/ts_js/00_indice.md](investigations/ES/packages/ts_js/00_indice.md)
+- **Usuarios**: [ES/packages/ts_js/00-indice.md](users/ES/packages/ts_js/00-indice.md)
+- **Desarrollo**: [ES/packages/ts_js/00-indice.md](development/ES/packages/ts_js/00-indice.md)
+- **Investigaciones**: [ES/packages/ts_js/00-indice.md](investigations/ES/packages/ts_js/00-indice.md)
 
 ---
 

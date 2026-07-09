@@ -41,7 +41,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Dependency graph unavailable notice
         if: needs.dependency-review-support.outputs.supported != 'true'
@@ -51,13 +51,13 @@ jobs:
 
       - name: Dependency review
         if: needs.dependency-review-support.outputs.supported == 'true'
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
 
   # ── npm audit (all events) ────────────────────────────────────────────────
   npm-audit-enhanced:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -77,7 +77,7 @@ jobs:
 
       - name: Upload audit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: npm-audit-report
           path: audit-report.json
@@ -86,13 +86,15 @@ jobs:
   secret-scanning:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
       - name: Install git-secrets
         run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq git-secrets
+          git clone https://github.com/awslabs/git-secrets.git /tmp/git-secrets
+          sudo make -C /tmp/git-secrets install
+          rm -rf /tmp/git-secrets
 
       - name: Register AWS patterns
         run: git secrets --register-aws --global
@@ -121,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -134,11 +136,10 @@ jobs:
 
       - name: Generate SBOM
         run: |
-          npm install -g @cyclonedx/bom
-          cyclonedx-bom -o bom.xml --output-format xml
+          npx --yes @cyclonedx/cyclonedx-npm --output-format XML --output-file bom.xml
 
       - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: software-bill-of-materials
           path: bom.xml

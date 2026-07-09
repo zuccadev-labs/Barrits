@@ -1,0 +1,2 @@
+# Rust build artifacts (compiled binaries, dependency build output)
+src-tauri/target/

@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const exampleDirectory = resolve(scriptDirectory, "..");
-const tsxCliPath = resolve(exampleDirectory, "../../../../../node_modules/tsx/dist/cli.mjs");
+const tsxCliPath = resolve(exampleDirectory, "../../node_modules/tsx/dist/cli.mjs");
 const nodeCliPath = resolve(exampleDirectory, "../../adapters/node/cli.ts");
 
 const child = spawn(

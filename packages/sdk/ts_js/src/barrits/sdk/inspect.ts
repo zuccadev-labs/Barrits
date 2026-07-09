@@ -1,12 +1,13 @@
 /**
  * @module
- * [EN] Placeholder module description.
- * [ES] Descripción de marcador de posición del módulo.
+ * [EN] Integration graph inspection via AST crawling, trait discovery, and diagnostics collection.
+ * [ES] Inspección del grafo de integración mediante crawling AST, descubrimiento de traits y recolección de diagnósticos.
  */
+import { mapConcurrent } from "./async-utils";
 import { joinPath, normalizePath } from "./path";
 import { loadBarritsConfig, type BarritsExportContractConfig } from "../config";
 import { inspectLayer } from "./crawler/layer";
-import { collectExportedTraitBindings, mergeTraitDescriptors, toTraitContractDescriptor } from "./ast/traits";
+import { collectExportedTraitBindings, mergeTraitDescriptors, toTraitContractDescriptor, type ExportedTraitBinding } from "./ast/traits";
 import { collectTraitDiagnostics } from "./ast/diagnostics";
 import { collectCollisions } from "./graph/collisions";
 import { planImportActions } from "./graph/imports";
@@ -115,9 +116,8 @@ const applyExportVisibilityOverrides = (
   return files.map((file) => {
     const normalizedPath = normalizePath(file.path);
     const nextExports = file.exports.map((entry) => {
-      const visibility = byName.get(`${normalizedPath}:${entry.name}`)
-        ?? byAccessPath.get(`${normalizedPath}:${entry.accessPath}`)
-        ?? entry.visibility;
+      const visibility =
+        byName.get(`${normalizedPath}:${entry.name}`) ?? byAccessPath.get(`${normalizedPath}:${entry.accessPath}`) ?? entry.visibility;
 
       return visibility === entry.visibility ? entry : { ...entry, visibility };
     });
@@ -144,8 +144,10 @@ export const inspectBarritsIntegrations = async (
   discovery: BarritsDiscovery,
 ): Promise<BarritsIntegrationGraph> => {
   const projectLayer = await inspectLayer(adapter, discovery.barritsDirectory, "barrits");
-  const extraLayers = await Promise.all(
-    discovery.discoveryRoots.map((root) => inspectLayer(adapter, joinPath(discovery.projectRoot, root), "barrits")),
+  const extraLayers = await mapConcurrent(
+    discovery.discoveryRoots,
+    10,
+    (root) => inspectLayer(adapter, joinPath(discovery.projectRoot, root), "barrits"),
   );
 
   const allLayers = [projectLayer, ...extraLayers];
@@ -167,22 +169,30 @@ export const inspectBarritsIntegrations = async (
 
   inspectedFiles = applyExportVisibilityOverrides(inspectedFiles, exportVisibilityOverrides);
 
-  const rootFiles = mergeRootFiles(inspectedFiles.filter((file) => file.path === "index.ts"), []);
+  const rootFiles = mergeRootFiles(
+    inspectedFiles.filter((file) => file.path === "index.ts"),
+    [],
+  );
   const domains = mergeDomains(
-    allLayers.flatMap((layer) => layer.domains.map((domain) => ({
-      ...domain,
-      files: inspectedFiles.filter((file) => file.path.startsWith(`${domain.name}/`) && file.sourceLayer === layer.sourceLayer),
-    }))),
+    allLayers.flatMap((layer) =>
+      layer.domains.map((domain) => ({
+        ...domain,
+        files: inspectedFiles.filter((file) => file.path.startsWith(`${domain.name}/`) && file.sourceLayer === layer.sourceLayer),
+      })),
+    ),
     [],
   );
   const exportsCount = inspectedFiles.reduce((count, file) => count + file.exports.length, 0);
-  const publicExportsCount = inspectedFiles.reduce((count, file) => count + file.exports.filter((entry) => entry.visibility === "public").length, 0);
+  const publicExportsCount = inspectedFiles.reduce(
+    (count, file) => count + file.exports.filter((entry) => entry.visibility === "public").length,
+    0,
+  );
   const internalExportsCount = exportsCount - publicExportsCount;
   const barrelsCount = inspectedFiles.filter((file) => file.kind === "barrel" || file.kind === "root").length;
 
   const discoveredTraitDescriptors = collectTraitDescriptors(inspectedFiles);
   const traitDescriptors = mergeTraitDescriptors(discoveredTraitDescriptors, contractTraitDescriptors);
-  const bindingsBySourceFile = new Map<string, any>();
+  const bindingsBySourceFile = new Map<string, readonly ExportedTraitBinding[]>();
 
   for (const file of inspectedFiles) {
     if (file.kind !== "trait") continue;

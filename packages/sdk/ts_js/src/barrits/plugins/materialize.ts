@@ -8,11 +8,7 @@ import { createManifestModuleSource } from "./shared";
  * [EN] Implementation of Ensure manifest module file.
  * [ES] Implementación de Ensure manifest module file.
  */
-export const ensureManifestModuleFile = async (
-  filePath: string,
-  manifest: BarritsBuildManifest | null,
-  banner: string,
-): Promise<void> => {
+export const ensureManifestModuleFile = async (filePath: string, manifest: BarritsBuildManifest | null, banner: string): Promise<void> => {
   await mkdir(dirname(filePath), { recursive: true });
   await writeFile(filePath, createManifestModuleSource(manifest, banner), "utf8");
 };

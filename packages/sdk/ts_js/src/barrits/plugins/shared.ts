@@ -2,6 +2,7 @@ import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { DEFAULT_AUTOMATION_DIRECTORY, resolveBarritsConfig } from "../config";
+import { parseJsonSource } from "../sdk/validation";
 import type { BarritsBuildManifest, RuntimeFileSystemAdapter, RuntimeFileSystemEntry } from "../sdk/contracts";
 
 /**
@@ -74,7 +75,7 @@ const ensureAutomaticManifest = async (
   }
 
   const graph = await inspectBarritsIntegrations(adapter, discovery);
-  const manifest = createBuildManifest(graph);
+  const manifest = await createBuildManifest(graph);
   const manifestDirectory = resolve(projectRoot, automationDirectory);
   const manifestPath = resolve(manifestDirectory, "auto-build-manifest.json");
   await mkdir(manifestDirectory, { recursive: true });
@@ -114,7 +115,7 @@ export const resolvePackageAutomationOptions = async (
  */
 export const loadManifest = async (manifestPath: string): Promise<BarritsBuildManifest> => {
   const content = await readFile(manifestPath, "utf8");
-  return JSON.parse(content) as BarritsBuildManifest;
+  return parseJsonSource(content, "BuildManifest") as unknown as BarritsBuildManifest;
 };
 
 /**
@@ -158,10 +159,7 @@ export const loadManifestForPackage = async (
  * [EN] Implementation of Create manifest module source.
  * [ES] Implementación de Create manifest module source.
  */
-export const createManifestModuleSource = (
-  manifest: BarritsBuildManifest | null,
-  banner: string,
-): string => {
+export const createManifestModuleSource = (manifest: BarritsBuildManifest | null, banner: string): string => {
   if (!manifest) {
     return `${banner}\nexport const manifest = null;\nexport default manifest;`;
   }

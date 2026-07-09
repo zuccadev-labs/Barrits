@@ -1,4 +1,5 @@
 import { performance } from "node:perf_hooks";
+import { writeFileSync, mkdirSync } from "node:fs";
 
 import { orderBy, quickSort, topK } from "../../src/barrits";
 
@@ -54,4 +55,8 @@ const suites = benchmarkPlans.map((plan) => {
   };
 });
 
-console.log(JSON.stringify({ suites }, null, 2));
+const output = { timestamp: new Date().toISOString(), suites };
+console.log(JSON.stringify(output, null, 2));
+
+mkdirSync("benchmarks/results", { recursive: true });
+writeFileSync("benchmarks/results/compare-large-datasets.json", JSON.stringify(output, null, 2));
