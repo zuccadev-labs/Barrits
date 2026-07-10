@@ -2,7 +2,14 @@ import type { BarritsPackageAutomationOptions } from "./plugins/shared";
 import { type BarritsRootConfig, type BarritsRuntimeKind, type BarritsWatchMode } from "./config";
 import { normalizePackageOptions } from "./internal/config_normalization";
 
-export type { BarritsContractsConfig, BarritsRootConfig, BarritsRuntimeKind, BarritsTraitConflictStrategy, BarritsWatchMode, ResolvedBarritsConfig } from "./config";
+export type {
+  BarritsContractsConfig,
+  BarritsRootConfig,
+  BarritsRuntimeKind,
+  BarritsTraitConflictStrategy,
+  BarritsWatchMode,
+  ResolvedBarritsConfig,
+} from "./config";
 export {
   BARRITS_CONFIG_FILENAMES,
   DEFAULT_AUTOMATION_DIRECTORY,

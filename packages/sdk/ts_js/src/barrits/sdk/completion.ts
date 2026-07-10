@@ -116,8 +116,9 @@ _compdef _barrits barrits brt
 const generateFishCompletion = (): string => `complete -c barrits -f -n '__fish_use_subcommand' -a '${BARRITS_COMMANDS.join("' '")}'
 complete -c brt -f -n '__fish_use_subcommand' -a '${BARRITS_COMMANDS.join("' '")}'
 
-${BARRITS_COMMANDS.filter((c) => c !== "help" && c !== "completion").map(
-  (cmd) => `# ${cmd} options
+${BARRITS_COMMANDS.filter((c) => c !== "help" && c !== "completion")
+  .map(
+    (cmd) => `# ${cmd} options
 complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l json -d 'Output as JSON'
 complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l domain -d 'Filter by domain' -r
 complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l export -d 'Filter by export' -r
@@ -125,7 +126,8 @@ complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l file-kind -d 'Fil
 complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l visibility -d 'Filter by visibility' -r -f -a 'public internal'
 complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l help -d 'Show help'
 `,
-).join("\n")}
+  )
+  .join("\n")}
 # imports specific
 complete -c barrits -n '__fish_seen_subcommand_from imports' -l write -d 'Write imports to disk'
 complete -c barrits -n '__fish_seen_subcommand_from imports' -l target -d 'Target file' -r

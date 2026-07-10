@@ -144,10 +144,8 @@ export const inspectBarritsIntegrations = async (
   discovery: BarritsDiscovery,
 ): Promise<BarritsIntegrationGraph> => {
   const projectLayer = await inspectLayer(adapter, discovery.barritsDirectory, "barrits");
-  const extraLayers = await mapConcurrent(
-    discovery.discoveryRoots,
-    10,
-    (root) => inspectLayer(adapter, joinPath(discovery.projectRoot, root), "barrits"),
+  const extraLayers = await mapConcurrent(discovery.discoveryRoots, 10, (root) =>
+    inspectLayer(adapter, joinPath(discovery.projectRoot, root), "barrits"),
   );
 
   const allLayers = [projectLayer, ...extraLayers];

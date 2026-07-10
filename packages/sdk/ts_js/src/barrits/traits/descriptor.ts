@@ -368,10 +368,7 @@ const buildDependencyCounters = (
   return { dependencyCounts, dependents };
 };
 
-const executeTopologicalSort = (
-  dependencyCounts: Map<string, number>,
-  dependents: Map<string, string[]>,
-): string[] => {
+const executeTopologicalSort = (dependencyCounts: Map<string, number>, dependents: Map<string, string[]>): string[] => {
   const pending = Array.from(dependencyCounts.entries())
     .filter(([, count]) => count === 0)
     .map(([name]) => name)

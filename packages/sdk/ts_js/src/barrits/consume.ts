@@ -69,5 +69,3 @@ export { createWatchSnapshotSummary } from "./sdk/summarization";
  * [ES] Crea un modelo de snapshot enfocado en el editor para pipelines de herramientas.
  */
 export { createLanguageToolSnapshot } from "./sdk/summarization";
-
-

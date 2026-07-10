@@ -87,7 +87,6 @@ export const findBarritsDirectory = async (
 
   let cursor = startDirectory;
 
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     const directChild = joinPath(cursor, targetName);
 
