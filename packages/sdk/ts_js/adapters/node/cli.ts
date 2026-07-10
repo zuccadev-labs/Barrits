@@ -433,10 +433,12 @@ const isDirectExecution = (): boolean => {
 };
 
 if (isDirectExecution()) {
-  void runNodeCli().then((exitCode) => {
-    process.exitCode = exitCode;
-  }).catch((error: unknown) => {
-    console.error(error instanceof Error ? error.message : String(error));
-    process.exitCode = 1;
-  });
+  void runNodeCli()
+    .then((exitCode) => {
+      process.exitCode = exitCode;
+    })
+    .catch((error: unknown) => {
+      console.error(error instanceof Error ? error.message : String(error));
+      process.exitCode = 1;
+    });
 }

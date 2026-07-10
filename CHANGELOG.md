@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 Todos los cambios relevantes de este repositorio se documentan aquí.
 
+## [Unreleased]
+
+### Changed
+- **Modernización del toolchain de desarrollo (root)**: ESLint 8.57 → 10.7.0 con migración a *flat config* (`eslint.config.mjs`, eliminando `.eslintrc.cjs` y `.eslintignore`); `@eslint/js` 10.0.1 y `@typescript-eslint/*` 8.63.0 añadidos/actualizados. Prettier 3.4.0 → 3.9.5. Toolchain de build de ejemplos fijado en root `devDependencies` (resuelto vía rutas relativas desde los ejemplos): `vite` 8.1.4, `webpack` 5.108.4, `webpack-cli` 7.2.1, `rollup` 4.62.2, `@rollup/plugin-node-resolve` 16.0.3, `@vitejs/plugin-vue` 6.0.7, `vite-plugin-solid` 2.11.12. El detalle completo y la validación por ejemplo están en el CHANGELOG del SDK (`packages/sdk/ts_js/CHANGELOG.md`).
+
 ## [0.2.0] - 2026-07-07
 
 ### Changed

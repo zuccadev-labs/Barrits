@@ -39,9 +39,7 @@ const resolveProjectCollision = (
   });
 };
 
-const collectRootNamespaceEntries = (
-  rootFiles: readonly BarritsFileIntegration[],
-): PublicNamespaceEntry[] => {
+const collectRootNamespaceEntries = (rootFiles: readonly BarritsFileIntegration[]): PublicNamespaceEntry[] => {
   const entries: PublicNamespaceEntry[] = [];
 
   for (const file of rootFiles.filter((rootFile) => rootFile.path === "index.ts")) {
@@ -59,9 +57,7 @@ const collectRootNamespaceEntries = (
   return entries;
 };
 
-const collectDomainNamespaceEntries = (
-  domains: readonly BarritsDomainIntegration[],
-): PublicNamespaceEntry[] => {
+const collectDomainNamespaceEntries = (domains: readonly BarritsDomainIntegration[]): PublicNamespaceEntry[] => {
   const entries: PublicNamespaceEntry[] = [];
 
   for (const domain of domains) {
@@ -98,10 +94,7 @@ export const collectPublicNamespaceEntries = (
   rootFiles: readonly BarritsFileIntegration[],
   domains: readonly BarritsDomainIntegration[],
 ): PublicNamespaceEntry[] => {
-  return [
-    ...collectRootNamespaceEntries(rootFiles),
-    ...collectDomainNamespaceEntries(domains),
-  ].sort(compareNamespaceEntries);
+  return [...collectRootNamespaceEntries(rootFiles), ...collectDomainNamespaceEntries(domains)].sort(compareNamespaceEntries);
 };
 
 /**

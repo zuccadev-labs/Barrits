@@ -68,7 +68,13 @@ export const createBuildManifest = async (
     generatedAt,
     checksum: await generateChecksum(payloadTokens),
     ...(() => {
-      const { rootFiles: _rootFiles, domains: _domains, libraryRootFiles: _libraryRootFiles, libraryDomains: _libraryDomains, ...base } = graph;
+      const {
+        rootFiles: _rootFiles,
+        domains: _domains,
+        libraryRootFiles: _libraryRootFiles,
+        libraryDomains: _libraryDomains,
+        ...base
+      } = graph;
       return base;
     })(),
     domains: graph.domains.map((domain) => domain.name),

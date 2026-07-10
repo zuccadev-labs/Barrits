@@ -59,7 +59,12 @@ export type TraitRuntimeMetadata = {
  * @returns Resolves the factory literal identifier string natively mapped.
  */
 const resolveWrapExpression = (expression: ts.Expression): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
-  if (ts.isParenthesizedExpression(expression) || ts.isAsExpression(expression) || ts.isSatisfiesExpression(expression) || ts.isNonNullExpression(expression)) {
+  if (
+    ts.isParenthesizedExpression(expression) ||
+    ts.isAsExpression(expression) ||
+    ts.isSatisfiesExpression(expression) ||
+    ts.isNonNullExpression(expression)
+  ) {
     return resolveTraitDescriptorFactoryFromExpression(expression.expression);
   }
 
@@ -74,12 +79,16 @@ const resolveWrapExpression = (expression: ts.Expression): ReturnType<typeof res
   return undefined;
 };
 
-const resolveBinaryExpression = (expression: ts.BinaryExpression | ts.ConditionalExpression): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
+const resolveBinaryExpression = (
+  expression: ts.BinaryExpression | ts.ConditionalExpression,
+): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
   if (ts.isBinaryExpression(expression)) {
     return resolveTraitDescriptorFactoryFromExpression(expression.left) ?? resolveTraitDescriptorFactoryFromExpression(expression.right);
   }
 
-  return resolveTraitDescriptorFactoryFromExpression(expression.whenTrue) ?? resolveTraitDescriptorFactoryFromExpression(expression.whenFalse);
+  return (
+    resolveTraitDescriptorFactoryFromExpression(expression.whenTrue) ?? resolveTraitDescriptorFactoryFromExpression(expression.whenFalse)
+  );
 };
 
 /**
@@ -201,10 +210,7 @@ export const readTraitRuntimeMetadataFromCall = (expression: ts.Expression | und
 /**
  * Sweeps the AST structure explicitly collecting export bindings matching trait payload creation routines mapping signatures recursively natively traversing explicit modifiers.
  */
-const collectConstVariableTraitBindings = (
-  statement: ts.VariableStatement,
-  sourceFile: ts.SourceFile,
-): ExportedTraitBinding[] => {
+const collectConstVariableTraitBindings = (statement: ts.VariableStatement, sourceFile: ts.SourceFile): ExportedTraitBinding[] => {
   if ((statement.declarationList.flags & ts.NodeFlags.Const) === 0) {
     return [];
   }

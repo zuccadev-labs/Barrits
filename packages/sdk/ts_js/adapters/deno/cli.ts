@@ -335,7 +335,10 @@ const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record
   const process = child.spawn();
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   const result = await Promise.race([
-    process.status.then((s) => { clearTimeout(timeoutId); return s; }),
+    process.status.then((s) => {
+      clearTimeout(timeoutId);
+      return s;
+    }),
     new Promise<{ code: number }>((resolve, reject) => {
       timeoutId = setTimeout(() => {
         process.kill("SIGTERM");
@@ -474,10 +477,12 @@ export const runDenoCli = async (argumentsList: string[] = getDenoGlobals().args
 };
 
 if (import.meta.main) {
-  void runDenoCli().then((exitCode) => {
-    getDenoGlobals().exit(exitCode);
-  }).catch((error: unknown) => {
-    console.error(error instanceof Error ? error.message : String(error));
-    getDenoGlobals().exit(1);
-  });
+  void runDenoCli()
+    .then((exitCode) => {
+      getDenoGlobals().exit(exitCode);
+    })
+    .catch((error: unknown) => {
+      console.error(error instanceof Error ? error.message : String(error));
+      getDenoGlobals().exit(1);
+    });
 }

@@ -1,4 +1,9 @@
-import type { BarritsTraitDescriptorInspection, BarritsTraitDiagnostic, BarritsTraitDiagnosticCategory, BarritsTraitDiagnosticCode } from "../contracts";
+import type {
+  BarritsTraitDescriptorInspection,
+  BarritsTraitDiagnostic,
+  BarritsTraitDiagnosticCategory,
+  BarritsTraitDiagnosticCode,
+} from "../contracts";
 import type { ExportedTraitBinding } from "./traits";
 
 const DIAGNOSTIC_CODE_CATEGORY: Record<BarritsTraitDiagnosticCode, BarritsTraitDiagnosticCategory> = {
@@ -223,20 +228,40 @@ const checkTraitRuntimeMismatches = (
     );
   };
 
-  addListMismatch("trait-provides-mismatch", binding?.runtimeProvides, descriptor.provides,
-    `Trait descriptor "${descriptor.name}" documents provides [${descriptor.provides.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeProvides?.join(", ")}] in ${descriptor.sourceFile}. Keep portable metadata aligned with runtime capabilities.`);
+  addListMismatch(
+    "trait-provides-mismatch",
+    binding?.runtimeProvides,
+    descriptor.provides,
+    `Trait descriptor "${descriptor.name}" documents provides [${descriptor.provides.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeProvides?.join(", ")}] in ${descriptor.sourceFile}. Keep portable metadata aligned with runtime capabilities.`,
+  );
 
-  addListMismatch("trait-conflicts-mismatch", binding?.runtimeConflicts, descriptor.conflicts,
-    `Trait descriptor "${descriptor.name}" documents conflicts [${descriptor.conflicts.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeConflicts?.join(", ")}] in ${descriptor.sourceFile}. Keep incompatibility metadata aligned with runtime composition policy.`);
+  addListMismatch(
+    "trait-conflicts-mismatch",
+    binding?.runtimeConflicts,
+    descriptor.conflicts,
+    `Trait descriptor "${descriptor.name}" documents conflicts [${descriptor.conflicts.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeConflicts?.join(", ")}] in ${descriptor.sourceFile}. Keep incompatibility metadata aligned with runtime composition policy.`,
+  );
 
-  addListMismatch("trait-requires-mismatch", binding?.runtimeRequires, descriptor.requires,
-    `Trait descriptor "${descriptor.name}" documents requires [${descriptor.requires.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeRequires?.join(", ")}] in ${descriptor.sourceFile}. Keep dependency metadata aligned with runtime composition order.`);
+  addListMismatch(
+    "trait-requires-mismatch",
+    binding?.runtimeRequires,
+    descriptor.requires,
+    `Trait descriptor "${descriptor.name}" documents requires [${descriptor.requires.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeRequires?.join(", ")}] in ${descriptor.sourceFile}. Keep dependency metadata aligned with runtime composition order.`,
+  );
 
-  addListMismatch("trait-consumes-mismatch", binding?.runtimeConsumes, descriptor.consumes,
-    `Trait descriptor "${descriptor.name}" documents consumes [${descriptor.consumes.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeConsumes?.join(", ")}] in ${descriptor.sourceFile}. Keep capability dependency metadata aligned with runtime expectations.`);
+  addListMismatch(
+    "trait-consumes-mismatch",
+    binding?.runtimeConsumes,
+    descriptor.consumes,
+    `Trait descriptor "${descriptor.name}" documents consumes [${descriptor.consumes.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeConsumes?.join(", ")}] in ${descriptor.sourceFile}. Keep capability dependency metadata aligned with runtime expectations.`,
+  );
 
-  addListMismatch("trait-state-mismatch", binding?.runtimeState, descriptor.state,
-    `Trait descriptor "${descriptor.name}" documents state [${descriptor.state.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeState?.join(", ")}] in ${descriptor.sourceFile}. Keep state ownership metadata aligned with runtime slots.`);
+  addListMismatch(
+    "trait-state-mismatch",
+    binding?.runtimeState,
+    descriptor.state,
+    `Trait descriptor "${descriptor.name}" documents state [${descriptor.state.join(", ")}], but createTraitDescriptor() declares [${binding?.runtimeState?.join(", ")}] in ${descriptor.sourceFile}. Keep state ownership metadata aligned with runtime slots.`,
+  );
 
   return diagnostics;
 };

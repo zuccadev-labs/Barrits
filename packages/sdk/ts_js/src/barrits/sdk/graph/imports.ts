@@ -31,17 +31,11 @@ const toSourceDomain = (sourceFile: string): string => {
   return firstSegment ?? "root";
 };
 
-const pushAction = (
-  actions: Map<string, BarritsImportAction>,
-  action: BarritsImportAction,
-): void => {
+const pushAction = (actions: Map<string, BarritsImportAction>, action: BarritsImportAction): void => {
   actions.set(`${action.exportName}:${action.kind}:${action.statement}`, action);
 };
 
-const buildApiImportActions = (
-  domains: readonly BarritsDomainIntegration[],
-  actions: Map<string, BarritsImportAction>,
-): void => {
+const buildApiImportActions = (domains: readonly BarritsDomainIntegration[], actions: Map<string, BarritsImportAction>): void => {
   const apiDomain = domains.find((domain) => domain.name === "api");
 
   if (!apiDomain) {
@@ -59,10 +53,7 @@ const buildApiImportActions = (
   }
 };
 
-const buildRootImportActions = (
-  rootFiles: readonly BarritsFileIntegration[],
-  actions: Map<string, BarritsImportAction>,
-): Set<string> => {
+const buildRootImportActions = (rootFiles: readonly BarritsFileIntegration[], actions: Map<string, BarritsImportAction>): Set<string> => {
   const rootNamedImportNames = new Set<string>();
 
   for (const exportedMember of collectMergedExports(rootFiles, (file) => file.path === "index.ts")) {
@@ -83,10 +74,7 @@ const buildRootImportActions = (
   return rootNamedImportNames;
 };
 
-const isNamedImportCandidate = (
-  exportedMember: BarritsFileExport,
-  rootNamedImportNames: Set<string>,
-): boolean => {
+const isNamedImportCandidate = (exportedMember: BarritsFileExport, rootNamedImportNames: Set<string>): boolean => {
   return (
     exportedMember.visibility === "public" &&
     !rootNamedImportNames.has(exportedMember.name) &&
@@ -200,10 +188,7 @@ const pushNamespaceActionsForDomain = (
   }
 };
 
-const buildNamespaceImportActions = (
-  domains: readonly BarritsDomainIntegration[],
-  actions: Map<string, BarritsImportAction>,
-): void => {
+const buildNamespaceImportActions = (domains: readonly BarritsDomainIntegration[], actions: Map<string, BarritsImportAction>): void => {
   for (const domain of domains) {
     if (domain.name === "api") continue;
 
