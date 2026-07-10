@@ -5,6 +5,20 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-07-10
+
+### Fixed
+- **Final JSR symbol-documentation gap closed**: Added bilingual (EN/ES) JSDoc to the four function-valued properties of the `collectionAlgorithms` object (`chunk`, `groupBy`, `indexBy`, `uniqueBy`) in `barrits_lib/logic/algorithms/collection/index.ts`. A JSR-replica analyzer (driven by `deno doc --json` on the published package) reports **542/542 exported symbols documented (100%)** across all four entry points. This removes the last 4 undocumented symbols that kept the "Has docs for most symbols" factor below 100%.
+
+### Changed
+- **Version bump**: 0.2.3 → 0.2.4 across `package.json` (root + SDK) and `jsr.json`.
+- **Provenance publishing (OIDC)**: The `publish-jsr` job continues to publish tokenlessly from GitHub Actions with `permissions: id-token: write`, which makes JSR emit a public transparency-log provenance attestation automatically (no `--provenance` flag needed for `jsr publish`).
+- **Forces JSR score recomputation**: v0.2.3 already shipped the provenance + member-documentation fixes, but JSR's displayed score page was cached against the prior v0.2.2 metrics (identical 65% docs / 0/1 provenance fingerprint). Publishing v0.2.4 triggers a fresh score evaluation, which should now report 100% (documentation 5/5 + provenance 1/1).
+
+### Validation
+- JSR-replica doc analyzer (`devtools/analyze-deno-doc-symbols.mjs` over `deno doc --json` of the published package): 542/542 symbols documented (100%).
+- The 4 added property docs are the only remaining gap closed since v0.2.3.
+
 ## [0.2.3] - 2026-07-09
 
 ### Fixed
