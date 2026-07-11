@@ -62,6 +62,10 @@ npm run publish:jsr:dry-run
 
 This validates that the publication from `jsr.json` is clean and that the exported surface for Deno does not carry new issues.
 
+## Related
+
+- [Project Structure and Discovery](12-project-structure-and-discovery.md)
+
 ---
 
 [← Commands and Runtimes](06-commands-and-runtimes.md) | [Traits and Composition →](08-traits-and-composition.md)
