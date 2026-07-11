@@ -77,6 +77,40 @@ When filesystem access must be delegated (Tauri backend, serverless reader), pas
 | Tauri desktop | `barrits/` + `barrits.config.ts` | `/consume` with backend-injected reader |
 | Monorepo package | `barrits/` per package | Discovery walks ancestors (`ancestor-child`) |
 
+## 7. Worked example
+
+Consider a Node.js backend service with the following layout:
+
+```text
+my-service/
+├── barrits.config.ts          # runtime: "node", namespace: "corpAgent"
+├── barrits/
+│   ├── logic/
+│   │   ├── order-by.ts        # export function orderBy(...)
+│   │   └── search-algorithms/
+│   │       ├── binary-search.ts
+│   │       └── index.ts
+│   ├── routes/
+│   │   └── health.ts
+│   └── traits/
+│       ├── user-service.ts
+│       └── http-handler.ts
+├── src/
+│   └── main.ts                # import { createBarrits } from "@zuccadev-labs/barrits"
+└── package.json
+```
+
+Trace the lifecycle:
+
+1. **Config** — `resolveBarritsConfig()` finds `barrits.config.ts` at the project root (Node/Deno only) and normalizes it. The `namespace: "corpAgent"` field makes the custom root API name `corpAgent`, so `createBarrits<"corpAgent">()` returns a typed `{ corpAgent, barrits, brt, config }`.
+2. **Discovery** — starting from `src/main.ts`'s directory, `findBarritsDirectory()` evaluates `direct-child` first: `<root>/barrits` exists, so `projectRoot` resolves to `<root>` and the domain folder is `<root>/barrits`.
+3. **Manifest** — `barrits build` (CLI) walks the domain folder, builds the integration graph, and writes `.barrits/build-manifest.json` with a SHA-256 checksum.
+4. **Consumption** — a Node tool reads it through `@zuccadev-labs/barrits/node`: `readNodeBuildManifest(".barrits/build-manifest.json")`. No discovery is re-run; the tool consumes the generated artifact.
+
+**Variant — monorepo package.** If the consumer lives in `packages/checkout/` with its own `barrits/` and `barrits.config.ts`, discovery from `packages/checkout/src/index.ts` walks ancestors and matches `ancestor-child`, resolving `projectRoot` to `packages/checkout/`.
+
+**Variant — renamed domain folder.** Set `targetName: "domain"` in `barrits.config.ts`; discovery then looks for `domain/` instead of `barrits/` using the same four strategies.
+
 ## Related
 
 - [Automation and Configuration](05-automation-and-configuration.md)

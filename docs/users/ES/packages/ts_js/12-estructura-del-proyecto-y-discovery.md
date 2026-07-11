@@ -77,6 +77,40 @@ Cuando el acceso al filesystem debe delegarse (backend Tauri, reader serverless)
 | Escritorio Tauri | `barrits/` + `barrits.config.ts` | `/consume` con reader inyectado desde el backend |
 | Paquete en monorepo | `barrits/` por paquete | El discovery camina ancestros (`ancestor-child`) |
 
+## 7. Ejemplo práctico
+
+Considera un servicio backend Node.js con el siguiente layout:
+
+```text
+mi-servicio/
+├── barrits.config.ts          # runtime: "node", namespace: "corpAgent"
+├── barrits/
+│   ├── logic/
+│   │   ├── order-by.ts        # export function orderBy(...)
+│   │   └── search-algorithms/
+│   │       ├── binary-search.ts
+│   │       └── index.ts
+│   ├── routes/
+│   │   └── health.ts
+│   └── traits/
+│       ├── user-service.ts
+│       └── http-handler.ts
+├── src/
+│   └── main.ts                # import { createBarrits } from "@zuccadev-labs/barrits"
+└── package.json
+```
+
+Traza del ciclo de vida:
+
+1. **Config** — `resolveBarritsConfig()` encuentra `barrits.config.ts` en la raíz del proyecto (solo Node/Deno) y lo normaliza. El campo `namespace: "corpAgent"` hace que el nombre raíz de la API sea `corpAgent`, de modo que `createBarrits<"corpAgent">()` devuelve un `{ corpAgent, barrits, brt, config }` tipado.
+2. **Discovery** — partiendo del directorio de `src/main.ts`, `findBarritsDirectory()` evalúa primero `direct-child`: `<raiz>/barrits` existe, así que `projectRoot` se resuelve a `<raiz>` y la carpeta de dominio es `<raiz>/barrits`.
+3. **Manifiesto** — `barrits build` (CLI) recorre la carpeta de dominio, construye el grafo de integración y escribe `.barrits/build-manifest.json` con checksum SHA-256.
+4. **Consumo** — una herramienta Node lo lee vía `@zuccadev-labs/barrits/node`: `readNodeBuildManifest(".barrits/build-manifest.json")`. No se re-ejecuta el discovery; la herramienta consume el artefacto generado.
+
+**Variante — paquete en monorepo.** Si el consumidor vive en `packages/checkout/` con su propio `barrits/` y `barrits.config.ts`, el discovery desde `packages/checkout/src/index.ts` camina ancestros y coincide con `ancestor-child`, resolviendo `projectRoot` a `packages/checkout/`.
+
+**Variante — carpeta de dominio renombrada.** Define `targetName: "domain"` en `barrits.config.ts`; el discovery entonces busca `domain/` en lugar de `barrits/` usando las mismas cuatro estrategias.
+
 ## Relacionado
 
 - [Automatización y Configuración](05-automatizacion-y-configuracion.md)

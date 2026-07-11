@@ -61,3 +61,7 @@ npm run publish:jsr:dry-run
 ```
 
 Esto valida que la publicación desde `jsr.json` esté limpia y que la superficie exportada para Deno no arrastre problemas nuevos.
+
+## Relacionado
+
+- [Estructura del Proyecto y Discovery](12-estructura-del-proyecto-y-discovery.md)
