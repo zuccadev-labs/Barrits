@@ -45,6 +45,40 @@ Lee un snapshot de tooling de lenguaje.
 
 Aparece en: `examples/example-tauri/src/main.ts`.
 
+### `parseBuildManifest(source)`
+
+Analiza una cadena JSON cruda en un `BarritsBuildManifest` validado sin tocar el filesystem. Úsalo cuando ya tengas el payload del manifiesto (por ejemplo, desde una caché en memoria o una fuente no basada en archivos).
+
+```ts
+import { parseBuildManifest } from "@zuccadev-labs/barrits/consume";
+
+const manifest = parseBuildManifest(rawJsonString);
+```
+
+### `parseWatchSnapshot(source)`
+
+Analiza una cadena JSON cruda en un `BarritsWatchSnapshot` validado.
+
+### `createBuildManifestSummary(manifest)`
+
+Construye un resumen compacto y listo para UI a partir de un manifiesto de build analizado (o inyectado). Es el mismo helper que los plugins de bundler usan internamente para exponer `virtual:barrits/manifest` a las apps frontend.
+
+```ts
+import { createBuildManifestSummary } from "@zuccadev-labs/barrits/consume";
+
+const summary = createBuildManifestSummary(manifest);
+```
+
+Aparece en: `examples/bundlers/*/*-manifest-entry.mjs` (vía `virtual:barrits/manifest`).
+
+### `createWatchSnapshotSummary(snapshot)`
+
+Construye un resumen compacto a partir de un `BarritsWatchSnapshot` analizado.
+
+### `createLanguageToolSnapshot(snapshot)`
+
+Construye un snapshot detallado orientado a editores a partir de un `BarritsWatchSnapshot` analizado.
+
 ---
 
 ## `@zuccadev-labs/barrits/node`
@@ -227,8 +261,6 @@ Generador de esquemas OpenAPI v3.1 desde los Traits descubiertos en el manifiest
 Retorna un objeto JSON compatible con OpenAPI v3.1.
 
 Aparece en: `examples/example-deno-baas/main.ts`.
-
----
 
 ---
 

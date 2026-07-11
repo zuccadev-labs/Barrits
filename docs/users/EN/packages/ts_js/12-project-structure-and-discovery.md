@@ -42,6 +42,23 @@ The `namespace` field here is what makes the **main API name customizable** (see
 
 Key knobs (all optional): `targetName` (default `"barrits"`), `maxDepth` (default `4`), `startDirectory`, and `ignoredDirectories`. The runtime adapter is selected automatically by `createRuntimeFileSystemAdapter()` — Deno uses `DenoFileSystemAdapter`, while Node and Bun use `NodeFileSystemAdapter`.
 
+```mermaid
+flowchart TD
+    Start([startDirectory]) --> A{"current-directory?<br/>basename == targetName"}
+    A -- "yes" --> A1["projectRoot = parent of start"]
+    A -- "no" --> B{"direct-child?<br/>&lt;cursor&gt;/barrits exists"}
+    B -- "yes" --> B1["projectRoot = container"]
+    B -- "no" --> C{"ancestor-child?<br/>ancestor has barrits/"}
+    C -- "yes" --> C1["projectRoot = ancestor"]
+    C -- "no" --> D{"recursive-child?<br/>BFS depth ≤ 4<br/>(excl. node_modules/dist/build/.git/.next/.turbo)"}
+    D -- "yes" --> D1["projectRoot = start"]
+    D -- "no" --> E([NoBarritsDirectory])
+    A1 --> Out([BarritsDiscovery])
+    B1 --> Out
+    C1 --> Out
+    D1 --> Out
+```
+
 ## 4. Manifest creation
 
 Once the structure is discovered, the engine builds an integration graph and serializes it:
