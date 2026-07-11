@@ -91,6 +91,62 @@ const db = await container.resolve<Database>("database");
 
 ---
 
+## Quick Start
+
+Install from npm (or JSR for Deno):
+
+```bash
+npm install @zuccadev-labs/barrits
+```
+
+Barrits exposes three equivalent API styles. Pick the one that fits your codebase.
+
+### 1. Flat imports (single functions)
+
+```ts
+import { sumar, orderBy, buildPath, composePipeline } from "@zuccadev-labs/barrits";
+
+sumar(2, 3); // 5
+```
+
+### 2. Namespaced access — `barrits.<domain>.<family>.<member>`
+
+The root export includes the `barrits` (and short alias `brt`) namespace objects, so you can navigate by domain and family:
+
+```ts
+import { barrits, brt } from "@zuccadev-labs/barrits";
+
+// Domain + member
+barrits.logic.orderBy(items, [{ project: (d) => d.score, direction: "asc" }]);
+
+// Domain + family + member
+barrits.logic.searchAlgorithms.binarySearch(sorted, target);
+
+// Trait composition
+barrits.traits.composePipeline(initialValue, step1, step2);
+
+// Short alias (exact equivalent of `barrits`)
+brt.logic.orderBy(items, criteria);
+```
+
+### 3. Customizable root name via the async factory
+
+The main API name is **personalizable**. `createBarrits()` reads the `namespace` field from `barrits.config.*` (or an explicit option) and returns a typed instance under that name — plus the fixed `brt` and `barrits` aliases and the resolved `config`:
+
+```ts
+import { createBarrits } from "@zuccadev-labs/barrits";
+
+// barrits.config.ts -> export default { namespace: "miApp" }
+const system = await createBarrits();
+system.miApp.logic.orderBy(/* ... */);    // custom root name
+system.barrits.logic.orderBy(/* ... */);  // fixed alias always present
+system.brt.logic.orderBy(/* ... */);       // fixed short alias
+```
+
+> Prefer `createBarrits()` over the `barrits` singleton when you need controlled instantiation, IoC injection, or multiple isolated instances in corporate projects. See [Automation and Configuration](docs/users/EN/packages/ts_js/05-automation-and-configuration.md).
+
+---
+
 ## Why Barrits Exists
 
 In large-scale engineering organizations, the hidden cost is not exporting functions — it is every team independently reimplementing discovery, manifest generation, watchers, bundler integration, artifact reading, and project conventions in isolation.

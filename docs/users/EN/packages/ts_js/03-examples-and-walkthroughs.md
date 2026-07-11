@@ -9,7 +9,7 @@ This document covers common integration scenarios with `@zuccadev-labs/barrits` 
 
 ## Integration Directory Setup
 
-Barrits reads and orchestrates a dedicated folder. The consumer project should create a directory named `.barrits` or `barrits/` at its execution root, or configure a custom path in `barrits.config.ts`.
+Barrits reads and orchestrates a dedicated folder. The consumer project should create a directory named `.barrits` or `barrits/` at its execution root, or configure a custom path in `barrits.config.ts`. See [Project Structure and Discovery](12-project-structure-and-discovery.md) for the full layout, discovery strategies, and per-runtime manifest reading.
 
 ```bash
 mkdir barrits

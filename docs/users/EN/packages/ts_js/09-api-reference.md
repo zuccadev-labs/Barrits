@@ -67,6 +67,7 @@ This file serves as the centralized backup reference for the public surface of `
   What it does: starts the application by dynamically building the SDK context based on the configuration file.
   Purpose: allows renaming the system root (dynamic namespace) by injecting predefined domains (`logic`, `traits`) into the local object without breaking the IDE or Typings Tooling.
   Usage: invoked asynchronously at the consumer application boot and returns a typed instance with a custom `namespace`.
+  Return shape: the object always exposes four keys — the configured `namespace` (e.g. `system.miApp`), the fixed `barrits` namespace, the fixed short `brt` alias, and the resolved `config`.
   Where used: in main scripts of `examples/example-nodejs` as a corporate replacement for global variables.
 
 ### Paths, Names and Domains
