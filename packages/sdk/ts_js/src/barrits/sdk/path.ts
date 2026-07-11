@@ -128,9 +128,8 @@ export const joinPath = (...segments: string[]): string => {
   }
 
   const [firstSegment, ...rest] = filteredSegments;
-  const base = trimTrailingSlash(firstSegment);
 
-  return normalizePath([base, ...rest.map((segment) => segment.replace(/^\/+/, ""))].join("/"));
+  return normalizePath([firstSegment, ...rest.map((segment) => segment.replace(/^\/+/, ""))].join("/"));
 };
 
 /**
