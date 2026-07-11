@@ -96,9 +96,21 @@ export default [
     rules: {
       "@typescript-eslint/explicit-function-return-type": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
-      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-var-requires": "off",
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        { disallowTypeAnnotations: false },
+      ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "TSEnumDeclaration",
+          message:
+            "Enums are discouraged (non-erasable runtime object, reverse-map overhead for numeric enums, incompatible with Node/Bun/Deno type-stripping and --erasableSyntaxOnly). Prefer `as const` objects + derived union types or string-literal unions.",
+        },
+      ],
       "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
