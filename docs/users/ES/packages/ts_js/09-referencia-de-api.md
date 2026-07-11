@@ -67,6 +67,7 @@ Este archivo actúa como referencia central de respaldo de la superficie públic
   Que hace: inicia la aplicación construyendo de forma dinámica el contexto del SDK basado en el archivo de configuración.
   Para que sirve: permitir renombrar la raíz del sistema (namespace dinámico) inyectando los dominios predefinidos (`logic`, `traits`) al objeto local sin romper el IDE ni el Typings Tooling.
   Como se usa: se invoca asíncronamente en el boot de la aplicación cliente y devuelve una instancia tipada con tu `namespace` personalizado.
+  Forma de retorno: el objeto siempre expone cuatro claves — el `namespace` configurado (p. ej. `system.miApp`), el namespace fijo `barrits`, el alias corto fijo `brt`, y el `config` resuelto.
   Donde se usa: en los scripts principales de `examples/example-nodejs` como reemplazo corporativo de las variables globales.
 
 ### Rutas, nombres y dominios

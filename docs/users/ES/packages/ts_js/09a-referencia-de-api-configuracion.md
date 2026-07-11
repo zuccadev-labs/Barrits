@@ -102,6 +102,7 @@ import { createBarrits } from "@zuccadev-labs/barrits";
 
 const app = await createBarrits();
 // app.logic, app.traits, app.routes están disponibles bajo el namespace configurado
+// El objeto devuelto también incluye siempre `barrits` y `brt` (alias fijos) más `config`.
 ```
 
 Aparece en: scripts principales de `examples/example-nodejs/`.

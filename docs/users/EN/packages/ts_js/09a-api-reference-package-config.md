@@ -111,6 +111,7 @@ import { createBarrits } from "@zuccadev-labs/barrits";
 
 const app = await createBarrits();
 // app.logic, app.traits, app.routes — available under the configured namespace
+// The returned object also always includes `barrits` and `brt` (fixed aliases) plus `config`.
 ```
 
 Appears in: `examples/example-nodejs/` main scripts as the namespace-aware boot entry.

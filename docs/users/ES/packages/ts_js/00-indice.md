@@ -25,6 +25,7 @@ Bienvenido a la documentación para usuarios y consumidores del SDK `@zuccadev-l
 | 09d | [Referencia de API — Traits y Composición](09d-referencia-de-api-traits-y-composicion.md) | Descriptores de traits, composición y tipado avanzado |
 | 10 | [Deno BaaS Core (IoC, Schema)](10-deno-baas-core.md) | Contenedor IoC dinámico y primitivas OpenAPI |
 | 11 | [Guía de Migración 0.1.x → 0.2.x](11_migracion-0.1-a-0.2.md) | Cambios rupturistas, nuevas exportaciones y pasos de actualización |
+| 12 | [Estructura del Proyecto y Discovery](12-estructura-del-proyecto-y-discovery.md) | Layout, resolución de config, estrategias de discovery, lectura de manifiesto por runtime |
 
 ---
 

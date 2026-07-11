@@ -13,7 +13,7 @@ Barrits asume que el proyecto consumidor delega al SDK la resolución del árbol
 
 ## Paso 1: Configurar el Directorio de Integración
 
-Barrits opera leyendo y consumiendo una carpeta dedicada. El proyecto debe crear una carpeta con nombre `.barrits` o `barrits/` en su directorio de ejecución, o configurar una ruta personalizada en `barrits.config.ts`.
+Barrits opera leyendo y consumiendo una carpeta dedicada. El proyecto debe crear una carpeta con nombre `.barrits` o `barrits/` en su directorio de ejecución, o configurar una ruta personalizada en `barrits.config.ts`. Ver [Estructura del Proyecto y Discovery](12-estructura-del-proyecto-y-discovery.md) para el layout completo, las estrategias de discovery y la lectura de manifiesto por runtime.
 
 1. Crear la carpeta en el proyecto: `mkdir barrits`
 2. El SDK detecta esta convención y aplica lectura *Differential Caching* en 0ms. Todo archivo ubicado en esta ruta o declarado en la configuración queda bajo orquestación determinística.
