@@ -188,7 +188,7 @@ export const applyManagedImports = (
     return source.replace(managedBlockPattern, `${importBlock}\n`);
   }
 
-  const importMatch = source.match(/^(?:import\s.+;\r?\n)+/);
+  const importMatch = /^(?:import\s.+;\r?\n)+/.exec(source);
 
   if (importMatch) {
     return `${importMatch[0]}${importBlock}\n${source.slice(importMatch[0].length)}`;

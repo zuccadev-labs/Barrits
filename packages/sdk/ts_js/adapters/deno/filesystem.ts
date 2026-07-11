@@ -52,7 +52,7 @@ export const createDenoFileSystemAdapter = (): RuntimeFileSystemAdapter => {
     },
     listEntries: async (path) => {
       try {
-        const entries: Array<{ name: string; type: "file" | "directory" }> = [];
+        const entries: { name: string; type: "file" | "directory" }[] = [];
 
         for await (const entry of runtime.readDir(path)) {
           entries.push({

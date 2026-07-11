@@ -79,7 +79,7 @@ const resolveDenoPath = (...segments: string[]): string => {
   );
 
   const isPosixAbsolute = resolved.startsWith("/");
-  const driveLetterMatch = resolved.match(/^([A-Za-z]:\/)/);
+  const driveLetterMatch = /^([A-Za-z]:\/)/.exec(resolved);
   const isWindowsAbsolute = driveLetterMatch !== null;
 
   const parts = resolved.replace(/^[A-Za-z]:\//, "").split("/");
@@ -317,7 +317,7 @@ const runChildCommand = async (childArgs: string[], cwd: string, envVars: Record
 
   const runtime = getDenoGlobals();
   const denoEnv = runtime.env.toObject();
-  const rawTimeout = denoEnv["BARRITS_CHILD_TIMEOUT_MS"];
+  const rawTimeout = denoEnv.BARRITS_CHILD_TIMEOUT_MS;
   const timeoutMs = rawTimeout ? Number(rawTimeout) : 600_000;
   const [command, ...args] = childArgs;
   const child = new runtime.Command(command, {

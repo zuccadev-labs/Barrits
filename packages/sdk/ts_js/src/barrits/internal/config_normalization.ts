@@ -17,6 +17,8 @@ const DEFAULT_AUTOMATION_DIRECTORY = ".barrits";
  */
 export const normalizeAutomationDirectory = (value: string | undefined): string => {
   const normalizedValue = value?.trim().replace(/[\\/]+$/g, "");
+  // Empty string is not a valid directory; fall back to default (intentional falsy check).
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   return normalizedValue || DEFAULT_AUTOMATION_DIRECTORY;
 };
 

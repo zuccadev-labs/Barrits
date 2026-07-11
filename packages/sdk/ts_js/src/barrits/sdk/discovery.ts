@@ -26,7 +26,7 @@ const findInDescendants = async (
   maxDepth: number,
   ignoredDirectories: Set<string>,
 ): Promise<string | null> => {
-  const queue: Array<{ path: string; depth: number }> = [{ path: rootDirectory, depth: 0 }];
+  const queue: { path: string; depth: number }[] = [{ path: rootDirectory, depth: 0 }];
 
   while (queue.length > 0) {
     const current = queue.shift();

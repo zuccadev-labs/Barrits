@@ -20,6 +20,8 @@ Esta ADR registra la evaluación y las decisiones de adopción incremental, apli
 4. **Deno examples `--no-check` — ACEPTAR por diseño.** El SDK utiliza *imports sin extensión* resueltos en build; el type-checker de Deno no puede resolverlos, de ahí `--no-check`. No requiere acción.
 5. **typescript-eslint best practices — ENFORCE.** Sobre la base de la documentación oficial (typescript-eslint.io), se endurecen las reglas del flat config: `@typescript-eslint/no-explicit-any: "error"` (era `warn`), `@typescript-eslint/consistent-type-imports: "error"` (habilitado; permite `import()` dinámicos con `disallowTypeAnnotations: false`), y **ban de enums a nivel proyecto** vía `no-restricted-syntax` (selector `TSEnumDeclaration`, mensaje con rationale de erasabilidad). El SDK **no declara ningún `enum`** (audit estricto: 0 coincidencias en `src`/`adapters`/`tests`); usa `Set<string>` (`DISCOVERY_STRATEGIES`, `FILE_MODES`, `SOURCE_LAYERS`, `BINDING_KINDS`, `TRAIT_FACTORIES`) y uniones / `as const` — precisamente la alternativa recomendada. El ban previene regresiones y alinea el repo con la erasabilidad que exige la era TS7 (`--erasableSyntaxOnly`, type-stripping de Node/Bun/Deno). El codebase ya es `strict`, `verbatimModuleSyntax` y `isolatedModules`, y está libre de `any`/`@ts-ignore`, por lo que estas reglas no introducen violaciones nuevas.
 
+6. **typescript-eslint type-checked configset — ADOPTAR.** El flat config ahora extiende `flat/recommended` + `flat/recommended-type-checked` + `flat/stylistic-type-checked` (typescript-eslint 8.63.0) con `parserOptions.projectService: true` (TypeScript Project Service, sin configurar `project` manual). Las reglas type-checked (`no-unsafe-*`, `no-floating-promises`, `restrict-*`, `prefer-nullish-coalescing`, `prefer-optional-chain`, `no-unnecessary-type-assertion`, `consistent-type-definitions`, etc.) corren ahora en lint/CI. Para evitar churn estilístico discutible, `consistent-type-definitions` se fija en `["error","type"]` (el SDK ya usa type aliases de forma consistente). El lint type-checked midió 90 violaciones (78 auto-fixables + 12 manuales no auto-fixables); tras `lint:fix` + 12 correcciones manuales preservando semántica, quedó en 0 errores / 0 warnings.
+
 ## Consequences
 ### Positive
 - ESLint migrado a **flat config sobre 10.7.0** (no requiere rework adicional para 9/10).
@@ -27,10 +29,11 @@ Esta ADR registra la evaluación y las decisiones de adopción incremental, apli
 - Código del SDK formateado consistentemente (16 archivos, Prettier 3.9.5).
 - **Mejores prácticas typescript-eslint enforceadas**: ban de enums (`no-restricted-syntax`), `no-explicit-any: error`, `consistent-type-imports: error`. El SDK ya era conforme (0 enums, 0 `any`, `strict`/`verbatimModuleSyntax`/`isolatedModules`), por lo que el endurecimiento no introduce violaciones.
 - TS7/ESLint 10 decisiones documentadas y confirmadas contra docs oficiales.
+- **Lint type-checked habilitado** (`recommendedTypeChecked` + `stylisticTypeChecked` con `projectService`): 90 violaciones iniciales → 0 tras auto-fix + 12 correcciones manuales; el SDK ahora tiene chequeo de tipos a nivel de lint (mayor seguridad de runtime), sin degradar `typecheck`/`tests` (946 passing).
 
 ### Negative
 - **TS7 no se adopta aún** (typescript-eslint 8.63.0 aún pinnea `typescript <6.1.0`; TS 7.0 no expone API hasta 7.1). Se difiere con puente `@typescript/typescript6` documentado.
-- El configset **type-checked** de typescript-eslint (`recommendedTypeChecked` / `strictTypeChecked` + `parserOptions.projectService`) aún no se adopta; queda como fase siguiente recomendada (el codebase limpio lo hace de bajo riesgo).
+- (Resuelto) El configset **type-checked** de typescript-eslint (`recommendedTypeChecked` + `stylisticTypeChecked` + `parserOptions.projectService`) **se adoptó** (ver Decisión 6); 90 violaciones → 0.
 
 ## Implementation
 - `eslint.config.mjs` creado (flat) replicando el comportamiento de `.eslintrc.cjs`; migrado a ESLint 10.7.0 con `ignores` (reemplaza `.eslintignore`).
@@ -39,6 +42,7 @@ Esta ADR registra la evaluación y las decisiones de adopción incremental, apli
 - 16 archivos del SDK re-formateados con Prettier (3.9.5).
 - Dependencias de dev actualizadas a latest (ESLint 10.7.0, `@typescript-eslint/*` 8.63.0, `@eslint/js` 10.0.1, Prettier 3.9.5, etc.; TypeScript retenido en 6.0.3).
 - Reglas endurecidas: `no-explicit-any: error`, `consistent-type-imports: error`, `no-restricted-syntax` (ban de `TSEnumDeclaration`).
+- `eslint.config.mjs` reestructurado para extender los configs type-checked oficiales (`flat/recommended` + `flat/recommended-type-checked` + `flat/stylistic-type-checked`) con `parserOptions.projectService: true`. 90 violaciones iniciales (78 auto-fixables + 12 manuales) → 0; correcciones manuales preservan semántica: fallback falsy intencional con `||` + `eslint-disable` justificado (`config_normalization`, `descriptor`, `traits` summary), `??` para `Set | null` (`query`), `hasSelectionFilters` con `?? 0) > 0`, `wire()` síncrono (`require-await`), optional chain en `cache`, y tipo de retorno `unknown` (`cli-spinner`).
 
 ## Enum Performance Analysis (best-practice rationale)
 La documentación oficial (typescript-eslint.io y TypeScript Handbook) **no depreca formalmente los enums** (no existe regla `no-enum`; proposal #561 rechazada), pero la postura de la era TS7 favorece la **erasabilidad**: `--erasableSyntaxOnly` y el type-stripping de Node/Bun/Deno tratan `enum`/`namespace` como errores. El matiz de typescript-eslint: *"eviten los enums numéricos; los string enums son aceptables"*.

@@ -287,7 +287,7 @@ export const collectTraitDescriptorMetadata = (source: string, relativePath: str
   for (const binding of collectExportedTraitBindings(source, relativePath)) {
     const jsDocBlock = extractAttachedJsDoc(source, binding.matchIndex);
 
-    if (!jsDocBlock || !jsDocBlock.includes("@barrits-trait")) {
+    if (!jsDocBlock?.includes("@barrits-trait")) {
       continue;
     }
 
@@ -350,6 +350,8 @@ export const toTraitContractDescriptor = (contract: BarritsTraitContractConfig):
     bindingName,
     bindingKind: contract.bindingKind ?? "const",
     factory: contract.factory,
+    // Empty summary must resolve to undefined (intentional falsy check).
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     summary: contract.summary?.trim() || undefined,
     requires: normalizeContractStringArray(contract.requires),
     conflicts: normalizeContractStringArray(contract.conflicts),

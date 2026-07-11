@@ -20,11 +20,11 @@ export type CliOptions = {
   /** [EN] Exports. [ES] Exportaciones. */
   exports: string[];
   /** [EN] Kinds. [ES] Tipos. */
-  kinds: Array<"named-import" | "namespace-access" | "alias-namespace-access">;
+  kinds: ("named-import" | "namespace-access" | "alias-namespace-access")[];
   /** [EN] File kinds. [ES] Archivo tipos. */
   fileKinds: BarritsFileKind[];
   /** [EN] Visibilities. [ES] Visibilidades. */
-  visibilities: Array<"public" | "internal">;
+  visibilities: ("public" | "internal")[];
   /** [EN] Write snapshot. [ES] Escritura snapshot. */
   writeSnapshot: boolean;
   /** [EN] Start directory. [ES] Inicio directorio. */

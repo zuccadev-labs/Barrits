@@ -222,11 +222,15 @@ const parseSingleTagValue = (jsDocBlock: string, tagName: string): string | unde
   const tagExpression = new RegExp(`@${tagName}\\s+([^\\n\\r]+)`, "u");
   const matchedValue = jsDocBlock.match(tagExpression)?.[1]?.trim();
 
+  // Empty/undefined match must resolve to undefined (intentional falsy check).
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   return matchedValue || undefined;
 };
 
 const normalizeOptionalString = (value: string | undefined): string | undefined => {
   const normalizedValue = value?.trim();
+  // Empty/undefined value must resolve to undefined (intentional falsy check).
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   return normalizedValue || undefined;
 };
 
@@ -271,7 +275,7 @@ export const createTraitDescriptor = <const TName extends string, TState extends
     conflicts: normalizeUniqueStrings(descriptor.conflicts),
     state: normalizeUniqueStrings(descriptor.state),
     consumes: normalizeUniqueStrings(descriptor.consumes),
-    provides: normalizeUniqueStrings(descriptor.provides as readonly string[] | undefined) as Array<keyof TProvides & string>,
+    provides: normalizeUniqueStrings(descriptor.provides) as (keyof TProvides & string)[],
     tags: normalizeUniqueStrings(descriptor.tags),
     runtimes: normalizeUniqueStrings(descriptor.runtimes),
     create: descriptor.create,
@@ -310,7 +314,7 @@ export const createTraitDescriptorFromJsDoc = <
     conflicts: descriptor.conflicts ?? metadata.conflicts,
     state: descriptor.state ?? metadata.state,
     consumes: descriptor.consumes ?? metadata.consumes,
-    provides: descriptor.provides ?? (metadata.provides as Array<keyof TProvides & string>),
+    provides: descriptor.provides ?? (metadata.provides as (keyof TProvides & string)[]),
     tags: descriptor.tags ?? metadata.tags,
     runtimes: descriptor.runtimes ?? metadata.runtimes,
     create: descriptor.create,

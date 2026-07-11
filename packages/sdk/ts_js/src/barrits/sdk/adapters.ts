@@ -6,12 +6,12 @@
 import { detectRuntime } from "../internal/runtime";
 import type { RuntimeFileSystemAdapter, RuntimeFileSystemEntry } from "./contracts";
 
-interface DenoNamespace {
+type DenoNamespace = {
   cwd(): string;
   stat(path: string): Promise<{ isDirectory: boolean }>;
   readDir(path: string): AsyncIterable<{ name: string; isDirectory: boolean }>;
   readTextFile(path: string): Promise<string>;
-}
+};
 
 const runtimeImport = <TModule>(specifier: string): Promise<TModule> => {
   return import(specifier) as Promise<TModule>;
