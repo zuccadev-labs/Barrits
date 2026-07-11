@@ -5,6 +5,30 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 
 ## [Unreleased]
 
+### Changed
+- **Modernización del toolchain de desarrollo (dependencias a últimas versiones)**:
+  - **ESLint 8.57 → 10.7.0**: migración de `.eslintrc.cjs` (legacy) a *flat config* (`eslint.config.mjs`), validada con paridad 100% vía `eslint --print-config` y `0 warnings / 0 errors` con `--max-warnings 0`. Se eliminó `.eslintignore` (ya no soportado en ESLint 10) y se movió la exclusión `*.d.ts` al campo `ignores` del flat config.
+  - **`@typescript-eslint/*` 8.0.0 → 8.63.0**; `@eslint/js` 10.0.1 añadido como dependencia directa del root para respaldar el flat config.
+  - **Prettier 3.4.0 → 3.9.5**: reformateo de 16 archivos fuente del SDK (sin cambios de comportamiento).
+  - **Bumps de parche/menor**: `typedoc` 0.28.19 → 0.28.20, `@types/node` 26.1.0 → 26.1.1, `fast-check` 4.8.0 → 4.9.0, `eslint-config-prettier` 9.0.0 → 10.1.8, `eslint-plugin-prettier` 5.2.0 → 5.5.6, `@sveltejs/vite-plugin-svelte` 7.0.0 → 7.2.0.
+  - **Toolchain de build de ejemplos** (resuelto desde root `node_modules` vía rutas relativas): `vite` 8.1.3 → 8.1.4, `webpack` 5.108.3 → 5.108.4, `webpack-cli` 7.1.0 → 7.2.1. Añadidos explícitamente a root `devDependencies` (`vite`, `webpack`, `webpack-cli`, `rollup`, `@rollup/plugin-node-resolve`, `@vitejs/plugin-vue`, `vite-plugin-solid`) para fijar versiones y evitar *drift*.
+  - **Manifests de ejemplos actualizados a latest**: `example-react`, `example-vue`, `example-svelte`, `example-solid`, `example-tauri` y `example-bundlers` (vite/webpack/webpack-cli) y `example-svelte` (`@sveltejs/vite-plugin-svelte`).
+   - **Endurecimiento de reglas typescript-eslint (best practices)**: `no-explicit-any` `warn` → `error`; habilitado `@typescript-eslint/consistent-type-imports` (`error`, permitiendo `import()` dinámicos vía `disallowTypeAnnotations: false`); **ban de `enum` a nivel proyecto** vía `no-restricted-syntax` (selector `TSEnumDeclaration`, mensaje con rationale de erasabilidad). El SDK no declara `enum` (usa `Set<string>` y uniones/`as const`), por lo que el cambio no introduce violaciones. Documentado en `docs/investigations/adr/0005-toolchain-modernization-assessment.md`.
+   - **Adopción del configset type-checked de typescript-eslint**: `eslint.config.mjs` extiende ahora `flat/recommended` + `flat/recommended-type-checked` + `flat/stylistic-type-checked` con `parserOptions.projectService: true`. Reglas type-checked habilitadas en lint/CI. `consistent-type-definitions` fijado en `["error","type"]` (el SDK ya usa type aliases). 90 violaciones iniciales → 0 tras `lint:fix` (78) + 12 correcciones manuales preservando semántica (`config_normalization`, `descriptor`, `traits` summary: fallback falsy intencional con `||`+`eslint-disable`; `query`: `??` para `Set|null`; `manifest.hasSelectionFilters`: `?? 0) > 0`; `ioc.wire()`: síncrono por `require-await`; `cache`: optional chain; `cli-spinner`: tipo `unknown`).
+- **Documentación de uso (API namespaced, nombre personalizable y discovery)**: `README.md`/`README.es.md` ahora incluyen Quick Start con los tres estilos de API (`barrits.<dominio>.<familia>.<miembro>`, alias `brt`, nombre raíz personalizable vía `createBarrits({ namespace })`); la API Reference aclara que `createBarrits()` devuelve siempre `{ namespace, barrits, brt, config }`; y se creó `docs/users/{EN,ES}/packages/ts_js/12-project-structure-and-discovery.md` (layout, resolución de `barrits.config.*`, 4 estrategias de discovery y lectura de manifiesto por runtime). Los ejemplos `example-nodejs` y `example-bun` demuestran `barrits.logic.orderBy` (con `createBarrits<"corpAgent">()` para el namespace tipado).
+
+### Notas / Decisiones
+- **TypeScript retenido en 6.0.3** (no se subió a 7.0.2): `typescript-eslint` 8.63.0 (última versión) sigue declarando peer `typescript: '>=4.8.4 <6.1.0'`, por lo que TS7 rompería el pipeline de lint. La migración a TS7 queda pendiente hasta que `typescript-eslint` soporte 7.x (esperado en la línea 7.1). Documentado en `docs/investigations/adr/0005-toolchain-modernization-assessment.md`.
+- **ESLint 10 requiere Node ≥20.19**: el entorno local (Node 24.16.0) y CI (Node 22/24) ya cumplen el requisito, por lo que la migración es segura en ambos entornos.
+
+### Validation
+- `tsc --noEmit`: 0 errores.
+- Core SDK tests: 946 passing (0 fail).
+- ESLint type-checked (flat config + `recommendedTypeChecked` + `stylisticTypeChecked`, `--max-warnings 0`): 0 warnings, 0 errors (90 violaciones iniciales → 0).
+- Prettier `--check`: scope del SDK limpio.
+- Ejemplos validados (build/test): `example-react` ✅, `example-vue` ✅, `example-svelte` ✅, `example-solid` ✅, `example-tauri` (vite) ✅, `example-bundlers` (vite + esbuild + rollup + webpack) ✅; `example-nodejs` 8 tests ✅, `example-bun` 14 tests ✅, `example-deno` 8 tests ✅, `example-deno-baas` 13 tests ✅.
+- `example-tauri` `tauri:build` y los runtimes Deno/Bun no se ejecutan en su forma nativa de empaquetado en este entorno (requieren Rust/toolchain de Tauri); se validó su etapa Vite, que es la afectada por el bump.
+
 ## [0.2.4] - 2026-07-10
 
 ### Fixed

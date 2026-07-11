@@ -74,6 +74,62 @@ Barrits elimina esa dispersión:
 
 ---
 
+## Inicio Rápido
+
+Instala desde npm (o JSR para Deno):
+
+```bash
+npm install @zuccadev-labs/barrits
+```
+
+Barrits expone tres estilos de API equivalentes. Elige el que mejor encaje en tu base de código.
+
+### 1. Imports planos (funciones sueltas)
+
+```ts
+import { sumar, orderBy, buildPath, composePipeline } from "@zuccadev-labs/barrits";
+
+sumar(2, 3); // 5
+```
+
+### 2. Acceso namespaced — `barrits.<dominio>.<familia>.<miembro>`
+
+El export raíz incluye los objetos namespace `barrits` (y el alias corto `brt`), permitiendo navegar por dominio y familia:
+
+```ts
+import { barrits, brt } from "@zuccadev-labs/barrits";
+
+// Dominio + miembro
+barrits.logic.orderBy(items, [{ project: (d) => d.score, direction: "asc" }]);
+
+// Dominio + familia + miembro
+barrits.logic.searchAlgorithms.binarySearch(sorted, target);
+
+// Composición de traits
+barrits.traits.composePipeline(initialValue, step1, step2);
+
+// Alias corto (equivalente exacto de `barrits`)
+brt.logic.orderBy(items, criteria);
+```
+
+### 3. Nombre raíz personalizable vía el factory asíncrono
+
+El nombre principal de la API es **personalizable**. `createBarrits()` lee el campo `namespace` desde `barrits.config.*` (u opción explícita) y devuelve una instancia tipada bajo ese nombre — más los alias fijos `brt` y `barrits` y el `config` resuelto:
+
+```ts
+import { createBarrits } from "@zuccadev-labs/barrits";
+
+// barrits.config.ts -> export default { namespace: "miApp" }
+const system = await createBarrits();
+system.miApp.logic.orderBy(/* ... */);     // nombre raíz personalizado
+system.barrits.logic.orderBy(/* ... */);   // alias fijo siempre presente
+system.brt.logic.orderBy(/* ... */);        // alias corto fijo
+```
+
+> Prefiere `createBarrits()` sobre el singleton `barrits` cuando necesitas instanciación controlada, inyección IoC o múltiples instancias aisladas en proyectos corporativos. Ver [Automatización y Configuración](docs/users/ES/packages/ts_js/05-automatizacion-y-configuracion.md).
+
+---
+
 ## Características Corporativas
 
 A pesar de su simplicidad conceptual, Barrits es un motor de grado corporativo que garantiza:
