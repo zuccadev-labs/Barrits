@@ -7,13 +7,15 @@ import { filterImportActions } from "./imports";
 import { filterIntegrationGraph } from "./query";
 
 const hasSelectionFilters = (filters: BarritsSelectionFilters | undefined): filters is BarritsSelectionFilters => {
-  return Boolean(
-    filters &&
-    (filters.domains?.length ||
-      filters.exports?.length ||
-      filters.fileKinds?.length ||
-      filters.visibilities?.length ||
-      filters.kinds?.length),
+  if (!filters) {
+    return false;
+  }
+  return (
+    (filters.domains?.length ?? 0) > 0 ||
+    (filters.exports?.length ?? 0) > 0 ||
+    (filters.fileKinds?.length ?? 0) > 0 ||
+    (filters.visibilities?.length ?? 0) > 0 ||
+    (filters.kinds?.length ?? 0) > 0
   );
 };
 

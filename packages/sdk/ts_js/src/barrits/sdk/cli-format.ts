@@ -29,7 +29,7 @@ const formatTraitDiagnosticCategorySummary = (diagnostics: readonly BarritsTrait
     counts[diagnostic.category] += 1;
   }
 
-  const parts = (Object.entries(counts) as Array<[BarritsTraitDiagnostic["category"], number]>)
+  const parts = (Object.entries(counts) as [BarritsTraitDiagnostic["category"], number][])
     .filter(([, count]) => count > 0)
     .map(([category, count]) => `${count} ${category}`);
 

@@ -57,7 +57,7 @@ export class BarritsIoCContainer {
    * [EN] Auto-wires the container using the BarritsBuildManifest.
    * [ES] Auto-conecta el contenedor utilizando el BarritsBuildManifest.
    */
-  async wire(): Promise<void> {
+  wire(): void {
     if (!this.manifest) {
       return;
     }

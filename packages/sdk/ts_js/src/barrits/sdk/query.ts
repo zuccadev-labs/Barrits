@@ -51,7 +51,7 @@ const filterFiles = (
     visibilityFilter: Set<string> | null;
   },
 ): BarritsFileIntegration[] => {
-  const hasExportFilters = Boolean(options.exportFilter || options.visibilityFilter);
+  const hasExportFilters = Boolean(options.exportFilter ?? options.visibilityFilter);
 
   return files.flatMap((file) => {
     if (!matchesAllowedValue(file.kind, options.fileKindFilter)) {

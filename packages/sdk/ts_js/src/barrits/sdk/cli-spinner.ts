@@ -1,7 +1,7 @@
 const DEFAULT_FRAMES = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
 const textEncoder = new TextEncoder();
 
-const getDenoNamespace = (): unknown | undefined => {
+const getDenoNamespace = (): unknown => {
   return (globalThis as Record<string, unknown>).Deno;
 };
 

@@ -1,93 +1,39 @@
-import js from "@eslint/js";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 
 /**
- * Flat config (ESLint 8.57+ / 9 / 10).
+ * Flat config (ESLint 10 / typescript-eslint v8).
  *
- * Migración desde `.eslintrc.cjs` (legacy) hacia flat config, manteniendo el
- * mismo comportamiento efectivo del proyecto:
- *   - `eslint:recommended`
- *   - `@typescript-eslint/recommended`
- *   - overrides de reglas del equipo
+ * Basado en los configs oficiales *type-checked* de typescript-eslint:
+ *   - flat/recommended               (eslint:recommended + @typescript-eslint/recommended)
+ *   - flat/recommended-type-checked  (reglas que requieren información de tipos)
+ *   - flat/stylistic-type-checked     (reglas de estilo que requieren información de tipos)
+ *
+ * Se habilita el TypeScript Project Service (`parserOptions.projectService`) para que
+ * las reglas type-checked resuelvan los tipos sin configurar `project` manualmente.
  *
  * Notas de ingeniería:
- * - `env: { node, es2020, jest }` del eslintrc es inerte bajo TypeScript porque
- *   `@typescript-eslint/recommended` desactiva `no-undef`; por eso no se replica
- *   como `languageOptions.globals` (evita una dependencia nueva de `globals`).
- * - El alcance de lint lo definen los scripts `lint`/`lint:fix` (src/barrits + adapters).
+ * - `engines`/`env`: `eslint:recommended` es inerte bajo TypeScript porque
+ *   `@typescript-eslint/recommended` desactiva `no-undef`; por eso no se replican
+ *   `languageOptions.globals` (evita una dependencia nueva de `globals`).
+ * - Alcance de lint definido por los scripts `lint`/`lint:fix` (src/barrits + adapters).
+ * - Documentado en `docs/investigations/adr/0005-toolchain-modernization-assessment.md`.
  */
 export default [
   {
     name: "barrits/ignores",
     ignores: ["**/*.d.ts"],
   },
-  js.configs.recommended,
+  ...tsPlugin.configs["flat/recommended"],
+  ...tsPlugin.configs["flat/recommended-type-checked"],
+  ...tsPlugin.configs["flat/stylistic-type-checked"],
   {
-    name: "typescript-eslint/base",
-    languageOptions: {
-      parser: tsParser,
-      sourceType: "module",
-    },
-    plugins: {
-      "@typescript-eslint": tsPlugin,
-    },
-  },
-  {
-    name: "typescript-eslint/eslint-recommended",
+    name: "barrits/project-service",
     files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],
-    rules: {
-      "constructor-super": "off",
-      "getter-return": "off",
-      "no-class-assign": "off",
-      "no-const-assign": "off",
-      "no-dupe-args": "off",
-      "no-dupe-class-members": "off",
-      "no-dupe-keys": "off",
-      "no-func-assign": "off",
-      "no-import-assign": "off",
-      "no-new-native-nonconstructor": "off",
-      "no-new-symbol": "off",
-      "no-obj-calls": "off",
-      "no-redeclare": "off",
-      "no-setter-return": "off",
-      "no-this-before-super": "off",
-      "no-undef": "off",
-      "no-unreachable": "off",
-      "no-unsafe-negation": "off",
-      "no-var": "error",
-      "no-with": "off",
-      "prefer-const": "error",
-      "prefer-rest-params": "error",
-      "prefer-spread": "error",
-    },
-  },
-  {
-    name: "typescript-eslint/recommended",
-    rules: {
-      "@typescript-eslint/ban-ts-comment": "error",
-      "no-array-constructor": "off",
-      "@typescript-eslint/no-array-constructor": "error",
-      "@typescript-eslint/no-duplicate-enum-values": "error",
-      "@typescript-eslint/no-empty-object-type": "error",
-      "@typescript-eslint/no-explicit-any": "error",
-      "@typescript-eslint/no-extra-non-null-assertion": "error",
-      "@typescript-eslint/no-misused-new": "error",
-      "@typescript-eslint/no-namespace": "error",
-      "@typescript-eslint/no-non-null-asserted-optional-chain": "error",
-      "@typescript-eslint/no-require-imports": "error",
-      "@typescript-eslint/no-this-alias": "error",
-      "@typescript-eslint/no-unnecessary-type-constraint": "error",
-      "@typescript-eslint/no-unsafe-declaration-merging": "error",
-      "@typescript-eslint/no-unsafe-function-type": "error",
-      "no-unused-expressions": "off",
-      "@typescript-eslint/no-unused-expressions": "error",
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": "error",
-      "@typescript-eslint/no-wrapper-object-types": "error",
-      "@typescript-eslint/prefer-as-const": "error",
-      "@typescript-eslint/prefer-namespace-keyword": "error",
-      "@typescript-eslint/triple-slash-reference": "error",
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+      },
     },
   },
   {
@@ -99,6 +45,7 @@ export default [
       "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-var-requires": "off",
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
       "@typescript-eslint/consistent-type-imports": [
         "error",
         { disallowTypeAnnotations: false },

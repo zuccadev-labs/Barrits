@@ -16,7 +16,7 @@ export type BarritsLogLevel = "debug" | "info" | "warn" | "error" | "off";
  * [EN] Contract for industrial logging implementations.
  * [ES] Contrato para implementaciones de registro industrial.
  */
-export interface BarritsLogger {
+export type BarritsLogger = {
   /** [EN] Log level. [ES] Nivel de log. */
   level: BarritsLogLevel;
   /** [EN] Log debug message. [ES] Registrar mensaje de depuración. */
@@ -27,7 +27,7 @@ export interface BarritsLogger {
   warn(message: string, ...args: unknown[]): void;
   /** [EN] Log error message. [ES] Registrar mensaje de error. */
   error(message: string, ...args: unknown[]): void;
-}
+};
 
 const LOG_LEVEL_PRIORITY: Record<BarritsLogLevel, number> = {
   debug: 0,

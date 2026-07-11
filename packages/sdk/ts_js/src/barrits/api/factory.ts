@@ -5,9 +5,7 @@ import { barrits } from "./domains";
  * [EN] Dynamically generated application API context matching the requested namespace.
  * [ES] Contexto de API de aplicación generado dinámicamente que coincide con el espacio de nombres solicitado.
  */
-export type CustomBarritsApi<TNamespace extends string> = {
-  [K in TNamespace]: typeof barrits;
-} & {
+export type CustomBarritsApi<TNamespace extends string> = Record<TNamespace, typeof barrits> & {
   /** [EN] Short alias for the API. [ES] Alias corto para la API. */
   brt: typeof barrits;
   /** [EN] Standard name for the API. [ES] Nombre estándar para la API. */

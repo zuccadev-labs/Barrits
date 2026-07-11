@@ -7,6 +7,6 @@ import type { UnaryFunction } from "../../shared";
  * @param steps Unary steps executed left-to-right.
  * @returns Final value produced by the last step.
  */
-export const composePipeline = <TValue>(initialValue: TValue, ...steps: Array<UnaryFunction<TValue, TValue>>): TValue => {
+export const composePipeline = <TValue>(initialValue: TValue, ...steps: UnaryFunction<TValue, TValue>[]): TValue => {
   return steps.reduce((value, step) => step(value), initialValue);
 };

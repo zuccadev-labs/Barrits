@@ -20,7 +20,7 @@ const AST_CACHE = new Map<
 export const createCachedSourceFile = (relativePath: string, source: string): ts.SourceFile => {
   const cached = AST_CACHE.get(relativePath);
 
-  if (cached && cached.source === source) {
+  if (cached?.source === source) {
     return cached.sourceFile;
   }
 
