@@ -42,6 +42,23 @@ El campo `namespace` aquí es lo que hace que el **nombre principal de la API se
 
 Parámetros opcionales: `targetName` (defecto `"barrits"`), `maxDepth` (defecto `4`), `startDirectory` e `ignoredDirectories`. El adapter de runtime se selecciona automáticamente con `createRuntimeFileSystemAdapter()` — Deno usa `DenoFileSystemAdapter`, mientras que Node y Bun usan `NodeFileSystemAdapter`.
 
+```mermaid
+flowchart TD
+    Start([startDirectory]) --> A{"¿current-directory?<br/>basename == targetName"}
+    A -- "sí" --> A1["projectRoot = padre del inicio"]
+    A -- "no" --> B{"¿direct-child?<br/>existe &lt;cursor&gt;/barrits"}
+    B -- "sí" --> B1["projectRoot = contenedor"]
+    B -- "no" --> C{"¿ancestor-child?<br/>un ancestro tiene barrits/"}
+    C -- "sí" --> C1["projectRoot = ancestro"]
+    C -- "no" --> D{"¿recursive-child?<br/>BFS prof. ≤ 4<br/>(excl. node_modules/dist/build/.git/.next/.turbo)"}
+    D -- "sí" --> D1["projectRoot = inicio"]
+    D -- "no" --> E([NoBarritsDirectory])
+    A1 --> Out([BarritsDiscovery])
+    B1 --> Out
+    C1 --> Out
+    D1 --> Out
+```
+
 ## 4. Creación del manifiesto
 
 Una vez descubierta la estructura, el motor construye un grafo de integración y lo serializa:
