@@ -6,6 +6,9 @@ import {
   type BarritsLanguageToolSnapshot,
 } from "@zuccadev-labs/barrits/consume";
 
+// NOTE: This renderer deliberately uses the secure `/consume` surface rather
+// than `createBarrits().barrits.*`. The webview must not touch the filesystem
+// or run trait discovery; the Rust backend mediates all artifact reads.
 const app = document.querySelector<HTMLDivElement>("#app");
 
 if (!app) {
