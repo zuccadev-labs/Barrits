@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@zuccadev-labs/barrits": "file:../..",
-    "svelte": "^5.56.4"
+    "svelte": "^5.56.8"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.2.0",
