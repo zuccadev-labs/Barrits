@@ -9,12 +9,12 @@
   },
   "dependencies": {
     "@zuccadev-labs/barrits": "file:../..",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.1"
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^6.0.3",
+    "@vitejs/plugin-react": "^6.0.5",
     "vite": "^8.1.4"
   }
 }
