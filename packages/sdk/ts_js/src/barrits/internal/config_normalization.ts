@@ -68,7 +68,6 @@ export const normalizeResolvedConfig = (
     ...normalized,
     contracts: mergedConfig.contracts,
     configFilePath,
-    main: mergedConfig.main,
     namespace: mergedConfig.namespace,
   };
 };

@@ -291,7 +291,6 @@ La configuración del proyecto a través de `barrits.config.ts` se rige por el t
 | `projectRoot` | `string` | `process.cwd()` | No modificar a menos que el archivo de configuración resida fuera de la raíz del proyecto. |
 | `debugCommands` | `boolean` | `false` | Activar únicamente durante la integración inicial para auditar el flujo de descubrimiento de AST. |
 | `contracts` | `BarritsContractsConfig` | `{}` | Usar para definir visibilidad de API y traits que no pueden usar JSDoc decorativo. |
-| `main` | `Function` | `undefined` | Implementar para centralizar la orquestación de arranque en aplicaciones standalone. |
 
 ### Configuración de Contratos (`contracts`)
 

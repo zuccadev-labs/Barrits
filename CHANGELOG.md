@@ -5,6 +5,12 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 
 ## [Unreleased]
 
+### Auditoría 2026-09 — plan de remediación por hitos
+
+Serie de commits en `dev` derivados de la auditoría forense del 2026-09-09. El detalle técnico por hito está en `packages/sdk/ts_js/CHANGELOG.md`.
+
+- **Hito 1 · fix(cli)**: el binario publicado `barrits`/`brt` no ejecutaba nada (heurística de `import.meta.url` rota por el code splitting de tsup) y `barrits.config.ts` no cargaba fuera de `tsx`. Nuevos entries `adapters/{node,bun}/bin.ts`, respaldo de transpilación con `typescript` (ahora `peerDependency`), `BarritsConfigError`, retirada de la opción muerta `main`, test e2e sobre `dist/`.
+
 ### Changed
 - **Modernización del toolchain de desarrollo (root)**: ESLint 8.57 → 10.7.0 con migración a *flat config* (`eslint.config.mjs`, eliminando `.eslintrc.cjs` y `.eslintignore`); `@eslint/js` 10.0.1 y `@typescript-eslint/*` 8.63.0 añadidos/actualizados. Prettier 3.4.0 → 3.9.5. Toolchain de build de ejemplos fijado en root `devDependencies` (resuelto vía rutas relativas desde los ejemplos): `vite` 8.1.4, `webpack` 5.108.4, `webpack-cli` 7.2.1, `rollup` 4.62.2, `@rollup/plugin-node-resolve` 16.0.3, `@vitejs/plugin-vue` 6.0.7, `vite-plugin-solid` 2.11.12. El detalle completo y la validación por ejemplo están en el CHANGELOG del SDK (`packages/sdk/ts_js/CHANGELOG.md`).
 - **typescript-eslint best-practice enforcement**: `no-explicit-any` → `error`, `@typescript-eslint/consistent-type-imports` habilitado (`error`), y **ban de `enum`** a nivel proyecto vía `no-restricted-syntax` (selector `TSEnumDeclaration`). El SDK ya evitaba enums (usa `Set<string>` y uniones/`as const`), por lo que el cambio no introduce violaciones. Detalle y análisis de rendimiento en `docs/investigations/adr/0005-toolchain-modernization-assessment.md`.

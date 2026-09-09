@@ -12,7 +12,7 @@ import { runCommand } from "./helpers/process";
 const _require = createRequire(import.meta.url);
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const tsxCliPath = _require.resolve("tsx/cli");
-const nodeCliPath = join(repositoryRoot, "adapters", "node", "cli.ts");
+const nodeCliPath = join(repositoryRoot, "adapters", "node", "bin.ts");
 
 test("node info prints trait diagnostics in human-readable output", async () => {
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-info-"));

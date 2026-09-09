@@ -13,7 +13,7 @@ const _require = createRequire(import.meta.url);
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const tsxCliPath = _require.resolve("tsx/cli");
 const nodeAdapterPath = pathToFileURL(join(repositoryRoot, "dist", "adapters", "node", "index.js")).href;
-const nodeCliPath = join(repositoryRoot, "adapters", "node", "cli.ts");
+const nodeCliPath = join(repositoryRoot, "adapters", "node", "bin.ts");
 
 test("node dev flow runs a child consumer with manifest and snapshot outputs", async () => {
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-dev-flow-"));

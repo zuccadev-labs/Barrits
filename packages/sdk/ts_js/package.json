@@ -32,8 +32,8 @@
   },
   "type": "module",
   "bin": {
-    "barrits": "./dist/adapters/node/cli.js",
-    "brt": "./dist/adapters/node/cli.js"
+    "barrits": "./dist/adapters/node/bin.js",
+    "brt": "./dist/adapters/node/bin.js"
   },
   "main": "./dist/src/index.cjs",
   "module": "./dist/src/index.js",
@@ -139,8 +139,8 @@
     "docs": "node ../../../node_modules/typedoc/bin/typedoc",
     "docs:serve": "node ../../../node_modules/typedoc/bin/typedoc --watch",
     "publish:jsr:dry-run": "deno publish --dry-run --allow-dirty --config jsr.json",
-    "barrits:dev": "node ./node_modules/tsx/dist/cli.mjs adapters/node/cli.ts dev -- node -e \"console.log('barrits dev session')\"",
-    "barrits:build": "node ./node_modules/tsx/dist/cli.mjs adapters/node/cli.ts build -- node -e \"console.log(process.env.BARRITS_BUILD_MANIFEST || '')\""
+    "barrits:dev": "node ./node_modules/tsx/dist/cli.mjs adapters/node/bin.ts dev -- node -e \"console.log('barrits dev session')\"",
+    "barrits:build": "node ./node_modules/tsx/dist/cli.mjs adapters/node/bin.ts build -- node -e \"console.log(process.env.BARRITS_BUILD_MANIFEST || '')\""
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
@@ -148,5 +148,8 @@
     "tsx": "^4.23.0",
     "typedoc": "^0.28.20",
     "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
   }
 }

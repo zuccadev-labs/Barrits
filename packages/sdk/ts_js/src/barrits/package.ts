@@ -12,6 +12,7 @@ export type {
 } from "./config";
 export {
   BARRITS_CONFIG_FILENAMES,
+  BarritsConfigError,
   DEFAULT_AUTOMATION_DIRECTORY,
   defineBarritsConfig,
   findBarritsConfigFile,

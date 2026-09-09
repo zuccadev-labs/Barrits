@@ -4,7 +4,6 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { watch } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { spawn } from "node:child_process";
-import { fileURLToPath } from "node:url";
 
 import {
   applyManagedImports,
@@ -421,24 +420,3 @@ export const runNodeCli = async (argumentsList = process.argv.slice(2)): Promise
 
   return handleNodeWatchDev(options, graph, discovery, emitGraph, selectionFilters, automationPaths);
 };
-
-const isDirectExecution = (): boolean => {
-  const entryFilePath = process.argv[1];
-
-  if (!entryFilePath) {
-    return false;
-  }
-
-  return resolve(entryFilePath) === fileURLToPath(import.meta.url);
-};
-
-if (isDirectExecution()) {
-  void runNodeCli()
-    .then((exitCode) => {
-      process.exitCode = exitCode;
-    })
-    .catch((error: unknown) => {
-      console.error(error instanceof Error ? error.message : String(error));
-      process.exitCode = 1;
-    });
-}

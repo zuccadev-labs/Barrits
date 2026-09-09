@@ -134,7 +134,6 @@ describe("normalizeResolvedConfig", () => {
         runtime: "node",
         contracts: { traits: [{ name: "test", sourceFile: "test.ts", bindingName: "test" }] },
         configFilePath: "/project/barrits.config.ts",
-        main: () => undefined,
         namespace: "custom",
       } as BarritsRootConfig,
       "/project",
@@ -147,7 +146,6 @@ describe("normalizeResolvedConfig", () => {
     assert.ok(result.contracts);
     assert.equal(result.contracts!.traits!.length, 1);
     assert.equal(result.contracts!.traits![0].name, "test");
-    assert.equal(typeof result.main, "function");
     assert.equal(result.namespace, "custom");
   });
 
@@ -166,8 +164,4 @@ describe("normalizeResolvedConfig", () => {
     assert.equal(result.namespace, undefined);
   });
 
-  it("allows main absent", () => {
-    const result = normalizeResolvedConfig({}, "/project", "/project/barrits.config.ts");
-    assert.equal(result.main, undefined);
-  });
 });

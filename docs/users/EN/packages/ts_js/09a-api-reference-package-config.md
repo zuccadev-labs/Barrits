@@ -286,7 +286,6 @@ The project configuration via `barrits.config.ts` is governed by the `BarritsRoo
 | `projectRoot` | `string` | `process.cwd()` | Do not modify unless the configuration file resides outside the project root. |
 | `debugCommands` | `boolean` | `false` | Enable only during initial integration to audit the AST discovery flow. |
 | `contracts` | `BarritsContractsConfig` | `{}` | Use to define API visibility and traits that cannot use decorative JSDoc. |
-| `main` | `Function` | `undefined` | Implement to centralize startup orchestration in standalone applications. |
 
 ### Contract Configuration (`contracts`)
 
