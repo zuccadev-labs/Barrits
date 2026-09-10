@@ -19,7 +19,7 @@
 
 `barrits` is the ultimate foundation for **Trait-Oriented Programming**, designed to turn complex codebases into self-configuring systems.
 
-Unlike conventional bundler tooling or monorepo orchestrators, Barrits operates directly at the **AST layer**: it extracts declared contracts (Traits, JSDoc, strict types), seals every build with cryptographic integrity hashes, and exposes strongly-typed Domain APIs that are fully agnostic of runtime and framework.
+Unlike conventional bundler tooling or monorepo orchestrators, Barrits operates directly at the **AST layer**: it extracts declared contracts (Traits, JSDoc, strict types), seals every build manifest with a SHA-256 checksum over its deterministic content (verifiable with `verifyBuildManifest`), and exposes strongly-typed Domain APIs that are fully agnostic of runtime and framework.
 
 The current release targets TypeScript and JavaScript ecosystems. The architecture is intentionally portable, with Go and Rust SDKs on the roadmap under the same contract standard.
 
@@ -167,7 +167,7 @@ Despite its conceptual simplicity, Barrits is an enterprise-grade engine that gu
 | :--- | :--- | :--- |
 | **Dynamic Inversion of Control (IoC)** | Container that reads the AST manifest and auto-injects dependencies without manual configuration. | A billing service declares `@barrits-consumes database` and receives the connection automatically. |
 | **Automatic OpenAPI Generation** | Transforms discovered Traits into Swagger v3.1 documentation on the fly. | Endpoints tagged with `http-endpoint` generate their schema without duplicated YAML. |
-| **Mathematical Traceability (SHA-256)** | Every build is cryptographically sealed to prevent supply chain attacks. | CI/CD verifies the manifest was not tampered with between build and deploy. |
+| **Integrity seal (SHA-256)** | Every build manifest carries a checksum computed over its full deterministic content; `verifyBuildManifest` / `assertBuildManifestIntegrity` detect any modification after generation. | CI/CD verifies the manifest was not altered between build and deploy. |
 | **Runtime & Framework Agnostic** | Works identically across Node.js, Deno, Bun, Tauri, React, Vue, Solid, and Svelte. | The same Trait contract is consumed in the Deno backend and the React frontend without changes. |
 
 ---

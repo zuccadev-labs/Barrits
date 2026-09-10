@@ -67,7 +67,7 @@ Una vez descubierta la estructura, el motor construye un grafo de integración y
 - El comando `build` de la CLI (o un plugin de bundler) escribe `<automationDirectory>/build-manifest.json`.
 - Los modos `watch` y `dev` escriben `<automationDirectory>/watch-snapshot.json`.
 
-El manifiesto lleva dominios, exports, descriptores de traits, acciones de importación, colisiones y un checksum SHA-256 para integridad de la cadena de suministro.
+El manifiesto lleva dominios, exports, descriptores de traits, acciones de importación, colisiones y un checksum SHA-256 calculado sobre todo su contenido determinista (todos los campos salvo `checksum` y `generatedAt`). Tras leer un manifiesto, `verifyBuildManifest(manifest)` devuelve `{ valid, expected, actual }` y `assertBuildManifestIntegrity(manifest)` lanza cuando el contenido ya no coincide con el sello; ambos se exportan desde `@zuccadev-labs/barrits/consume` y desde la raíz del paquete.
 
 ### 4.1 Usar el motor de forma programática
 

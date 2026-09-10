@@ -51,5 +51,16 @@ export {
   readWatchSnapshotSummary,
 } from "./consume";
 export { applyManagedImports, createImportBlock, createImportsModuleSource, filterImportActions } from "./imports";
-export { createBuildManifest, createProjectedGraph, createWatchSnapshot, stringifyBuildManifest, stringifyWatchSnapshot } from "./manifest";
+export {
+  BUILD_MANIFEST_CHECKSUM_PREFIX,
+  assertBuildManifestIntegrity,
+  computeBuildManifestChecksum,
+  createBuildManifest,
+  createProjectedGraph,
+  createWatchSnapshot,
+  stringifyBuildManifest,
+  stringifyWatchSnapshot,
+  verifyBuildManifest,
+} from "./manifest";
+export type { BarritsBuildManifestIntegrity, BarritsBuildManifestPayload } from "./manifest";
 export { filterIntegrationGraph, resolveProjectFilePath } from "./query";

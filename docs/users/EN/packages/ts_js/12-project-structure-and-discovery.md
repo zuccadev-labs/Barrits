@@ -67,7 +67,7 @@ Once the structure is discovered, the engine builds an integration graph and ser
 - The CLI `build` command (or a bundler plugin) writes `<automationDirectory>/build-manifest.json`.
 - `watch` and `dev` modes write `<automationDirectory>/watch-snapshot.json`.
 
-The manifest carries domains, exports, trait descriptors, import actions, collisions, and a SHA-256 checksum for supply-chain integrity.
+The manifest carries domains, exports, trait descriptors, import actions, collisions, and a SHA-256 checksum computed over its full deterministic content (every field except `checksum` and `generatedAt`). After reading a manifest, `verifyBuildManifest(manifest)` returns `{ valid, expected, actual }` and `assertBuildManifestIntegrity(manifest)` throws when the content no longer matches the seal; both are exported from `@zuccadev-labs/barrits/consume` and from the package root.
 
 ### 4.1 Driving the engine programmatically
 

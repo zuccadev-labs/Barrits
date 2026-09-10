@@ -34,27 +34,30 @@ const stableArtifact = deterministicStringify(rawManifest, 2);
 ## 3. Cryptographic Integrity Hashes (Score Target: 100)
 **Q: Provide a code snippet or description showing how Barrits' cryptographic integrity hashes can be used to verify the authenticity of generated automation artifacts.**
 
-Barrits embeds a SHA-256 hash inside the `BarritsBuildManifest`. At runtime, the consumer service re-hashes the deterministic payload and compares it against the stored signature to prevent supply-chain tampering.
+Barrits embeds a SHA-256 checksum inside the `BarritsBuildManifest`. The checksum is computed over the deterministic JSON serialization (recursively sorted keys, code-unit order) of every manifest field except `checksum` and `generatedAt`, so identical content always yields the same seal regardless of when or where it was generated. Consumers recompute it and compare it against the stored seal to detect any modification after generation.
 
 **Concrete Manifest Example:**
 ```json
 {
-  "version": "0.1.4",
-  "checksum": "a3f2b4c...d8e1f",
-  "generatedAt": "2026-04-21T14:30:00.000Z",
-  "traits": { ... }
+  "generatedAt": "2026-09-09T14:30:00.000Z",
+  "checksum": "sha256-barrits-a3f2b4c...d8e1f",
+  "projectRoot": "/srv/app",
+  "barritsDirectory": "/srv/app/barrits",
+  "strategy": "direct-child",
+  "domains": ["logic", "traits"],
+  "traitDescriptors": [ { "name": "user-service", "provides": ["user"], "...": "..." } ],
+  "importActions": [ { "exportName": "getUser", "kind": "named-import", "...": "..." } ]
 }
 ```
 
 **Verification Code:**
 ```typescript
-import { sha256Hex, deterministicStringify } from "@aspect/barrits/logic";
+import { readNodeBuildManifest } from "@zuccadev-labs/barrits/node";
+import { assertBuildManifestIntegrity, verifyBuildManifest } from "@zuccadev-labs/barrits/consume";
 
-const verifyManifest = async (manifest: BarritsBuildManifest) => {
-  const { checksum, ...payload } = manifest;
-  const computedHash = await sha256Hex(deterministicStringify(payload));
-  if (computedHash !== checksum) throw new Error("Compromised Artifact");
-};
+const manifest = await readNodeBuildManifest(".barrits/build-manifest.json");
+const integrity = await verifyBuildManifest(manifest); // { valid, expected, actual }
+await assertBuildManifestIntegrity(manifest); // throws when the seal does not match the content
 ```
 
 ## 4. Strongly-Typed Domain API Independence (Score Target: 100)

@@ -3,7 +3,7 @@
  * hexadecimal digest.
  *
  * This function uses the Web Crypto API (`crypto.subtle.digest`), which is
- * available in all modern runtimes including Deno, Node.js 18+, Bun, and
+ * available in all supported runtimes: Deno, Node.js 20+, Bun and
  * browsers. No external dependencies are required.
  *
  * SHA-256 is the industry standard for content-addressable integrity
@@ -15,9 +15,9 @@
  *
  * @example
  * ```ts
- * import { sha256Hex } from "@aspect/barrits";
+ * import { sha256Hex } from "@zuccadev-labs/barrits";
  *
- * const manifest = JSON.stringify({ version: "0.1.4", domains: ["auth", "billing"] });
+ * const manifest = JSON.stringify({ domains: ["auth", "billing"] });
  * const checksum = await sha256Hex(manifest);
  * // checksum: "a3f2...d8e1" (64 hex chars)
  * ```
