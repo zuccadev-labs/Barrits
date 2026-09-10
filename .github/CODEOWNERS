@@ -1,7 +1,25 @@
-# Reemplaza @zuccadev por el equipo o usuario real de mantenimiento corporativo si aplica
+# Code ownership for @zuccadev-labs/barrits.
+#
+# GitHub reads .github/CODEOWNERS with precedence over any other location, so this is the single
+# source of truth (the former root-level copy has been removed). Team handles such as
+# @zuccadev-labs/sdk-maintainers must exist in the organisation before they are referenced here;
+# GitHub flags the whole file as invalid otherwise. Until those teams are created, every path is
+# owned by the maintainer account. Replace the owner per path as teams are provisioned.
 
+# Whole repository
 * @zuccadev
 
-/packages/sdk/ts_js/ @zuccadev
-/.github/ @zuccadev
+# SDK core, adapters and examples
+/packages/sdk/ts_js/src/ @zuccadev
+/packages/sdk/ts_js/adapters/ @zuccadev
+/packages/sdk/ts_js/examples/ @zuccadev
+
+# Documentation
 /docs/ @zuccadev
+
+# Automation, workflows and dependency policy
+/.github/ @zuccadev
+
+# Shared manifests and lockfiles
+/package.json @zuccadev
+/package-lock.json @zuccadev

@@ -10,38 +10,38 @@ on:
       - main
       - dev
   schedule:
-    - cron: '0 4 * * 1'
+    - cron: "0 4 * * 1"
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  NODE_VERSION: 22
+  NPM_VERSION: 11.6.2
+
 jobs:
+  # ── Dependency review (pull requests only) ─────────────────────────────────
   dependency-review-support:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: pwsh
-
     outputs:
       supported: ${{ steps.probe.outputs.supported }}
-
     steps:
       - name: Probe dependency graph support
         id: probe
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh api repos/${{ github.repository }}/dependency-graph/sbom 1>$null 2>$null
-          if ($LASTEXITCODE -eq 0) {
-            "supported=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-          } else {
-            "supported=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-          }
-
-          exit 0
+          if gh api "repos/${{ github.repository }}/dependency-graph/sbom" > /dev/null 2>&1; then
+            echo "supported=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "supported=false" >> "$GITHUB_OUTPUT"
+          fi
 
   dependency-review:
     needs: dependency-review-support
@@ -50,11 +50,6 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-
-    defaults:
-      run:
-        shell: pwsh
-
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -62,20 +57,16 @@ jobs:
       - name: Dependency graph unavailable
         if: needs.dependency-review-support.outputs.supported != 'true'
         run: |
-          Write-Host "Dependency graph is not enabled for this repository."
-          Write-Host "Skipping dependency-review until GitHub support is available in repo settings."
+          echo "Dependency graph is not enabled for this repository."
+          echo "Skipping dependency-review until it is enabled in the repository settings."
 
       - name: Dependency review
         if: needs.dependency-review-support.outputs.supported == 'true'
         uses: actions/dependency-review-action@v5
 
+  # ── npm audit (every event) ────────────────────────────────────────────────
   npm-audit:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: pwsh
-
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -83,14 +74,73 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
       - name: Setup npm
-        run: npm install --global npm@11.6.2
+        run: npm install --global npm@${{ env.NPM_VERSION }}
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Audit production dependency graph
+      - name: Audit production dependency graph (high+ severity)
         run: npm audit --omit=dev --audit-level=high
+
+      - name: Export full audit report
+        if: always()
+        run: npm audit --json > audit-report.json || true
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: audit-report.json
+
+  # ── Secret scanning ────────────────────────────────────────────────────────
+  secret-scanning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Install git-secrets
+        run: |
+          git clone --depth 1 https://github.com/awslabs/git-secrets.git /tmp/git-secrets
+          sudo make -C /tmp/git-secrets install
+          rm -rf /tmp/git-secrets
+
+      - name: Register AWS patterns
+        run: git secrets --register-aws --global
+
+      - name: Scan history for secrets
+        run: git secrets --scan-history
+
+  # ── SBOM (main only) ───────────────────────────────────────────────────────
+  sbom:
+    needs: npm-audit
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate SBOM
+        run: npx --yes @cyclonedx/cyclonedx-npm --output-format XML --output-file bom.xml
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: software-bill-of-materials
+          path: bom.xml

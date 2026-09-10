@@ -11,14 +11,15 @@ Thank you for considering contributing to Barrits! We welcome contributions from
 
 ### Pull Requests
 1. Fork the repository
-2. Create a new branch from `main`: `git checkout -b feature/amazing-feature`
+2. Create a new branch from `dev`: `git checkout -b feature/amazing-feature dev`
 3. Make your changes
-4. Ensure your code follows our style guidelines (we use Prettier and ESLint)
+4. Ensure your code follows our style guidelines (`npm run lint`, `npm run format`)
 5. Add tests for any new functionality
-6. Ensure all tests pass: `npm test`
-7. Commit your changes: `git commit -m 'feat: add amazing feature'`
-8. Push to the branch: `git push origin feature/amazing-feature`
-9. Open a Pull Request against the `main` branch
+6. Ensure all gates pass: `npm run typecheck`, `npm test`, and the tests of every example you touched
+7. Update `CHANGELOG.md` (root) and `packages/sdk/ts_js/CHANGELOG.md` under `[Unreleased]`
+8. Commit your changes: `git commit -m 'feat: add amazing feature'`
+9. Push to the branch: `git push origin feature/amazing-feature`
+10. Open a Pull Request against the `dev` branch. `main` only receives release merges from `dev`.
 
 ### Development Setup
 ```bash
@@ -26,23 +27,26 @@ Thank you for considering contributing to Barrits! We welcome contributions from
 git clone https://github.com/zuccadev-labs/Barrits.git
 cd Barrits
 
-# Install dependencies
+# Install dependencies (also installs the git hooks via `npm run prepare`)
 npm ci
 
-# Run tests
-npm test
-
-# Run type checking
+# Lint, format check and type checking
+npm run lint
+npm run format
 npm run typecheck
 
-# Build the project
+# Build the SDK (required before the example and dist tests)
 npm run build
+
+# Run the SDK test suite
+npm test
 ```
 
+Node.js 20 or newer is required (`engines` in `packages/sdk/ts_js/package.json`). Deno 2 and Bun are needed only to run the Deno and Bun examples.
+
 ### Code Style
-- We use [Prettier](https://prettier.io/) for code formatting
-- We use [ESLint](https://eslint.org/) for code quality
-- Husky hooks are set up to run lint-staged on pre-commit
+- We use [Prettier](https://prettier.io/) for code formatting and [ESLint](https://eslint.org/) (typescript-eslint, type-checked rules) for code quality
+- A versioned pre-commit hook (`.husky/pre-commit`, wired through `git config core.hooksPath` by `npm run prepare`) runs lint, typecheck and the test suite before every commit; no extra tooling is required
 - Please ensure your code passes all checks before submitting a PR
 
 ### Commit Messages
@@ -59,9 +63,9 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ### Testing
 - All new features should include tests
-- Unit tests are located alongside the source code or in `__tests__` directories
-- Run tests with `npm test`
-- We aim for high test coverage to ensure reliability
+- SDK tests live in `packages/sdk/ts_js/tests/` (node:test via tsx); each example ships its own `tests/` directory
+- Run the SDK suite with `npm test`; run an example with `npm test --workspace <example-name>` (`deno task test` / `bun test` for the Deno and Bun examples)
+- CI runs every example build and test on Linux and Windows
 
 ### Documentation
 - User-facing documentation is in the `/docs/users/` directory

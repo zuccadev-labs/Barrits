@@ -29,7 +29,7 @@ describe("property: defaultCompare", () => {
       fc.property(anyDouble, anyDouble, (left, right) => {
         const forward = Math.sign(defaultCompare(left, right));
         const backward = Math.sign(defaultCompare(right, left));
-        assert.equal(forward, -backward);
+        assert.equal(forward + backward, 0);
         if (forward === 0) {
           assert.ok(Object.is(left, right) || left === right || (Number.isNaN(left) && Number.isNaN(right)));
         }

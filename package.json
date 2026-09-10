@@ -23,13 +23,15 @@
     "test": "npm run test --workspace @zuccadev-labs/barrits",
     "test:coverage": "npm run test:coverage --workspace @zuccadev-labs/barrits",
     "typecheck": "npm run typecheck --workspace @zuccadev-labs/barrits",
-    "lint": "eslint packages/sdk/ts_js/src/barrits packages/sdk/ts_js/adapters",
-    "lint:fix": "eslint packages/sdk/ts_js/src/barrits packages/sdk/ts_js/adapters --fix",
-    "format": "prettier --check packages/sdk/ts_js/src/barrits packages/sdk/ts_js/adapters",
+    "lint": "eslint packages/sdk/ts_js/src packages/sdk/ts_js/adapters",
+    "lint:fix": "eslint packages/sdk/ts_js/src packages/sdk/ts_js/adapters --fix",
+    "format": "prettier --check packages/sdk/ts_js/src packages/sdk/ts_js/adapters packages/sdk/ts_js/tests",
     "benchmark:algorithms": "npm run benchmark:algorithms --workspace @zuccadev-labs/barrits",
     "publish:jsr:dry-run": "npm run publish:jsr:dry-run --workspace @zuccadev-labs/barrits",
     "barrits:dev": "npm run barrits:dev --workspace @zuccadev-labs/barrits",
-    "barrits:build": "npm run barrits:build --workspace @zuccadev-labs/barrits"
+    "barrits:build": "npm run barrits:build --workspace @zuccadev-labs/barrits",
+    "prepare": "node scripts/prepare-hooks.mjs",
+    "format:write": "prettier --write packages/sdk/ts_js/src packages/sdk/ts_js/adapters packages/sdk/ts_js/tests"
   },
   "devDependencies": {
     "@emnapi/core": "^1.11.2",
@@ -67,5 +69,9 @@
       "esbuild": "^0.28.1"
     },
     "vite": "^8.1.4"
-  }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@11.6.2"
 }
