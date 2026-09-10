@@ -1,5 +1,5 @@
 import type { BarritsPackageAutomationOptions } from "./plugins/shared";
-import { type BarritsRootConfig, type BarritsRuntimeKind, type BarritsWatchMode } from "./config";
+import type { BarritsRootConfig, ResolvedBarritsPackageOptions } from "./config";
 import { normalizePackageOptions } from "./internal/config_normalization";
 
 export type {
@@ -8,15 +8,29 @@ export type {
   BarritsRuntimeKind,
   BarritsTraitConflictStrategy,
   BarritsWatchMode,
+  LegacyTraitConflictStrategy,
   ResolvedBarritsConfig,
+  ResolvedBarritsPackageOptions,
 } from "./config";
 export {
   BARRITS_CONFIG_FILENAMES,
+  BARRITS_RUNTIME_KINDS,
+  BARRITS_WATCH_MODES,
   BarritsConfigError,
   DEFAULT_AUTOMATION_DIRECTORY,
+  DEFAULT_BARRITS_NAMESPACE,
+  DEFAULT_RUNTIME_KIND,
+  DEFAULT_TRAIT_CONFLICT_STRATEGY,
+  DEFAULT_WATCH_MODE,
+  RESERVED_BARRITS_NAMESPACES,
+  TRAIT_CONFLICT_STRATEGIES,
   defineBarritsConfig,
   findBarritsConfigFile,
+  isBarritsRuntimeKind,
+  isBarritsWatchMode,
+  isTraitConflictStrategy,
   loadBarritsConfig,
+  normalizeTraitConflictStrategy,
   resolveBarritsConfig,
 } from "./config";
 
@@ -25,27 +39,6 @@ export {
  * [ES] Alias público para la configuración raíz de Barrits basada en paquetes.
  */
 export type BarritsPackageOptions = BarritsRootConfig;
-
-/**
- * [EN] Resolved package configuration consumed internally by automation layers.
- * [ES] Configuración de paquete resuelta consumida internamente por las capas de automatización.
- */
-type ResolvedBarritsPackageOptions = {
-  /** [EN] Runtime kind (node, deno, etc.). [ES] Tipo de tiempo de ejecución. */
-  runtime: BarritsRuntimeKind;
-  /** [EN] Watch mode policy. [ES] Política de modo de observación. */
-  watch: BarritsWatchMode;
-  /** [EN] Enable debug output. [ES] Habilitar salida de depuración. */
-  debugCommands: boolean;
-  /** [EN] Resolved project absolute path. [ES] Ruta absoluta resuelta del proyecto. */
-  projectRoot: string;
-  /** [EN] Path to store/load the manifest. [ES] Ruta para almacenar/cargar el manifiesto. */
-  manifestPath?: string;
-  /** [EN] Automatically sync manifest changes. [ES] Sincronizar automáticamente los cambios del manifiesto. */
-  autoManifest: boolean;
-  /** [EN] Local automation directory (.barrits). [ES] Directorio local de automatización (.barrits). */
-  automationDirectory: string;
-};
 
 /**
  * [EN] Normalizes package-first configuration into a deterministic runtime contract.

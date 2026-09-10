@@ -1,7 +1,10 @@
+import { DEFAULT_TRAIT_CONFLICT_STRATEGY, type TraitConflictStrategy } from "../conflict";
+
 /**
- * Collision strategy used by `mergeTraits` when both trait objects define the same key.
+ * Collision strategy used by `mergeTraits` when both trait objects define the same key (same vocabulary as
+ * `composeTraitDescriptors` and `traitConflictStrategy`).
  */
-export type MergeTraitsConflictStrategy = "throw" | "left" | "right";
+export type MergeTraitsConflictStrategy = TraitConflictStrategy;
 
 /**
  * Options that control conflict behavior while merging trait capability objects.
@@ -28,7 +31,7 @@ export const mergeTraits = <TLeft extends object, TRight extends object>(
   options: MergeTraitsOptions = {},
 ): TLeft & TRight => {
   const result = { ...(left as Record<string, unknown>) };
-  const conflictStrategy = options.onConflict ?? "throw";
+  const conflictStrategy = options.onConflict ?? DEFAULT_TRAIT_CONFLICT_STRATEGY;
 
   for (const [key, rightValue] of Object.entries(right)) {
     if (!(key in result)) {

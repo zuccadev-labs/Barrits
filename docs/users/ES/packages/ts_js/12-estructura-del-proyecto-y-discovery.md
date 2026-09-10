@@ -25,7 +25,7 @@ Puedes ubicar la carpeta de dominio visible en la raíz del proyecto, en un subd
 
 1. `findBarritsConfigFile(projectRoot)` busca `barrits.config.ts` → `.mts` → `.js` → `.mjs` (en ese orden) en la raíz del proyecto. Soportado en Node y Deno.
 2. El `default` export del módulo cargado (o los named `barritsConfig` / `config`) se parsea y valida.
-3. El objeto fusionado se normaliza en `ResolvedBarritsConfig` (runtime, watch, namespace, ruta de manifiesto, discovery roots, estrategia de conflictos de traits, etc.).
+3. El objeto fusionado se normaliza en `ResolvedBarritsConfig` (runtime, watch, namespace, ruta de manifiesto, discovery roots, estrategia de conflictos de traits, etc.). Los campos enumerados se validan: `runtime` debe ser uno de `BARRITS_RUNTIME_KINDS`, `watch` uno de `BARRITS_WATCH_MODES`, `traitConflictStrategy` uno de `"throw"` | `"left"` | `"right"` (los valores heredados `"error"`/`"override"`/`"merge"` se mapean) y `namespace` debe ser un identificador JavaScript distinto de `brt` o `config`. Un valor inválido lanza `TypeError` en lugar de conservarse en silencio.
 
 El campo `namespace` aquí es lo que hace que el **nombre principal de la API sea personalizable** (ver [Referencia de API — Configuración](09a-referencia-de-api-configuracion.md)).
 

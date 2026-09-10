@@ -5,20 +5,27 @@ type RuntimeGlobals = typeof globalThis & {
   process?: {
     cwd?: () => string;
     versions?: {
+      bun?: string;
       node?: string;
     };
   };
 };
 
 /**
- * [EN] Implementation of Detect runtime.
- * [ES] Implementación de Detect runtime.
+ * [EN] Detects the host runtime: Deno (global `Deno`), Bun (`process.versions.bun`, checked before Node because Bun
+ * also reports a Node version), Node (`process.versions.node`) or `unknown`.
+ * [ES] Detecta el runtime anfitrión: Deno (global `Deno`), Bun (`process.versions.bun`, comprobado antes que Node
+ * porque Bun también informa una versión de Node), Node (`process.versions.node`) o `unknown`.
  */
 export const detectRuntime = (): RuntimeName => {
   const runtime = globalThis as RuntimeGlobals;
 
   if (typeof runtime.Deno !== "undefined") {
     return "deno";
+  }
+
+  if (typeof runtime.process?.versions?.bun === "string") {
+    return "bun";
   }
 
   if (typeof runtime.process?.versions?.node === "string") {

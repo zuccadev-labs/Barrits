@@ -54,7 +54,7 @@ describe("normalizePackageOptions", () => {
     assert.equal(result.autoManifest, true);
     assert.equal(result.automationDirectory, ".barrits");
     assert.deepEqual(result.discoveryRoots, []);
-    assert.equal(result.traitConflictStrategy, "error");
+    assert.equal(result.traitConflictStrategy, "throw");
   });
 
   it("uses provided runtime", () => {
@@ -108,8 +108,22 @@ describe("normalizePackageOptions", () => {
   });
 
   it("uses provided traitConflictStrategy", () => {
-    const result = normalizePackageOptions({ traitConflictStrategy: "merge" } as BarritsRootConfig, "/p");
-    assert.equal(result.traitConflictStrategy, "merge");
+    const result = normalizePackageOptions({ traitConflictStrategy: "left" } as BarritsRootConfig, "/p");
+    assert.equal(result.traitConflictStrategy, "left");
+  });
+
+  it("maps legacy traitConflictStrategy spellings to the canonical vocabulary", () => {
+    assert.equal(normalizePackageOptions({ traitConflictStrategy: "error" }, "/p").traitConflictStrategy, "throw");
+    assert.equal(normalizePackageOptions({ traitConflictStrategy: "merge" }, "/p").traitConflictStrategy, "right");
+  });
+
+  it("rejects unknown enumerated values instead of keeping them", () => {
+    assert.throws(
+      () => normalizePackageOptions({ traitConflictStrategy: "warn" } as unknown as BarritsRootConfig, "/p"),
+      /traitConflictStrategy/,
+    );
+    assert.throws(() => normalizePackageOptions({ runtime: "cloudflare" } as unknown as BarritsRootConfig, "/p"), /runtime/);
+    assert.throws(() => normalizePackageOptions({ watch: "always" } as unknown as BarritsRootConfig, "/p"), /watch/);
   });
 
   it("returns discoveryRoots as array", () => {
@@ -119,7 +133,7 @@ describe("normalizePackageOptions", () => {
 
   it("returns readonly traitConflictStrategy", () => {
     const result = normalizePackageOptions({ traitConflictStrategy: "override" } as BarritsRootConfig, "/p");
-    assert.equal(result.traitConflictStrategy, "override");
+    assert.equal(result.traitConflictStrategy, "right");
   });
 });
 

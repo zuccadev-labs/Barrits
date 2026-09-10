@@ -212,7 +212,7 @@ describe("resolveBarritsConfig", () => {
     assert.equal(result.watch, "auto");
     assert.equal(result.autoManifest, true);
     assert.equal(result.debugCommands, false);
-    assert.equal(result.traitConflictStrategy, "error");
+    assert.equal(result.traitConflictStrategy, "throw");
     assert.equal(result.automationDirectory, ".barrits");
   });
 

@@ -25,7 +25,7 @@ You can place the visible domain folder at the project root, in a subdirectory, 
 
 1. `findBarritsConfigFile(projectRoot)` looks for `barrits.config.ts` → `.mts` → `.js` → `.mjs` (in that order) in the project root. It is supported on Node and Deno.
 2. The loaded module's `default` export (or `barritsConfig` / `config` named export) is parsed and validated.
-3. The merged object is normalized into `ResolvedBarritsConfig` (runtime, watch, namespace, manifest path, discovery roots, trait conflict strategy, etc.).
+3. The merged object is normalized into `ResolvedBarritsConfig` (runtime, watch, namespace, manifest path, discovery roots, trait conflict strategy, etc.). Enumerated fields are validated: `runtime` must be one of `BARRITS_RUNTIME_KINDS`, `watch` one of `BARRITS_WATCH_MODES`, `traitConflictStrategy` one of `"throw"` | `"left"` | `"right"` (legacy `"error"`/`"override"`/`"merge"` are mapped), and `namespace` must be a JavaScript identifier other than `brt` or `config`. An invalid value throws a `TypeError` instead of being silently kept.
 
 The `namespace` field here is what makes the **main API name customizable** (see [API Reference — Package Config](09a-api-reference-package-config.md)).
 

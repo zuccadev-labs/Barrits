@@ -9,12 +9,12 @@ Barrits uses an AST-driven crawler that scans files without executing them. To c
 
 ```typescript
 // barrits.config.ts
-import { defineBarritsConfig } from "@aspect/barrits";
+import { defineBarritsConfig } from "@zuccadev-labs/barrits";
 
 export default defineBarritsConfig({
   runtime: "deno",
   discoveryRoots: ["src/contracts", "barrits"],
-  traitConflictStrategy: "error"
+  traitConflictStrategy: "throw"
 });
 ```
 

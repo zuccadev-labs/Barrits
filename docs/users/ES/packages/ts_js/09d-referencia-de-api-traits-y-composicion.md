@@ -206,19 +206,21 @@ Opciones para `composeTraitDescriptors`:
 
 | Propiedad | Tipo | Descripción |
 | :--- | :--- | :--- |
-| `input` | TraitDescriptor[] | Array de descriptores de trait a componer |
-| `conflictStrategy` | TraitConflictStrategy | Estrategia de resolución de conflictos (ver a continuación) |
+| `state` | TState | Estado compartido inicial que recibe cada `create()` |
+| `onConflict` | TraitConflictStrategy | Cómo se resuelve una capacidad proporcionada por dos traits (ver a continuación) |
+| `resolveConflict` | (key, left, right, leftTrait, rightTrait) => unknown | Resolutor personalizado; prevalece sobre `onConflict` |
 
 ### TraitConflictStrategy
 
-Define cómo manejar conflictos durante la composición de traits:
+Vocabulario único compartido por `composeTraitDescriptors`, `mergeTraits` y la opción `traitConflictStrategy` de `barrits.config.*` (`createBarrits().composeTraits` usa el valor configurado como `onConflict` por defecto):
 
 | Valor | Descripción |
 | :--- | :--- |
-| `"error"` | Lanzar un error cuando se detectan conflictos (predeterminado) |
-| `"warn"` | Registrar una advertencia pero continuar la composición |
-| `"ignore"` | Ignorar conflictos silenciosamente |
-| `"replace"` | Reemplazar traits en conflicto con los posteriores |
+| `"throw"` | Lanzar en la primera colisión de capacidades (predeterminado) |
+| `"left"` | Conservar la capacidad del primer proveedor |
+| `"right"` | Dejar ganar al último proveedor |
+
+Las grafías heredadas de la configuración se siguen aceptando y se normalizan: `"error"` → `"throw"`, `"override"` y `"merge"` → `"right"`. Cualquier otro valor lanza `TypeError` al resolver la configuración.
 
 ### ComposedTraitDescriptorsResult
 

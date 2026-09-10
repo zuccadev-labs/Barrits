@@ -2,11 +2,24 @@ type UnionToIntersection<TValue> = (TValue extends unknown ? (value: TValue) => 
   ? TIntersection
   : never;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyTraitDescriptor = TraitDescriptor<string, any, any>;
+/**
+ * [EN] Any trait descriptor regardless of its state and provided capabilities. `create` is intentionally loose so
+ * concrete descriptors (whose context carries a literal `descriptorName`) satisfy the constraint without casts.
+ * [ES] Cualquier descriptor de trait con independencia de su estado y capacidades. `create` es deliberadamente laxo
+ * para que los descriptores concretos (cuyo contexto lleva un `descriptorName` literal) cumplan la restricción sin casts.
+ */
+export type AnyTraitDescriptor = Omit<TraitDescriptor<string, object, object>, "create" | "provides"> & {
+  /** [EN] Provided capability keys. [ES] Claves de capacidades proporcionadas. */
+  readonly provides: readonly string[];
+  /** [EN] Factory accepting any composition context. [ES] Factoría que acepta cualquier contexto de composición. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readonly create: (context: any) => object;
+};
 
 /** Collision strategy for capability keys during trait composition. */
-export type TraitConflictStrategy = "throw" | "left" | "right";
+export type { TraitConflictStrategy } from "./conflict";
+import type { TraitConflictStrategy } from "./conflict";
+import { DEFAULT_TRAIT_CONFLICT_STRATEGY } from "./conflict";
 
 /** Context object passed to each trait factory during composition. */
 export type TraitDescriptorContext<TState extends object, TResolvedTraits extends object, TName extends string> = {
@@ -174,9 +187,14 @@ export type ComposedTraitDescriptorsResult<TState extends object, TTraits extend
   readonly traitMetadata: Readonly<Record<string, TraitDescriptorMetadata>>;
 };
 
-type TraitProvides<TDescriptor> = TDescriptor extends TraitDescriptor<string, object, infer TProvides> ? TProvides : never;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TraitProvides<TDescriptor> = TDescriptor extends TraitDescriptor<any, any, infer TProvides> ? TProvides : never;
 
-type MergeTraitProvides<TDescriptors extends readonly AnyTraitDescriptor[]> =
+/**
+ * [EN] Intersection of the capabilities provided by a tuple of descriptors (the `traits` type of a composition).
+ * [ES] Intersección de las capacidades proporcionadas por una tupla de descriptores (el tipo `traits` de una composición).
+ */
+export type MergeTraitProvides<TDescriptors extends readonly AnyTraitDescriptor[]> =
   UnionToIntersection<TraitProvides<TDescriptors[number]>> extends object
     ? UnionToIntersection<TraitProvides<TDescriptors[number]>>
     : Record<string, never>;
@@ -208,7 +226,7 @@ const normalizeJsDocBlock = (value: string): string => {
 };
 
 const parseTagValues = (jsDocBlock: string, tagName: string): string[] => {
-  const tagExpression = new RegExp(`@${tagName}\\s+([^\\n\\r]+)`, "gu");
+  const tagExpression = new RegExp(`(?:^|\\s)@${tagName}[ \\t]+([^\\n\\r]+)`, "gu");
 
   return normalizeUniqueStrings(
     Array.from(jsDocBlock.matchAll(tagExpression))
@@ -219,7 +237,7 @@ const parseTagValues = (jsDocBlock: string, tagName: string): string[] => {
 };
 
 const parseSingleTagValue = (jsDocBlock: string, tagName: string): string | undefined => {
-  const tagExpression = new RegExp(`@${tagName}\\s+([^\\n\\r]+)`, "u");
+  const tagExpression = new RegExp(`(?:^|\\s)@${tagName}[ \\t]+([^\\n\\r]+)`, "u");
   const matchedValue = jsDocBlock.match(tagExpression)?.[1]?.trim();
 
   // Empty/undefined match must resolve to undefined (intentional falsy check).
@@ -510,7 +528,7 @@ export const composeTraitDescriptors = <
   const traitProviders: Record<string, readonly string[]> = {};
   const traitMetadata: Record<string, TraitDescriptorMetadata> = {};
   const state = options.state ?? ({} as TState);
-  const conflictStrategy = options.onConflict ?? "throw";
+  const conflictStrategy = options.onConflict ?? DEFAULT_TRAIT_CONFLICT_STRATEGY;
 
   const resolveCapabilityConflict = (
     providedKey: string,

@@ -158,26 +158,66 @@ export const readStringArrayLiteral = (expression: TypeScript.Expression | undef
   return values.length > 0 ? Array.from(new Set(values)).sort((left, right) => left.localeCompare(right)) : [];
 };
 
-/**
- * [EN] Reads the statically analyzable fields (`name`, `provides`, `conflicts`, `requires`, `consumes`, `state`)
- * of a `createTraitDescriptor({...})` call; dynamic fields resolve to undefined.
- * [ES] Lee los campos analizables estáticamente (`name`, `provides`, `conflicts`, `requires`, `consumes`, `state`)
- * de una llamada `createTraitDescriptor({...})`; los campos dinámicos resuelven a undefined.
- */
-export const readTraitRuntimeMetadataFromCall = (expression: TypeScript.Expression | undefined): TraitRuntimeMetadata | undefined => {
+const unwrapExpression = (expression: TypeScript.Expression): TypeScript.Expression => {
+  const ts = requireTypeScript();
+  let current = expression;
+
+  while (
+    ts.isParenthesizedExpression(current) ||
+    ts.isAsExpression(current) ||
+    ts.isSatisfiesExpression(current) ||
+    ts.isNonNullExpression(current) ||
+    ts.isTypeAssertionExpression(current)
+  ) {
+    current = current.expression;
+  }
+
+  return current;
+};
+
+const readStringLiteral = (expression: TypeScript.Expression): string | undefined => {
+  const ts = requireTypeScript();
+  const unwrapped = unwrapExpression(expression);
+
+  return ts.isStringLiteralLike(unwrapped) ? unwrapped.text.trim() || undefined : undefined;
+};
+
+const findDescriptorObjectLiteral = (expression: TypeScript.Expression | undefined): TypeScript.ObjectLiteralExpression | undefined => {
   const ts = requireTypeScript();
 
-  if (!expression || !ts.isCallExpression(expression) || !ts.isIdentifier(expression.expression)) {
+  if (!expression) {
     return undefined;
   }
 
-  if (expression.expression.text !== "createTraitDescriptor") {
-    return undefined;
+  const unwrapped = unwrapExpression(expression);
+
+  if (ts.isObjectLiteralExpression(unwrapped)) {
+    return unwrapped;
   }
 
-  const descriptorArgument = expression.arguments[0];
+  if (ts.isCallExpression(unwrapped) && ts.isIdentifier(unwrapped.expression) && unwrapped.expression.text === "createTraitDescriptor") {
+    const descriptorArgument = unwrapped.arguments[0];
+    const unwrappedArgument = descriptorArgument ? unwrapExpression(descriptorArgument) : undefined;
+    return unwrappedArgument && ts.isObjectLiteralExpression(unwrappedArgument) ? unwrappedArgument : undefined;
+  }
 
-  if (!descriptorArgument || !ts.isObjectLiteralExpression(descriptorArgument)) {
+  return undefined;
+};
+
+/**
+ * [EN] Reads the statically analyzable fields (`name`, `provides`, `conflicts`, `requires`, `consumes`, `state`)
+ * of a trait initializer: a `createTraitDescriptor({...})` call or a plain object literal (optionally wrapped in
+ * `as`/`satisfies`/parentheses). Dynamic fields resolve to undefined; other initializers return undefined.
+ * [ES] Lee los campos analizables estáticamente (`name`, `provides`, `conflicts`, `requires`, `consumes`, `state`)
+ * de un inicializador de trait: una llamada `createTraitDescriptor({...})` o un literal de objeto (opcionalmente
+ * envuelto en `as`/`satisfies`/paréntesis). Los campos dinámicos resuelven a undefined; otros inicializadores
+ * devuelven undefined.
+ */
+export const readTraitRuntimeMetadata = (expression: TypeScript.Expression | undefined): TraitRuntimeMetadata | undefined => {
+  const ts = requireTypeScript();
+  const descriptorArgument = findDescriptorObjectLiteral(expression);
+
+  if (!descriptorArgument) {
     return undefined;
   }
 
@@ -198,16 +238,14 @@ export const readTraitRuntimeMetadataFromCall = (expression: TypeScript.Expressi
     const propName = property.name.text;
 
     if (propName === "name") {
-      if (ts.isStringLiteralLike(property.initializer)) {
-        runtimeName = property.initializer.text.trim() || undefined;
-      }
+      runtimeName = readStringLiteral(property.initializer);
       continue;
     }
 
     const field = fields[propName];
 
     if (field) {
-      const parsed = readStringArrayLiteral(property.initializer);
+      const parsed = readStringArrayLiteral(unwrapExpression(property.initializer));
       field.values = parsed ?? field.values;
       field.isDynamic = parsed === undefined;
     }
@@ -222,6 +260,12 @@ export const readTraitRuntimeMetadataFromCall = (expression: TypeScript.Expressi
     state: fields.state.isDynamic ? undefined : fields.state.values,
   };
 };
+
+/**
+ * [EN] Alias of `readTraitRuntimeMetadata` kept for backwards compatibility.
+ * [ES] Alias de `readTraitRuntimeMetadata` conservado por compatibilidad.
+ */
+export const readTraitRuntimeMetadataFromCall = readTraitRuntimeMetadata;
 
 const collectConstVariableTraitBindings = (
   statement: TypeScript.VariableStatement,
@@ -242,7 +286,7 @@ const collectConstVariableTraitBindings = (
       continue;
     }
 
-    const runtimeMetadata = readTraitRuntimeMetadataFromCall(declaration.initializer);
+    const runtimeMetadata = readTraitRuntimeMetadata(declaration.initializer);
 
     bindings.push({
       bindingKind: "const",
@@ -302,30 +346,31 @@ export const collectExportedTraitBindings = (source: string, relativePath: strin
   return bindings;
 };
 
+const TRAIT_TAG_PATTERN = /(?:^|\s)@barrits-trait(?:\s|$)/u;
+
 /**
  * [EN] Builds trait descriptor inspections from the exported bindings whose attached JSDoc declares
  * `@barrits-trait`. Attachment follows the TypeScript parser, so unrelated comments never leak a trait onto the
- * next export.
+ * next export. A bare `@barrits-trait` (no value) names the trait after the `name` literal of its initializer
+ * (`createTraitDescriptor({ name })` or an object literal) and, failing that, after the exported binding.
  * [ES] Construye inspecciones de descriptores de trait a partir de los bindings exportados cuyo JSDoc asociado declara
  * `@barrits-trait`. La asociación sigue al parser de TypeScript, por lo que comentarios ajenos nunca filtran un trait
- * al siguiente export.
+ * al siguiente export. Un `@barrits-trait` sin valor toma el nombre del literal `name` de su inicializador
+ * (`createTraitDescriptor({ name })` o un literal de objeto) y, en su defecto, el del binding exportado.
  */
 export const collectTraitDescriptorMetadata = (source: string, relativePath: string): BarritsTraitDescriptorInspection[] => {
   const descriptors: BarritsTraitDescriptorInspection[] = [];
 
   for (const binding of collectExportedTraitBindings(source, relativePath)) {
-    if (!binding.jsDoc?.includes("@barrits-trait")) {
+    if (!binding.jsDoc || !TRAIT_TAG_PATTERN.test(binding.jsDoc)) {
       continue;
     }
 
     const metadata = parseTraitDescriptorJsDoc(`/**${binding.jsDoc}*/`);
-
-    if (!metadata.name) {
-      continue;
-    }
+    const name = metadata.name ?? binding.runtimeName ?? binding.bindingName;
 
     descriptors.push({
-      name: metadata.name,
+      name,
       sourceFile: relativePath,
       bindingName: binding.bindingName,
       bindingKind: binding.bindingKind,

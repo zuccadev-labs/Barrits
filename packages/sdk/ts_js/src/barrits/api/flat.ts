@@ -31,8 +31,12 @@ export {
   composeTraitDescriptors,
   createTraitDescriptor,
   createTraitDescriptorFromJsDoc,
+  DEFAULT_TRAIT_CONFLICT_STRATEGY,
+  isTraitConflictStrategy,
   mergeTraits,
+  normalizeTraitConflictStrategy,
   parseTraitDescriptorJsDoc,
+  TRAIT_CONFLICT_STRATEGIES,
 } from "../traits";
 
 /**
@@ -60,8 +64,11 @@ export type { NumberInput, PathParts, RuntimeName, UnaryFunction } from "../shar
  * [ES] Contratos de tipo para descriptores de trait y composición para escenarios de tipado avanzado.
  */
 export type {
+  AnyTraitDescriptor,
   ComposedTraitDescriptorsResult,
   ComposeTraitDescriptorsOptions,
+  LegacyTraitConflictStrategy,
+  MergeTraitProvides,
   TraitConflictStrategy,
   TraitDescriptor,
   TraitDescriptorContext,

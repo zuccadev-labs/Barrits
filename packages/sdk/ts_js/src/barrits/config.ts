@@ -1,5 +1,7 @@
 import { detectRuntime, getCurrentWorkingDirectory } from "./internal/runtime";
 import { normalizeResolvedConfig } from "./internal/config_normalization";
+import type { BarritsRuntimeKind, BarritsWatchMode } from "./internal/config_defaults";
+import type { LegacyTraitConflictStrategy, TraitConflictStrategy } from "./traits/conflict";
 
 /**
  * @module
@@ -9,27 +11,35 @@ import { normalizeResolvedConfig } from "./internal/config_normalization";
  * la carga (con respaldo de TypeScript para Node.js sin loader), la normalización y la resolución del estado.
  */
 
-/**
- * [EN] Supported runtime identifiers for package-level configuration.
- * [ES] Identificadores de tiempo de ejecución soportados para la configuración a nivel de paquete.
- */
-export type BarritsRuntimeKind = "node" | "deno" | "bun" | "react" | "browser" | "other";
+export {
+  BARRITS_RUNTIME_KINDS,
+  BARRITS_WATCH_MODES,
+  DEFAULT_AUTOMATION_DIRECTORY,
+  DEFAULT_BARRITS_NAMESPACE,
+  DEFAULT_RUNTIME_KIND,
+  DEFAULT_WATCH_MODE,
+  RESERVED_BARRITS_NAMESPACES,
+  isBarritsRuntimeKind,
+  isBarritsWatchMode,
+} from "./internal/config_defaults";
+export type { BarritsRuntimeKind, BarritsWatchMode } from "./internal/config_defaults";
+export {
+  DEFAULT_TRAIT_CONFLICT_STRATEGY,
+  TRAIT_CONFLICT_STRATEGIES,
+  isTraitConflictStrategy,
+  normalizeTraitConflictStrategy,
+} from "./traits/conflict";
+export type { LegacyTraitConflictStrategy, TraitConflictStrategy } from "./traits/conflict";
 
-/** [EN] Strategy for resolving trait composition conflicts.
- *  [ES] Estrategia para resolver conflictos de composición de traits. */
-export type BarritsTraitConflictStrategy = "error" | "override" | "merge";
-
 /**
- * [EN] Watch policy used by automation and adapter orchestration.
- * [ES] Política de observación (watch) utilizada por la automatización y la orquestación de adaptadores.
+ * [EN] Value accepted by `traitConflictStrategy` in `barrits.config.*`: the canonical vocabulary shared with
+ * `composeTraitDescriptors` (`throw` | `left` | `right`) plus the legacy spellings, which are normalized
+ * (`error` → `throw`, `override`/`merge` → `right`).
+ * [ES] Valor aceptado por `traitConflictStrategy` en `barrits.config.*`: el vocabulario canónico compartido con
+ * `composeTraitDescriptors` (`throw` | `left` | `right`) más las grafías heredadas, que se normalizan
+ * (`error` → `throw`, `override`/`merge` → `right`).
  */
-export type BarritsWatchMode = "auto" | "manual" | "off";
-
-/**
- * [EN] Default folder where Barrits stores generated automation artifacts.
- * [ES] Carpeta predeterminada donde Barrits almacena los artefactos de automatización generados.
- */
-export const DEFAULT_AUTOMATION_DIRECTORY = ".barrits";
+export type BarritsTraitConflictStrategy = TraitConflictStrategy | LegacyTraitConflictStrategy;
 
 /**
  * [EN] Candidate config filenames resolved in project root order.
@@ -117,7 +127,11 @@ export type BarritsRootConfig = {
   automationDirectory?: string;
   /** [EN] Optional roots to scan for JSDoc contracts (e.g. ["src"]). [ES] Raíces opcionales para escanear contratos JSDoc. */
   discoveryRoots?: readonly string[];
-  /** [EN] Strategy for handling trait conflicts (default: "error"). [ES] Estrategia para manejar conflictos de traits. */
+  /**
+   * [EN] Strategy applied by `createBarrits().composeTraits` when two traits provide the same capability
+   * (default: "throw"). [ES] Estrategia aplicada por `createBarrits().composeTraits` cuando dos traits proporcionan
+   * la misma capacidad (por defecto: "throw").
+   */
   traitConflictStrategy?: BarritsTraitConflictStrategy;
   /** [EN] Manual contract definitions. [ES] Definiciones manuales de contratos. */
   contracts?: BarritsContractsConfig;
@@ -129,10 +143,12 @@ export type BarritsRootConfig = {
 };
 
 /**
- * [EN] Fully resolved runtime configuration consumed internally by Barrits.
- * [ES] Configuración de tiempo de ejecución completamente resuelta consumida internamente por Barrits.
+ * [EN] Package-level options after normalization: every field has a value and enumerations are canonical. This is
+ * what `defineBarritsPackage()` returns and the base of `ResolvedBarritsConfig`.
+ * [ES] Opciones a nivel de paquete tras la normalización: todos los campos tienen valor y las enumeraciones son
+ * canónicas. Es lo que devuelve `defineBarritsPackage()` y la base de `ResolvedBarritsConfig`.
  */
-export type ResolvedBarritsConfig = {
+export type ResolvedBarritsPackageOptions = {
   /** [EN] Target runtime kind. [ES] Tipo de runtime objetivo. */
   runtime: BarritsRuntimeKind;
   /** [EN] Watch policy for automation. [ES] Política de observación para automatización. */
@@ -149,8 +165,17 @@ export type ResolvedBarritsConfig = {
   automationDirectory: string;
   /** [EN] Roots to scan for JSDoc contracts. [ES] Raíces para escanear contratos JSDoc. */
   discoveryRoots: readonly string[];
-  /** [EN] Strategy for trait conflict resolution. [ES] Estrategia para resolución de conflictos de traits. */
-  traitConflictStrategy: BarritsTraitConflictStrategy;
+  /** [EN] Canonical trait conflict strategy. [ES] Estrategia canónica de conflictos de traits. */
+  traitConflictStrategy: TraitConflictStrategy;
+};
+
+/**
+ * [EN] Fully resolved configuration consumed internally by Barrits: package options plus contracts, the config file
+ * that was loaded (if any) and the validated custom namespace.
+ * [ES] Configuración completamente resuelta consumida internamente por Barrits: opciones de paquete más contratos, el
+ * archivo de configuración cargado (si existe) y el espacio de nombres personalizado validado.
+ */
+export type ResolvedBarritsConfig = ResolvedBarritsPackageOptions & {
   /** [EN] Manual contract definitions (optional). [ES] Definiciones manuales de contratos (opcional). */
   contracts?: BarritsContractsConfig;
   /** [EN] Path to the resolved config file (optional). [ES] Ruta al archivo de configuración resuelto (opcional). */
@@ -404,7 +429,7 @@ export const defineBarritsConfig = <TConfig extends BarritsRootConfig>(config: T
 export const findBarritsConfigFile = async (projectRoot: string = getCurrentWorkingDirectory()): Promise<string | undefined> => {
   const runtime = detectRuntime();
 
-  if (runtime !== "node" && runtime !== "deno") {
+  if (runtime === "unknown") {
     return undefined;
   }
 

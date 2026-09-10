@@ -12,11 +12,29 @@ export * from "../../src/barrits/api/flat";
 /** Discovery, inspection, manifest, import and query engine (runtime-agnostic, adapter-driven). */
 export * from "../../src/barrits/sdk";
 
-/** Package-level configuration helpers used by runtimes and plugins. */
-export { defineBarritsConfig, defineBarritsPackage, toBarritsAutomationOptions } from "../../src/barrits/package";
+/** Package-level configuration helpers and vocabulary used by runtimes and plugins. */
+export {
+  BARRITS_RUNTIME_KINDS,
+  BARRITS_WATCH_MODES,
+  DEFAULT_AUTOMATION_DIRECTORY,
+  DEFAULT_RUNTIME_KIND,
+  DEFAULT_WATCH_MODE,
+  defineBarritsConfig,
+  defineBarritsPackage,
+  isBarritsRuntimeKind,
+  isBarritsWatchMode,
+  toBarritsAutomationOptions,
+} from "../../src/barrits/package";
 
-/** Runtime and watch mode types used by package-first config. */
-export type { BarritsRuntimeKind, BarritsWatchMode } from "../../src/barrits/package";
+/** Configuration types used by package-first config. */
+export type {
+  BarritsRootConfig,
+  BarritsRuntimeKind,
+  BarritsTraitConflictStrategy,
+  BarritsWatchMode,
+  ResolvedBarritsConfig,
+  ResolvedBarritsPackageOptions,
+} from "../../src/barrits/package";
 
 /** File system adapter implementation backed by Deno APIs. */
 export { createDenoFileSystemAdapter } from "./filesystem";
