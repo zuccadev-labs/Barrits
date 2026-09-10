@@ -197,9 +197,9 @@ export const inspectLayer = async (
   directory: string | undefined,
   sourceLayer: BarritsSourceLayer,
 ): Promise<InspectedLayer> => {
-  if (!directory) {
+  if (!directory || !(await adapter.directoryExists(directory))) {
     return {
-      directory: "",
+      directory: directory ?? "",
       sourceLayer,
       rootFiles: [],
       domains: [],

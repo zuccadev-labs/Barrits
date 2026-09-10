@@ -64,3 +64,8 @@ export {
 } from "./manifest";
 export type { BarritsBuildManifestIntegrity, BarritsBuildManifestPayload } from "./manifest";
 export { filterIntegrationGraph, resolveProjectFilePath } from "./query";
+export { runCli, createHelpText } from "./cli-core";
+export type { CliRuntimeIo, CliWatchHandle, RunCliOptions } from "./cli-core";
+export { createManifestReaders } from "./tooling";
+export type { BarritsManifestReaders } from "./tooling";
+export { BARRITS_EXPORT_VISIBILITIES, BARRITS_FILE_KINDS } from "./guards";

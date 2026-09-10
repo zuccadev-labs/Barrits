@@ -47,7 +47,7 @@ describe("generateCompletionScript", () => {
     assert.match(script, /#compdef barrits brt/);
     assert.match(script, /_barrits_commands/);
     assert.match(script, /_barrits\(\)/);
-    assert.match(script, /_compdef _barrits barrits brt/);
+    assert.match(script, /^compdef _barrits barrits brt$/m);
   });
 
   it("zsh script includes command descriptions", () => {
@@ -183,7 +183,7 @@ describe("printCompletion", () => {
       printCompletion("zsh");
       assert.equal(lines.length, 1);
       assert.match(lines[0], /#compdef barrits brt/);
-      assert.match(lines[0], /_compdef _barrits barrits brt/);
+      assert.match(lines[0], /^compdef _barrits barrits brt$/m);
     } finally {
       console.log = originalLog;
     }

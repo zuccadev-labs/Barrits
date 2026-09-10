@@ -14,6 +14,8 @@ const AST_CACHE = new Map<
   }
 >();
 
+const MAX_AST_CACHE_ENTRIES = 2048;
+
 let typescriptModule: TypeScriptModule | undefined;
 let typescriptLoading: Promise<TypeScriptModule> | undefined;
 
@@ -96,6 +98,15 @@ export const createCachedSourceFile = (relativePath: string, source: string): Ty
 
   const ts = requireTypeScript();
   const sourceFile = ts.createSourceFile(relativePath, source, ts.ScriptTarget.Latest, true);
+
+  if (!AST_CACHE.has(relativePath) && AST_CACHE.size >= MAX_AST_CACHE_ENTRIES) {
+    const oldestPath = AST_CACHE.keys().next().value;
+
+    if (oldestPath !== undefined) {
+      AST_CACHE.delete(oldestPath);
+    }
+  }
+
   AST_CACHE.set(relativePath, { source, sourceFile });
   return sourceFile;
 };
