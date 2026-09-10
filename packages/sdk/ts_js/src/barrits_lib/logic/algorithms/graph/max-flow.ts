@@ -7,45 +7,65 @@ import type { GraphEdge, GraphNodeId } from "./types";
 export type MaxFlowResult<NodeId extends GraphNodeId = GraphNodeId> = {
   /** [EN] Maximum flow value. [ES] Valor del flujo máximo. */
   readonly value: number;
-  /** [EN] Paths used to augment the flow. [ES] Caminos utilizados para aumentar el flujo. */
-  readonly augmentingPaths: NodeId[][];
+  /** [EN] Paths used to augment the flow, in discovery order. [ES] Caminos utilizados para aumentar el flujo, en orden de descubrimiento. */
+  readonly augmentingPaths: readonly (readonly NodeId[])[];
+};
+
+const getCapacity = <NodeId extends GraphNodeId>(capacities: Map<NodeId, Map<NodeId, number>>, from: NodeId, to: NodeId): number => {
+  return capacities.get(from)?.get(to) ?? 0;
+};
+
+const addCapacity = <NodeId extends GraphNodeId>(capacities: Map<NodeId, Map<NodeId, number>>, from: NodeId, to: NodeId, delta: number): void => {
+  const row = capacities.get(from) ?? new Map<NodeId, number>();
+  row.set(to, (row.get(to) ?? 0) + delta);
+  capacities.set(from, row);
 };
 
 /**
- * [EN] Computes the maximum flow between a source and a sink using the Edmonds-Karp algorithm.
- * [ES] Calcula el flujo máximo entre una fuente y un sumidero utilizando el algoritmo de Edmonds-Karp.
- * 
- * @param edges [EN] Collection of graph edges with capacity. [ES] Colección de aristas de grafo con capacidad.
+ * [EN] Computes the maximum flow from `source` to `sink` with the Edmonds-Karp algorithm (BFS augmenting
+ * paths, O(V · E²)). `weight` is the edge capacity (default 1); parallel edges add up, node identifiers are
+ * kept as-is (no string concatenation), and negative capacities throw.
+ * [ES] Calcula el flujo máximo de `source` a `sink` con el algoritmo de Edmonds-Karp (caminos de aumento por BFS,
+ * O(V · E²)). `weight` es la capacidad de la arista (por defecto 1); las aristas paralelas se suman, los
+ * identificadores se conservan tal cual (sin concatenar cadenas) y las capacidades negativas lanzan.
+ *
+ * @param edges [EN] Directed edges with capacity. [ES] Aristas dirigidas con capacidad.
  * @param source [EN] The source node identifier. [ES] El identificador del nodo fuente.
  * @param sink [EN] The sink node identifier. [ES] El identificador del nodo sumidero.
- * @returns [EN] The maximum flow value and the used augmenting paths. [ES] El valor del flujo máximo y los caminos de aumento utilizados.
+ * @returns [EN] The maximum flow value and the augmenting paths used. [ES] El valor del flujo máximo y los caminos de aumento utilizados.
+ * @throws RangeError - [EN] When an edge has a negative capacity. [ES] Cuando una arista tiene capacidad negativa.
  */
-export const maxFlow = <NodeId extends GraphNodeId>(
-  edges: readonly GraphEdge<NodeId>[],
-  source: NodeId,
-  sink: NodeId,
-): MaxFlowResult<NodeId> => {
-  const capacity = new Map<string, number>();
-  const adjacencyList = new Map<NodeId, NodeId[]>();
-  const createKey = (from: NodeId, to: NodeId) => `${String(from)}=>${String(to)}`;
-  const registerNeighbor = (from: NodeId, to: NodeId): void => {
-    const neighbors = adjacencyList.get(from);
+export const maxFlow = <NodeId extends GraphNodeId>(edges: readonly GraphEdge<NodeId>[], source: NodeId, sink: NodeId): MaxFlowResult<NodeId> => {
+  const capacities = new Map<NodeId, Map<NodeId, number>>();
+  const neighbors = new Map<NodeId, NodeId[]>();
+  const connect = (from: NodeId, to: NodeId): void => {
+    const list = neighbors.get(from);
 
-    if (neighbors) {
-      if (!neighbors.includes(to)) {
-        neighbors.push(to);
-      }
+    if (!list) {
+      neighbors.set(from, [to]);
       return;
     }
 
-    adjacencyList.set(from, [to]);
+    if (!list.includes(to)) {
+      list.push(to);
+    }
   };
 
   for (const edge of edges) {
-    capacity.set(createKey(edge.from, edge.to), edge.weight ?? 1);
-    capacity.set(createKey(edge.to, edge.from), capacity.get(createKey(edge.to, edge.from)) ?? 0);
-    registerNeighbor(edge.from, edge.to);
-    registerNeighbor(edge.to, edge.from);
+    const capacity = edge.weight ?? 1;
+
+    if (!Number.isFinite(capacity) || capacity < 0) {
+      throw new RangeError(`maxFlow requires finite, non-negative capacities (edge ${String(edge.from)} -> ${String(edge.to)} has ${String(edge.weight)}).`);
+    }
+
+    addCapacity(capacities, edge.from, edge.to, capacity);
+    addCapacity(capacities, edge.to, edge.from, 0);
+    connect(edge.from, edge.to);
+    connect(edge.to, edge.from);
+  }
+
+  if (source === sink) {
+    return { value: 0, augmentingPaths: [] };
   }
 
   let totalFlow = 0;
@@ -55,14 +75,14 @@ export const maxFlow = <NodeId extends GraphNodeId>(
     const queue: NodeId[] = [source];
     const parents = new Map<NodeId, NodeId>();
     const visited = new Set<NodeId>([source]);
+    let head = 0;
 
-    while (queue.length > 0 && !visited.has(sink)) {
-      const currentNode = queue.shift() as NodeId;
+    while (head < queue.length && !visited.has(sink)) {
+      const currentNode = queue[head];
+      head += 1;
 
-      for (const neighbor of adjacencyList.get(currentNode) ?? []) {
-        const residualCapacity = capacity.get(createKey(currentNode, neighbor)) ?? 0;
-
-        if (residualCapacity <= 0 || visited.has(neighbor)) {
+      for (const neighbor of neighbors.get(currentNode) ?? []) {
+        if (visited.has(neighbor) || getCapacity(capacities, currentNode, neighbor) <= 0) {
           continue;
         }
 
@@ -81,20 +101,24 @@ export const maxFlow = <NodeId extends GraphNodeId>(
     let cursor = sink;
 
     while (cursor !== source) {
-      const parent = parents.get(cursor) as NodeId;
-      bottleneck = Math.min(bottleneck, capacity.get(createKey(parent, cursor)) ?? 0);
-      path.unshift(parent);
+      const parent = parents.get(cursor)!;
+      bottleneck = Math.min(bottleneck, getCapacity(capacities, parent, cursor));
+      path.push(parent);
       cursor = parent;
+    }
+
+    path.reverse();
+
+    if (bottleneck <= 0) {
+      break;
     }
 
     augmentingPaths.push(path);
     totalFlow += bottleneck;
 
     for (let index = 1; index < path.length; index += 1) {
-      const from = path[index - 1];
-      const to = path[index];
-      capacity.set(createKey(from, to), (capacity.get(createKey(from, to)) ?? 0) - bottleneck);
-      capacity.set(createKey(to, from), (capacity.get(createKey(to, from)) ?? 0) + bottleneck);
+      addCapacity(capacities, path[index - 1], path[index], -bottleneck);
+      addCapacity(capacities, path[index], path[index - 1], bottleneck);
     }
   }
 

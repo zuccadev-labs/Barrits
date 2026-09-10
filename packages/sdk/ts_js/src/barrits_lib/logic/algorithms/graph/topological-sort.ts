@@ -1,49 +1,52 @@
+import { buildAdjacencyList } from "./build-adjacency-list";
 import type { GraphEdge, GraphNodeId } from "./types";
 
 /**
- * [EN] Performs a Topological Sort on a Directed Acyclic Graph (DAG) using Kahn's algorithm.
- * [ES] Realiza un ordenamiento topológico en un Grafo Dirigido Acíclico (DAG) utilizando el algoritmo de Kahn.
- * 
+ * [EN] Performs a topological sort of a directed acyclic graph with Kahn's algorithm in O(V + E). Nodes with
+ * no incoming edges are emitted first, in the order they first appear in `edges`.
+ * [ES] Realiza un ordenamiento topológico de un grafo dirigido acíclico con el algoritmo de Kahn en O(V + E). Los
+ * nodos sin aristas entrantes se emiten primero, en el orden en que aparecen por primera vez en `edges`.
+ *
  * @param edges [EN] Collection of directed graph edges. [ES] Colección de aristas de grafo dirigido.
  * @returns [EN] Linearly ordered list of nodes. [ES] Lista de nodos ordenada linealmente.
+ * @throws Error - [EN] When the graph contains a cycle. [ES] Cuando el grafo contiene un ciclo.
  */
-export const topologicalSort = <NodeId extends GraphNodeId>(
-  edges: readonly GraphEdge<NodeId>[],
-): NodeId[] => {
-  const adjacencyList = new Map<NodeId, NodeId[]>();
+export const topologicalSort = <NodeId extends GraphNodeId>(edges: readonly GraphEdge<NodeId>[]): NodeId[] => {
+  const adjacencyList = buildAdjacencyList(edges, { directed: true });
   const inDegree = new Map<NodeId, number>();
 
-  for (const edge of edges) {
-    const neighbors = adjacencyList.get(edge.from);
-
-    if (neighbors) {
-      neighbors.push(edge.to);
-    } else {
-      adjacencyList.set(edge.from, [edge.to]);
-    }
-
-    if (!inDegree.has(edge.from)) {
-      inDegree.set(edge.from, 0);
-    }
-
-    inDegree.set(edge.to, (inDegree.get(edge.to) ?? 0) + 1);
+  for (const node of adjacencyList.keys()) {
+    inDegree.set(node, 0);
   }
 
-  const queue = Array.from(inDegree.entries())
-    .filter(([, degree]) => degree === 0)
-    .map(([node]) => node);
-  const orderedNodes: NodeId[] = [];
+  for (const neighbors of adjacencyList.values()) {
+    for (const neighbor of neighbors) {
+      inDegree.set(neighbor.to, (inDegree.get(neighbor.to) ?? 0) + 1);
+    }
+  }
 
-  while (queue.length > 0) {
-    const currentNode = queue.shift() as NodeId;
+  const queue: NodeId[] = [];
+
+  for (const [node, degree] of inDegree) {
+    if (degree === 0) {
+      queue.push(node);
+    }
+  }
+
+  const orderedNodes: NodeId[] = [];
+  let head = 0;
+
+  while (head < queue.length) {
+    const currentNode = queue[head];
+    head += 1;
     orderedNodes.push(currentNode);
 
     for (const neighbor of adjacencyList.get(currentNode) ?? []) {
-      const nextDegree = (inDegree.get(neighbor) ?? 0) - 1;
-      inDegree.set(neighbor, nextDegree);
+      const nextDegree = (inDegree.get(neighbor.to) ?? 0) - 1;
+      inDegree.set(neighbor.to, nextDegree);
 
       if (nextDegree === 0) {
-        queue.push(neighbor);
+        queue.push(neighbor.to);
       }
     }
   }

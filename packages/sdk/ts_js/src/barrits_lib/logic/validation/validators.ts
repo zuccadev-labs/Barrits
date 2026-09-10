@@ -12,7 +12,7 @@
  *
  * @example
  * ```ts
- * import { isEmail } from "@aspect/barrits";
+ * import { isEmail } from "@zuccadev-labs/barrits";
  *
  * isEmail("admin@example.com");      // true
  * isEmail("user+tag@corp.co.uk");    // true
@@ -37,7 +37,7 @@ export const isEmail = (value: string): boolean => {
  *
  * @example
  * ```ts
- * import { isUrl } from "@aspect/barrits";
+ * import { isUrl } from "@zuccadev-labs/barrits";
  *
  * isUrl("https://api.example.com/v2");  // true
  * isUrl("ftp://files.corp.net");        // false (not http/https)
@@ -55,17 +55,16 @@ export const isUrl = (value: string): boolean => {
 
 /**
  * Validates whether the provided string conforms to the UUID v4 format
- * as defined in RFC 4122.
- *
- * The pattern accepts lowercase hexadecimal characters with the version
- * nibble fixed to `4` and the variant nibble in the `[8-b]` range.
+ * as defined in RFC 4122. Hexadecimal digits are accepted in either case;
+ * the version nibble must be `4` and the variant nibble in the `[8-b]` range.
+ * Other UUID versions (v1, v7...) are intentionally rejected.
  *
  * @param value - The string to validate.
  * @returns `true` if the string is a valid UUID v4.
  *
  * @example
  * ```ts
- * import { isUuid } from "@aspect/barrits";
+ * import { isUuid } from "@zuccadev-labs/barrits";
  *
  * isUuid("550e8400-e29b-41d4-a716-446655440000"); // true
  * isUuid("not-a-uuid");                           // false
@@ -75,29 +74,55 @@ export const isUuid = (value: string): boolean => {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(value);
 };
 
+const ISO_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|[+-](\d{2}):(\d{2}))?)?$/u;
+
+const daysInMonth = (year: number, month: number): number => {
+  return new Date(Date.UTC(year, month, 0)).getUTCDate();
+};
+
 /**
- * Validates whether the provided string conforms to the ISO 8601 date
- * format (`YYYY-MM-DD` or full datetime with timezone offset).
+ * Validates whether the provided string is a real ISO 8601 calendar date (`YYYY-MM-DD`) or datetime
+ * (`YYYY-MM-DDTHH:mm:ss[.sss][Z|±HH:mm]`). Unlike `Date.parse`, which silently normalizes overflowing
+ * components (`2026-02-30` becomes March 2nd), every component is range-checked: month `01-12`, day within
+ * the month (leap years included), hour `00-23`, minute/second `00-59`, and offset hours/minutes in range.
  *
  * @param value - The string to validate.
  * @returns `true` if the string is a valid ISO 8601 date or datetime.
  *
  * @example
  * ```ts
- * import { isIsoDate } from "@aspect/barrits";
+ * import { isIsoDate } from "@zuccadev-labs/barrits";
  *
  * isIsoDate("2026-04-21");                    // true
  * isIsoDate("2026-04-21T14:30:00.000Z");      // true
+ * isIsoDate("2026-02-30");                    // false (February has no 30th)
  * isIsoDate("21/04/2026");                    // false
  * ```
  */
 export const isIsoDate = (value: string): boolean => {
-  if (!/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})?)?$/u.test(value)) {
+  const match = ISO_DATE_PATTERN.exec(value);
+
+  if (!match) {
     return false;
   }
 
-  const timestamp = Date.parse(value);
-  return !Number.isNaN(timestamp);
+  const [, year, month, day, hour, minute, second, offsetHours, offsetMinutes] = match.map((part) => (part === undefined ? undefined : Number(part)));
+  const monthValue = month!;
+  const dayValue = day!;
+
+  if (monthValue < 1 || monthValue > 12 || dayValue < 1 || dayValue > daysInMonth(year!, monthValue)) {
+    return false;
+  }
+
+  if (hour !== undefined && (hour > 23 || (minute!) > 59 || (second!) > 59)) {
+    return false;
+  }
+
+  if (offsetHours !== undefined && (offsetHours > 23 || (offsetMinutes!) > 59)) {
+    return false;
+  }
+
+  return true;
 };
 
 /**
@@ -112,7 +137,7 @@ export const isIsoDate = (value: string): boolean => {
  *
  * @example
  * ```ts
- * import { isIpAddress } from "@aspect/barrits";
+ * import { isIpAddress } from "@zuccadev-labs/barrits";
  *
  * isIpAddress("192.168.1.1");    // true
  * isIpAddress("::1");            // true
@@ -153,7 +178,7 @@ const isIpv6 = (value: string): boolean => {
  *
  * @example
  * ```ts
- * import { assertNonNullish } from "@aspect/barrits";
+ * import { assertNonNullish } from "@zuccadev-labs/barrits";
  *
  * const userId = request.headers.get("x-user-id");
  * const validId = assertNonNullish(userId, "x-user-id header");

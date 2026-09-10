@@ -33,7 +33,7 @@ export const createOrderComparator = <Value>(
       criterion.project,
       criterion.direction ?? "asc",
       criterion.compare ?? (defaultCompare as CompareFunction<unknown>),
-    ) as CompareFunction<Value>;
+    );
   }));
 };
 

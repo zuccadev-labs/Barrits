@@ -260,9 +260,9 @@ Aparece en: `examples/example-react/src/main.jsx`, `examples/example-vue/src/App
 
 Calcula volatilidad anualizada.
 
-### `exponentialMovingAverage(series, alpha)`
+### `exponentialMovingAverage(series, period = 10, smoothing = 2)`
 
-Calcula promedio móvil exponencial con factor alpha configurable.
+Calcula la media móvil exponencial con un coeficiente constante alpha = smoothing / (period + 1) (la definición estándar del análisis técnico); el primer punto inicializa la serie.
 
 ### `timeSeriesAlgorithms`
 

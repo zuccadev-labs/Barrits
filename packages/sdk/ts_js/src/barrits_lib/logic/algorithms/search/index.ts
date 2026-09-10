@@ -5,7 +5,6 @@ import { lowerBound } from "./lower-bound";
 import { upperBound } from "./upper-bound";
 
 export { binarySearch } from "./binary-search";
-export type { CompareFunction } from "../internal/compare";
 export { findSortedRange } from "./find-sorted-range";
 export type { SortedRangeMatch } from "./find-sorted-range";
 export { linearSearch } from "./linear-search";

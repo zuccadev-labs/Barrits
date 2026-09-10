@@ -1,76 +1,81 @@
 import { buildAdjacencyList } from "./build-adjacency-list";
-import type { GraphEdge, GraphNodeId, GraphPath } from "./types";
+import { createBinaryHeap } from "../internal/binary-heap";
+import type { GraphEdge, GraphNodeId, GraphPath, GraphTraversalOptions } from "./types";
+
+type QueueEntry<NodeId extends GraphNodeId> = {
+  readonly node: NodeId;
+  readonly distance: number;
+};
 
 /**
- * [EN] Finds the shortest path between two nodes using Dijkstra's algorithm.
- * [ES] Encuentra el camino más corto entre dos nodos utilizando el algoritmo de Dijkstra.
- * 
+ * [EN] Finds the shortest path between two nodes with Dijkstra's algorithm backed by a binary heap
+ * (O((V + E) log V)). Edges are directional by default (`options.directed`, default `true`); weights default
+ * to 1 and must be non-negative. When the target is unreachable the result has `distance: Infinity` and an
+ * empty `path`.
+ * [ES] Encuentra el camino más corto entre dos nodos con el algoritmo de Dijkstra respaldado por un montículo
+ * binario (O((V + E) log V)). Las aristas son direccionales por defecto (`options.directed`, por defecto `true`);
+ * los pesos valen 1 por defecto y deben ser no negativos. Si el destino es inalcanzable, el resultado tiene
+ * `distance: Infinity` y un `path` vacío.
+ *
  * @param edges [EN] Collection of weighted graph edges. [ES] Colección de aristas de grafo con peso.
  * @param startNode [EN] The starting node identifier. [ES] El identificador del nodo inicial.
  * @param targetNode [EN] The target node identifier. [ES] El identificador del nodo objetivo.
- * @returns [EN] Object containing distance, path, and visit order. [ES] Objeto con la distancia, el camino y el orden de visita.
+ * @param options [EN] Traversal options (`directed`). [ES] Opciones del recorrido (`directed`).
+ * @returns [EN] Object containing distance, path, and settle order. [ES] Objeto con la distancia, el camino y el orden de asentamiento.
+ * @throws RangeError - [EN] When an edge has a negative weight. [ES] Cuando una arista tiene peso negativo.
  */
 export const dijkstraShortestPath = <NodeId extends GraphNodeId>(
   edges: readonly GraphEdge<NodeId>[],
   startNode: NodeId,
   targetNode: NodeId,
+  options: GraphTraversalOptions = {},
 ): GraphPath<NodeId> => {
-  const adjacencyList = buildAdjacencyList(edges, { directed: true });
+  for (const edge of edges) {
+    if ((edge.weight ?? 1) < 0) {
+      throw new RangeError(`dijkstraShortestPath requires non-negative weights (edge ${String(edge.from)} -> ${String(edge.to)} has ${String(edge.weight)}).`);
+    }
+  }
+
+  const adjacencyList = buildAdjacencyList(edges, { directed: options.directed ?? true });
   const distances = new Map<NodeId, number>([[startNode, 0]]);
   const previousNodes = new Map<NodeId, NodeId>();
-  const visited = new Set<NodeId>();
+  const settled = new Set<NodeId>();
   const visitOrder: NodeId[] = [];
-  const queue = new Set<NodeId>(adjacencyList.keys());
-  queue.add(startNode);
-  queue.add(targetNode);
+  const queue = createBinaryHeap<QueueEntry<NodeId>>((left, right) => left.distance - right.distance);
 
-  while (queue.size > 0) {
-    let currentNode: NodeId | undefined;
-    let currentDistance = Number.POSITIVE_INFINITY;
+  queue.push({ node: startNode, distance: 0 });
 
-    for (const node of queue) {
-      const distance = distances.get(node) ?? Number.POSITIVE_INFINITY;
+  while (queue.size() > 0) {
+    const current = queue.pop()!;
 
-      if (distance < currentDistance) {
-        currentNode = node;
-        currentDistance = distance;
-      }
-    }
-
-    if (currentNode === undefined || currentDistance === Number.POSITIVE_INFINITY) {
-      break;
-    }
-
-    queue.delete(currentNode);
-
-    if (visited.has(currentNode)) {
+    if (settled.has(current.node)) {
       continue;
     }
 
-    visited.add(currentNode);
-    visitOrder.push(currentNode);
+    settled.add(current.node);
+    visitOrder.push(current.node);
 
-    if (currentNode === targetNode) {
+    if (current.node === targetNode) {
       break;
     }
 
-    for (const neighbor of adjacencyList.get(currentNode) ?? []) {
-      const candidateDistance = currentDistance + neighbor.weight;
+    for (const neighbor of adjacencyList.get(current.node) ?? []) {
+      const candidateDistance = current.distance + neighbor.weight;
       const knownDistance = distances.get(neighbor.to) ?? Number.POSITIVE_INFINITY;
 
       if (candidateDistance < knownDistance) {
         distances.set(neighbor.to, candidateDistance);
-        previousNodes.set(neighbor.to, currentNode);
-        queue.add(neighbor.to);
+        previousNodes.set(neighbor.to, current.node);
+        queue.push({ node: neighbor.to, distance: candidateDistance });
       }
     }
   }
 
   const distance = distances.get(targetNode) ?? Number.POSITIVE_INFINITY;
 
-  if (distance === Number.POSITIVE_INFINITY) {
+  if (!settled.has(targetNode) || distance === Number.POSITIVE_INFINITY) {
     return {
-      distance,
+      distance: Number.POSITIVE_INFINITY,
       path: [],
       visitedOrder: visitOrder,
     };
@@ -90,8 +95,10 @@ export const dijkstraShortestPath = <NodeId extends GraphNodeId>(
       };
     }
 
-    path.unshift(cursor);
+    path.push(cursor);
   }
+
+  path.reverse();
 
   return {
     distance,

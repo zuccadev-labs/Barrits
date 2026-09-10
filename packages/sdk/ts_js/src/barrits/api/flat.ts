@@ -36,113 +36,18 @@ export {
 } from "../traits";
 
 /**
- * [EN] Core logic and algorithm families exposed for package consumers.
- * [ES] Familias de algoritmos y lógica central expuestas para los consumidores del paquete.
+ * [EN] The whole standard library (algorithm families, strings, hashing, validation, datetime, resilience,
+ * arithmetic) plus the `logic` and `logicFamilies` namespace objects, re-exported from `../logic`.
+ * [ES] Toda la librería estándar (familias de algoritmos, strings, hashing, validación, fechas, resiliencia,
+ * aritmética) más los objetos de espacio de nombres `logic` y `logicFamilies`, re-exportados desde `../logic`.
  */
-export {
-  aggregateAlgorithms,
-  algorithms,
-  arithmetic,
-  averageBy,
-  annualizedVolatility,
-  binarySearch,
-  breadthFirstSearch,
-  buildAdjacencyList,
-  bucketByInterval,
-  chunk,
-  collectionAlgorithms,
-  depthFirstSearch,
-  detectDirectedCycle,
-  detectTimeSeriesGaps,
-  differenceSeries,
-  dijkstraShortestPath,
-  exponentialMovingAverage,
-  findSortedRange,
-  graphAlgorithms,
-  groupBy,
-  histogramBy,
-  indexBy,
-  insertSorted,
-  linearSearch,
-  lowerBound,
-  maxBy,
-  maxDrawdown,
-  maxFlow,
-  minBy,
-  minimumSpanningTree,
-  movingAverage,
-  movingAverageSeries,
-  orderBy,
-  paginate,
-  partitionBy,
-  quickSort,
-  rankBy,
-  resampleSeries,
-  restar,
-  returnsSeries,
-  rollingSum,
-  searchAlgorithms,
-  selectionAlgorithms,
-  slidingWindow,
-  sortAlgorithms,
-  sortTimeSeries,
-  stableSortBy,
-  sumBy,
-  sumar,
-  timeSeriesAlgorithms,
-  topK,
-  topologicalSort,
-  uniqueBy,
-  upperBound,
-  windowAlgorithms,
-  windowDelta,
-  // Resilience patterns
-  retryWithBackoff,
-  withTimeout,
-  createCircuitBreaker,
-  // Hashing utilities
-  sha256Hex,
-  murmurHash3,
-  deterministicStringify,
-  // Datetime utilities
-  toIsoString,
-  fromIsoString,
-  diffMs,
-  addMs,
-  toRelativeTime,
-} from "../logic";
+export * from "../logic";
 
 /**
  * [EN] Shared package naming constants used in generated imports and tooling.
  * [ES] Constantes compartidas de nombres de paquetes utilizadas en importaciones generadas y herramientas.
  */
 export { PACKAGE_ALIAS, PACKAGE_NAME } from "../shared";
-
-/**
- * [EN] Algorithm-level type contracts shared by graph, search, sort, and timeseries APIs.
- * [ES] Contratos de tipo a nivel de algoritmo compartidos por las APIs de grafos, búsqueda, ordenación y series temporales.
- */
-export type {
-  CompareFunction,
-  DrawdownPoint,
-  GraphAdjacencyEntry,
-  GraphEdge,
-  GraphNodeId,
-  GraphPath,
-  MaxFlowResult,
-  MinimumSpanningTreeResult,
-  OrderCriterion,
-  PaginatedResult,
-  PaginationOptions,
-  PartitionResult,
-  RankedValue,
-  SearchPredicate,
-  SortDirection,
-  SortedRangeMatch,
-  TimeBucket,
-  TimeGap,
-  TimeSeriesPoint,
-} from "../../barrits_lib/logic";
 
 /**
  * [EN] Primitive and shared runtime types used across helper APIs.

@@ -269,9 +269,9 @@ Appears in: `examples/example-react/src/main.jsx`, `examples/example-vue/src/App
 
 Calculates annualized volatility from a returns-compatible series.
 
-### `exponentialMovingAverage(series, alpha)`
+### `exponentialMovingAverage(series, period = 10, smoothing = 2)`
 
-Calculates an exponential moving average with a configurable alpha factor.
+Calculates an exponential moving average with a constant coefficient `alpha = smoothing / (period + 1)` (the standard technical-analysis definition); the first point seeds the series.
 
 ### `timeSeriesAlgorithms`
 

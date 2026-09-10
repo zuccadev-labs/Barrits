@@ -4,6 +4,7 @@ import { maxDrawdown } from "./max-drawdown";
 import { returnsSeries } from "./returns-series";
 
 export { annualizedVolatility } from "./annualized-volatility";
+export type { AnnualizedVolatilityOptions } from "./annualized-volatility";
 export { exponentialMovingAverage } from "./exponential-moving-average";
 export { maxDrawdown } from "./max-drawdown";
 export type { DrawdownPoint } from "./max-drawdown";

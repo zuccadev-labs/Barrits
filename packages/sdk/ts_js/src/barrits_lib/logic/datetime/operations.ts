@@ -12,7 +12,7 @@
  *
  * @example
  * ```ts
- * import { toIsoString } from "@aspect/barrits";
+ * import { toIsoString } from "@zuccadev-labs/barrits";
  *
  * toIsoString(new Date("2026-04-21T14:30:00Z"));
  * // "2026-04-21T14:30:00.000Z"
@@ -43,7 +43,7 @@ export const toIsoString = (input: Date | number | string): string => {
  *
  * @example
  * ```ts
- * import { fromIsoString } from "@aspect/barrits";
+ * import { fromIsoString } from "@zuccadev-labs/barrits";
  *
  * const date = fromIsoString("2026-04-21T14:30:00.000Z");
  * // Date object or null
@@ -66,7 +66,7 @@ export const fromIsoString = (input: string): Date | null => {
  *
  * @example
  * ```ts
- * import { diffMs } from "@aspect/barrits";
+ * import { diffMs } from "@zuccadev-labs/barrits";
  *
  * const start = new Date("2026-04-21T00:00:00Z");
  * const end = new Date("2026-04-22T00:00:00Z");
@@ -87,7 +87,7 @@ export const diffMs = (start: Date, end: Date): number => {
  *
  * @example
  * ```ts
- * import { addMs } from "@aspect/barrits";
+ * import { addMs } from "@zuccadev-labs/barrits";
  *
  * const now = new Date("2026-04-21T14:30:00Z");
  * const later = addMs(now, 3600000); // 1 hour later
@@ -123,20 +123,22 @@ const TIME_DIVISIONS: readonly { readonly amount: number; readonly unit: Intl.Re
  *
  * @example
  * ```ts
- * import { toRelativeTime } from "@aspect/barrits";
+ * import { toRelativeTime } from "@zuccadev-labs/barrits";
  *
  * const twoHoursAgo = new Date(Date.now() - 7200000);
  * toRelativeTime(twoHoursAgo);       // "2 hours ago"
  * toRelativeTime(twoHoursAgo, "es"); // "hace 2 horas"
  * ```
  */
-export const toRelativeTime = (date: Date, locale: string = "en"): string => {
+export const toRelativeTime = (date: Date, locale = "en"): string => {
   const formatter = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
   let duration = (date.getTime() - Date.now()) / 1000;
 
   for (const division of TIME_DIVISIONS) {
-    if (Math.abs(duration) < division.amount) {
-      return formatter.format(Math.round(duration), division.unit);
+    const rounded = Math.round(duration);
+
+    if (Math.abs(rounded) < division.amount) {
+      return formatter.format(rounded, division.unit);
     }
 
     duration /= division.amount;
