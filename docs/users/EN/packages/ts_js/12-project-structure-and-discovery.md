@@ -69,6 +69,23 @@ Once the structure is discovered, the engine builds an integration graph and ser
 
 The manifest carries domains, exports, trait descriptors, import actions, collisions, and a SHA-256 checksum for supply-chain integrity.
 
+### 4.1 Driving the engine programmatically
+
+The discovery and inspection engine is exported from the package root, from `@zuccadev-labs/barrits/sdk`, and from every runtime adapter (`./node`, `./bun`, `./deno`). It is runtime-agnostic: it only needs a filesystem adapter.
+
+```ts
+import { createNodeFileSystemAdapter, findBarritsDirectory, inspectBarritsIntegrations, createBuildManifest } from "@zuccadev-labs/barrits/node";
+
+const adapter = createNodeFileSystemAdapter();
+const discovery = await findBarritsDirectory(adapter, { startDirectory: process.cwd() });
+if (!discovery) throw new Error("barrits directory not found");
+
+const graph = await inspectBarritsIntegrations(adapter, { ...discovery, discoveryRoots: ["src"] });
+const manifest = await createBuildManifest(graph);
+```
+
+`discoveryRoots` are resolved relative to `projectRoot`; trait files found under an extra root are read from that root, and their `sourceFile` stays relative to it.
+
 ## 5. Reading the manifest per runtime (the consumption contract)
 
 Tooling never re-implements discovery — it consumes the generated artifact through a small, typed reader. Choose the reader that matches your runtime:

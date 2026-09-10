@@ -1,6 +1,7 @@
 import { joinPath } from "../path";
 import { isInternalPath, relativeFromBase, extractExports } from "../ast/extractor";
 import { collectTraitDescriptorMetadata } from "../ast/traits";
+import { loadTypeScript } from "../ast/cache";
 import { mapConcurrent } from "../async-utils";
 import type {
   BarritsFileKind,
@@ -98,6 +99,7 @@ export const inspectFile = async (
   filePath: string,
   sourceLayer: BarritsSourceLayer,
 ): Promise<BarritsFileIntegration> => {
+  await loadTypeScript();
   const source = await adapter.readTextFile(filePath);
   const relativePath = toRelativeFilePath(barritsDirectory, filePath);
 
@@ -116,6 +118,8 @@ export const inspectFile = async (
  * [ES] Definición de tipo para InspectedLayer.
  */
 export type InspectedLayer = {
+  /** [EN] Absolute directory the layer was crawled from (empty when the layer is absent). [ES] Directorio absoluto desde el que se rastreó la capa (vacío si la capa no existe). */
+  readonly directory: string;
   /** [EN] Source layer. [ES] Fuente capa. */
   readonly sourceLayer: BarritsSourceLayer;
   /** [EN] Root files. [ES] Raíz archivos. */
@@ -181,6 +185,7 @@ export const buildLayer = (
       })),
     files,
     sourceLayer,
+    directory,
   };
 };
 
@@ -194,6 +199,7 @@ export const inspectLayer = async (
 ): Promise<InspectedLayer> => {
   if (!directory) {
     return {
+      directory: "",
       sourceLayer,
       rootFiles: [],
       domains: [],

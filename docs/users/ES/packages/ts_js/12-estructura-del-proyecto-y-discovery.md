@@ -69,6 +69,23 @@ Una vez descubierta la estructura, el motor construye un grafo de integración y
 
 El manifiesto lleva dominios, exports, descriptores de traits, acciones de importación, colisiones y un checksum SHA-256 para integridad de la cadena de suministro.
 
+### 4.1 Usar el motor de forma programática
+
+El motor de discovery e inspección se exporta desde la raíz del paquete, desde `@zuccadev-labs/barrits/sdk` y desde cada adaptador de runtime (`./node`, `./bun`, `./deno`). Es agnóstico del runtime: solo necesita un adaptador de filesystem.
+
+```ts
+import { createNodeFileSystemAdapter, findBarritsDirectory, inspectBarritsIntegrations, createBuildManifest } from "@zuccadev-labs/barrits/node";
+
+const adapter = createNodeFileSystemAdapter();
+const discovery = await findBarritsDirectory(adapter, { startDirectory: process.cwd() });
+if (!discovery) throw new Error("directorio barrits no encontrado");
+
+const graph = await inspectBarritsIntegrations(adapter, { ...discovery, discoveryRoots: ["src"] });
+const manifest = await createBuildManifest(graph);
+```
+
+Las `discoveryRoots` se resuelven relativas a `projectRoot`; los archivos de traits encontrados bajo una raíz extra se leen desde esa raíz y su `sourceFile` queda relativo a ella.
+
 ## 5. Lectura del manifiesto por runtime (el contrato de consumo)
 
 El tooling nunca re-implementa el discovery — consume el artefacto generado a través de un reader tipado y pequeño. Elige el reader según tu runtime:

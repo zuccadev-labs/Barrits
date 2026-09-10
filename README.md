@@ -260,6 +260,7 @@ This release is **fully backward-compatible** with v0.1.x. No breaking changes w
 | **Bun runtime** | Full Bun adapter — `@zuccadev-labs/barrits/bun` | `./bun`, `./bun/cli` |
 | **IoC Container** | `BarritsIoCContainer` for runtime dependency injection | `@zuccadev-labs/barrits/ioc` |
 | **OpenAPI Generator** | Auto-generate Swagger v3.1 schemas from trait metadata | `@zuccadev-labs/barrits/schema/openapi` |
+| **Discovery engine** | `findBarritsDirectory`, `inspectBarritsIntegrations`, `createBuildManifest` driven by any filesystem adapter | `@zuccadev-labs/barrits/sdk` (also re-exported from the root and every runtime adapter) |
 
 ### New API Subpaths
 

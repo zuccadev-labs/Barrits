@@ -1,6 +1,6 @@
-import ts from "typescript";
+import type * as TypeScript from "typescript";
 import { joinPath, normalizePath } from "../path";
-import { createCachedSourceFile } from "./cache";
+import { createCachedSourceFile, loadTypeScript, requireTypeScript } from "./cache";
 import type { BarritsFileExport, RuntimeFileSystemAdapter } from "../contracts";
 
 const SUPPORTED_SOURCE_FILE = /\.(?:[cm]?[jt]s|[jt]sx)$/i;
@@ -200,12 +200,14 @@ export const parseJsDocAccessPath = (source: string, matchIndex: number): string
  * @param node - Analyzable TypeScript AST module block root payload indexer object.
  * @returns Validates existence directly matching `ts.SyntaxKind.ExportKeyword`.
  */
-export const hasExportModifier = (node: ts.Node): boolean => {
+export const hasExportModifier = (node: TypeScript.Node): boolean => {
+  const ts = requireTypeScript();
+
   if (!ts.canHaveModifiers(node)) {
     return false;
   }
 
-  return ts.getModifiers(node)?.some((modifier: ts.Modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword) ?? false;
+  return ts.getModifiers(node)?.some((modifier: TypeScript.Modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword) ?? false;
 };
 
 /**
@@ -219,13 +221,6 @@ export type ParsedExportStatements = {
   readonly exportAllSpecifiers: readonly string[];
 };
 
-/**
- * Queries abstract module components identifying named and default explicit programmatic payload exports globally mapping access keys.
- *
- * @param source - Immutable parsed plain text input.
- * @param relativePath - Unmutated contextual system identifier relative file path mapping string locator strings identifier maps.
- * @returns An extracted ParsedExportStatements object mapping standard definitions and aggregating broad system namespace overrides logic dependencies map.
- */
 type ExportPushContext = {
   readonly exportsMap: Map<string, BarritsFileExport>;
   readonly source: string;
@@ -254,7 +249,9 @@ const pushExport = (ctx: ExportPushContext, name: string, kind: BarritsFileExpor
   });
 };
 
-const handleVariableStatement = (ctx: ExportPushContext, statement: ts.VariableStatement, matchIndex: number): void => {
+const handleVariableStatement = (ctx: ExportPushContext, statement: TypeScript.VariableStatement, matchIndex: number): void => {
+  const ts = requireTypeScript();
+
   if ((statement.declarationList.flags & ts.NodeFlags.Const) === 0) {
     return;
   }
@@ -266,7 +263,7 @@ const handleVariableStatement = (ctx: ExportPushContext, statement: ts.VariableS
   }
 };
 
-const handleFunctionDeclaration = (ctx: ExportPushContext, statement: ts.FunctionDeclaration, matchIndex: number): void => {
+const handleFunctionDeclaration = (ctx: ExportPushContext, statement: TypeScript.FunctionDeclaration, matchIndex: number): void => {
   if (statement.name) {
     pushExport(ctx, statement.name.text, "function", matchIndex);
   }
@@ -274,10 +271,12 @@ const handleFunctionDeclaration = (ctx: ExportPushContext, statement: ts.Functio
 
 const handleExportDeclaration = (
   ctx: ExportPushContext,
-  statement: ts.ExportDeclaration,
+  statement: TypeScript.ExportDeclaration,
   exportAllSpecifiers: string[],
   matchIndex: number,
 ): void => {
+  const ts = requireTypeScript();
+
   if (!statement.exportClause && statement.moduleSpecifier && ts.isStringLiteralLike(statement.moduleSpecifier)) {
     exportAllSpecifiers.push(statement.moduleSpecifier.text);
     return;
@@ -294,9 +293,12 @@ const handleExportDeclaration = (
 
 /**
  * [EN] Collects all direct exports (named, default, re-exports) from a source file's AST in one pass.
+ * Requires the TypeScript compiler API to be loaded (`await loadTypeScript()`); `extractExports` does it for you.
  * [ES] Recolecta todas las exportaciones directas (nombradas, por defecto, re-exportaciones) desde el AST de un archivo fuente en una pasada.
+ * Requiere la API del compilador de TypeScript cargada (`await loadTypeScript()`); `extractExports` lo hace por ti.
  */
 export const collectDirectExports = (source: string, relativePath: string): ParsedExportStatements => {
+  const ts = requireTypeScript();
   const exportsMap = new Map<string, BarritsFileExport>();
   const exportAllSpecifiers: string[] = [];
   const visibility = isInternalPath(relativePath) ? "internal" : "public";
@@ -345,6 +347,7 @@ export const extractExports = async (
   source: string,
   visited = new Set<string>(),
 ): Promise<BarritsFileExport[]> => {
+  await loadTypeScript();
   const { exportsMap, exportAllSpecifiers } = collectDirectExports(source, relativePath);
   visited.add(relativePath);
 

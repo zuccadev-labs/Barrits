@@ -9,6 +9,7 @@ import { loadBarritsConfig, type BarritsExportContractConfig } from "../config";
 import { inspectLayer } from "./crawler/layer";
 import { collectExportedTraitBindings, mergeTraitDescriptors, toTraitContractDescriptor, type ExportedTraitBinding } from "./ast/traits";
 import { collectTraitDiagnostics } from "./ast/diagnostics";
+import { loadTypeScript } from "./ast/cache";
 import { collectCollisions } from "./graph/collisions";
 import { planImportActions } from "./graph/imports";
 import type {
@@ -143,6 +144,7 @@ export const inspectBarritsIntegrations = async (
   adapter: RuntimeFileSystemAdapter,
   discovery: BarritsDiscovery,
 ): Promise<BarritsIntegrationGraph> => {
+  await loadTypeScript();
   const projectLayer = await inspectLayer(adapter, discovery.barritsDirectory, "barrits");
   const extraLayers = await mapConcurrent(discovery.discoveryRoots, 10, (root) =>
     inspectLayer(adapter, joinPath(discovery.projectRoot, root), "barrits"),
@@ -192,11 +194,12 @@ export const inspectBarritsIntegrations = async (
   const traitDescriptors = mergeTraitDescriptors(discoveredTraitDescriptors, contractTraitDescriptors);
   const bindingsBySourceFile = new Map<string, readonly ExportedTraitBinding[]>();
 
-  for (const file of inspectedFiles) {
-    if (file.kind !== "trait") continue;
-    const absolutePath = joinPath(discovery.barritsDirectory, file.path);
-    const source = await adapter.readTextFile(absolutePath);
-    bindingsBySourceFile.set(file.path, collectExportedTraitBindings(source, file.path));
+  for (const layer of allLayers) {
+    for (const file of layer.files) {
+      if (file.kind !== "trait") continue;
+      const source = await adapter.readTextFile(joinPath(layer.directory, file.path));
+      bindingsBySourceFile.set(file.path, collectExportedTraitBindings(source, file.path));
+    }
   }
 
   const traitDiagnostics = collectTraitDiagnostics(traitDescriptors, bindingsBySourceFile);

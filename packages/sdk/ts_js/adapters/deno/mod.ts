@@ -77,6 +77,9 @@ export {
   windowDelta,
 } from "../../src/barrits/api/flat";
 
+/** Discovery, inspection, manifest, import and query engine (runtime-agnostic, adapter-driven). */
+export * from "../../src/barrits/sdk";
+
 /** Package-level configuration helpers used by runtimes and plugins. */
 export { defineBarritsConfig, defineBarritsPackage, toBarritsAutomationOptions } from "../../src/barrits/package";
 

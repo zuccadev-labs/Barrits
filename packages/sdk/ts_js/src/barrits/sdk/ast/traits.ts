@@ -1,6 +1,6 @@
-import ts from "typescript";
+import type * as TypeScript from "typescript";
 import { parseTraitDescriptorJsDoc } from "../../traits/descriptor";
-import { createCachedSourceFile } from "./cache";
+import { createCachedSourceFile, requireTypeScript } from "./cache";
 import { extractAttachedJsDoc, hasExportModifier } from "./extractor";
 import { normalizePath } from "../path";
 import type { BarritsTraitDescriptorInspection } from "../contracts";
@@ -58,7 +58,9 @@ export type TraitRuntimeMetadata = {
  * @param expression - Typescript logic interface binding literal root syntax expression node component dependency pointer.
  * @returns Resolves the factory literal identifier string natively mapped.
  */
-const resolveWrapExpression = (expression: ts.Expression): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
+const resolveWrapExpression = (expression: TypeScript.Expression): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
+  const ts = requireTypeScript();
+
   if (
     ts.isParenthesizedExpression(expression) ||
     ts.isAsExpression(expression) ||
@@ -80,8 +82,10 @@ const resolveWrapExpression = (expression: ts.Expression): ReturnType<typeof res
 };
 
 const resolveBinaryExpression = (
-  expression: ts.BinaryExpression | ts.ConditionalExpression,
+  expression: TypeScript.BinaryExpression | TypeScript.ConditionalExpression,
 ): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
+  const ts = requireTypeScript();
+
   if (ts.isBinaryExpression(expression)) {
     return resolveTraitDescriptorFactoryFromExpression(expression.left) ?? resolveTraitDescriptorFactoryFromExpression(expression.right);
   }
@@ -96,11 +100,13 @@ const resolveBinaryExpression = (
  * [ES] Resuelve el nombre de una fábrica de descriptores de traits desde un nodo AST de expresión de llamada TypeScript.
  */
 export const resolveTraitDescriptorFactoryFromExpression = (
-  expression: ts.Expression | undefined,
+  expression: TypeScript.Expression | undefined,
 ): "createTraitDescriptor" | "createTraitDescriptorFromJsDoc" | undefined => {
   if (!expression) {
     return undefined;
   }
+
+  const ts = requireTypeScript();
 
   if (ts.isCallExpression(expression)) {
     if (ts.isIdentifier(expression.expression)) {
@@ -134,13 +140,15 @@ export const resolveTraitDescriptorFactoryFromExpression = (
 /**
  * Parses a TypeScript Array Literal node mapping plain text constants mapping primitive string interfaces.
  */
-export const readStringArrayLiteral = (expression: ts.Expression | undefined): string[] | undefined => {
+export const readStringArrayLiteral = (expression: TypeScript.Expression | undefined): string[] | undefined => {
+  const ts = requireTypeScript();
+
   if (!expression || !ts.isArrayLiteralExpression(expression)) {
     return undefined;
   }
 
   const values = expression.elements
-    .filter((element): element is ts.StringLiteralLike => ts.isStringLiteralLike(element))
+    .filter((element): element is TypeScript.StringLiteralLike => ts.isStringLiteralLike(element))
     .map((element) => element.text.trim())
     .filter(Boolean);
 
@@ -150,7 +158,9 @@ export const readStringArrayLiteral = (expression: ts.Expression | undefined): s
 /**
  * Parses internal explicit argument objects targeting explicit trait mapping dependencies evaluating structural runtime property maps.
  */
-export const readTraitRuntimeMetadataFromCall = (expression: ts.Expression | undefined): TraitRuntimeMetadata | undefined => {
+export const readTraitRuntimeMetadataFromCall = (expression: TypeScript.Expression | undefined): TraitRuntimeMetadata | undefined => {
+  const ts = requireTypeScript();
+
   if (!expression || !ts.isCallExpression(expression) || !ts.isIdentifier(expression.expression)) {
     return undefined;
   }
@@ -210,7 +220,12 @@ export const readTraitRuntimeMetadataFromCall = (expression: ts.Expression | und
 /**
  * Sweeps the AST structure explicitly collecting export bindings matching trait payload creation routines mapping signatures recursively natively traversing explicit modifiers.
  */
-const collectConstVariableTraitBindings = (statement: ts.VariableStatement, sourceFile: ts.SourceFile): ExportedTraitBinding[] => {
+const collectConstVariableTraitBindings = (
+  statement: TypeScript.VariableStatement,
+  sourceFile: TypeScript.SourceFile,
+): ExportedTraitBinding[] => {
+  const ts = requireTypeScript();
+
   if ((statement.declarationList.flags & ts.NodeFlags.Const) === 0) {
     return [];
   }
@@ -244,9 +259,12 @@ const collectConstVariableTraitBindings = (statement: ts.VariableStatement, sour
 
 /**
  * [EN] Collects all exported trait bindings (const, function, class) from a source file's AST.
+ * Requires the TypeScript compiler API to be loaded (`await loadTypeScript()`).
  * [ES] Recolecta todos los bindings de traits exportados (const, function, class) desde el AST de un archivo fuente.
+ * Requiere la API del compilador de TypeScript cargada (`await loadTypeScript()`).
  */
 export const collectExportedTraitBindings = (source: string, relativePath: string): ExportedTraitBinding[] => {
+  const ts = requireTypeScript();
   const sourceFile = createCachedSourceFile(relativePath, source);
   const bindings: ExportedTraitBinding[] = [];
 

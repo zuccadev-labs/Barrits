@@ -13,6 +13,9 @@ import {
 } from "../src/barrits/sdk/ast/traits";
 import type { BarritsTraitDescriptorInspection } from "../src/barrits/sdk/contracts";
 import type { BarritsTraitContractConfig } from "../src/barrits/config";
+import { loadTypeScript } from "../src/barrits/sdk/ast/cache";
+
+await loadTypeScript();
 
 const sf = (code: string) => ts.createSourceFile("test.ts", code, 99, true);
 const expr = (code: string) => (sf(code).statements[0] as any)?.declarationList?.declarations?.[0]?.initializer ?? sf(code).statements[0];

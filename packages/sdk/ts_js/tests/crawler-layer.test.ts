@@ -13,6 +13,9 @@ import {
 } from "../src/barrits/sdk/crawler/layer";
 import type { RuntimeFileSystemAdapter, BarritsFileIntegration, BarritsSourceLayer } from "../src/barrits/sdk/contracts";
 import { createRuntimeFileSystemAdapter } from "../src/barrits/sdk/adapters";
+import { loadTypeScript } from "../src/barrits/sdk/ast/cache";
+
+await loadTypeScript();
 
 const makeRelative = (p: string) => toRelativeFilePath("/project/barrits", `/project/barrits/${p}`);
 

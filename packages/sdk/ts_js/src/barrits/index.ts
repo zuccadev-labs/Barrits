@@ -24,6 +24,14 @@ export * from "./sdk/adapters";
 export * from "./sdk/logger";
 
 /**
+ * [EN] Re-exports the discovery, inspection, manifest, import and query engine so consumers can drive
+ * Barrits programmatically with any runtime filesystem adapter.
+ * [ES] Re-exporta el motor de descubrimiento, inspección, manifiestos, imports y consultas para que los
+ * consumidores dirijan Barrits de forma programática con cualquier adaptador de filesystem.
+ */
+export * from "./sdk";
+
+/**
  * [EN] Re-exports all SDK contract types for deno doc --lint compliance.
  * [ES] Re-exporta todos los tipos de contrato del SDK para conformidad con deno doc --lint.
  */

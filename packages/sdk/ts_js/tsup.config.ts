@@ -4,6 +4,7 @@ export default defineConfig({
   entry: [
     "src/index.ts",
     "src/barrits/consume.ts",
+    "src/barrits/sdk/index.ts",
     "src/barrits/plugins/esbuild.ts",
     "src/barrits/plugins/rollup.ts",
     "src/barrits/plugins/vite.ts",
