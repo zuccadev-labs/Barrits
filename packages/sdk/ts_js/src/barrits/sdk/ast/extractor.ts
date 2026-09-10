@@ -3,7 +3,16 @@ import { joinPath, normalizePath } from "../path";
 import { createCachedSourceFile, loadTypeScript, requireTypeScript } from "./cache";
 import type { BarritsFileExport, RuntimeFileSystemAdapter } from "../contracts";
 
-const SUPPORTED_SOURCE_FILE = /\.(?:[cm]?[jt]s|[jt]sx)$/i;
+const SOURCE_EXTENSION_PATTERN = /\.(?:[cm]?[jt]s|[jt]sx)$/i;
+const TYPESCRIPT_CANDIDATES = [".ts", ".tsx", ".mts", ".cts"] as const;
+const JAVASCRIPT_CANDIDATES = [".js", ".jsx", ".mjs", ".cjs"] as const;
+const JAVASCRIPT_TO_TYPESCRIPT: Readonly<Record<string, string>> = {
+  ".js": ".ts",
+  ".jsx": ".tsx",
+  ".mjs": ".mts",
+  ".cjs": ".cts",
+};
+const JSDOC_PROBE_PATH = "<barrits-jsdoc-probe>";
 
 /**
  * Normalizes a path string against a designated base path by isolating the relative sub-route.
@@ -52,14 +61,7 @@ export const splitPathSegments = (path: string): string[] => {
     .filter(Boolean);
 };
 
-/**
- * Computes a relative module specifier targeting against an origin component's file path.
- *
- * @param fromRelativePath - The caller module's relative location.
- * @param specifier - The import destination route explicitly passed inside the target module.
- * @returns A fully verified relative typescript module path, or null if unresolvable.
- */
-export const resolveRelativeModulePath = (fromRelativePath: string, specifier: string): string | null => {
+const resolveRelativeSpecifier = (fromRelativePath: string, specifier: string): string | null => {
   if (!specifier.startsWith(".")) {
     return null;
   }
@@ -81,16 +83,56 @@ export const resolveRelativeModulePath = (fromRelativePath: string, specifier: s
   }
 
   const resolvedPath = sourceSegments.join("/");
+  return resolvedPath || null;
+};
+
+/**
+ * Computes the canonical relative module path for a relative specifier: extension-less specifiers get `.ts`.
+ * Use `resolveRelativeModuleCandidates` when the file on disk may use another extension or be a directory index.
+ *
+ * @param fromRelativePath - The caller module's relative location.
+ * @param specifier - The import destination route explicitly passed inside the target module.
+ * @returns A relative module path, or null when the specifier is not relative or resolves to nothing.
+ */
+export const resolveRelativeModulePath = (fromRelativePath: string, specifier: string): string | null => {
+  const resolvedPath = resolveRelativeSpecifier(fromRelativePath, specifier);
 
   if (!resolvedPath) {
     return null;
   }
 
-  if (SUPPORTED_SOURCE_FILE.test(resolvedPath)) {
-    return resolvedPath;
+  return SOURCE_EXTENSION_PATTERN.test(resolvedPath) ? resolvedPath : `${resolvedPath}.ts`;
+};
+
+/**
+ * Lists every relative path a specifier may resolve to, in resolution order: the literal path, its TypeScript
+ * counterpart for `.js`/`.jsx`/`.mjs`/`.cjs` specifiers (the TypeScript ESM convention), then TypeScript and
+ * JavaScript extensions and directory indexes for extension-less specifiers.
+ *
+ * @param fromRelativePath - The caller module's relative location.
+ * @param specifier - Relative specifier found in the import/export statement.
+ * @returns Candidate relative paths (empty for bare specifiers).
+ */
+export const resolveRelativeModuleCandidates = (fromRelativePath: string, specifier: string): string[] => {
+  const resolvedPath = resolveRelativeSpecifier(fromRelativePath, specifier);
+
+  if (!resolvedPath) {
+    return [];
   }
 
-  return `${resolvedPath}.ts`;
+  const extension = SOURCE_EXTENSION_PATTERN.exec(resolvedPath)?.[0].toLowerCase();
+
+  if (extension) {
+    const typescriptCounterpart = JAVASCRIPT_TO_TYPESCRIPT[extension];
+    const withoutExtension = resolvedPath.slice(0, -extension.length);
+    return typescriptCounterpart ? [resolvedPath, `${withoutExtension}${typescriptCounterpart}`] : [resolvedPath];
+  }
+
+  const extensions = [...TYPESCRIPT_CANDIDATES, ...JAVASCRIPT_CANDIDATES];
+  return [
+    ...extensions.map((candidate) => `${resolvedPath}${candidate}`),
+    ...extensions.map((candidate) => `${resolvedPath}/index${candidate}`),
+  ];
 };
 
 /**
@@ -100,7 +142,7 @@ export const resolveRelativeModulePath = (fromRelativePath: string, specifier: s
  * @returns The pure, un-extensioned name sequence.
  */
 export const stripSourceExtension = (relativePath: string): string => {
-  return relativePath.replace(/\.(?:[cm]?[jt]s|[jt]sx)$/i, "");
+  return relativePath.replace(SOURCE_EXTENSION_PATTERN, "");
 };
 
 /**
@@ -142,39 +184,49 @@ export const deriveExportAccessPath = (relativePath: string, exportName: string)
   return [...domainSegments, exportName].join(".");
 };
 
-/**
- * Extracts a JSDoc block cleanly detached from overhead node definitions by iterating directly over Source File index blocks.
- *
- * @param source - Full plain-text typescript module file raw buffer.
- * @param matchIndex - Locational pinpoint bounding index over the abstract target property node.
- * @returns A structurally clean and unparsed interior documentation payload without trailing syntax wrapper bytes.
- */
-export const extractAttachedJsDoc = (source: string, matchIndex: number): string | undefined => {
-  const beforeMatch = source.slice(0, matchIndex).replace(/\s+$/u, "");
-
-  if (!beforeMatch.endsWith("*/")) {
-    return undefined;
-  }
-
-  const openIndex = beforeMatch.lastIndexOf("/**");
-
-  if (openIndex === -1) {
-    return undefined;
-  }
-
-  return beforeMatch.slice(openIndex + 3, beforeMatch.length - 2);
+const stripJsDocDelimiters = (text: string): string => {
+  return text.replace(/^\/\*\*/u, "").replace(/\*\/$/u, "");
 };
 
 /**
- * Filters normalized JSDoc inputs evaluating path structure and filtering implicit structural data components.
+ * Returns the inner text of the JSDoc block attached to a statement by the TypeScript parser (the block that
+ * immediately precedes the declaration), or `undefined` when the statement has no JSDoc. Because attachment is
+ * decided by the parser, a plain `/* ... *\/` comment or unrelated code between a documented declaration and the
+ * next one never leaks the previous block onto it.
  *
- * @param source - Plain string module buffer payload.
- * @param matchIndex - Pointer memory locational byte index targeting a declaration node.
- * @returns The resolved `@barrits-path` structural route override strings, or undefined natively.
+ * @param node - Statement or declaration node.
+ * @param sourceFile - Source file the node belongs to.
+ * @returns Inner JSDoc text (without `/**` and `*\/`), or undefined.
  */
-export const parseJsDocAccessPath = (source: string, matchIndex: number): string | undefined => {
-  const jsDocBlock = extractAttachedJsDoc(source, matchIndex);
+export const getAttachedJsDoc = (node: TypeScript.Node, sourceFile: TypeScript.SourceFile): string | undefined => {
+  const ts = requireTypeScript();
+  const docs = ts.getJSDocCommentsAndTags(node).filter((entry): entry is TypeScript.JSDoc => ts.isJSDoc(entry));
+  const attached = docs.at(-1);
 
+  return attached ? stripJsDocDelimiters(attached.getText(sourceFile)) : undefined;
+};
+
+const findStatementAt = (sourceFile: TypeScript.SourceFile, matchIndex: number): TypeScript.Statement | undefined => {
+  return sourceFile.statements.find((statement) => statement.getStart(sourceFile) === matchIndex);
+};
+
+/**
+ * Extracts the JSDoc block attached to the statement that starts at `matchIndex`. The source is parsed with the
+ * TypeScript compiler (cached), so attachment follows the parser's rules instead of scanning text backwards.
+ * Requires the compiler API to be loaded (`await loadTypeScript()`).
+ *
+ * @param source - Full plain-text module source.
+ * @param matchIndex - Start offset of the target statement.
+ * @returns Inner JSDoc text, or undefined when no statement starts there or it carries no JSDoc.
+ */
+export const extractAttachedJsDoc = (source: string, matchIndex: number): string | undefined => {
+  const sourceFile = createCachedSourceFile(JSDOC_PROBE_PATH, source);
+  const statement = findStatementAt(sourceFile, matchIndex);
+
+  return statement ? getAttachedJsDoc(statement, sourceFile) : undefined;
+};
+
+const parseAccessPathTag = (jsDocBlock: string | undefined): string | undefined => {
   if (!jsDocBlock) {
     return undefined;
   }
@@ -195,6 +247,17 @@ export const parseJsDocAccessPath = (source: string, matchIndex: number): string
 };
 
 /**
+ * Reads the `@barrits-path` override from the JSDoc attached to the statement starting at `matchIndex`.
+ *
+ * @param source - Plain string module source.
+ * @param matchIndex - Start offset of the target statement.
+ * @returns The dotted access path override, or undefined.
+ */
+export const parseJsDocAccessPath = (source: string, matchIndex: number): string | undefined => {
+  return parseAccessPathTag(extractAttachedJsDoc(source, matchIndex));
+};
+
+/**
  * Scans TypeScript metadata tokens querying strictly explicit public typescript export flags.
  *
  * @param node - Analyzable TypeScript AST module block root payload indexer object.
@@ -211,31 +274,31 @@ export const hasExportModifier = (node: TypeScript.Node): boolean => {
 };
 
 /**
- * [EN] Type definition for ParsedExportStatements.
- * [ES] Definición de tipo para ParsedExportStatements.
+ * [EN] Direct exports of a module plus the specifiers of its `export * from` statements.
+ * [ES] Exports directos de un módulo más los especificadores de sus sentencias `export * from`.
  */
 export type ParsedExportStatements = {
-  /** [EN] Exports map. [ES] Exportaciones map. */
+  /** [EN] Exports keyed by exported name. [ES] Exports indexados por nombre exportado. */
   readonly exportsMap: Map<string, BarritsFileExport>;
-  /** [EN] Export all specifiers. [ES] Exportación all specifiers. */
+  /** [EN] Module specifiers re-exported wholesale. [ES] Especificadores de módulo reexportados íntegramente. */
   readonly exportAllSpecifiers: readonly string[];
 };
 
 type ExportPushContext = {
   readonly exportsMap: Map<string, BarritsFileExport>;
-  readonly source: string;
+  readonly sourceFile: TypeScript.SourceFile;
   readonly relativePath: string;
   readonly visibility: "internal" | "public";
 };
 
-const pushExport = (ctx: ExportPushContext, name: string, kind: BarritsFileExport["kind"], matchIndex: number): void => {
+const pushExport = (ctx: ExportPushContext, name: string, kind: BarritsFileExport["kind"], statement: TypeScript.Statement): void => {
   const normalizedName = name.trim();
 
   if (!normalizedName) {
     return;
   }
 
-  const jsDocAccessPath = parseJsDocAccessPath(ctx.source, matchIndex);
+  const jsDocAccessPath = parseAccessPathTag(getAttachedJsDoc(statement, ctx.sourceFile));
   const derivedAccessPath = deriveExportAccessPath(ctx.relativePath, normalizedName);
   const accessPath = jsDocAccessPath ?? derivedAccessPath;
   const accessStrategy = jsDocAccessPath ? "jsdoc" : accessPath === normalizedName ? "export-name" : "file-system";
@@ -249,7 +312,7 @@ const pushExport = (ctx: ExportPushContext, name: string, kind: BarritsFileExpor
   });
 };
 
-const handleVariableStatement = (ctx: ExportPushContext, statement: TypeScript.VariableStatement, matchIndex: number): void => {
+const handleVariableStatement = (ctx: ExportPushContext, statement: TypeScript.VariableStatement): void => {
   const ts = requireTypeScript();
 
   if ((statement.declarationList.flags & ts.NodeFlags.Const) === 0) {
@@ -258,23 +321,12 @@ const handleVariableStatement = (ctx: ExportPushContext, statement: TypeScript.V
 
   for (const declaration of statement.declarationList.declarations) {
     if (ts.isIdentifier(declaration.name)) {
-      pushExport(ctx, declaration.name.text, "const", matchIndex);
+      pushExport(ctx, declaration.name.text, "const", statement);
     }
   }
 };
 
-const handleFunctionDeclaration = (ctx: ExportPushContext, statement: TypeScript.FunctionDeclaration, matchIndex: number): void => {
-  if (statement.name) {
-    pushExport(ctx, statement.name.text, "function", matchIndex);
-  }
-};
-
-const handleExportDeclaration = (
-  ctx: ExportPushContext,
-  statement: TypeScript.ExportDeclaration,
-  exportAllSpecifiers: string[],
-  matchIndex: number,
-): void => {
+const handleExportDeclaration = (ctx: ExportPushContext, statement: TypeScript.ExportDeclaration, exportAllSpecifiers: string[]): void => {
   const ts = requireTypeScript();
 
   if (!statement.exportClause && statement.moduleSpecifier && ts.isStringLiteralLike(statement.moduleSpecifier)) {
@@ -287,15 +339,17 @@ const handleExportDeclaration = (
   }
 
   for (const element of statement.exportClause.elements) {
-    pushExport(ctx, element.name.text, "reexport", matchIndex);
+    pushExport(ctx, element.name.text, "reexport", statement);
   }
 };
 
 /**
- * [EN] Collects all direct exports (named, default, re-exports) from a source file's AST in one pass.
- * Requires the TypeScript compiler API to be loaded (`await loadTypeScript()`); `extractExports` does it for you.
- * [ES] Recolecta todas las exportaciones directas (nombradas, por defecto, re-exportaciones) desde el AST de un archivo fuente en una pasada.
- * Requiere la API del compilador de TypeScript cargada (`await loadTypeScript()`); `extractExports` lo hace por ti.
+ * [EN] Collects the direct exports of a module in one pass: `export const`, `export function`, `export class`,
+ * named re-exports (`export { a, b } from`) and `export *` specifiers. Requires the TypeScript compiler API to be
+ * loaded (`await loadTypeScript()`); `extractExports` does it for you.
+ * [ES] Recolecta los exports directos de un módulo en una pasada: `export const`, `export function`, `export class`,
+ * reexports con nombre (`export { a, b } from`) y especificadores `export *`. Requiere la API del compilador de
+ * TypeScript cargada (`await loadTypeScript()`); `extractExports` lo hace por ti.
  */
 export const collectDirectExports = (source: string, relativePath: string): ParsedExportStatements => {
   const ts = requireTypeScript();
@@ -303,23 +357,26 @@ export const collectDirectExports = (source: string, relativePath: string): Pars
   const exportAllSpecifiers: string[] = [];
   const visibility = isInternalPath(relativePath) ? "internal" : "public";
   const sourceFile = createCachedSourceFile(relativePath, source);
-  const ctx: ExportPushContext = { exportsMap, source, relativePath, visibility };
+  const ctx: ExportPushContext = { exportsMap, sourceFile, relativePath, visibility };
 
   for (const statement of sourceFile.statements) {
-    const matchIndex = statement.getStart(sourceFile);
-
     if (ts.isVariableStatement(statement) && hasExportModifier(statement)) {
-      handleVariableStatement(ctx, statement, matchIndex);
+      handleVariableStatement(ctx, statement);
       continue;
     }
 
-    if (ts.isFunctionDeclaration(statement) && hasExportModifier(statement)) {
-      handleFunctionDeclaration(ctx, statement, matchIndex);
+    if (ts.isFunctionDeclaration(statement) && hasExportModifier(statement) && statement.name) {
+      pushExport(ctx, statement.name.text, "function", statement);
+      continue;
+    }
+
+    if (ts.isClassDeclaration(statement) && hasExportModifier(statement) && statement.name) {
+      pushExport(ctx, statement.name.text, "class", statement);
       continue;
     }
 
     if (ts.isExportDeclaration(statement)) {
-      handleExportDeclaration(ctx, statement, exportAllSpecifiers, matchIndex);
+      handleExportDeclaration(ctx, statement, exportAllSpecifiers);
     }
   }
 
@@ -329,16 +386,34 @@ export const collectDirectExports = (source: string, relativePath: string): Pars
   };
 };
 
+const readFirstExisting = async (
+  adapter: RuntimeFileSystemAdapter,
+  barritsDirectory: string,
+  candidates: readonly string[],
+): Promise<{ relativePath: string; source: string } | null> => {
+  for (const relativePath of candidates) {
+    try {
+      const source = await adapter.readTextFile(joinPath(barritsDirectory, relativePath));
+      return { relativePath, source };
+    } catch {
+      continue;
+    }
+  }
+
+  return null;
+};
+
 /**
- * Discovers deeply nested cross-file re-export mechanisms tracing import blocks recursively.
- * Builds an exhaustive export manifest targeting namespace paths globally natively resolving internal scopes mappings.
+ * Resolves the full export surface of a module by following `export * from` statements recursively. Relative
+ * specifiers are resolved against the files that actually exist (`./x.js` → `x.ts`, extension-less → `.ts`,
+ * `.tsx`, `.mts`, `.js`... or a directory index); re-exported entries are reported with kind `reexport`.
  *
- * @param adapter - Readonly abstract adapter targeting execution runtime payloads.
- * @param barritsDirectory - Original abstract context namespace target logics.
- * @param relativePath - Internal targeting mapping dependency nested payload pointer location root abstraction.
- * @param source - Plaintext dependency target dependency bindings native pointer bindings.
- * @param visited - Shared deduplicating context recursive caching logic.
- * @returns Explicit explicit exported manifest module configurations natively mapped to export file components object payload.
+ * @param adapter - Runtime filesystem adapter.
+ * @param barritsDirectory - Root directory the relative paths are resolved against.
+ * @param relativePath - Relative path of the module being inspected.
+ * @param source - Source text of that module.
+ * @param visited - Modules already visited (cycle protection).
+ * @returns Exports sorted by name.
  */
 export const extractExports = async (
   adapter: RuntimeFileSystemAdapter,
@@ -352,26 +427,25 @@ export const extractExports = async (
   visited.add(relativePath);
 
   for (const specifier of exportAllSpecifiers) {
-    const resolvedRelativePath = resolveRelativeModulePath(relativePath, specifier);
+    const candidates = resolveRelativeModuleCandidates(relativePath, specifier).filter((candidate) => !visited.has(candidate));
 
-    if (!resolvedRelativePath || visited.has(resolvedRelativePath)) {
+    if (candidates.length === 0) {
       continue;
     }
 
-    const absoluteFilePath = joinPath(barritsDirectory, resolvedRelativePath);
+    const reexported = await readFirstExisting(adapter, barritsDirectory, candidates);
 
-    try {
-      const reexportedSource = await adapter.readTextFile(absoluteFilePath);
-      const reexportedExports = await extractExports(adapter, barritsDirectory, resolvedRelativePath, reexportedSource, visited);
-
-      for (const reexportedEntry of reexportedExports) {
-        exportsMap.set(reexportedEntry.name, {
-          ...reexportedEntry,
-          kind: "reexport",
-        });
-      }
-    } catch {
+    if (!reexported) {
       continue;
+    }
+
+    const reexportedExports = await extractExports(adapter, barritsDirectory, reexported.relativePath, reexported.source, visited);
+
+    for (const reexportedEntry of reexportedExports) {
+      exportsMap.set(reexportedEntry.name, {
+        ...reexportedEntry,
+        kind: "reexport",
+      });
     }
   }
 

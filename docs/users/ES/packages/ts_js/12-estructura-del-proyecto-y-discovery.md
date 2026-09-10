@@ -86,6 +86,19 @@ const manifest = await createBuildManifest(graph);
 
 Las `discoveryRoots` se resuelven relativas a `projectRoot`; los archivos de traits encontrados bajo una raíz extra se leen desde esa raíz y su `sourceFile` queda relativo a ella.
 
+### 4.2 Qué lee el crawler
+
+El crawler recorre la carpeta de dominio (y cada entrada de `discoveryRoots`) con estas reglas:
+
+| Regla | Comportamiento |
+| --- | --- |
+| **Archivos fuente** | `.ts`, `.tsx`, `.mts`, `.cts`, `.js`, `.jsx`, `.mjs`, `.cjs`. Se omiten los archivos de declaraciones (`*.d.ts`) y los de test (`*.test.*`, `*.spec.*`). |
+| **Directorios ignorados** | `node_modules`, `dist`, `build`, `coverage`, `.git`, `.next`, `.turbo`, `.barrits`, `.cache`, `__tests__`, `__mocks__`. |
+| **Tipos de archivo** | `index.<ext>` en la raíz es `root`; los archivos bajo `traits/` son `trait`; `<dominio>/.../index.<ext>` es `barrel`; las carpetas `internal`, `shared` y `sdk` conservan su tipo; el resto es `domain`. |
+| **Exports** | Se recogen `export const`, `export function`, `export class` y los reexports con nombre (`kind`: `const`, `function`, `class`, `reexport`). `export let`/`var` se ignoran a propósito. |
+| **`export * from`** | Los especificadores relativos se resuelven contra los archivos que existen: `./math.js` prueba también `math.ts` (convención ESM de TypeScript) y un `./math` sin extensión prueba todas las extensiones soportadas más `math/index.<ext>`. |
+| **JSDoc** | Los bloques `@barrits-trait` y `@barrits-path` se leen desde el nodo del AST al que el parser de TypeScript los asocia. Un comentario `/* ... */` o una sentencia no exportada entre dos declaraciones nunca filtra un bloque al siguiente export. |
+
 ## 5. Lectura del manifiesto por runtime (el contrato de consumo)
 
 El tooling nunca re-implementa el discovery — consume el artefacto generado a través de un reader tipado y pequeño. Elige el reader según tu runtime:

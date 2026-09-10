@@ -1,41 +1,45 @@
 import type * as TypeScript from "typescript";
 import { parseTraitDescriptorJsDoc } from "../../traits/descriptor";
 import { createCachedSourceFile, requireTypeScript } from "./cache";
-import { extractAttachedJsDoc, hasExportModifier } from "./extractor";
+import { getAttachedJsDoc, hasExportModifier } from "./extractor";
 import { normalizePath } from "../path";
 import type { BarritsTraitDescriptorInspection } from "../contracts";
 import type { BarritsTraitContractConfig } from "../../config";
 
 /**
- * [EN] Type definition for ExportedTraitBinding.
- * [ES] Definición de tipo para ExportedTraitBinding.
+ * [EN] Exported binding found in a trait file, with the runtime metadata read from a `createTraitDescriptor()` call
+ * (when statically analyzable) and the JSDoc block the parser attached to it.
+ * [ES] Binding exportado hallado en un archivo de traits, con los metadatos runtime leídos de una llamada
+ * `createTraitDescriptor()` (cuando son analizables estáticamente) y el bloque JSDoc que el parser le asoció.
  */
 export type ExportedTraitBinding = {
-  /** [EN] Binding kind. [ES] Binding tipo. */
+  /** [EN] Binding kind. [ES] Tipo de binding. */
   readonly bindingKind: "const" | "function" | "class";
-  /** [EN] Binding name. [ES] Binding nombre. */
+  /** [EN] Binding name. [ES] Nombre del binding. */
   readonly bindingName: string;
-  /** [EN] Match index. [ES] Match índice. */
+  /** [EN] Start offset of the declaration in the source. [ES] Desplazamiento inicial de la declaración en el fuente. */
   readonly matchIndex: number;
-  /** [EN] Runtime conflicts. [ES] Entorno de ejecución conflictos. */
+  /** [EN] Inner text of the attached JSDoc block, if any. [ES] Texto interior del bloque JSDoc asociado, si existe. */
+  readonly jsDoc?: string;
+  /** [EN] Conflicts declared at runtime (undefined when dynamic). [ES] Conflictos declarados en runtime (undefined si son dinámicos). */
   readonly runtimeConflicts?: readonly string[];
-  /** [EN] Factory. [ES] Factory. */
+  /** [EN] Factory used by the initializer. [ES] Factoría usada por el inicializador. */
   readonly factory?: "createTraitDescriptor" | "createTraitDescriptorFromJsDoc";
-  /** [EN] Runtime consumes. [ES] Entorno de ejecución consume. */
+  /** [EN] Capabilities consumed at runtime. [ES] Capacidades consumidas en runtime. */
   readonly runtimeConsumes?: readonly string[];
-  /** [EN] Runtime name. [ES] Entorno de ejecución nombre. */
+  /** [EN] Trait name declared at runtime. [ES] Nombre del trait declarado en runtime. */
   readonly runtimeName?: string;
-  /** [EN] Runtime requires. [ES] Entorno de ejecución requiere. */
+  /** [EN] Traits required at runtime. [ES] Traits requeridos en runtime. */
   readonly runtimeRequires?: readonly string[];
-  /** [EN] Runtime provides. [ES] Entorno de ejecución proporciona. */
+  /** [EN] Capabilities provided at runtime. [ES] Capacidades proporcionadas en runtime. */
   readonly runtimeProvides?: readonly string[];
-  /** [EN] Runtime state. [ES] Entorno de ejecución estado. */
+  /** [EN] State keys declared at runtime. [ES] Claves de estado declaradas en runtime. */
   readonly runtimeState?: readonly string[];
 };
 
 /**
- * [EN] Type definition for TraitRuntimeMetadata.
- * [ES] Definición de tipo para TraitRuntimeMetadata.
+ * [EN] Runtime metadata statically readable from a `createTraitDescriptor({...})` literal.
+ * [ES] Metadatos runtime legibles estáticamente desde un literal `createTraitDescriptor({...})`.
  */
 export type TraitRuntimeMetadata = {
   /** [EN] Conflicts. [ES] Conflictos. */
@@ -52,12 +56,6 @@ export type TraitRuntimeMetadata = {
   readonly state?: readonly string[];
 };
 
-/**
- * Resolves deeply nested semantic abstract factories evaluating expression tree architectures mapped targeting capability creation.
- *
- * @param expression - Typescript logic interface binding literal root syntax expression node component dependency pointer.
- * @returns Resolves the factory literal identifier string natively mapped.
- */
 const resolveWrapExpression = (expression: TypeScript.Expression): ReturnType<typeof resolveTraitDescriptorFactoryFromExpression> => {
   const ts = requireTypeScript();
 
@@ -96,8 +94,10 @@ const resolveBinaryExpression = (
 };
 
 /**
- * [EN] Resolves a trait descriptor factory name from a TypeScript call expression AST node.
- * [ES] Resuelve el nombre de una fábrica de descriptores de traits desde un nodo AST de expresión de llamada TypeScript.
+ * [EN] Resolves which trait factory (if any) an initializer expression ends up calling, looking through
+ * parentheses, casts, awaits, property accesses, ternaries and binary expressions.
+ * [ES] Resuelve qué factoría de traits (si alguna) acaba llamando una expresión inicializadora, atravesando
+ * paréntesis, casts, awaits, accesos a propiedades, ternarios y expresiones binarias.
  */
 export const resolveTraitDescriptorFactoryFromExpression = (
   expression: TypeScript.Expression | undefined,
@@ -138,7 +138,10 @@ export const resolveTraitDescriptorFactoryFromExpression = (
 };
 
 /**
- * Parses a TypeScript Array Literal node mapping plain text constants mapping primitive string interfaces.
+ * [EN] Reads a string-literal array literal as a sorted, de-duplicated list; returns undefined for anything else
+ * (dynamic expressions cannot be verified statically).
+ * [ES] Lee un literal de array de strings como lista ordenada y deduplicada; devuelve undefined para cualquier otra
+ * cosa (las expresiones dinámicas no pueden verificarse estáticamente).
  */
 export const readStringArrayLiteral = (expression: TypeScript.Expression | undefined): string[] | undefined => {
   const ts = requireTypeScript();
@@ -156,7 +159,10 @@ export const readStringArrayLiteral = (expression: TypeScript.Expression | undef
 };
 
 /**
- * Parses internal explicit argument objects targeting explicit trait mapping dependencies evaluating structural runtime property maps.
+ * [EN] Reads the statically analyzable fields (`name`, `provides`, `conflicts`, `requires`, `consumes`, `state`)
+ * of a `createTraitDescriptor({...})` call; dynamic fields resolve to undefined.
+ * [ES] Lee los campos analizables estáticamente (`name`, `provides`, `conflicts`, `requires`, `consumes`, `state`)
+ * de una llamada `createTraitDescriptor({...})`; los campos dinámicos resuelven a undefined.
  */
 export const readTraitRuntimeMetadataFromCall = (expression: TypeScript.Expression | undefined): TraitRuntimeMetadata | undefined => {
   const ts = requireTypeScript();
@@ -217,9 +223,6 @@ export const readTraitRuntimeMetadataFromCall = (expression: TypeScript.Expressi
   };
 };
 
-/**
- * Sweeps the AST structure explicitly collecting export bindings matching trait payload creation routines mapping signatures recursively natively traversing explicit modifiers.
- */
 const collectConstVariableTraitBindings = (
   statement: TypeScript.VariableStatement,
   sourceFile: TypeScript.SourceFile,
@@ -231,6 +234,8 @@ const collectConstVariableTraitBindings = (
   }
 
   const bindings: ExportedTraitBinding[] = [];
+  const jsDoc = getAttachedJsDoc(statement, sourceFile);
+  const matchIndex = statement.getStart(sourceFile);
 
   for (const declaration of statement.declarationList.declarations) {
     if (!ts.isIdentifier(declaration.name)) {
@@ -238,12 +243,12 @@ const collectConstVariableTraitBindings = (
     }
 
     const runtimeMetadata = readTraitRuntimeMetadataFromCall(declaration.initializer);
-    const matchIndex = statement.getStart(sourceFile);
 
     bindings.push({
       bindingKind: "const",
       bindingName: declaration.name.text,
       matchIndex,
+      jsDoc,
       runtimeConflicts: runtimeMetadata?.conflicts,
       runtimeConsumes: runtimeMetadata?.consumes,
       factory: resolveTraitDescriptorFactoryFromExpression(declaration.initializer),
@@ -258,10 +263,10 @@ const collectConstVariableTraitBindings = (
 };
 
 /**
- * [EN] Collects all exported trait bindings (const, function, class) from a source file's AST.
- * Requires the TypeScript compiler API to be loaded (`await loadTypeScript()`).
- * [ES] Recolecta todos los bindings de traits exportados (const, function, class) desde el AST de un archivo fuente.
- * Requiere la API del compilador de TypeScript cargada (`await loadTypeScript()`).
+ * [EN] Collects all exported trait bindings (const, function, class) from a source file's AST, including the
+ * JSDoc block the parser attached to each declaration. Requires the TypeScript compiler API to be loaded.
+ * [ES] Recolecta todos los bindings de traits exportados (const, function, class) desde el AST de un archivo fuente,
+ * incluido el bloque JSDoc que el parser asoció a cada declaración. Requiere la API del compilador cargada.
  */
 export const collectExportedTraitBindings = (source: string, relativePath: string): ExportedTraitBinding[] => {
   const ts = requireTypeScript();
@@ -279,6 +284,7 @@ export const collectExportedTraitBindings = (source: string, relativePath: strin
         bindingKind: "function",
         bindingName: statement.name.text,
         matchIndex: statement.getStart(sourceFile),
+        jsDoc: getAttachedJsDoc(statement, sourceFile),
       });
       continue;
     }
@@ -288,6 +294,7 @@ export const collectExportedTraitBindings = (source: string, relativePath: strin
         bindingKind: "class",
         bindingName: statement.name.text,
         matchIndex: statement.getStart(sourceFile),
+        jsDoc: getAttachedJsDoc(statement, sourceFile),
       });
     }
   }
@@ -296,20 +303,22 @@ export const collectExportedTraitBindings = (source: string, relativePath: strin
 };
 
 /**
- * Builds physical meta-descriptor objects parsing logical block JSDocs overriding payload identifiers.
- * Traces context pointers securely parsing traits without side-effects or heavy runtime impact.
+ * [EN] Builds trait descriptor inspections from the exported bindings whose attached JSDoc declares
+ * `@barrits-trait`. Attachment follows the TypeScript parser, so unrelated comments never leak a trait onto the
+ * next export.
+ * [ES] Construye inspecciones de descriptores de trait a partir de los bindings exportados cuyo JSDoc asociado declara
+ * `@barrits-trait`. La asociación sigue al parser de TypeScript, por lo que comentarios ajenos nunca filtran un trait
+ * al siguiente export.
  */
 export const collectTraitDescriptorMetadata = (source: string, relativePath: string): BarritsTraitDescriptorInspection[] => {
   const descriptors: BarritsTraitDescriptorInspection[] = [];
 
   for (const binding of collectExportedTraitBindings(source, relativePath)) {
-    const jsDocBlock = extractAttachedJsDoc(source, binding.matchIndex);
-
-    if (!jsDocBlock?.includes("@barrits-trait")) {
+    if (!binding.jsDoc?.includes("@barrits-trait")) {
       continue;
     }
 
-    const metadata = parseTraitDescriptorJsDoc(`/**${jsDocBlock}*/`);
+    const metadata = parseTraitDescriptorJsDoc(`/**${binding.jsDoc}*/`);
 
     if (!metadata.name) {
       continue;
@@ -336,8 +345,8 @@ export const collectTraitDescriptorMetadata = (source: string, relativePath: str
 };
 
 /**
- * [EN] Implementation of Normalize contract string array.
- * [ES] Implementación de Normalize contract string array.
+ * [EN] Trims, de-duplicates and sorts a contract string list; undefined or empty input yields an empty list.
+ * [ES] Recorta, deduplica y ordena una lista de strings de contrato; una entrada undefined o vacía produce una lista vacía.
  */
 export const normalizeContractStringArray = (values: readonly string[] | undefined): string[] => {
   if (!values?.length) {
@@ -350,8 +359,10 @@ export const normalizeContractStringArray = (values: readonly string[] | undefin
 };
 
 /**
- * [EN] Implementation of To trait contract descriptor.
- * [ES] Implementación de To trait contract descriptor.
+ * [EN] Converts a manual trait contract from `barrits.config.*` into an inspection descriptor; returns null when
+ * the contract lacks a source file, name or binding name.
+ * [ES] Convierte un contrato manual de trait de `barrits.config.*` en un descriptor de inspección; devuelve null cuando
+ * al contrato le falta archivo fuente, nombre o nombre de binding.
  */
 export const toTraitContractDescriptor = (contract: BarritsTraitContractConfig): BarritsTraitDescriptorInspection | null => {
   const sourceFile = normalizePath(contract.sourceFile).replace(/^\.\//u, "");
@@ -382,8 +393,10 @@ export const toTraitContractDescriptor = (contract: BarritsTraitContractConfig):
 };
 
 /**
- * [EN] Implementation of Merge trait descriptors.
- * [ES] Implementación de Merge trait descriptors.
+ * [EN] Merges discovered (JSDoc) descriptors with manual contract descriptors keyed by `sourceFile::bindingName`;
+ * contract fields override discovered ones, and the result is sorted by name then source file.
+ * [ES] Fusiona los descriptores descubiertos (JSDoc) con los contratos manuales indexados por
+ * `sourceFile::bindingName`; los campos del contrato prevalecen y el resultado se ordena por nombre y archivo.
  */
 export const mergeTraitDescriptors = (
   discoveredDescriptors: readonly BarritsTraitDescriptorInspection[],

@@ -11,8 +11,44 @@ import type {
   RuntimeFileSystemAdapter,
 } from "../contracts";
 
-const IGNORED_DIRECTORIES = new Set([".git", "node_modules", "dist", "build", ".next", ".turbo"]);
-const SUPPORTED_SOURCE_FILE = /\.(?:[cm]?[jt]s|[jt]sx)$/i;
+const IGNORED_DIRECTORIES = new Set([
+  ".git",
+  "node_modules",
+  "dist",
+  "build",
+  "coverage",
+  ".next",
+  ".turbo",
+  ".barrits",
+  ".cache",
+  "__tests__",
+  "__mocks__",
+]);
+const SUPPORTED_SOURCE_FILE = /.(?:[cm]?[jt]s|[jt]sx)$/i;
+const EXCLUDED_SOURCE_FILE = /(?:.d.[cm]?ts|.(?:test|spec).(?:[cm]?[jt]s|[jt]sx))$/i;
+const INDEX_FILE = /^index.(?:[cm]?[jt]s|[jt]sx)$/i;
+
+/**
+ * [EN] Whether a relative path is the root index module (`index.ts`, `index.js`, `index.mts`...).
+ * [ES] Indica si una ruta relativa es el módulo índice raíz (`index.ts`, `index.js`, `index.mts`...).
+ */
+export const isRootIndexPath = (relativePath: string): boolean => INDEX_FILE.test(relativePath);
+
+/**
+ * [EN] Whether a relative path is a barrel (`<domain>/.../index.<ext>`).
+ * [ES] Indica si una ruta relativa es un barrel (`<dominio>/.../index.<ext>`).
+ */
+export const isBarrelIndexPath = (relativePath: string): boolean =>
+  relativePath.includes("/") && INDEX_FILE.test(relativePath.slice(relativePath.lastIndexOf("/") + 1));
+
+/**
+ * [EN] Whether a file name is a crawlable source module: TypeScript/JavaScript, excluding declaration files
+ * (`.d.ts`) and test/spec files.
+ * [ES] Indica si un nombre de archivo es un módulo fuente rastreable: TypeScript/JavaScript, excluyendo archivos de
+ * declaraciones (`.d.ts`) y archivos de test/spec.
+ */
+export const isCrawlableSourceFile = (fileName: string): boolean =>
+  SUPPORTED_SOURCE_FILE.test(fileName) && !EXCLUDED_SOURCE_FILE.test(fileName);
 
 /**
  * Assesses the logical classification of a physical file path within the Barrits architecture.
@@ -21,7 +57,7 @@ const SUPPORTED_SOURCE_FILE = /\.(?:[cm]?[jt]s|[jt]sx)$/i;
  * @returns The classified architecture semantic identifier block logic root path.
  */
 export const classifyFileKind = (relativePath: string): BarritsFileKind => {
-  if (relativePath === "index.ts") {
+  if (isRootIndexPath(relativePath)) {
     return "root";
   }
 
@@ -29,7 +65,7 @@ export const classifyFileKind = (relativePath: string): BarritsFileKind => {
     return "trait";
   }
 
-  if (relativePath.endsWith("/index.ts")) {
+  if (isBarrelIndexPath(relativePath)) {
     return "barrel";
   }
 
@@ -81,7 +117,7 @@ export const collectFiles = async (adapter: RuntimeFileSystemAdapter, rootDirect
         continue;
       }
 
-      if (SUPPORTED_SOURCE_FILE.test(entry.name)) {
+      if (isCrawlableSourceFile(entry.name)) {
         files.push(joinPath(currentDirectory, entry.name));
       }
     }
@@ -105,7 +141,7 @@ export const inspectFile = async (
 
   return {
     path: relativePath,
-    isIndex: relativePath.endsWith("/index.ts") || relativePath === "index.ts",
+    isIndex: isRootIndexPath(relativePath) || isBarrelIndexPath(relativePath),
     kind: classifyFileKind(relativePath),
     sourceLayer,
     exports: await extractExports(adapter, barritsDirectory, relativePath, source),

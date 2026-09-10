@@ -1053,11 +1053,12 @@ test("IMPORT_ACTION_KINDS contains all import action kinds", () => {
   assert.equal(IMPORT_ACTION_KINDS.size, 3);
 });
 
-test("EXPORT_KINDS contains const, function, reexport", () => {
+test("EXPORT_KINDS contains const, function, class, reexport", () => {
   assert.ok(EXPORT_KINDS.has("const"));
   assert.ok(EXPORT_KINDS.has("function"));
+  assert.ok(EXPORT_KINDS.has("class"));
   assert.ok(EXPORT_KINDS.has("reexport"));
-  assert.equal(EXPORT_KINDS.size, 3);
+  assert.equal(EXPORT_KINDS.size, 4);
 });
 
 test("SOURCE_LAYERS contains barrits and barrits_lib", () => {
