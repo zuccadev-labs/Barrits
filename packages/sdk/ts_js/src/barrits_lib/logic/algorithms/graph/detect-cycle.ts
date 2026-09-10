@@ -29,7 +29,9 @@ export const detectDirectedCycle = <NodeId extends GraphNodeId>(edges: readonly 
       continue;
     }
 
-    const stack: Frame<NodeId>[] = [{ node: root, neighbors: (adjacencyList.get(root) ?? []).map((entry) => entry.to), nextNeighborIndex: 0 }];
+    const stack: Frame<NodeId>[] = [
+      { node: root, neighbors: (adjacencyList.get(root) ?? []).map((entry) => entry.to), nextNeighborIndex: 0 },
+    ];
     visited.add(root);
     onPath.set(root, 0);
     path.push(root);

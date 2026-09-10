@@ -14,12 +14,8 @@ test("esbuild plugin accepts package-first automation options", async () => {
   await writeProjectFile(projectRoot, "barrits/logic/index.ts", 'export { duplicar } from "./duplicar";\n');
   await writeProjectFile(projectRoot, "barrits/logic/duplicar.ts", "export const duplicar = (value: number) => value * 2;\n");
 
-  let onResolveHandler:
-    | ((args: { path: string }) => { path: string; namespace?: string } | null)
-    | undefined;
-  let onLoadHandler:
-    | ((args: { path: string }) => Promise<{ contents: string; loader: "js" } | null>)
-    | undefined;
+  let onResolveHandler: ((args: { path: string }) => { path: string; namespace?: string } | null) | undefined;
+  let onLoadHandler: ((args: { path: string }) => Promise<{ contents: string; loader: "js" } | null>) | undefined;
 
   const plugin = barritsEsbuildPlugin({
     package: toBarritsAutomationOptions(defineBarritsPackage({ runtime: "node", projectRoot })),

@@ -74,21 +74,42 @@ describe("normalize helpers", () => {
 
 describe("minBy / maxBy", () => {
   it("keep falsy elements and zero projections as valid candidates", () => {
-    assert.equal(minBy([0, 5, 3], (value) => value), 0);
-    assert.equal(maxBy([-5, 0, -1], (value) => value), 0);
-    assert.equal(minBy(["", "a"], (value) => value.length), "");
+    assert.equal(
+      minBy([0, 5, 3], (value) => value),
+      0,
+    );
+    assert.equal(
+      maxBy([-5, 0, -1], (value) => value),
+      0,
+    );
+    assert.equal(
+      minBy(["", "a"], (value) => value.length),
+      "",
+    );
   });
 
   it("return undefined only for empty input and keep the first tie", () => {
-    assert.equal(minBy([], (value: number) => value), undefined);
-    const items = [{ id: "a", score: 1 }, { id: "b", score: 1 }];
+    assert.equal(
+      minBy([], (value: number) => value),
+      undefined,
+    );
+    const items = [
+      { id: "a", score: 1 },
+      { id: "b", score: 1 },
+    ];
     assert.equal(minBy(items, (item) => item.score)?.id, "a");
     assert.equal(maxBy(items, (item) => item.score)?.id, "a");
   });
 
   it("ignore NaN projections when a comparable projection exists", () => {
-    assert.equal(minBy([NaN, 2, 1], (value) => value), 1);
-    assert.equal(maxBy([NaN, 2, 1], (value) => value), 2);
+    assert.equal(
+      minBy([NaN, 2, 1], (value) => value),
+      1,
+    );
+    assert.equal(
+      maxBy([NaN, 2, 1], (value) => value),
+      2,
+    );
   });
 });
 
@@ -163,10 +184,24 @@ describe("graph", () => {
   });
 
   it("maxFlow accumulates parallel edges and keeps identifiers intact", () => {
-    const parallel = maxFlow([{ from: "s", to: "t", weight: 1 }, { from: "s", to: "t", weight: 2 }], "s", "t");
+    const parallel = maxFlow(
+      [
+        { from: "s", to: "t", weight: 1 },
+        { from: "s", to: "t", weight: 2 },
+      ],
+      "s",
+      "t",
+    );
     assert.equal(parallel.value, 3);
 
-    const suspicious = maxFlow([{ from: "a=>b", to: "c", weight: 5 }, { from: "a", to: "b=>c", weight: 1 }], "a=>b", "c");
+    const suspicious = maxFlow(
+      [
+        { from: "a=>b", to: "c", weight: 5 },
+        { from: "a", to: "b=>c", weight: 1 },
+      ],
+      "a=>b",
+      "c",
+    );
     assert.equal(suspicious.value, 5);
     assert.equal(maxFlow([{ from: "s", to: "t" }], "s", "s").value, 0);
     assert.throws(() => maxFlow([{ from: "s", to: "t", weight: -1 }], "s", "t"), RangeError);
@@ -184,8 +219,21 @@ describe("graph", () => {
   });
 
   it("detectDirectedCycle returns a closed path and survives deep chains", () => {
-    assert.deepEqual(detectDirectedCycle([{ from: 1, to: 2 }, { from: 2, to: 3 }, { from: 3, to: 1 }]), [1, 2, 3, 1]);
-    assert.equal(detectDirectedCycle([{ from: 1, to: 2 }, { from: 2, to: 3 }]), null);
+    assert.deepEqual(
+      detectDirectedCycle([
+        { from: 1, to: 2 },
+        { from: 2, to: 3 },
+        { from: 3, to: 1 },
+      ]),
+      [1, 2, 3, 1],
+    );
+    assert.equal(
+      detectDirectedCycle([
+        { from: 1, to: 2 },
+        { from: 2, to: 3 },
+      ]),
+      null,
+    );
 
     const chain = Array.from({ length: 50_000 }, (_, index) => ({ from: index, to: index + 1 }));
     assert.equal(detectDirectedCycle(chain), null);
@@ -193,8 +241,21 @@ describe("graph", () => {
   });
 
   it("topologicalSort keeps first-appearance order and rejects cycles", () => {
-    assert.deepEqual(topologicalSort([{ from: "a", to: "b" }, { from: "c", to: "b" }]), ["a", "c", "b"]);
-    assert.throws(() => topologicalSort([{ from: "a", to: "b" }, { from: "b", to: "a" }]), /acyclic/);
+    assert.deepEqual(
+      topologicalSort([
+        { from: "a", to: "b" },
+        { from: "c", to: "b" },
+      ]),
+      ["a", "c", "b"],
+    );
+    assert.throws(
+      () =>
+        topologicalSort([
+          { from: "a", to: "b" },
+          { from: "b", to: "a" },
+        ]),
+      /acyclic/,
+    );
   });
 
   it("dijkstraShortestPath is directional by default, supports undirected graphs and rejects negative weights", () => {
@@ -234,7 +295,10 @@ describe("quickSort", () => {
   });
 
   it("honours a custom comparator", () => {
-    assert.deepEqual(quickSort(["bb", "a", "ccc"], (left, right) => right.length - left.length), ["ccc", "bb", "a"]);
+    assert.deepEqual(
+      quickSort(["bb", "a", "ccc"], (left, right) => right.length - left.length),
+      ["ccc", "bb", "a"],
+    );
   });
 });
 
@@ -274,8 +338,17 @@ describe("selection and windows", () => {
   });
 
   it("bucketByInterval neutralizes NaN intervals", () => {
-    const buckets = bucketByInterval([{ timestamp: 5, value: 1 }, { timestamp: 6, value: 2 }], NaN);
-    assert.deepEqual(buckets.map((bucket) => bucket.bucketStart), [5, 6]);
+    const buckets = bucketByInterval(
+      [
+        { timestamp: 5, value: 1 },
+        { timestamp: 6, value: 2 },
+      ],
+      NaN,
+    );
+    assert.deepEqual(
+      buckets.map((bucket) => bucket.bucketStart),
+      [5, 6],
+    );
   });
 });
 
@@ -286,7 +359,17 @@ describe("finance", () => {
     const sample = annualizedVolatility(points, 252, { sample: true });
     assert.ok(sample > population);
     assert.equal(annualizedVolatility([{ timestamp: 0, value: 1 }], 252), 0);
-    assert.equal(annualizedVolatility([{ timestamp: 0, value: 1 }, { timestamp: 1, value: 2 }], 252, { sample: true }), 0);
+    assert.equal(
+      annualizedVolatility(
+        [
+          { timestamp: 0, value: 1 },
+          { timestamp: 1, value: 2 },
+        ],
+        252,
+        { sample: true },
+      ),
+      0,
+    );
   });
 
   it("maxDrawdown rejects non-positive values and reports the deepest decline", () => {
@@ -325,7 +408,8 @@ describe("resilience", () => {
   it("withTimeout rejects with TimeoutError and accepts thunks", async () => {
     await assert.rejects(
       () => withTimeout(() => new Promise<never>(() => undefined), 10, "never"),
-      (error: unknown) => error instanceof TimeoutError && error.name === "TimeoutError" && error.timeoutMs === 10 && error.label === "never",
+      (error: unknown) =>
+        error instanceof TimeoutError && error.name === "TimeoutError" && error.timeoutMs === 10 && error.label === "never",
     );
     assert.equal(await withTimeout(Promise.resolve("ok"), 50), "ok");
     assert.equal(await withTimeout(() => Promise.resolve("thunk"), 50), "thunk");
@@ -335,7 +419,10 @@ describe("resilience", () => {
     const breaker = createCircuitBreaker({ failureThreshold: 1, resetTimeoutMs: 60_000 });
     await assert.rejects(() => breaker.call(() => Promise.reject(new Error("boom"))), /boom/);
     assert.equal(breaker.getState(), "open");
-    await assert.rejects(() => breaker.call(() => Promise.resolve(1)), (error: unknown) => error instanceof CircuitOpenError);
+    await assert.rejects(
+      () => breaker.call(() => Promise.resolve(1)),
+      (error: unknown) => error instanceof CircuitOpenError,
+    );
   });
 });
 

@@ -4,10 +4,7 @@ import assert from "node:assert/strict";
 import { mergeTraits } from "../src/barrits/traits";
 
 test("mergeTraits fails fast when two traits define the same property", () => {
-  assert.throws(
-    () => mergeTraits({ normalize: () => "left" }, { normalize: () => "right" }),
-    /Trait collision for "normalize"/,
-  );
+  assert.throws(() => mergeTraits({ normalize: () => "left" }, { normalize: () => "right" }), /Trait collision for "normalize"/);
 });
 
 test("mergeTraits supports explicit conflict resolution policies", () => {

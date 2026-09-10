@@ -104,10 +104,7 @@ export const waitForProcessOutput = async (
   });
 };
 
-export const waitForProcessExit = async (
-  child: ChildProcessWithoutNullStreams,
-  timeoutMs = 5000,
-): Promise<ProcessResult> => {
+export const waitForProcessExit = async (child: ChildProcessWithoutNullStreams, timeoutMs = 5000): Promise<ProcessResult> => {
   return new Promise((resolvePromise, reject) => {
     let stdout = "";
     let stderr = "";

@@ -35,6 +35,12 @@ Serie de commits en `dev` que corrigen los hallazgos de la auditoría forense de
 - **Impacto**: cambios de contrato en `exponentialMovingAverage` (segundo parámetro pasa a ser `period`), `withTimeout` (error `TimeoutError`), `maxDrawdown` (lanza con valores no positivos), `topK` (`k` inválido → vacío) y los tipos `readonly` de resultado. Todo lo demás conserva la firma. `logic` contiene ahora todos los exports runtime de la librería (antes 67 claves).
 - **Validación**: nuevos `tests/lib-correctness.test.ts` (aserciones sobre cada corrección, incluidos vectores de referencia de MurmurHash3 y límites de tiempo para grafos y ventanas de 10⁵ elementos) y `tests/lib-property.test.ts` con `fast-check` (antisimetría y transitividad del comparador con `NaN`, `quickSort` ≡ `Array.prototype.sort`, `topK` ≡ sort + slice, `minBy`/`maxBy` ≡ sort, `slugify` idempotente y ASCII, `truncate` ≤ límite, `chunk`/`paginate` cubren la entrada exactamente una vez, `rollingSum`/`windowDelta` ≡ definición ingenua, BFS ≡ DFS en conjunto alcanzado, Dijkstra ≡ Bellman-Ford); `tests/logic.test.ts` deriva la superficie esperada de la librería. `tsc --noEmit` 0; ESLint 0 incluyendo `src/barrits_lib`; suite 1047/1047; `example-nodejs` 8/8 + showcase; `example-bun` 14/14; `example-deno` 8/8; `example-deno-baas` 13/13; `bundlers` 11/11.
 
+#### Hito 5a · style(sdk): formato normalizado con Prettier
+- **Qué cambió**: `prettier --write` sobre `src/`, `adapters/` y `tests/` del SDK (105 archivos, solo espaciado, saltos de línea y comas finales; sin cambios de comportamiento). Nuevo script raíz `format:write`; `format` (check) amplía su alcance a `src/barrits_lib` y `tests/`.
+- **Por qué**: la comprobación de formato existía (`npm run format`) pero no se ejecutaba en CI y el árbol no la superaba, por lo que cualquier gate de formato habría fallado de entrada.
+- **Impacto**: ninguno funcional; a partir de aquí CI exige formato (`Format check`).
+- **Validación**: `prettier --check` limpio; ESLint 0; `tsc --noEmit` 0; suite 1047/1047.
+
 ### Changed
 - **Modernización del toolchain de desarrollo (dependencias a últimas versiones)**:
   - **ESLint 8.57 → 10.7.0**: migración de `.eslintrc.cjs` (legacy) a *flat config* (`eslint.config.mjs`), validada con paridad 100% vía `eslint --print-config` y `0 warnings / 0 errors` con `--max-warnings 0`. Se eliminó `.eslintignore` (ya no soportado en ESLint 10) y se movió la exclusión `*.d.ts` al campo `ignores` del flat config.

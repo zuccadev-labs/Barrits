@@ -48,7 +48,7 @@ test("published vite surface imports cleanly in an ESM process", async () => {
     "",
     'const options = toBarritsAutomationOptions(defineBarritsPackage({ runtime: "browser", watch: "auto" }));',
     "const plugin = barritsVitePlugin({ package: options });",
-    'console.log(JSON.stringify({ name: plugin.name }));',
+    "console.log(JSON.stringify({ name: plugin.name }));",
   ].join("\n");
 
   const result = await runCommand(process.execPath, ["--input-type=module", "--eval", script], repositoryRoot, process.env);

@@ -208,7 +208,13 @@ test("expectOptionalArray throws for non-array non-undefined", () => {
 });
 
 test("expectOptionalArray passes through mapEntry errors", () => {
-  assert.throws(() => expectOptionalArray(["a", "b"], "test", "$", () => { throw new Error("map fail"); }), /map fail/);
+  assert.throws(
+    () =>
+      expectOptionalArray(["a", "b"], "test", "$", () => {
+        throw new Error("map fail");
+      }),
+    /map fail/,
+  );
 });
 
 test("expectOptionalArray throws for null", () => {
@@ -291,13 +297,17 @@ test("expectSelectionFilters rejects invalid kinds", () => {
 });
 
 test("expectSelectionFilters parses all filters simultaneously", () => {
-  const result = expectSelectionFilters({
-    domains: ["api", "core"],
-    exports: ["foo", "bar"],
-    fileKinds: ["barrel"],
-    visibilities: ["public"],
-    kinds: ["named-import"],
-  }, "test", "$");
+  const result = expectSelectionFilters(
+    {
+      domains: ["api", "core"],
+      exports: ["foo", "bar"],
+      fileKinds: ["barrel"],
+      visibilities: ["public"],
+      kinds: ["named-import"],
+    },
+    "test",
+    "$",
+  );
   assert.deepEqual(result, {
     domains: ["api", "core"],
     exports: ["foo", "bar"],
@@ -312,19 +322,23 @@ test("expectSelectionFilters throws TypeError when domains is not an array", () 
 });
 
 test("expectTraitDescriptor returns valid descriptor", () => {
-  const result = expectTraitDescriptor({
-    name: "test",
-    sourceFile: "file.ts",
-    bindingName: "testBinding",
-    bindingKind: "const",
-    requires: [],
-    conflicts: [],
-    state: [],
-    consumes: [],
-    provides: ["result"],
-    tags: [],
-    runtimes: ["node"],
-  }, "descriptor", "$");
+  const result = expectTraitDescriptor(
+    {
+      name: "test",
+      sourceFile: "file.ts",
+      bindingName: "testBinding",
+      bindingKind: "const",
+      requires: [],
+      conflicts: [],
+      state: [],
+      consumes: [],
+      provides: ["result"],
+      tags: [],
+      runtimes: ["node"],
+    },
+    "descriptor",
+    "$",
+  );
   assert.equal(result.name, "test");
   assert.equal(result.sourceFile, "file.ts");
   assert.equal(result.bindingName, "testBinding");
@@ -335,352 +349,55 @@ test("expectTraitDescriptor returns valid descriptor", () => {
 });
 
 test("expectTraitDescriptor throws TypeError for missing name", () => {
-  assert.throws(() => expectTraitDescriptor({
-    sourceFile: "file.ts",
-    bindingName: "testBinding",
-    bindingKind: "const",
-    requires: [],
-    conflicts: [],
-    state: [],
-    consumes: [],
-    provides: [],
-    tags: [],
-    runtimes: [],
-  }, "descriptor", "$"), TypeError);
+  assert.throws(
+    () =>
+      expectTraitDescriptor(
+        {
+          sourceFile: "file.ts",
+          bindingName: "testBinding",
+          bindingKind: "const",
+          requires: [],
+          conflicts: [],
+          state: [],
+          consumes: [],
+          provides: [],
+          tags: [],
+          runtimes: [],
+        },
+        "descriptor",
+        "$",
+      ),
+    TypeError,
+  );
 });
 
 test("expectTraitDescriptor throws TypeError for invalid bindingKind", () => {
-  assert.throws(() => expectTraitDescriptor({
-    name: "test",
-    sourceFile: "file.ts",
-    bindingName: "testBinding",
-    bindingKind: "invalid",
-    requires: [],
-    conflicts: [],
-    state: [],
-    consumes: [],
-    provides: [],
-    tags: [],
-    runtimes: [],
-  }, "descriptor", "$"), TypeError);
+  assert.throws(
+    () =>
+      expectTraitDescriptor(
+        {
+          name: "test",
+          sourceFile: "file.ts",
+          bindingName: "testBinding",
+          bindingKind: "invalid",
+          requires: [],
+          conflicts: [],
+          state: [],
+          consumes: [],
+          provides: [],
+          tags: [],
+          runtimes: [],
+        },
+        "descriptor",
+        "$",
+      ),
+    TypeError,
+  );
 });
 
 test("expectTraitDescriptor includes optional factory when present", () => {
-  const result = expectTraitDescriptor({
-    name: "test",
-    sourceFile: "file.ts",
-    bindingName: "testBinding",
-    bindingKind: "const",
-    requires: [],
-    conflicts: [],
-    state: [],
-    consumes: [],
-    provides: [],
-    tags: [],
-    runtimes: [],
-    factory: "createTraitDescriptor",
-  }, "descriptor", "$");
-  assert.equal(result.factory, "createTraitDescriptor");
-});
-
-test("expectTraitDescriptor includes optional summary when present", () => {
-  const result = expectTraitDescriptor({
-    name: "test",
-    sourceFile: "file.ts",
-    bindingName: "testBinding",
-    bindingKind: "const",
-    requires: [],
-    conflicts: [],
-    state: [],
-    consumes: [],
-    provides: [],
-    tags: [],
-    runtimes: [],
-    summary: "A test trait",
-  }, "descriptor", "$");
-  assert.equal(result.summary, "A test trait");
-});
-
-test("expectTraitDiagnostic returns valid diagnostic", () => {
-  const result = expectTraitDiagnostic({
-    code: "trait-duplicate-name",
-    category: "drift",
-    severity: "error",
-    message: "Duplicate name found",
-    sourceFile: "file.ts",
-  }, "diagnostic", "$");
-  assert.equal(result.code, "trait-duplicate-name");
-  assert.equal(result.category, "drift");
-  assert.equal(result.severity, "error");
-  assert.equal(result.message, "Duplicate name found");
-  assert.equal(result.sourceFile, "file.ts");
-});
-
-test("expectTraitDiagnostic includes optional descriptorName", () => {
-  const result = expectTraitDiagnostic({
-    code: "trait-duplicate-name",
-    category: "drift",
-    severity: "error",
-    message: "test",
-    sourceFile: "file.ts",
-    descriptorName: "dup",
-  }, "diagnostic", "$");
-  assert.equal(result.descriptorName, "dup");
-});
-
-test("expectTraitDiagnostic includes optional bindingName", () => {
-  const result = expectTraitDiagnostic({
-    code: "trait-duplicate-name",
-    category: "drift",
-    severity: "error",
-    message: "test",
-    sourceFile: "file.ts",
-    bindingName: "dupBinding",
-  }, "diagnostic", "$");
-  assert.equal(result.bindingName, "dupBinding");
-});
-
-test("expectTraitDiagnostic includes optional capabilityName", () => {
-  const result = expectTraitDiagnostic({
-    code: "trait-duplicate-name",
-    category: "drift",
-    severity: "error",
-    message: "test",
-    sourceFile: "file.ts",
-    capabilityName: "cap",
-  }, "diagnostic", "$");
-  assert.equal(result.capabilityName, "cap");
-});
-
-test("expectTraitDiagnostic throws TypeError for invalid code", () => {
-  assert.throws(() => expectTraitDiagnostic({
-    code: "invalid-code",
-    category: "drift",
-    severity: "error",
-    message: "test",
-    sourceFile: "file.ts",
-  }, "diagnostic", "$"), TypeError);
-});
-
-test("expectTraitDiagnostic throws TypeError for invalid category", () => {
-  assert.throws(() => expectTraitDiagnostic({
-    code: "trait-duplicate-name",
-    category: "invalid",
-    severity: "error",
-    message: "test",
-    sourceFile: "file.ts",
-  }, "diagnostic", "$"), TypeError);
-});
-
-test("expectTraitDiagnostic throws TypeError for invalid severity", () => {
-  assert.throws(() => expectTraitDiagnostic({
-    code: "trait-duplicate-name",
-    category: "drift",
-    severity: "invalid",
-    message: "test",
-    sourceFile: "file.ts",
-  }, "diagnostic", "$"), TypeError);
-});
-
-test("expectImportAction returns valid import action", () => {
-  const result = expectImportAction({
-    exportName: "foo",
-    domain: "api",
-    sourceFile: "foo.ts",
-    kind: "named-import",
-    statement: 'import { foo } from "./foo"',
-  }, "action", "$");
-  assert.equal(result.exportName, "foo");
-  assert.equal(result.domain, "api");
-  assert.equal(result.statement, 'import { foo } from "./foo"');
-});
-
-test("expectImportAction throws TypeError for missing exportName", () => {
-  assert.throws(() => expectImportAction({
-    domain: "api",
-    sourceFile: "foo.ts",
-    kind: "named-import",
-    statement: '',
-  }, "action", "$"), TypeError);
-});
-
-test("expectImportAction throws TypeError for invalid kind", () => {
-  assert.throws(() => expectImportAction({
-    exportName: "foo",
-    domain: "api",
-    sourceFile: "foo.ts",
-    kind: "invalid",
-    statement: '',
-  }, "action", "$"), TypeError);
-});
-
-test("expectExportCollision returns valid collision", () => {
-  const result = expectExportCollision({
-    type: "project-project",
-    namespace: "ns",
-    exportName: "foo",
-    projectSourceFile: "a.ts",
-    conflictSourceFile: "b.ts",
-    message: "collision",
-  }, "collision", "$");
-  assert.equal(result.type, "project-project");
-  assert.equal(result.namespace, "ns");
-  assert.equal(result.exportName, "foo");
-});
-
-test("expectExportCollision includes optional librarySourceFile", () => {
-  const result = expectExportCollision({
-    type: "project-library",
-    namespace: "ns",
-    exportName: "foo",
-    projectSourceFile: "a.ts",
-    conflictSourceFile: "lib.ts",
-    librarySourceFile: "lib.ts",
-    message: "collision with library",
-  }, "collision", "$");
-  assert.equal(result.librarySourceFile, "lib.ts");
-});
-
-test("expectExportCollision throws TypeError for invalid type", () => {
-  assert.throws(() => expectExportCollision({
-    type: "invalid",
-    namespace: "ns",
-    exportName: "foo",
-    projectSourceFile: "a.ts",
-    conflictSourceFile: "b.ts",
-    message: "err",
-  }, "collision", "$"), TypeError);
-});
-
-test("expectExportCollision does not include librarySourceFile when absent", () => {
-  const result = expectExportCollision({
-    type: "project-project",
-    namespace: "ns",
-    exportName: "foo",
-    projectSourceFile: "a.ts",
-    conflictSourceFile: "b.ts",
-    message: "err",
-  }, "collision", "$");
-  assert.equal(result.librarySourceFile, undefined);
-});
-
-test("expectFileExport returns valid file export", () => {
-  const result = expectFileExport({
-    name: "foo",
-    accessPath: "./foo",
-    accessStrategy: "export-name",
-    kind: "const",
-    visibility: "public",
-  }, "export", "$");
-  assert.equal(result.name, "foo");
-  assert.equal(result.kind, "const");
-});
-
-test("expectFileExport throws TypeError for invalid accessStrategy", () => {
-  assert.throws(() => expectFileExport({
-    name: "foo",
-    accessPath: "./foo",
-    accessStrategy: "invalid",
-    kind: "const",
-    visibility: "public",
-  }, "export", "$"), TypeError);
-});
-
-test("expectFileExport throws TypeError for missing name", () => {
-  assert.throws(() => expectFileExport({
-    accessPath: "./foo",
-    accessStrategy: "export-name",
-    kind: "const",
-    visibility: "public",
-  }, "export", "$"), TypeError);
-});
-
-test("expectFileIntegration returns valid file integration", () => {
-  const result = expectFileIntegration({
-    path: "src/foo.ts",
-    isIndex: false,
-    kind: "barrel",
-    sourceLayer: "barrits",
-    exports: [],
-    traitDescriptors: [],
-  }, "file", "$");
-  assert.equal(result.path, "src/foo.ts");
-  assert.equal(result.isIndex, false);
-  assert.equal(result.kind, "barrel");
-  assert.equal(result.sourceLayer, "barrits");
-  assert.deepEqual(result.exports, []);
-});
-
-test("expectFileIntegration returns isIndex true when set", () => {
-  const result = expectFileIntegration({
-    path: "src/index.ts",
-    isIndex: true,
-    kind: "barrel",
-    sourceLayer: "barrits",
-    exports: [],
-    traitDescriptors: [],
-  }, "file", "$");
-  assert.equal(result.isIndex, true);
-});
-
-test("expectFileIntegration throws TypeError when isIndex is not boolean", () => {
-  assert.throws(() => expectFileIntegration({
-    path: "src/index.ts",
-    isIndex: "yes",
-    kind: "source",
-    sourceLayer: "barrits",
-    exports: [],
-    traitDescriptors: [],
-  }, "file", "$"), TypeError);
-});
-
-test("expectFileIntegration throws TypeError for invalid kind", () => {
-  assert.throws(() => expectFileIntegration({
-    path: "src/index.ts",
-    isIndex: false,
-    kind: "invalid",
-    sourceLayer: "barrits",
-    exports: [],
-    traitDescriptors: [],
-  }, "file", "$"), TypeError);
-});
-
-test("expectFileIntegration throws TypeError for invalid sourceLayer", () => {
-  assert.throws(() => expectFileIntegration({
-    path: "src/index.ts",
-    isIndex: false,
-    kind: "source",
-    sourceLayer: "invalid-layer",
-    exports: [],
-    traitDescriptors: [],
-  }, "file", "$"), TypeError);
-});
-
-test("expectFileIntegration validates export visibility", () => {
-  assert.throws(() => expectFileIntegration({
-    path: "src/index.ts",
-    isIndex: false,
-    kind: "source",
-    sourceLayer: "barrits",
-    exports: [{
-      name: "foo",
-      accessPath: "./foo",
-      accessStrategy: "export-name",
-      kind: "const",
-      visibility: "invalid-visibility",
-    }],
-    traitDescriptors: [],
-  }, "file", "$"), TypeError);
-});
-
-test("expectFileIntegration parses traitDescriptors when present", () => {
-  const result = expectFileIntegration({
-    path: "src/index.ts",
-    isIndex: false,
-    kind: "barrel",
-    sourceLayer: "barrits",
-    exports: [],
-    traitDescriptors: [{
+  const result = expectTraitDescriptor(
+    {
       name: "test",
       sourceFile: "file.ts",
       bindingName: "testBinding",
@@ -692,69 +409,566 @@ test("expectFileIntegration parses traitDescriptors when present", () => {
       provides: [],
       tags: [],
       runtimes: [],
-    }],
-  }, "file", "$");
+      factory: "createTraitDescriptor",
+    },
+    "descriptor",
+    "$",
+  );
+  assert.equal(result.factory, "createTraitDescriptor");
+});
+
+test("expectTraitDescriptor includes optional summary when present", () => {
+  const result = expectTraitDescriptor(
+    {
+      name: "test",
+      sourceFile: "file.ts",
+      bindingName: "testBinding",
+      bindingKind: "const",
+      requires: [],
+      conflicts: [],
+      state: [],
+      consumes: [],
+      provides: [],
+      tags: [],
+      runtimes: [],
+      summary: "A test trait",
+    },
+    "descriptor",
+    "$",
+  );
+  assert.equal(result.summary, "A test trait");
+});
+
+test("expectTraitDiagnostic returns valid diagnostic", () => {
+  const result = expectTraitDiagnostic(
+    {
+      code: "trait-duplicate-name",
+      category: "drift",
+      severity: "error",
+      message: "Duplicate name found",
+      sourceFile: "file.ts",
+    },
+    "diagnostic",
+    "$",
+  );
+  assert.equal(result.code, "trait-duplicate-name");
+  assert.equal(result.category, "drift");
+  assert.equal(result.severity, "error");
+  assert.equal(result.message, "Duplicate name found");
+  assert.equal(result.sourceFile, "file.ts");
+});
+
+test("expectTraitDiagnostic includes optional descriptorName", () => {
+  const result = expectTraitDiagnostic(
+    {
+      code: "trait-duplicate-name",
+      category: "drift",
+      severity: "error",
+      message: "test",
+      sourceFile: "file.ts",
+      descriptorName: "dup",
+    },
+    "diagnostic",
+    "$",
+  );
+  assert.equal(result.descriptorName, "dup");
+});
+
+test("expectTraitDiagnostic includes optional bindingName", () => {
+  const result = expectTraitDiagnostic(
+    {
+      code: "trait-duplicate-name",
+      category: "drift",
+      severity: "error",
+      message: "test",
+      sourceFile: "file.ts",
+      bindingName: "dupBinding",
+    },
+    "diagnostic",
+    "$",
+  );
+  assert.equal(result.bindingName, "dupBinding");
+});
+
+test("expectTraitDiagnostic includes optional capabilityName", () => {
+  const result = expectTraitDiagnostic(
+    {
+      code: "trait-duplicate-name",
+      category: "drift",
+      severity: "error",
+      message: "test",
+      sourceFile: "file.ts",
+      capabilityName: "cap",
+    },
+    "diagnostic",
+    "$",
+  );
+  assert.equal(result.capabilityName, "cap");
+});
+
+test("expectTraitDiagnostic throws TypeError for invalid code", () => {
+  assert.throws(
+    () =>
+      expectTraitDiagnostic(
+        {
+          code: "invalid-code",
+          category: "drift",
+          severity: "error",
+          message: "test",
+          sourceFile: "file.ts",
+        },
+        "diagnostic",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectTraitDiagnostic throws TypeError for invalid category", () => {
+  assert.throws(
+    () =>
+      expectTraitDiagnostic(
+        {
+          code: "trait-duplicate-name",
+          category: "invalid",
+          severity: "error",
+          message: "test",
+          sourceFile: "file.ts",
+        },
+        "diagnostic",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectTraitDiagnostic throws TypeError for invalid severity", () => {
+  assert.throws(
+    () =>
+      expectTraitDiagnostic(
+        {
+          code: "trait-duplicate-name",
+          category: "drift",
+          severity: "invalid",
+          message: "test",
+          sourceFile: "file.ts",
+        },
+        "diagnostic",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectImportAction returns valid import action", () => {
+  const result = expectImportAction(
+    {
+      exportName: "foo",
+      domain: "api",
+      sourceFile: "foo.ts",
+      kind: "named-import",
+      statement: 'import { foo } from "./foo"',
+    },
+    "action",
+    "$",
+  );
+  assert.equal(result.exportName, "foo");
+  assert.equal(result.domain, "api");
+  assert.equal(result.statement, 'import { foo } from "./foo"');
+});
+
+test("expectImportAction throws TypeError for missing exportName", () => {
+  assert.throws(
+    () =>
+      expectImportAction(
+        {
+          domain: "api",
+          sourceFile: "foo.ts",
+          kind: "named-import",
+          statement: "",
+        },
+        "action",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectImportAction throws TypeError for invalid kind", () => {
+  assert.throws(
+    () =>
+      expectImportAction(
+        {
+          exportName: "foo",
+          domain: "api",
+          sourceFile: "foo.ts",
+          kind: "invalid",
+          statement: "",
+        },
+        "action",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectExportCollision returns valid collision", () => {
+  const result = expectExportCollision(
+    {
+      type: "project-project",
+      namespace: "ns",
+      exportName: "foo",
+      projectSourceFile: "a.ts",
+      conflictSourceFile: "b.ts",
+      message: "collision",
+    },
+    "collision",
+    "$",
+  );
+  assert.equal(result.type, "project-project");
+  assert.equal(result.namespace, "ns");
+  assert.equal(result.exportName, "foo");
+});
+
+test("expectExportCollision includes optional librarySourceFile", () => {
+  const result = expectExportCollision(
+    {
+      type: "project-library",
+      namespace: "ns",
+      exportName: "foo",
+      projectSourceFile: "a.ts",
+      conflictSourceFile: "lib.ts",
+      librarySourceFile: "lib.ts",
+      message: "collision with library",
+    },
+    "collision",
+    "$",
+  );
+  assert.equal(result.librarySourceFile, "lib.ts");
+});
+
+test("expectExportCollision throws TypeError for invalid type", () => {
+  assert.throws(
+    () =>
+      expectExportCollision(
+        {
+          type: "invalid",
+          namespace: "ns",
+          exportName: "foo",
+          projectSourceFile: "a.ts",
+          conflictSourceFile: "b.ts",
+          message: "err",
+        },
+        "collision",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectExportCollision does not include librarySourceFile when absent", () => {
+  const result = expectExportCollision(
+    {
+      type: "project-project",
+      namespace: "ns",
+      exportName: "foo",
+      projectSourceFile: "a.ts",
+      conflictSourceFile: "b.ts",
+      message: "err",
+    },
+    "collision",
+    "$",
+  );
+  assert.equal(result.librarySourceFile, undefined);
+});
+
+test("expectFileExport returns valid file export", () => {
+  const result = expectFileExport(
+    {
+      name: "foo",
+      accessPath: "./foo",
+      accessStrategy: "export-name",
+      kind: "const",
+      visibility: "public",
+    },
+    "export",
+    "$",
+  );
+  assert.equal(result.name, "foo");
+  assert.equal(result.kind, "const");
+});
+
+test("expectFileExport throws TypeError for invalid accessStrategy", () => {
+  assert.throws(
+    () =>
+      expectFileExport(
+        {
+          name: "foo",
+          accessPath: "./foo",
+          accessStrategy: "invalid",
+          kind: "const",
+          visibility: "public",
+        },
+        "export",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectFileExport throws TypeError for missing name", () => {
+  assert.throws(
+    () =>
+      expectFileExport(
+        {
+          accessPath: "./foo",
+          accessStrategy: "export-name",
+          kind: "const",
+          visibility: "public",
+        },
+        "export",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectFileIntegration returns valid file integration", () => {
+  const result = expectFileIntegration(
+    {
+      path: "src/foo.ts",
+      isIndex: false,
+      kind: "barrel",
+      sourceLayer: "barrits",
+      exports: [],
+      traitDescriptors: [],
+    },
+    "file",
+    "$",
+  );
+  assert.equal(result.path, "src/foo.ts");
+  assert.equal(result.isIndex, false);
+  assert.equal(result.kind, "barrel");
+  assert.equal(result.sourceLayer, "barrits");
+  assert.deepEqual(result.exports, []);
+});
+
+test("expectFileIntegration returns isIndex true when set", () => {
+  const result = expectFileIntegration(
+    {
+      path: "src/index.ts",
+      isIndex: true,
+      kind: "barrel",
+      sourceLayer: "barrits",
+      exports: [],
+      traitDescriptors: [],
+    },
+    "file",
+    "$",
+  );
+  assert.equal(result.isIndex, true);
+});
+
+test("expectFileIntegration throws TypeError when isIndex is not boolean", () => {
+  assert.throws(
+    () =>
+      expectFileIntegration(
+        {
+          path: "src/index.ts",
+          isIndex: "yes",
+          kind: "source",
+          sourceLayer: "barrits",
+          exports: [],
+          traitDescriptors: [],
+        },
+        "file",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectFileIntegration throws TypeError for invalid kind", () => {
+  assert.throws(
+    () =>
+      expectFileIntegration(
+        {
+          path: "src/index.ts",
+          isIndex: false,
+          kind: "invalid",
+          sourceLayer: "barrits",
+          exports: [],
+          traitDescriptors: [],
+        },
+        "file",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectFileIntegration throws TypeError for invalid sourceLayer", () => {
+  assert.throws(
+    () =>
+      expectFileIntegration(
+        {
+          path: "src/index.ts",
+          isIndex: false,
+          kind: "source",
+          sourceLayer: "invalid-layer",
+          exports: [],
+          traitDescriptors: [],
+        },
+        "file",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectFileIntegration validates export visibility", () => {
+  assert.throws(
+    () =>
+      expectFileIntegration(
+        {
+          path: "src/index.ts",
+          isIndex: false,
+          kind: "source",
+          sourceLayer: "barrits",
+          exports: [
+            {
+              name: "foo",
+              accessPath: "./foo",
+              accessStrategy: "export-name",
+              kind: "const",
+              visibility: "invalid-visibility",
+            },
+          ],
+          traitDescriptors: [],
+        },
+        "file",
+        "$",
+      ),
+    TypeError,
+  );
+});
+
+test("expectFileIntegration parses traitDescriptors when present", () => {
+  const result = expectFileIntegration(
+    {
+      path: "src/index.ts",
+      isIndex: false,
+      kind: "barrel",
+      sourceLayer: "barrits",
+      exports: [],
+      traitDescriptors: [
+        {
+          name: "test",
+          sourceFile: "file.ts",
+          bindingName: "testBinding",
+          bindingKind: "const",
+          requires: [],
+          conflicts: [],
+          state: [],
+          consumes: [],
+          provides: [],
+          tags: [],
+          runtimes: [],
+        },
+      ],
+    },
+    "file",
+    "$",
+  );
   assert.equal(result.traitDescriptors.length, 1);
   assert.equal(result.traitDescriptors[0].name, "test");
 });
 
 test("expectFileIntegration defaults traitDescriptors to empty array when absent", () => {
-  const result = expectFileIntegration({
-    path: "src/index.ts",
-    isIndex: false,
-    kind: "barrel",
-    sourceLayer: "barrits",
-    exports: [],
-  }, "file", "$");
+  const result = expectFileIntegration(
+    {
+      path: "src/index.ts",
+      isIndex: false,
+      kind: "barrel",
+      sourceLayer: "barrits",
+      exports: [],
+    },
+    "file",
+    "$",
+  );
   assert.deepEqual(result.traitDescriptors, []);
 });
 
 test("expectFileIntegration defaults exports to empty array when exports absent", () => {
-  const result = expectFileIntegration({
-    path: "src/index.ts",
-    isIndex: false,
-    kind: "barrel",
-    sourceLayer: "barrits",
-  }, "file", "$");
+  const result = expectFileIntegration(
+    {
+      path: "src/index.ts",
+      isIndex: false,
+      kind: "barrel",
+      sourceLayer: "barrits",
+    },
+    "file",
+    "$",
+  );
   assert.deepEqual(result.exports, []);
 });
 
 test("expectDomainIntegration returns valid domain integration", () => {
-  const result = expectDomainIntegration({
-    name: "api",
-    path: "src/api",
-    files: [{
-      path: "src/api/route.ts",
-      isIndex: false,
-      kind: "barrel",
-      sourceLayer: "barrits",
-      exports: [{
-        name: "handler",
-        accessPath: "./handler",
-        accessStrategy: "export-name",
-        kind: "function",
-        visibility: "public",
-      }],
-      traitDescriptors: [],
-    }],
-  }, "domain", "$");
+  const result = expectDomainIntegration(
+    {
+      name: "api",
+      path: "src/api",
+      files: [
+        {
+          path: "src/api/route.ts",
+          isIndex: false,
+          kind: "barrel",
+          sourceLayer: "barrits",
+          exports: [
+            {
+              name: "handler",
+              accessPath: "./handler",
+              accessStrategy: "export-name",
+              kind: "function",
+              visibility: "public",
+            },
+          ],
+          traitDescriptors: [],
+        },
+      ],
+    },
+    "domain",
+    "$",
+  );
   assert.equal(result.name, "api");
   assert.equal(result.files.length, 1);
   assert.equal(result.files[0].exports[0].name, "handler");
 });
 
 test("expectDomainIntegration defaults files to empty array when absent", () => {
-  const result = expectDomainIntegration({
-    name: "api",
-    path: "src/api",
-  }, "domain", "$");
+  const result = expectDomainIntegration(
+    {
+      name: "api",
+      path: "src/api",
+    },
+    "domain",
+    "$",
+  );
   assert.deepEqual(result.files, []);
 });
 
 test("expectDomainIntegration throws TypeError for missing name", () => {
-  assert.throws(() => expectDomainIntegration({
-    path: "src/api",
-  }, "domain", "$"), TypeError);
+  assert.throws(
+    () =>
+      expectDomainIntegration(
+        {
+          path: "src/api",
+        },
+        "domain",
+        "$",
+      ),
+    TypeError,
+  );
 });
 
 test("parseJsonSource parses valid JSON", () => {

@@ -1,7 +1,7 @@
 /**
  * [EN] Represents a single data point in a time-series.
  * [ES] Representa un único punto de datos en una serie temporal.
- * 
+ *
  * @template Value [EN] Type of the data value. [ES] Tipo del valor de los datos.
  */
 export type TimeSeriesPoint<Value = number> = {

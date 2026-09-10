@@ -1,19 +1,34 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { filterIntegrationGraph, resolveProjectFilePath } from "../src/barrits/sdk/query";
-import type { BarritsIntegrationGraph, BarritsFileIntegration, BarritsDomainIntegration, BarritsFileExport } from "../src/barrits/sdk/contracts";
+import type {
+  BarritsIntegrationGraph,
+  BarritsFileIntegration,
+  BarritsDomainIntegration,
+  BarritsFileExport,
+} from "../src/barrits/sdk/contracts";
 
 const makeExport = (name: string, visibility: "public" | "internal" = "public"): BarritsFileExport => ({
-  name, accessPath: name, accessStrategy: "file-system" as const, kind: "const" as const, visibility,
+  name,
+  accessPath: name,
+  accessStrategy: "file-system" as const,
+  kind: "const" as const,
+  visibility,
 });
 
 const makeFile = (path: string, kind: string = "domain", ...exports: BarritsFileExport[]): BarritsFileIntegration => ({
-  path, isIndex: path === "index.ts" || path.endsWith("/index.ts"), kind: kind as any,
-  sourceLayer: "barrits", exports, traitDescriptors: [],
+  path,
+  isIndex: path === "index.ts" || path.endsWith("/index.ts"),
+  kind: kind as any,
+  sourceLayer: "barrits",
+  exports,
+  traitDescriptors: [],
 });
 
 const makeDomain = (name: string, ...files: BarritsFileIntegration[]): BarritsDomainIntegration => ({
-  name, path: `/project/${name}`, files,
+  name,
+  path: `/project/${name}`,
+  files,
 });
 
 const makeGraph = (overrides: Partial<BarritsIntegrationGraph> = {}): BarritsIntegrationGraph => ({
@@ -62,10 +77,7 @@ describe("filterIntegrationGraph", () => {
 
   it("filters domains by name", () => {
     const graph = makeGraph({
-      domains: [
-        makeDomain("logic", makeFile("logic/math.ts")),
-        makeDomain("api", makeFile("api/flat.ts")),
-      ],
+      domains: [makeDomain("logic", makeFile("logic/math.ts")), makeDomain("api", makeFile("api/flat.ts"))],
     });
     const result = filterIntegrationGraph(graph, { domains: ["logic"] });
     assert.equal(result.domains.length, 1);
@@ -101,9 +113,7 @@ describe("filterIntegrationGraph", () => {
 
   it("removes domains when all files are filtered out", () => {
     const graph = makeGraph({
-      domains: [
-        makeDomain("logic", makeFile("logic/math.ts", "domain", makeExport("helper", "internal"))),
-      ],
+      domains: [makeDomain("logic", makeFile("logic/math.ts", "domain", makeExport("helper", "internal")))],
     });
     const result = filterIntegrationGraph(graph, { visibilities: ["public"] });
     assert.equal(result.domains.length, 0);
@@ -112,7 +122,8 @@ describe("filterIntegrationGraph", () => {
   it("keeps domains when some files survive filtering", () => {
     const graph = makeGraph({
       domains: [
-        makeDomain("logic",
+        makeDomain(
+          "logic",
           makeFile("logic/math.ts", "domain", makeExport("pub", "public")),
           makeFile("logic/helper.ts", "domain", makeExport("priv", "internal")),
         ),
@@ -137,9 +148,7 @@ describe("filterIntegrationGraph", () => {
 
   it("filters library domains", () => {
     const graph = makeGraph({
-      libraryDomains: [
-        makeDomain("lib", makeFile("lib/utils.ts")),
-      ],
+      libraryDomains: [makeDomain("lib", makeFile("lib/utils.ts"))],
     });
     const result = filterIntegrationGraph(graph, { domains: ["lib"] });
     assert.equal(result.libraryDomains.length, 1);

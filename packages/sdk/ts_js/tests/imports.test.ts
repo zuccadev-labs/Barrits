@@ -46,19 +46,17 @@ describe("filterImportActions", () => {
   });
 
   it("filters by domain", () => {
-    const result = filterImportActions(
-      makeGraph([makeAction({ domain: "logic" }), makeAction({ domain: "api", exportName: "other" })]),
-      { domains: ["logic"] },
-    );
+    const result = filterImportActions(makeGraph([makeAction({ domain: "logic" }), makeAction({ domain: "api", exportName: "other" })]), {
+      domains: ["logic"],
+    });
     assert.equal(result.importActions.length, 1);
     assert.equal(result.importActions[0].domain, "logic");
   });
 
   it("filters by export name", () => {
-    const result = filterImportActions(
-      makeGraph([makeAction({ exportName: "keep" }), makeAction({ exportName: "omit" })]),
-      { exports: ["keep"] },
-    );
+    const result = filterImportActions(makeGraph([makeAction({ exportName: "keep" }), makeAction({ exportName: "omit" })]), {
+      exports: ["keep"],
+    });
     assert.equal(result.importActions.length, 1);
     assert.equal(result.importActions[0].exportName, "keep");
   });
@@ -86,9 +84,16 @@ describe("filterImportActions", () => {
 
 describe("createImportsModuleSource", () => {
   it("generates module source with import actions", () => {
-    const source = createImportsModuleSource(makeGraph([
-      makeAction({ exportName: "hello", domain: "root", kind: "named-import", statement: `import { hello } from "@zuccadev-labs/barrits";` }),
-    ]));
+    const source = createImportsModuleSource(
+      makeGraph([
+        makeAction({
+          exportName: "hello",
+          domain: "root",
+          kind: "named-import",
+          statement: `import { hello } from "@zuccadev-labs/barrits";`,
+        }),
+      ]),
+    );
     assert.ok(source.includes("importActions"));
     assert.ok(source.includes("hello"));
     assert.ok(source.includes("namedImports"));
@@ -98,10 +103,12 @@ describe("createImportsModuleSource", () => {
   });
 
   it("sorts actions by domain then exportName", () => {
-    const source = createImportsModuleSource(makeGraph([
-      makeAction({ exportName: "zExport", domain: "api", statement: `import { zExport } from "@zuccadev-labs/barrits";` }),
-      makeAction({ exportName: "aExport", domain: "logic", statement: `import { aExport } from "@zuccadev-labs/barrits";` }),
-    ]));
+    const source = createImportsModuleSource(
+      makeGraph([
+        makeAction({ exportName: "zExport", domain: "api", statement: `import { zExport } from "@zuccadev-labs/barrits";` }),
+        makeAction({ exportName: "aExport", domain: "logic", statement: `import { aExport } from "@zuccadev-labs/barrits";` }),
+      ]),
+    );
     const apiIdx = source.indexOf('"api"');
     const logicIdx = source.indexOf('"logic"');
     assert.ok(apiIdx > 0);
@@ -110,10 +117,12 @@ describe("createImportsModuleSource", () => {
   });
 
   it("groups actions by exportName in importMap", () => {
-    const source = createImportsModuleSource(makeGraph([
-      makeAction({ exportName: "shared", kind: "named-import" }),
-      makeAction({ exportName: "shared", kind: "namespace-access" }),
-    ]));
+    const source = createImportsModuleSource(
+      makeGraph([
+        makeAction({ exportName: "shared", kind: "named-import" }),
+        makeAction({ exportName: "shared", kind: "namespace-access" }),
+      ]),
+    );
     assert.ok(source.includes('"shared"'));
   });
 
@@ -128,10 +137,13 @@ describe("createImportsModuleSource", () => {
 
 describe("createImportBlock", () => {
   it("creates named-import block with export names", () => {
-    const block = createImportBlock(makeGraph([
-      makeAction({ exportName: "hello", kind: "named-import", statement: `import { hello } from "@zuccadev-labs/barrits";` }),
-      makeAction({ exportName: "world", kind: "named-import", statement: `import { world } from "@zuccadev-labs/barrits";` }),
-    ]), "named-import");
+    const block = createImportBlock(
+      makeGraph([
+        makeAction({ exportName: "hello", kind: "named-import", statement: `import { hello } from "@zuccadev-labs/barrits";` }),
+        makeAction({ exportName: "world", kind: "named-import", statement: `import { world } from "@zuccadev-labs/barrits";` }),
+      ]),
+      "named-import",
+    );
     assert.ok(block.includes(AUTO_IMPORTS_START));
     assert.ok(block.includes(AUTO_IMPORTS_END));
     assert.ok(block.includes("hello") && block.includes("world"));
@@ -157,10 +169,10 @@ describe("createImportBlock", () => {
   });
 
   it("deduplicates export names", () => {
-    const block = createImportBlock(makeGraph([
-      makeAction({ exportName: "hello", kind: "named-import" }),
-      makeAction({ exportName: "hello", kind: "named-import" }),
-    ]), "named-import");
+    const block = createImportBlock(
+      makeGraph([makeAction({ exportName: "hello", kind: "named-import" }), makeAction({ exportName: "hello", kind: "named-import" })]),
+      "named-import",
+    );
     const match = block.match(/\bhello\b/g);
     assert.equal(match?.length, 1);
   });
@@ -169,9 +181,7 @@ describe("createImportBlock", () => {
 describe("applyManagedImports", () => {
   it("replaces existing managed import block", () => {
     const source = `${AUTO_IMPORTS_START}\nimport { old } from "@zuccadev-labs/barrits";\n${AUTO_IMPORTS_END}\n\nconst x = 1;`;
-    const result = applyManagedImports(source, makeGraph([
-      makeAction({ exportName: "hello", kind: "named-import" }),
-    ]), "named-import");
+    const result = applyManagedImports(source, makeGraph([makeAction({ exportName: "hello", kind: "named-import" })]), "named-import");
     assert.ok(result.includes("hello"));
     assert.ok(!result.includes("old"));
     assert.ok(result.includes("const x = 1;"));
@@ -179,9 +189,7 @@ describe("applyManagedImports", () => {
 
   it("appends block after existing imports", () => {
     const source = "import fs from 'node:fs';\n\nconst x = 1;";
-    const result = applyManagedImports(source, makeGraph([
-      makeAction({ exportName: "hello", kind: "named-import" }),
-    ]), "named-import");
+    const result = applyManagedImports(source, makeGraph([makeAction({ exportName: "hello", kind: "named-import" })]), "named-import");
     assert.ok(result.includes("import fs from 'node:fs'"));
     assert.ok(result.includes(AUTO_IMPORTS_START));
     assert.ok(result.includes("const x = 1;"));
@@ -189,9 +197,7 @@ describe("applyManagedImports", () => {
 
   it("prepends block when no existing imports", () => {
     const source = "const x = 1;";
-    const result = applyManagedImports(source, makeGraph([
-      makeAction({ exportName: "hello", kind: "named-import" }),
-    ]), "named-import");
+    const result = applyManagedImports(source, makeGraph([makeAction({ exportName: "hello", kind: "named-import" })]), "named-import");
     assert.ok(result.startsWith(AUTO_IMPORTS_START));
     assert.ok(result.includes("const x = 1;"));
   });

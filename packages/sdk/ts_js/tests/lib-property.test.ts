@@ -71,8 +71,14 @@ describe("property: sorting and selection", () => {
     fc.assert(
       fc.property(fc.array(finiteDouble, { minLength: 1, maxLength: 200 }), (values) => {
         const sorted = [...values].sort((a, b) => a - b);
-        assert.equal(minBy(values, (value) => value), sorted[0]);
-        assert.equal(maxBy(values, (value) => value), sorted[sorted.length - 1]);
+        assert.equal(
+          minBy(values, (value) => value),
+          sorted[0],
+        );
+        assert.equal(
+          maxBy(values, (value) => value),
+          sorted[sorted.length - 1],
+        );
       }),
     );
   });
@@ -118,7 +124,10 @@ describe("property: collections and windows", () => {
       fc.property(fc.array(fc.integer(), { maxLength: 60 }), fc.integer({ min: 1, max: 10 }), (values, pageSize) => {
         const first = paginate(values, { page: 1, pageSize });
         const pages = Array.from({ length: first.totalPages }, (_, index) => paginate(values, { page: index + 1, pageSize }));
-        assert.deepEqual(pages.flatMap((page) => page.items), values);
+        assert.deepEqual(
+          pages.flatMap((page) => page.items),
+          values,
+        );
         assert.equal(pages.at(-1)?.hasNextPage, false);
         assert.equal(pages[0].hasPreviousPage, false);
       }),
@@ -155,7 +164,11 @@ describe("property: hashing", () => {
 });
 
 describe("property: graphs", () => {
-  const edgeArbitrary = fc.record({ from: fc.integer({ min: 0, max: 7 }), to: fc.integer({ min: 0, max: 7 }), weight: fc.integer({ min: 1, max: 9 }) });
+  const edgeArbitrary = fc.record({
+    from: fc.integer({ min: 0, max: 7 }),
+    to: fc.integer({ min: 0, max: 7 }),
+    weight: fc.integer({ min: 1, max: 9 }),
+  });
 
   it("BFS and DFS reach the same node set from the same start", () => {
     fc.assert(
@@ -163,7 +176,10 @@ describe("property: graphs", () => {
         const bfs = breadthFirstSearch(edges, start, { directed });
         const dfs = depthFirstSearch(edges, start, { directed });
         assert.equal(bfs[0], start);
-        assert.deepEqual([...bfs].sort((a, b) => a - b), [...dfs].sort((a, b) => a - b));
+        assert.deepEqual(
+          [...bfs].sort((a, b) => a - b),
+          [...dfs].sort((a, b) => a - b),
+        );
         assert.equal(new Set(bfs).size, bfs.length);
       }),
     );
@@ -171,26 +187,31 @@ describe("property: graphs", () => {
 
   it("dijkstraShortestPath agrees with Bellman-Ford on small directed graphs", () => {
     fc.assert(
-      fc.property(fc.array(edgeArbitrary, { maxLength: 24 }), fc.integer({ min: 0, max: 7 }), fc.integer({ min: 0, max: 7 }), (edges, start, target) => {
-        const distances = new Map<number, number>([[start, 0]]);
-        for (let iteration = 0; iteration < 8; iteration += 1) {
-          for (const edge of edges) {
-            const fromDistance = distances.get(edge.from);
-            if (fromDistance === undefined) continue;
-            const candidate = fromDistance + edge.weight;
-            if (candidate < (distances.get(edge.to) ?? Number.POSITIVE_INFINITY)) {
-              distances.set(edge.to, candidate);
+      fc.property(
+        fc.array(edgeArbitrary, { maxLength: 24 }),
+        fc.integer({ min: 0, max: 7 }),
+        fc.integer({ min: 0, max: 7 }),
+        (edges, start, target) => {
+          const distances = new Map<number, number>([[start, 0]]);
+          for (let iteration = 0; iteration < 8; iteration += 1) {
+            for (const edge of edges) {
+              const fromDistance = distances.get(edge.from);
+              if (fromDistance === undefined) continue;
+              const candidate = fromDistance + edge.weight;
+              if (candidate < (distances.get(edge.to) ?? Number.POSITIVE_INFINITY)) {
+                distances.set(edge.to, candidate);
+              }
             }
           }
-        }
-        const expected = distances.get(target) ?? Number.POSITIVE_INFINITY;
-        const result = dijkstraShortestPath(edges, start, target);
-        assert.equal(result.distance, expected);
-        if (expected !== Number.POSITIVE_INFINITY) {
-          assert.equal(result.path[0], start);
-          assert.equal(result.path[result.path.length - 1], target);
-        }
-      }),
+          const expected = distances.get(target) ?? Number.POSITIVE_INFINITY;
+          const result = dijkstraShortestPath(edges, start, target);
+          assert.equal(result.distance, expected);
+          if (expected !== Number.POSITIVE_INFINITY) {
+            assert.equal(result.path[0], start);
+            assert.equal(result.path[result.path.length - 1], target);
+          }
+        },
+      ),
     );
   });
 });

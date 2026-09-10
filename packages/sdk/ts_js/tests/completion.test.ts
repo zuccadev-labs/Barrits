@@ -158,7 +158,9 @@ describe("printCompletion", () => {
   it("prints bash completion to console", () => {
     const lines: string[] = [];
     const originalLog = console.log;
-    console.log = (...args: unknown[]) => { lines.push(args.map(String).join(" ")); };
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
 
     try {
       printCompletion("bash");
@@ -173,7 +175,9 @@ describe("printCompletion", () => {
   it("prints zsh completion to console", () => {
     const lines: string[] = [];
     const originalLog = console.log;
-    console.log = (...args: unknown[]) => { lines.push(args.map(String).join(" ")); };
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
 
     try {
       printCompletion("zsh");
@@ -188,7 +192,9 @@ describe("printCompletion", () => {
   it("prints fish completion to console", () => {
     const lines: string[] = [];
     const originalLog = console.log;
-    console.log = (...args: unknown[]) => { lines.push(args.map(String).join(" ")); };
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
 
     try {
       printCompletion("fish");
@@ -203,7 +209,9 @@ describe("printCompletion", () => {
   it("prints error message for unknown shell", () => {
     const lines: string[] = [];
     const originalLog = console.log;
-    console.log = (...args: unknown[]) => { lines.push(args.map(String).join(" ")); };
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
 
     try {
       printCompletion("unknown");

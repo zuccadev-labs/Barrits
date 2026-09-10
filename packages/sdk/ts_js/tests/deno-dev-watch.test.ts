@@ -15,7 +15,7 @@ const denoCliPath = join(repositoryRoot, "adapters", "deno", "cli.ts");
 const waitFor = async (predicate: () => Promise<boolean>, timeoutMs = 5000): Promise<void> => {
   const start = Date.now();
 
-  while ((Date.now() - start) < timeoutMs) {
+  while (Date.now() - start < timeoutMs) {
     if (await predicate()) {
       return;
     }
@@ -29,52 +29,43 @@ const waitFor = async (predicate: () => Promise<boolean>, timeoutMs = 5000): Pro
 test("deno dev flow runs a child consumer with manifest and snapshot outputs", { concurrency: false }, async () => {
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-deno-dev-flow-"));
   await createAutomationProjectFixture(projectRoot);
-  await writeProjectFile(projectRoot, "barrits.config.mjs", [
-    "export default {",
-    '  automationDirectory: ".cache/barrits",',
-    "};",
-    "",
-  ].join("\n"));
+  await writeProjectFile(
+    projectRoot,
+    "barrits.config.mjs",
+    ["export default {", '  automationDirectory: ".cache/barrits",', "};", ""].join("\n"),
+  );
 
-  const consumerScriptPath = await writeProjectFile(projectRoot, "scripts/dev-consumer.ts", [
-    `import { readDenoBuildManifestSummary, readDenoLanguageToolSnapshot } from ${JSON.stringify(denoAdapterPath)};`,
-    "",
-    'const buildManifestPath = Deno.env.get("BARRITS_BUILD_MANIFEST");',
-    'const snapshotPath = Deno.env.get("BARRITS_WATCH_SNAPSHOT");',
-    'const devMode = Deno.env.get("BARRITS_DEV_MODE") ?? "";',
-    "",
-    'if (!buildManifestPath || !snapshotPath || devMode !== "1") {',
-    '  console.error("missing-deno-dev-environment");',
-    '  Deno.exit(1);',
-    "}",
-    "",
-    "const buildSummary = await readDenoBuildManifestSummary(buildManifestPath);",
-    "const snapshot = await readDenoLanguageToolSnapshot(snapshotPath);",
-    "",
-    'console.log("BARRITS_DENO_CHILD_PAYLOAD::" + JSON.stringify({',
-    '  devMode,',
-    '  buildDomains: buildSummary.domains,',
-    '  snapshotMode: snapshot.mode,',
-    '  snapshotDomains: snapshot.domains.map((domain) => domain.name),',
-    '  importStatements: snapshot.importStatements,',
-    '}));',
-  ].join("\n"));
+  const consumerScriptPath = await writeProjectFile(
+    projectRoot,
+    "scripts/dev-consumer.ts",
+    [
+      `import { readDenoBuildManifestSummary, readDenoLanguageToolSnapshot } from ${JSON.stringify(denoAdapterPath)};`,
+      "",
+      'const buildManifestPath = Deno.env.get("BARRITS_BUILD_MANIFEST");',
+      'const snapshotPath = Deno.env.get("BARRITS_WATCH_SNAPSHOT");',
+      'const devMode = Deno.env.get("BARRITS_DEV_MODE") ?? "";',
+      "",
+      'if (!buildManifestPath || !snapshotPath || devMode !== "1") {',
+      '  console.error("missing-deno-dev-environment");',
+      "  Deno.exit(1);",
+      "}",
+      "",
+      "const buildSummary = await readDenoBuildManifestSummary(buildManifestPath);",
+      "const snapshot = await readDenoLanguageToolSnapshot(snapshotPath);",
+      "",
+      'console.log("BARRITS_DENO_CHILD_PAYLOAD::" + JSON.stringify({',
+      "  devMode,",
+      "  buildDomains: buildSummary.domains,",
+      "  snapshotMode: snapshot.mode,",
+      "  snapshotDomains: snapshot.domains.map((domain) => domain.name),",
+      "  importStatements: snapshot.importStatements,",
+      "}));",
+    ].join("\n"),
+  );
 
   const result = await runCommand(
     "deno",
-    [
-      "run",
-      "-A",
-      denoCliPath,
-      "dev",
-      projectRoot,
-      "--write-snapshot",
-      "--",
-      "deno",
-      "run",
-      "-A",
-      consumerScriptPath,
-    ],
+    ["run", "-A", denoCliPath, "dev", projectRoot, "--write-snapshot", "--", "deno", "run", "-A", consumerScriptPath],
     repositoryRoot,
     process.env,
   );
@@ -83,9 +74,7 @@ test("deno dev flow runs a child consumer with manifest and snapshot outputs", {
   assert.match(result.stderr, /starting dev session/);
   assert.doesNotMatch(result.stderr, /missing-deno-dev-environment/);
 
-  const payloadLine = result.stdout
-    .split(/\r?\n/)
-    .find((line) => line.startsWith("BARRITS_DENO_CHILD_PAYLOAD::"));
+  const payloadLine = result.stdout.split(/\r?\n/).find((line) => line.startsWith("BARRITS_DENO_CHILD_PAYLOAD::"));
   assert.ok(payloadLine);
 
   const payload = JSON.parse(payloadLine.slice("BARRITS_DENO_CHILD_PAYLOAD::".length));
@@ -104,49 +93,45 @@ test("deno dev flow runs a child consumer with manifest and snapshot outputs", {
 test("deno watch updates snapshot after chained hot file changes in one session", { concurrency: false }, async () => {
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-deno-watch-flow-"));
   await createAutomationProjectFixture(projectRoot);
-  await writeProjectFile(projectRoot, "barrits.config.mjs", [
-    "export default {",
-    '  automationDirectory: ".cache/barrits",',
-    "};",
-    "",
-  ].join("\n"));
-  const mutationScriptPath = await writeProjectFile(projectRoot, "scripts/mutate-watch-fixture.ts", [
-    'const phase = Deno.args[0] ?? "phase-1";',
-    `const projectRoot = ${JSON.stringify(projectRoot.replace(/\\/g, "/"))};`,
-    "",
-    'if (phase === "phase-1") {',
-    '  await Deno.writeTextFile(`${projectRoot}/barrits/logic/duplicar.ts`, [',
-    '    "export const duplicar = (value: number) => value * 2;",',
-    '    "export const triplicar = (value: number) => value * 3;",',
-    '    "",',
-    '  ].join("\\n"));',
-    '  await new Promise(r => setTimeout(r, 500));',
-    '  await Deno.writeTextFile(`${projectRoot}/barrits/logic/index.ts`, "export { duplicar, triplicar } from \\\"./duplicar\\\";\\n");',
-    '  await new Promise(r => setTimeout(r, 500));',
-    '  await Deno.writeTextFile(`${projectRoot}/barrits/index.ts`, "export { duplicar, triplicar } from \\\"./logic\\\";\\n");',
-    '} else {',
-    '  await Deno.writeTextFile(`${projectRoot}/barrits/logic/duplicar.ts`, [',
-    '    "export const duplicar = (value: number) => value * 2;",',
-    '    "export const cuadruplicar = (value: number) => value * 4;",',
-    '    "",',
-    '  ].join("\\n"));',
-    '  await new Promise(r => setTimeout(r, 500));',
-    '  await Deno.writeTextFile(`${projectRoot}/barrits/logic/index.ts`, "export { duplicar, cuadruplicar } from \\\"./duplicar\\\";\\n");',
-    '  await new Promise(r => setTimeout(r, 500));',
-    '  await Deno.writeTextFile(`${projectRoot}/barrits/index.ts`, "export { duplicar, cuadruplicar } from \\\"./logic\\\";\\n");',
-    '}',
-  ].join("\n"));
+  await writeProjectFile(
+    projectRoot,
+    "barrits.config.mjs",
+    ["export default {", '  automationDirectory: ".cache/barrits",', "};", ""].join("\n"),
+  );
+  const mutationScriptPath = await writeProjectFile(
+    projectRoot,
+    "scripts/mutate-watch-fixture.ts",
+    [
+      'const phase = Deno.args[0] ?? "phase-1";',
+      `const projectRoot = ${JSON.stringify(projectRoot.replace(/\\/g, "/"))};`,
+      "",
+      'if (phase === "phase-1") {',
+      "  await Deno.writeTextFile(`${projectRoot}/barrits/logic/duplicar.ts`, [",
+      '    "export const duplicar = (value: number) => value * 2;",',
+      '    "export const triplicar = (value: number) => value * 3;",',
+      '    "",',
+      '  ].join("\\n"));',
+      "  await new Promise(r => setTimeout(r, 500));",
+      '  await Deno.writeTextFile(`${projectRoot}/barrits/logic/index.ts`, "export { duplicar, triplicar } from \\\"./duplicar\\\";\\n");',
+      "  await new Promise(r => setTimeout(r, 500));",
+      '  await Deno.writeTextFile(`${projectRoot}/barrits/index.ts`, "export { duplicar, triplicar } from \\\"./logic\\\";\\n");',
+      "} else {",
+      "  await Deno.writeTextFile(`${projectRoot}/barrits/logic/duplicar.ts`, [",
+      '    "export const duplicar = (value: number) => value * 2;",',
+      '    "export const cuadruplicar = (value: number) => value * 4;",',
+      '    "",',
+      '  ].join("\\n"));',
+      "  await new Promise(r => setTimeout(r, 500));",
+      '  await Deno.writeTextFile(`${projectRoot}/barrits/logic/index.ts`, "export { duplicar, cuadruplicar } from \\\"./duplicar\\\";\\n");',
+      "  await new Promise(r => setTimeout(r, 500));",
+      '  await Deno.writeTextFile(`${projectRoot}/barrits/index.ts`, "export { duplicar, cuadruplicar } from \\\"./logic\\\";\\n");',
+      "}",
+    ].join("\n"),
+  );
 
   const watchProcess = spawnCommand(
     "deno",
-    [
-      "run",
-      "-A",
-      denoCliPath,
-      "watch",
-      projectRoot,
-      "--write-snapshot",
-    ],
+    ["run", "-A", denoCliPath, "watch", projectRoot, "--write-snapshot"],
     repositoryRoot,
     process.env,
   );
@@ -164,12 +149,7 @@ test("deno watch updates snapshot after chained hot file changes in one session"
       }
     }, 8000);
 
-    const mutationResult = await runCommand(
-      "deno",
-      ["run", "-A", mutationScriptPath, "phase-1"],
-      repositoryRoot,
-      process.env,
-    );
+    const mutationResult = await runCommand("deno", ["run", "-A", mutationScriptPath, "phase-1"], repositoryRoot, process.env);
     assert.equal(mutationResult.exitCode, 0);
 
     await waitFor(async () => {
@@ -184,21 +164,18 @@ test("deno watch updates snapshot after chained hot file changes in one session"
     assert.match(snapshotSource, /"mode":\s*"watch"/);
     assert.match(buildManifestSource, /triplicar/);
 
-    const secondMutationResult = await runCommand(
-      "deno",
-      ["run", "-A", mutationScriptPath, "phase-2"],
-      repositoryRoot,
-      process.env,
-    );
+    const secondMutationResult = await runCommand("deno", ["run", "-A", mutationScriptPath, "phase-2"], repositoryRoot, process.env);
     assert.equal(secondMutationResult.exitCode, 0);
 
     await waitFor(async () => {
       const nextSnapshotSource = await readFile(snapshotPath, "utf8");
       const nextBuildManifestSource = await readFile(join(projectRoot, ".cache", "barrits", "build-manifest.json"), "utf8");
-      return nextSnapshotSource.includes("cuadruplicar")
-        && nextBuildManifestSource.includes("cuadruplicar")
-        && !nextSnapshotSource.includes("triplicar")
-        && !nextBuildManifestSource.includes("triplicar");
+      return (
+        nextSnapshotSource.includes("cuadruplicar") &&
+        nextBuildManifestSource.includes("cuadruplicar") &&
+        !nextSnapshotSource.includes("triplicar") &&
+        !nextBuildManifestSource.includes("triplicar")
+      );
     }, 20000);
 
     const nextSnapshotSource = await readFile(snapshotPath, "utf8");

@@ -18,41 +18,44 @@ test("node info prints trait diagnostics in human-readable output", async () => 
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-info-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-summary Slug trait used in CLI diagnostics output.",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  await writeProjectFile(projectRoot, "barrits/traits/formatting/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const duplicateSlugTrait = {",
-    '  name: "slug",',
-    "};",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "info", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-summary Slug trait used in CLI diagnostics output.",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/formatting/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const duplicateSlugTrait = {",
+      '  name: "slug",',
+      "};",
+      "",
+    ].join("\n"),
+  );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "info", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /traits: 2/);
@@ -66,36 +69,39 @@ test("node build prints trait diagnostics summary in human-readable output", asy
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-build-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  provides: ["toSlug"],',
-    "  create: () => ({ toSlug(value: string) { return value; } }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  await writeProjectFile(projectRoot, "barrits/traits/formatting/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const duplicateSlugTrait = {",
-    '  name: "slug",',
-    "};",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "build", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  provides: ["toSlug"],',
+      "  create: () => ({ toSlug(value: string) { return value; } }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/formatting/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const duplicateSlugTrait = {",
+      '  name: "slug",',
+      "};",
+      "",
+    ].join("\n"),
+  );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "build", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /buildManifest:/);
@@ -108,29 +114,28 @@ test("node info prints structural trait drift diagnostics in human-readable outp
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-mismatch-info-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-provides toSlug normalizeSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug-runtime",',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "info", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-provides toSlug normalizeSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug-runtime",',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "info", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /traits: 1/);
@@ -143,29 +148,28 @@ test("node build prints structural trait drift summary in human-readable output"
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-mismatch-build-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-provides toSlug normalizeSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug-runtime",',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "build", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-provides toSlug normalizeSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug-runtime",',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "build", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /buildManifest:/);
@@ -179,27 +183,26 @@ test("node info detects trait descriptors declared in barrits/traits/index.ts", 
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-traits-index-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/index.ts", [
-    "/**",
-    " * @barrits-trait runtime-node",
-    " * @barrits-provides getRuntimeName",
-    " */",
-    "export const nodeRuntimeTrait = createTraitDescriptor({",
-    '  name: "runtime-node",',
-    '  provides: ["getRuntimeName"],',
-    "  create: () => ({",
-    '    getRuntimeName() { return "node"; },',
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "info", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/index.ts",
+    [
+      "/**",
+      " * @barrits-trait runtime-node",
+      " * @barrits-provides getRuntimeName",
+      " */",
+      "export const nodeRuntimeTrait = createTraitDescriptor({",
+      '  name: "runtime-node",',
+      '  provides: ["getRuntimeName"],',
+      "  create: () => ({",
+      '    getRuntimeName() { return "node"; },',
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "info", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /traits: 1/);
@@ -211,37 +214,36 @@ test("node info prints dependency, state, and conflicts drift diagnostics in hum
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-dependency-drift-info-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-requires normalize",
-    " * @barrits-consumes normalize",
-    " * @barrits-conflicts legacySlug",
-    " * @barrits-state session",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  conflicts: ["normalize"],',
-    "  requires: [],",
-    '  consumes: ["formatPath"],',
-    '  state: ["cache"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "info", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-requires normalize",
+      " * @barrits-consumes normalize",
+      " * @barrits-conflicts legacySlug",
+      " * @barrits-state session",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  conflicts: ["normalize"],',
+      "  requires: [],",
+      '  consumes: ["formatPath"],',
+      '  state: ["cache"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "info", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /traits: 1/);
@@ -257,37 +259,36 @@ test("node build prints dependency, state, and conflicts drift summary in human-
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-dependency-drift-build-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-requires normalize",
-    " * @barrits-consumes normalize",
-    " * @barrits-conflicts legacySlug",
-    " * @barrits-state session",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  conflicts: ["normalize"],',
-    "  requires: [],",
-    '  consumes: ["formatPath"],',
-    '  state: ["cache"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "build", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-requires normalize",
+      " * @barrits-consumes normalize",
+      " * @barrits-conflicts legacySlug",
+      " * @barrits-state session",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  conflicts: ["normalize"],',
+      "  requires: [],",
+      '  consumes: ["formatPath"],',
+      '  state: ["cache"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "build", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /buildManifest:/);
@@ -304,33 +305,32 @@ test("node info prints contradictory portable trait contract diagnostics in huma
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-policy-drift-info-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-requires normalize slug",
-    " * @barrits-conflicts normalize slug",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  requires: ["normalize", "slug"],',
-    '  conflicts: ["normalize", "slug"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "info", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-requires normalize slug",
+      " * @barrits-conflicts normalize slug",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  requires: ["normalize", "slug"],',
+      '  conflicts: ["normalize", "slug"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "info", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /traits: 1/);
@@ -346,33 +346,32 @@ test("node build prints contradictory portable trait contract summary in human-r
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-policy-drift-build-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-requires normalize slug",
-    " * @barrits-conflicts normalize slug",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  requires: ["normalize", "slug"],',
-    '  conflicts: ["normalize", "slug"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "build", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-requires normalize slug",
+      " * @barrits-conflicts normalize slug",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  requires: ["normalize", "slug"],',
+      '  conflicts: ["normalize", "slug"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "build", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /buildManifest:/);
@@ -388,31 +387,30 @@ test("node info prints missing required trait diagnostics in human-readable outp
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-missing-required-info-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-requires normalize",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  requires: ["normalize"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "info", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-requires normalize",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  requires: ["normalize"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "info", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /traits: 1/);
@@ -424,31 +422,30 @@ test("node build prints missing required trait summary in human-readable output"
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-missing-required-build-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-requires normalize",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  requires: ["normalize"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "build", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-requires normalize",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  requires: ["normalize"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "build", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /buildManifest:/);
@@ -461,31 +458,30 @@ test("node info prints missing consumed capability diagnostics in human-readable
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-missing-consumed-info-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-consumes normalize",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  consumes: ["normalize"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "info", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-consumes normalize",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  consumes: ["normalize"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "info", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /traits: 1/);
@@ -498,31 +494,30 @@ test("node build prints missing consumed capability summary in human-readable ou
   const projectRoot = await mkdtemp(join(tmpdir(), "barrits-node-cli-missing-consumed-build-"));
   await createAutomationProjectFixture(projectRoot);
 
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-consumes normalize",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  consumes: ["normalize"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
-
-  const result = await runCommand(
-    process.execPath,
-    [tsxCliPath, nodeCliPath, "build", projectRoot],
-    repositoryRoot,
-    process.env,
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-consumes normalize",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  consumes: ["normalize"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
   );
+
+  const result = await runCommand(process.execPath, [tsxCliPath, nodeCliPath, "build", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /buildManifest:/);

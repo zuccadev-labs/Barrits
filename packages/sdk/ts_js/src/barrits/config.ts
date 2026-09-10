@@ -322,7 +322,10 @@ const transpileTypeScriptConfig = async (configFilePath: string, source: string)
  * [ES] Transpila una configuración TypeScript a ESM junto al archivo original (para que los imports relativos
  * sigan resolviendo) e importa el módulo temporal. El archivo temporal se elimina siempre.
  */
-const importTranspiledConfig = async (configFilePath: string, importModule: BarritsConfigModuleImporter): Promise<Record<string, unknown>> => {
+const importTranspiledConfig = async (
+  configFilePath: string,
+  importModule: BarritsConfigModuleImporter,
+): Promise<Record<string, unknown>> => {
   const [filesystem, pathModule] = await Promise.all([
     runtimeImport<typeof import("node:fs/promises")>("node:fs/promises"),
     runtimeImport<typeof import("node:path")>("node:path"),

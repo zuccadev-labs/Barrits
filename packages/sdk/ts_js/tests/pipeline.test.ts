@@ -35,7 +35,10 @@ describe("composePipeline", () => {
 
   it("preserves order of steps", () => {
     const log: number[] = [];
-    const track = (x: number) => { log.push(x); return x; };
+    const track = (x: number) => {
+      log.push(x);
+      return x;
+    };
     composePipeline(0, track, track, track);
     assert.deepEqual(log, [0, 0, 0]);
   });

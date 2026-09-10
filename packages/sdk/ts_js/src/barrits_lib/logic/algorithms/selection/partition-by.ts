@@ -12,7 +12,7 @@ export type PartitionResult<Value> = {
 /**
  * [EN] Partitions a collection into two groups based on a predicate function.
  * [ES] Particiona una colección en dos grupos basado en una función de predicado.
- * 
+ *
  * @param values [EN] Collection to partition. [ES] Colección a particionar.
  * @param predicate [EN] Function to test each element. [ES] Función para probar cada elemento.
  * @returns [EN] Object containing matched and rejected elements. [ES] Objeto con elementos aceptados y rechazados.

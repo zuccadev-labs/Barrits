@@ -65,9 +65,7 @@ describe("findBarritsDirectory", () => {
   });
 
   it("returns recursive-child strategy via BFS", async () => {
-    const adapter = createMockAdapter([
-      "/home/project/src/barrits",
-    ]);
+    const adapter = createMockAdapter(["/home/project/src/barrits"]);
     const result = await findBarritsDirectory(adapter, { startDirectory: "/home/project" });
     assert.ok(result);
     assert.equal(result.strategy, "recursive-child");
@@ -75,9 +73,7 @@ describe("findBarritsDirectory", () => {
   });
 
   it("returns recursive-child strategy with depth-limited BFS", async () => {
-    const adapter = createMockAdapter([
-      "/home/project/a/b/c/barrits",
-    ]);
+    const adapter = createMockAdapter(["/home/project/a/b/c/barrits"]);
     const result = await findBarritsDirectory(adapter, { startDirectory: "/home/project" });
     assert.ok(result);
     assert.equal(result.strategy, "recursive-child");
@@ -90,20 +86,14 @@ describe("findBarritsDirectory", () => {
   });
 
   it("ignores node_modules during recursive search", async () => {
-    const adapter = createMockAdapter([
-      "/home/project/node_modules/barrits",
-      "/home/project/src/barrits",
-    ]);
+    const adapter = createMockAdapter(["/home/project/node_modules/barrits", "/home/project/src/barrits"]);
     const result = await findBarritsDirectory(adapter, { startDirectory: "/home/project" });
     assert.ok(result);
     assert.equal(result.barritsDirectory, "/home/project/src/barrits");
   });
 
   it("ignores .git during recursive search", async () => {
-    const adapter = createMockAdapter([
-      "/home/project/.git/barrits",
-      "/home/project/lib/barrits",
-    ]);
+    const adapter = createMockAdapter(["/home/project/.git/barrits", "/home/project/lib/barrits"]);
     const result = await findBarritsDirectory(adapter, { startDirectory: "/home/project" });
     assert.ok(result);
     assert.equal(result.barritsDirectory, "/home/project/lib/barrits");
@@ -121,9 +111,7 @@ describe("findBarritsDirectory", () => {
   });
 
   it("uses custom maxDepth to limit search", async () => {
-    const adapter = createMockAdapter([
-      "/home/project/a/b/c/barrits",
-    ]);
+    const adapter = createMockAdapter(["/home/project/a/b/c/barrits"]);
     const result = await findBarritsDirectory(adapter, {
       startDirectory: "/home/project",
       maxDepth: 2,
@@ -132,10 +120,7 @@ describe("findBarritsDirectory", () => {
   });
 
   it("returns direct-child over recursive when both exist", async () => {
-    const adapter = createMockAdapter([
-      "/home/project/barrits",
-      "/home/project/deep/barrits",
-    ]);
+    const adapter = createMockAdapter(["/home/project/barrits", "/home/project/deep/barrits"]);
     const result = await findBarritsDirectory(adapter, { startDirectory: "/home/project" });
     assert.ok(result);
     assert.equal(result.strategy, "direct-child");
@@ -143,10 +128,7 @@ describe("findBarritsDirectory", () => {
   });
 
   it("direct-child takes priority over ancestor-child", async () => {
-    const adapter = createMockAdapter([
-      "/home/barrits",
-      "/home/project/barrits",
-    ]);
+    const adapter = createMockAdapter(["/home/barrits", "/home/project/barrits"]);
     const result = await findBarritsDirectory(adapter, { startDirectory: "/home/project" });
     assert.ok(result);
     assert.equal(result.strategy, "direct-child");
@@ -154,11 +136,7 @@ describe("findBarritsDirectory", () => {
   });
 
   it("ignores dist and build directories", async () => {
-    const adapter = createMockAdapter([
-      "/home/project/dist/barrits",
-      "/home/project/build/barrits",
-      "/home/project/src/barrits",
-    ]);
+    const adapter = createMockAdapter(["/home/project/dist/barrits", "/home/project/build/barrits", "/home/project/src/barrits"]);
     const result = await findBarritsDirectory(adapter, { startDirectory: "/home/project" });
     assert.ok(result);
     assert.equal(result.barritsDirectory, "/home/project/src/barrits");

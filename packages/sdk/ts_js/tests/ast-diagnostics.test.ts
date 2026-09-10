@@ -31,36 +31,31 @@ const makeBinding = (overrides: Partial<ExportedTraitBinding> = {}): ExportedTra
 describe("collectTraitDiagnostics", () => {
   describe("self-consistency", () => {
     it("detects self-requires", () => {
-      const diags = collectTraitDiagnostics(
-        [makeDescriptor({ requires: ["testTrait"] })],
-        new Map(),
-      );
+      const diags = collectTraitDiagnostics([makeDescriptor({ requires: ["testTrait"] })], new Map());
       assert.ok(diags.some((d) => d.code === "trait-self-requires"));
     });
 
     it("detects self-conflict", () => {
-      const diags = collectTraitDiagnostics(
-        [makeDescriptor({ conflicts: ["testTrait"] })],
-        new Map(),
-      );
+      const diags = collectTraitDiagnostics([makeDescriptor({ conflicts: ["testTrait"] })], new Map());
       assert.ok(diags.some((d) => d.code === "trait-self-conflict"));
     });
 
     it("detects contradictory requires and conflicts", () => {
-      const diags = collectTraitDiagnostics(
-        [makeDescriptor({ requires: ["otherTrait"], conflicts: ["otherTrait"] })],
-        new Map(),
-      );
+      const diags = collectTraitDiagnostics([makeDescriptor({ requires: ["otherTrait"], conflicts: ["otherTrait"] })], new Map());
       assert.ok(diags.some((d) => d.code === "trait-requires-conflict-overlap"));
     });
 
     it("detects required-conflict between two required traits", () => {
       const otherA: BarritsTraitDescriptorInspection = makeDescriptor({
-        name: "traitA", sourceFile: "traits/a.ts", bindingName: "traitA",
+        name: "traitA",
+        sourceFile: "traits/a.ts",
+        bindingName: "traitA",
         conflicts: ["traitB"],
       });
       const otherB: BarritsTraitDescriptorInspection = makeDescriptor({
-        name: "traitB", sourceFile: "traits/b.ts", bindingName: "traitB",
+        name: "traitB",
+        sourceFile: "traits/b.ts",
+        bindingName: "traitB",
       });
       const main = makeDescriptor({ requires: ["traitA", "traitB"] });
       const diags = collectTraitDiagnostics([main, otherA, otherB], new Map());
@@ -75,27 +70,18 @@ describe("collectTraitDiagnostics", () => {
 
   describe("missing dependencies", () => {
     it("detects missing required trait", () => {
-      const diags = collectTraitDiagnostics(
-        [makeDescriptor({ requires: ["missingTrait"] })],
-        new Map(),
-      );
+      const diags = collectTraitDiagnostics([makeDescriptor({ requires: ["missingTrait"] })], new Map());
       assert.ok(diags.some((d) => d.code === "trait-missing-required-trait"));
     });
 
     it("detects missing consumed capability", () => {
-      const diags = collectTraitDiagnostics(
-        [makeDescriptor({ consumes: ["missingCap"] })],
-        new Map(),
-      );
+      const diags = collectTraitDiagnostics([makeDescriptor({ consumes: ["missingCap"] })], new Map());
       assert.ok(diags.some((d) => d.code === "trait-missing-consumed-capability"));
     });
 
     it("does not flag consumed capability when it matches a require name", () => {
       const provider = makeDescriptor({ name: "capProvider", provides: ["missingCap"] });
-      const diags = collectTraitDiagnostics(
-        [makeDescriptor({ requires: ["capProvider"] }), provider],
-        new Map(),
-      );
+      const diags = collectTraitDiagnostics([makeDescriptor({ requires: ["capProvider"] }), provider], new Map());
       assert.equal(diags.filter((d) => d.code === "trait-missing-consumed-capability").length, 0);
     });
 
@@ -184,10 +170,7 @@ describe("collectTraitDiagnostics", () => {
     });
 
     it("does not flag createTraitDescriptorFromJsDoc as unsupported", () => {
-      const diags = collectTraitDiagnostics(
-        [makeDescriptor({ factory: "createTraitDescriptorFromJsDoc" })],
-        new Map(),
-      );
+      const diags = collectTraitDiagnostics([makeDescriptor({ factory: "createTraitDescriptorFromJsDoc" })], new Map());
       assert.equal(diags.filter((d) => d.code === "trait-unsupported-factory").length, 0);
     });
   });

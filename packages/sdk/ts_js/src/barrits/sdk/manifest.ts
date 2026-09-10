@@ -65,7 +65,9 @@ export const createProjectedGraph = (graph: BarritsIntegrationGraph, filters: Ba
   });
 };
 
-const toChecksumPayload = (manifest: BarritsBuildManifestPayload & Partial<Pick<BarritsBuildManifest, "checksum" | "generatedAt">>): BarritsBuildManifestPayload => {
+const toChecksumPayload = (
+  manifest: BarritsBuildManifestPayload & Partial<Pick<BarritsBuildManifest, "checksum" | "generatedAt">>,
+): BarritsBuildManifestPayload => {
   const { checksum: _checksum, generatedAt: _generatedAt, ...payload } = manifest;
   return payload;
 };
@@ -136,7 +138,10 @@ export const assertBuildManifestIntegrity = async (manifest: BarritsBuildManifes
  * @param filters - [EN] Selection filters applied to the graph. [ES] Filtros de selección aplicados al grafo.
  * @returns [EN] Sealed build manifest. [ES] Manifiesto de build sellado.
  */
-export const createBuildManifest = async (graph: BarritsIntegrationGraph, filters?: BarritsSelectionFilters): Promise<BarritsBuildManifest> => {
+export const createBuildManifest = async (
+  graph: BarritsIntegrationGraph,
+  filters?: BarritsSelectionFilters,
+): Promise<BarritsBuildManifest> => {
   const { rootFiles: _rootFiles, domains, libraryRootFiles: _libraryRootFiles, libraryDomains: _libraryDomains, ...base } = graph;
 
   const payload: BarritsBuildManifestPayload = {
@@ -177,7 +182,11 @@ export const stringifyBuildManifest = async (graph: BarritsIntegrationGraph, fil
  * @param filters - [EN] Selection filters. [ES] Filtros de selección.
  * @returns [EN] Watch snapshot. [ES] Snapshot de observación.
  */
-export const createWatchSnapshot = (graph: BarritsIntegrationGraph, mode: "watch" | "dev", filters?: BarritsSelectionFilters): BarritsWatchSnapshot => {
+export const createWatchSnapshot = (
+  graph: BarritsIntegrationGraph,
+  mode: "watch" | "dev",
+  filters?: BarritsSelectionFilters,
+): BarritsWatchSnapshot => {
   return {
     generatedAt: new Date().toISOString(),
     mode,
@@ -195,6 +204,10 @@ export const createWatchSnapshot = (graph: BarritsIntegrationGraph, mode: "watch
  * @param filters - [EN] Selection filters. [ES] Filtros de selección.
  * @returns [EN] JSON text with two-space indentation. [ES] Texto JSON con sangría de dos espacios.
  */
-export const stringifyWatchSnapshot = (graph: BarritsIntegrationGraph, mode: "watch" | "dev", filters?: BarritsSelectionFilters): string => {
+export const stringifyWatchSnapshot = (
+  graph: BarritsIntegrationGraph,
+  mode: "watch" | "dev",
+  filters?: BarritsSelectionFilters,
+): string => {
   return JSON.stringify(createWatchSnapshot(graph, mode, filters), null, 2);
 };

@@ -16,7 +16,8 @@ after(async () => {
 
 describe("ensureManifestModuleFile", () => {
   it("creates file with manifest content", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-materialize-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-materialize-"));
+    tempDirs.add(dir);
     const filePath = join(dir, "manifest.ts");
 
     const manifest = {
@@ -45,7 +46,8 @@ describe("ensureManifestModuleFile", () => {
   });
 
   it("creates file with null manifest", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-materialize-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-materialize-"));
+    tempDirs.add(dir);
     const filePath = join(dir, "empty-manifest.ts");
 
     await ensureManifestModuleFile(filePath, null, "// banner");
@@ -54,7 +56,8 @@ describe("ensureManifestModuleFile", () => {
   });
 
   it("creates intermediate directories", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-materialize-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-materialize-"));
+    tempDirs.add(dir);
     const filePath = join(dir, "nested", "deep", "manifest.ts");
 
     await ensureManifestModuleFile(filePath, null, "");

@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { deterministicStringify, sha256Hex } from "../src/barrits_lib/logic/hashing";
 
 describe("sha256Hex", () => {
-  it("matches the FIPS 180-4 test vector for \"abc\"", async () => {
+  it('matches the FIPS 180-4 test vector for "abc"', async () => {
     assert.equal(await sha256Hex("abc"), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
   });
 

@@ -17,7 +17,11 @@ import { toPositiveInteger } from "../../internal/normalize";
  * @param smoothing [EN] Smoothing constant (default 2). [ES] Constante de suavizado (por defecto 2).
  * @returns [EN] A time-series of EMA values aligned with the input timestamps. [ES] Una serie temporal de valores EMA alineada con las marcas de tiempo de entrada.
  */
-export const exponentialMovingAverage = (points: readonly TimeSeriesPoint<number>[], period = 10, smoothing = 2): TimeSeriesPoint<number>[] => {
+export const exponentialMovingAverage = (
+  points: readonly TimeSeriesPoint<number>[],
+  period = 10,
+  smoothing = 2,
+): TimeSeriesPoint<number>[] => {
   const normalizedPeriod = toPositiveInteger(period, 10);
   const alpha = smoothing / (normalizedPeriod + 1);
   const sortedPoints = sortTimeSeries(points);

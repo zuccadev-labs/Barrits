@@ -50,29 +50,60 @@ test("selection and collection algorithms produce reusable operational views", (
     { project: (incident) => incident.severity, direction: "desc" },
     { project: (incident) => incident.affected, direction: "desc" },
   ]);
-  const topIncidents = topK(incidents, 2, (left, right) => {
-    return ((left.severity * 1000) + left.affected) - ((right.severity * 1000) + right.affected);
-  }, "desc");
+  const topIncidents = topK(
+    incidents,
+    2,
+    (left, right) => {
+      return left.severity * 1000 + left.affected - (right.severity * 1000 + right.affected);
+    },
+    "desc",
+  );
   const paginated = paginate(orderedIncidents, { page: 1, pageSize: 2 });
   const partitioned = partitionBy(incidents, (incident) => incident.severity >= 4);
   const grouped = groupBy(incidents, (incident) => incident.squad);
-  const deduplicated = uniqueBy([
-    { id: "cus-1", name: "Atlas" },
-    { id: "cus-2", name: "Atlas" },
-    { id: "cus-3", name: "Nova" },
-  ], (customer) => customer.name);
+  const deduplicated = uniqueBy(
+    [
+      { id: "cus-1", name: "Atlas" },
+      { id: "cus-2", name: "Atlas" },
+      { id: "cus-3", name: "Nova" },
+    ],
+    (customer) => customer.name,
+  );
   const ranked = rankBy(incidents, [
     { project: (incident) => incident.severity, direction: "desc" },
     { project: (incident) => incident.affected, direction: "desc" },
   ]);
 
-  assert.deepEqual(topIncidents.map((incident) => incident.id), ["inc-1", "inc-2"]);
+  assert.deepEqual(
+    topIncidents.map((incident) => incident.id),
+    ["inc-1", "inc-2"],
+  );
   assert.equal(paginated.totalPages, 2);
-  assert.deepEqual(partitioned.matched.map((incident) => incident.id), ["inc-1", "inc-2", "inc-3"]);
-  assert.deepEqual(Array.from(grouped.get("catalog") ?? []).map((incident) => incident.id), ["inc-2", "inc-3"]);
-  assert.deepEqual(deduplicated.map((customer) => customer.id), ["cus-1", "cus-3"]);
-  assert.deepEqual(ranked.map((entry) => [entry.value.id, entry.rank]), [["inc-1", 1], ["inc-2", 2], ["inc-3", 3], ["inc-4", 4]]);
-  assert.deepEqual(chunk(orderedIncidents, 3).map((group) => group.map((incident) => incident.id)), [["inc-1", "inc-2", "inc-3"], ["inc-4"]]);
+  assert.deepEqual(
+    partitioned.matched.map((incident) => incident.id),
+    ["inc-1", "inc-2", "inc-3"],
+  );
+  assert.deepEqual(
+    Array.from(grouped.get("catalog") ?? []).map((incident) => incident.id),
+    ["inc-2", "inc-3"],
+  );
+  assert.deepEqual(
+    deduplicated.map((customer) => customer.id),
+    ["cus-1", "cus-3"],
+  );
+  assert.deepEqual(
+    ranked.map((entry) => [entry.value.id, entry.rank]),
+    [
+      ["inc-1", 1],
+      ["inc-2", 2],
+      ["inc-3", 3],
+      ["inc-4", 4],
+    ],
+  );
+  assert.deepEqual(
+    chunk(orderedIncidents, 3).map((group) => group.map((incident) => incident.id)),
+    [["inc-1", "inc-2", "inc-3"], ["inc-4"]],
+  );
 });
 
 test("graph and timeseries algorithms solve operational routing and rolling metrics", () => {
@@ -97,13 +128,26 @@ test("graph and timeseries algorithms solve operational routing and rolling metr
   assert.deepEqual(shortestPath.path, ["api-gateway", "checkout", "payments", "ledger"]);
   assert.equal(shortestPath.visitedOrder[0], "api-gateway");
   assert.ok(shortestPath.visitedOrder.includes("ledger"));
-  assert.deepEqual(slidingWindow([1, 2, 3, 4], 2), [[1, 2], [2, 3], [3, 4]]);
+  assert.deepEqual(slidingWindow([1, 2, 3, 4], 2), [
+    [1, 2],
+    [2, 3],
+    [3, 4],
+  ]);
   assert.deepEqual(movingAverage([100, 150, 200, 250], 2), [125, 175, 225]);
   assert.deepEqual(rollingSum([100, 150, 200, 250], 2), [250, 350, 450]);
   assert.deepEqual(windowDelta([100, 150, 200, 250], 3), [100, 100]);
-  assert.equal(sumBy(latencySeries, (point) => point.value), 630);
-  assert.equal(averageBy(latencySeries, (point) => point.value), 157.5);
-  assert.deepEqual(bucketByInterval(latencySeries, 2_000).map((bucket) => bucket.bucketStart), [0, 2_000, 4_000]);
+  assert.equal(
+    sumBy(latencySeries, (point) => point.value),
+    630,
+  );
+  assert.equal(
+    averageBy(latencySeries, (point) => point.value),
+    157.5,
+  );
+  assert.deepEqual(
+    bucketByInterval(latencySeries, 2_000).map((bucket) => bucket.bucketStart),
+    [0, 2_000, 4_000],
+  );
   assert.deepEqual(movingAverageSeries(latencySeries, 2), [
     { timestamp: 2_000, value: 140 },
     { timestamp: 3_000, value: 180 },

@@ -84,8 +84,32 @@ describe("createBuildManifest", () => {
   it("sorts trait descriptors and import actions", async () => {
     const graph = makeGraph({
       traitDescriptors: [
-        { name: "zTrait", sourceFile: "z.ts", bindingName: "z", bindingKind: "const", requires: [], conflicts: [], state: [], consumes: [], provides: [], tags: [], runtimes: [] },
-        { name: "aTrait", sourceFile: "a.ts", bindingName: "a", bindingKind: "const", requires: [], conflicts: [], state: [], consumes: [], provides: [], tags: [], runtimes: [] },
+        {
+          name: "zTrait",
+          sourceFile: "z.ts",
+          bindingName: "z",
+          bindingKind: "const",
+          requires: [],
+          conflicts: [],
+          state: [],
+          consumes: [],
+          provides: [],
+          tags: [],
+          runtimes: [],
+        },
+        {
+          name: "aTrait",
+          sourceFile: "a.ts",
+          bindingName: "a",
+          bindingKind: "const",
+          requires: [],
+          conflicts: [],
+          state: [],
+          consumes: [],
+          provides: [],
+          tags: [],
+          runtimes: [],
+        },
       ],
       importActions: [
         { exportName: "zExport", domain: "logic", sourceFile: "z.ts", kind: "named-import", statement: "import { zExport } from 'x';" },

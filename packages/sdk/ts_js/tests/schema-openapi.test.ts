@@ -66,58 +66,56 @@ describe("generateOpenApiSchema", () => {
   });
 
   it("returns empty paths when no http-endpoint tags", () => {
-    const schema = toSchema(makeManifest([
-      { name: "myTrait", tags: ["storage"] },
-    ])) as Record<string, Record<string, unknown>>;
+    const schema = toSchema(makeManifest([{ name: "myTrait", tags: ["storage"] }])) as Record<string, Record<string, unknown>>;
     assert.equal(Object.keys(schema.paths).length, 0);
   });
 
   it("generates a path for http-endpoint tagged descriptor", () => {
-    const schema = toSchema(makeManifest([
-      { name: "createUserEndpoint", tags: ["http-endpoint"] },
-    ])) as Record<string, Record<string, { post: { operationId: string; summary: string } }>>;
+    const schema = toSchema(makeManifest([{ name: "createUserEndpoint", tags: ["http-endpoint"] }])) as Record<
+      string,
+      Record<string, { post: { operationId: string; summary: string } }>
+    >;
     assert.ok(schema.paths["/createuser"]);
     assert.equal(schema.paths["/createuser"].post.operationId, "createUserEndpoint");
     assert.equal(schema.paths["/createuser"].post.summary, "Executes createUserEndpoint");
   });
 
   it("uses summary from descriptor when available", () => {
-    const schema = toSchema(makeManifest([
-      { name: "loginEndpoint", tags: ["http-endpoint"], summary: "Authenticates a user" },
-    ])) as Record<string, Record<string, { post: { summary: string } }>>;
+    const schema = toSchema(makeManifest([{ name: "loginEndpoint", tags: ["http-endpoint"], summary: "Authenticates a user" }])) as Record<
+      string,
+      Record<string, { post: { summary: string } }>
+    >;
     assert.equal(schema.paths["/login"].post.summary, "Authenticates a user");
   });
 
   it("detects endpoint by name even without http-endpoint tag", () => {
-    const schema = toSchema(makeManifest([
-      { name: "loginEndpoint" },
-    ])) as Record<string, Record<string, unknown>>;
+    const schema = toSchema(makeManifest([{ name: "loginEndpoint" }])) as Record<string, Record<string, unknown>>;
     assert.ok(schema.paths["/login"]);
   });
 
   it("generates multiple paths for multiple endpoints", () => {
-    const schema = toSchema(makeManifest([
-      { name: "createUserEndpoint", tags: ["http-endpoint"] },
-      { name: "deleteUserEndpoint", tags: ["http-endpoint"] },
-    ])) as Record<string, Record<string, unknown>>;
+    const schema = toSchema(
+      makeManifest([
+        { name: "createUserEndpoint", tags: ["http-endpoint"] },
+        { name: "deleteUserEndpoint", tags: ["http-endpoint"] },
+      ]),
+    ) as Record<string, Record<string, unknown>>;
     assert.equal(Object.keys(schema.paths).length, 2);
     assert.ok(schema.paths["/createuser"]);
     assert.ok(schema.paths["/deleteuser"]);
   });
 
   it("generates POST handler with 200 response", () => {
-    const schema = toSchema(makeManifest([
-      { name: "testEndpoint", tags: ["http-endpoint"] },
-    ]));
-    const handler = (schema as Record<string, Record<string, { post: { responses: Record<string, { description: string }> } }>>).paths["/test"].post;
+    const schema = toSchema(makeManifest([{ name: "testEndpoint", tags: ["http-endpoint"] }]));
+    const handler = (schema as Record<string, Record<string, { post: { responses: Record<string, { description: string }> } }>>).paths[
+      "/test"
+    ].post;
     assert.ok(handler.responses["200"]);
     assert.equal(handler.responses["200"].description, "Successful response");
   });
 
   it("handles descriptor names without 'endpoint' suffix", () => {
-    const schema = toSchema(makeManifest([
-      { name: "health", tags: ["http-endpoint"] },
-    ])) as Record<string, Record<string, unknown>>;
+    const schema = toSchema(makeManifest([{ name: "health", tags: ["http-endpoint"] }])) as Record<string, Record<string, unknown>>;
     assert.ok(schema.paths["/health"]);
   });
 

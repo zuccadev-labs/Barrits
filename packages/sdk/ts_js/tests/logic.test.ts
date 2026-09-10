@@ -23,7 +23,9 @@ import {
   topologicalSort,
 } from "../src/barrits/logic";
 
-const libraryRuntimeExports = Object.keys(library).filter((key) => key !== "logicFamilies").sort();
+const libraryRuntimeExports = Object.keys(library)
+  .filter((key) => key !== "logicFamilies")
+  .sort();
 
 describe("logic namespace object (barrits.logic)", () => {
   it("is an object", () => {

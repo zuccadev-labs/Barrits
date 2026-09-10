@@ -60,7 +60,7 @@ test("loadBarritsConfig and resolveBarritsConfig read root config files with inl
       "export default {",
       '  runtime: "react",',
       '  watch: "manual",',
-      '  autoManifest: true,',
+      "  autoManifest: true,",
       '  automationDirectory: ".cache/barrits",',
       "};",
       "",

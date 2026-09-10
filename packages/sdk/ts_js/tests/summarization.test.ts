@@ -28,13 +28,22 @@ describe("mapImportStatements", () => {
 
   it("maps import actions to statement strings", () => {
     const actions: BarritsImportAction[] = [
-      { exportName: "foo", domain: "logic", sourceFile: "logic/foo.ts", kind: "named-import", statement: 'import { foo } from "./logic/foo";' },
-      { exportName: "bar", domain: "logic", sourceFile: "logic/bar.ts", kind: "named-import", statement: 'import { bar } from "./logic/bar";' },
+      {
+        exportName: "foo",
+        domain: "logic",
+        sourceFile: "logic/foo.ts",
+        kind: "named-import",
+        statement: 'import { foo } from "./logic/foo";',
+      },
+      {
+        exportName: "bar",
+        domain: "logic",
+        sourceFile: "logic/bar.ts",
+        kind: "named-import",
+        statement: 'import { bar } from "./logic/bar";',
+      },
     ];
-    assert.deepEqual(mapImportStatements(actions), [
-      'import { foo } from "./logic/foo";',
-      'import { bar } from "./logic/bar";',
-    ]);
+    assert.deepEqual(mapImportStatements(actions), ['import { foo } from "./logic/foo";', 'import { bar } from "./logic/bar";']);
   });
 
   it("preserves input order", () => {
@@ -58,16 +67,43 @@ describe("mapTraitDescriptors", () => {
   it("sorts by name then sourceFile", () => {
     const descriptors: BarritsConsumedTraitDescriptor[] = [
       {
-        name: "zebra", sourceFile: "a/z.ts", bindingName: "z", bindingKind: "const",
-        requires: [], conflicts: [], state: [], consumes: [], provides: [], tags: [], runtimes: [],
+        name: "zebra",
+        sourceFile: "a/z.ts",
+        bindingName: "z",
+        bindingKind: "const",
+        requires: [],
+        conflicts: [],
+        state: [],
+        consumes: [],
+        provides: [],
+        tags: [],
+        runtimes: [],
       },
       {
-        name: "alfa", sourceFile: "z/a.ts", bindingName: "a", bindingKind: "const",
-        requires: [], conflicts: [], state: [], consumes: [], provides: [], tags: [], runtimes: [],
+        name: "alfa",
+        sourceFile: "z/a.ts",
+        bindingName: "a",
+        bindingKind: "const",
+        requires: [],
+        conflicts: [],
+        state: [],
+        consumes: [],
+        provides: [],
+        tags: [],
+        runtimes: [],
       },
       {
-        name: "alfa", sourceFile: "a/b.ts", bindingName: "b", bindingKind: "function",
-        requires: [], conflicts: [], state: [], consumes: [], provides: [], tags: [], runtimes: [],
+        name: "alfa",
+        sourceFile: "a/b.ts",
+        bindingName: "b",
+        bindingKind: "function",
+        requires: [],
+        conflicts: [],
+        state: [],
+        consumes: [],
+        provides: [],
+        tags: [],
+        runtimes: [],
       },
     ];
     const result = mapTraitDescriptors(descriptors);
@@ -82,12 +118,30 @@ describe("mapTraitDescriptors", () => {
   it("does not mutate the input array", () => {
     const originalOrder: BarritsConsumedTraitDescriptor[] = [
       {
-        name: "z", sourceFile: "z.ts", bindingName: "z", bindingKind: "const",
-        requires: [], conflicts: [], state: [], consumes: [], provides: [], tags: [], runtimes: [],
+        name: "z",
+        sourceFile: "z.ts",
+        bindingName: "z",
+        bindingKind: "const",
+        requires: [],
+        conflicts: [],
+        state: [],
+        consumes: [],
+        provides: [],
+        tags: [],
+        runtimes: [],
       },
       {
-        name: "a", sourceFile: "a.ts", bindingName: "a", bindingKind: "const",
-        requires: [], conflicts: [], state: [], consumes: [], provides: [], tags: [], runtimes: [],
+        name: "a",
+        sourceFile: "a.ts",
+        bindingName: "a",
+        bindingKind: "const",
+        requires: [],
+        conflicts: [],
+        state: [],
+        consumes: [],
+        provides: [],
+        tags: [],
+        runtimes: [],
       },
     ];
     mapTraitDescriptors(originalOrder);
@@ -171,9 +225,30 @@ describe("createTraitDiagnosticAggregate", () => {
 
   it("groups by descriptor name, sourceFile and bindingName", () => {
     const diagnostics: BarritsTraitDiagnostic[] = [
-      { code: "trait-duplicate-name", category: "impossible", severity: "error", message: "dup", sourceFile: "a.ts", descriptorName: "myTrait" },
-      { code: "trait-duplicate-name", category: "impossible", severity: "error", message: "dup2", sourceFile: "a.ts", descriptorName: "myTrait" },
-      { code: "trait-missing-consumed-capability", category: "drift", severity: "warning", message: "missing", sourceFile: "b.ts", descriptorName: "otherTrait" },
+      {
+        code: "trait-duplicate-name",
+        category: "impossible",
+        severity: "error",
+        message: "dup",
+        sourceFile: "a.ts",
+        descriptorName: "myTrait",
+      },
+      {
+        code: "trait-duplicate-name",
+        category: "impossible",
+        severity: "error",
+        message: "dup2",
+        sourceFile: "a.ts",
+        descriptorName: "myTrait",
+      },
+      {
+        code: "trait-missing-consumed-capability",
+        category: "drift",
+        severity: "warning",
+        message: "missing",
+        sourceFile: "b.ts",
+        descriptorName: "otherTrait",
+      },
     ];
     const result = createTraitDiagnosticAggregate(diagnostics);
     assert(result !== undefined);
@@ -196,7 +271,14 @@ describe("createTraitDiagnosticAggregate", () => {
 
   it("sorts byDescriptor by descriptorName then sourceFile", () => {
     const diagnostics: BarritsTraitDiagnostic[] = [
-      { code: "trait-duplicate-name", category: "impossible", severity: "error", message: "z", sourceFile: "a.ts", descriptorName: "zebra" },
+      {
+        code: "trait-duplicate-name",
+        category: "impossible",
+        severity: "error",
+        message: "z",
+        sourceFile: "a.ts",
+        descriptorName: "zebra",
+      },
       { code: "trait-duplicate-name", category: "impossible", severity: "error", message: "a", sourceFile: "z.ts", descriptorName: "alfa" },
       { code: "trait-duplicate-name", category: "impossible", severity: "error", message: "b", sourceFile: "a.ts", descriptorName: "alfa" },
     ];
@@ -212,7 +294,14 @@ describe("createTraitDiagnosticAggregate", () => {
 
   it("sorts codes within each descriptor", () => {
     const diagnostics: BarritsTraitDiagnostic[] = [
-      { code: "trait-missing-consumed-capability", category: "drift", severity: "warning", message: "x", sourceFile: "a.ts", descriptorName: "t" },
+      {
+        code: "trait-missing-consumed-capability",
+        category: "drift",
+        severity: "warning",
+        message: "x",
+        sourceFile: "a.ts",
+        descriptorName: "t",
+      },
       { code: "trait-duplicate-name", category: "impossible", severity: "error", message: "y", sourceFile: "a.ts", descriptorName: "t" },
     ];
     const result = createTraitDiagnosticAggregate(diagnostics);
@@ -223,7 +312,15 @@ describe("createTraitDiagnosticAggregate", () => {
 
   it("maps bindingName from diagnostics", () => {
     const diagnostics: BarritsTraitDiagnostic[] = [
-      { code: "trait-duplicate-name", category: "impossible", severity: "error", message: "dup", sourceFile: "a.ts", descriptorName: "t", bindingName: "myBinding" },
+      {
+        code: "trait-duplicate-name",
+        category: "impossible",
+        severity: "error",
+        message: "dup",
+        sourceFile: "a.ts",
+        descriptorName: "t",
+        bindingName: "myBinding",
+      },
     ];
     const result = createTraitDiagnosticAggregate(diagnostics);
     assert(result !== undefined);
@@ -257,16 +354,39 @@ describe("createBuildManifestSummary", () => {
       barrelsCount: 2,
       domains: ["logic", "ui"],
       traitDescriptors: [
-        { name: "myTrait", sourceFile: "logic/trait.ts", bindingName: "t", bindingKind: "const", requires: [], conflicts: [], state: [], consumes: [], provides: [], tags: [], runtimes: [] },
+        {
+          name: "myTrait",
+          sourceFile: "logic/trait.ts",
+          bindingName: "t",
+          bindingKind: "const",
+          requires: [],
+          conflicts: [],
+          state: [],
+          consumes: [],
+          provides: [],
+          tags: [],
+          runtimes: [],
+        },
       ],
-      traitDiagnostics: [
-        { code: "trait-duplicate-name", category: "impossible", severity: "error", message: "dup", sourceFile: "a.ts" },
-      ],
+      traitDiagnostics: [{ code: "trait-duplicate-name", category: "impossible", severity: "error", message: "dup", sourceFile: "a.ts" }],
       importActions: [
-        { exportName: "foo", domain: "logic", sourceFile: "logic/foo.ts", kind: "named-import", statement: 'import { foo } from "./logic/foo";' },
+        {
+          exportName: "foo",
+          domain: "logic",
+          sourceFile: "logic/foo.ts",
+          kind: "named-import",
+          statement: 'import { foo } from "./logic/foo";',
+        },
       ],
       collisions: [
-        { type: "project-project", namespace: "shared", exportName: "dup", projectSourceFile: "a.ts", conflictSourceFile: "b.ts", message: "Duplicate export" },
+        {
+          type: "project-project",
+          namespace: "shared",
+          exportName: "dup",
+          projectSourceFile: "a.ts",
+          conflictSourceFile: "b.ts",
+          message: "Duplicate export",
+        },
       ],
     };
     const summary = createBuildManifestSummary(manifest);
@@ -387,7 +507,13 @@ describe("createWatchSnapshotSummary", () => {
         traitDescriptors: [],
         traitDiagnostics: [],
         importActions: [
-          { exportName: "foo", domain: "logic", sourceFile: "logic/foo.ts", kind: "named-import", statement: 'import { foo } from "./logic/foo";' },
+          {
+            exportName: "foo",
+            domain: "logic",
+            sourceFile: "logic/foo.ts",
+            kind: "named-import",
+            statement: 'import { foo } from "./logic/foo";',
+          },
         ],
         collisions: [],
       },
@@ -482,8 +608,22 @@ describe("createLanguageToolSnapshot", () => {
             name: "logic",
             path: "logic",
             files: [
-              { path: "a.ts", isIndex: false, kind: "domain", sourceLayer: "barrits", traitDescriptors: [], exports: [{ name: "foo", accessPath: "foo", accessStrategy: "export-name", kind: "const", visibility: "public" }] },
-              { path: "b.ts", isIndex: false, kind: "domain", sourceLayer: "barrits", traitDescriptors: [], exports: [{ name: "bar", accessPath: "bar", accessStrategy: "export-name", kind: "function", visibility: "public" }] },
+              {
+                path: "a.ts",
+                isIndex: false,
+                kind: "domain",
+                sourceLayer: "barrits",
+                traitDescriptors: [],
+                exports: [{ name: "foo", accessPath: "foo", accessStrategy: "export-name", kind: "const", visibility: "public" }],
+              },
+              {
+                path: "b.ts",
+                isIndex: false,
+                kind: "domain",
+                sourceLayer: "barrits",
+                traitDescriptors: [],
+                exports: [{ name: "bar", accessPath: "bar", accessStrategy: "export-name", kind: "function", visibility: "public" }],
+              },
             ],
           },
           {
@@ -616,10 +756,23 @@ describe("createLanguageToolSnapshot", () => {
         traitDescriptors: [],
         traitDiagnostics: [],
         importActions: [
-          { exportName: "foo", domain: "logic", sourceFile: "logic/foo.ts", kind: "named-import", statement: 'import { foo } from "./logic/foo";' },
+          {
+            exportName: "foo",
+            domain: "logic",
+            sourceFile: "logic/foo.ts",
+            kind: "named-import",
+            statement: 'import { foo } from "./logic/foo";',
+          },
         ],
         collisions: [
-          { type: "project-project", namespace: "shared", exportName: "dup", projectSourceFile: "a.ts", conflictSourceFile: "b.ts", message: "Duplicate export" },
+          {
+            type: "project-project",
+            namespace: "shared",
+            exportName: "dup",
+            projectSourceFile: "a.ts",
+            conflictSourceFile: "b.ts",
+            message: "Duplicate export",
+          },
         ],
       },
     };

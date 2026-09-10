@@ -32,7 +32,9 @@ export const dijkstraShortestPath = <NodeId extends GraphNodeId>(
 ): GraphPath<NodeId> => {
   for (const edge of edges) {
     if ((edge.weight ?? 1) < 0) {
-      throw new RangeError(`dijkstraShortestPath requires non-negative weights (edge ${String(edge.from)} -> ${String(edge.to)} has ${String(edge.weight)}).`);
+      throw new RangeError(
+        `dijkstraShortestPath requires non-negative weights (edge ${String(edge.from)} -> ${String(edge.to)} has ${String(edge.weight)}).`,
+      );
     }
   }
 

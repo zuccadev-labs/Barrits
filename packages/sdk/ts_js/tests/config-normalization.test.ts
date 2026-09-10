@@ -7,11 +7,7 @@ import {
   normalizeResolvedConfig,
 } from "../src/barrits/internal/config_normalization";
 
-import type {
-  BarritsRootConfig,
-  BarritsRuntimeKind,
-  BarritsWatchMode,
-} from "../src/barrits/config";
+import type { BarritsRootConfig, BarritsRuntimeKind, BarritsWatchMode } from "../src/barrits/config";
 
 describe("normalizeAutomationDirectory", () => {
   it("returns default for undefined", () => {
@@ -163,5 +159,4 @@ describe("normalizeResolvedConfig", () => {
     const result = normalizeResolvedConfig({}, "/project", "/project/barrits.config.ts");
     assert.equal(result.namespace, undefined);
   });
-
 });

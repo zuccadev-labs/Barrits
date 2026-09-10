@@ -181,7 +181,8 @@ describe("createPluginBaseOptions", () => {
 
 describe("loadManifest", () => {
   it("reads and parses a valid manifest file", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-"));
+    tempDirs.add(dir);
     const manifestPath = join(dir, "manifest.json");
     const manifest = makeManifest({ projectRoot: dir });
     await writeFile(manifestPath, JSON.stringify(manifest), "utf8");
@@ -192,7 +193,8 @@ describe("loadManifest", () => {
   });
 
   it("throws on invalid JSON", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-"));
+    tempDirs.add(dir);
     const manifestPath = join(dir, "bad.json");
     await writeFile(manifestPath, "not json", "utf8");
 
@@ -206,7 +208,8 @@ describe("loadManifest", () => {
 
 describe("resolvePackageAutomationOptions", () => {
   it("returns defaults when no options and no config file", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-"));
+    tempDirs.add(dir);
     const opts = await resolvePackageAutomationOptions({}, dir);
     assert.equal(opts.projectRoot, dir);
     assert.equal(opts.manifestPath, undefined);
@@ -215,7 +218,8 @@ describe("resolvePackageAutomationOptions", () => {
   });
 
   it("applies explicit options over defaults", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-"));
+    tempDirs.add(dir);
     const opts = await resolvePackageAutomationOptions(
       {
         projectRoot: dir,
@@ -232,7 +236,8 @@ describe("resolvePackageAutomationOptions", () => {
   });
 
   it("uses fallbackProjectRoot when projectRoot not provided", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-"));
+    tempDirs.add(dir);
     const opts = await resolvePackageAutomationOptions({}, dir);
     assert.equal(opts.projectRoot, dir);
   });
@@ -240,7 +245,8 @@ describe("resolvePackageAutomationOptions", () => {
 
 describe("loadManifestOrCreate", () => {
   it("loads manifest when manifestPath is provided", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-"));
+    tempDirs.add(dir);
     const manifestPath = join(dir, "manifest.json");
     const manifest = makeManifest({ projectRoot: dir });
     await writeFile(manifestPath, JSON.stringify(manifest), "utf8");
@@ -251,7 +257,8 @@ describe("loadManifestOrCreate", () => {
   });
 
   it("returns null when no manifestPath and no barrits directory", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-"));
+    tempDirs.add(dir);
     const result = await loadManifestOrCreate(undefined, dir);
     assert.equal(result, null);
   });
@@ -259,7 +266,8 @@ describe("loadManifestOrCreate", () => {
 
 describe("loadManifestForPackage", () => {
   it("loads manifest when options contain manifestPath", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-"));
+    tempDirs.add(dir);
     const manifestPath = join(dir, "manifest.json");
     const manifest = makeManifest({ projectRoot: dir });
     await writeFile(manifestPath, JSON.stringify(manifest), "utf8");
@@ -273,7 +281,8 @@ describe("loadManifestForPackage", () => {
   });
 
   it("returns null when no manifest path and autoManifest is false", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-"));
+    tempDirs.add(dir);
     const result = await loadManifestForPackage({
       projectRoot: dir,
       autoManifest: false,
@@ -282,7 +291,8 @@ describe("loadManifestForPackage", () => {
   });
 
   it("returns null when no manifest path and no barrits directory", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-")); tempDirs.add(dir);
+    const dir = await mkdtemp(join(tmpdir(), "barrits-plugins-"));
+    tempDirs.add(dir);
     const result = await loadManifestForPackage({
       projectRoot: dir,
       autoManifest: true,

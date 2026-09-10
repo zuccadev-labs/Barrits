@@ -27,5 +27,10 @@ export const truncate = (input: string, maxLength: number, ellipsis = "…"): st
     return ellipsisCharacters.slice(0, limit).join("");
   }
 
-  return characters.slice(0, limit - ellipsisCharacters.length).join("").trimEnd() + ellipsis;
+  return (
+    characters
+      .slice(0, limit - ellipsisCharacters.length)
+      .join("")
+      .trimEnd() + ellipsis
+  );
 };

@@ -21,7 +21,9 @@
  * ```
  */
 export const isEmail = (value: string): boolean => {
-  return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/u.test(value);
+  return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/u.test(
+    value,
+  );
 };
 
 /**
@@ -106,7 +108,9 @@ export const isIsoDate = (value: string): boolean => {
     return false;
   }
 
-  const [, year, month, day, hour, minute, second, offsetHours, offsetMinutes] = match.map((part) => (part === undefined ? undefined : Number(part)));
+  const [, year, month, day, hour, minute, second, offsetHours, offsetMinutes] = match.map((part) =>
+    part === undefined ? undefined : Number(part),
+  );
   const monthValue = month!;
   const dayValue = day!;
 
@@ -114,11 +118,11 @@ export const isIsoDate = (value: string): boolean => {
     return false;
   }
 
-  if (hour !== undefined && (hour > 23 || (minute!) > 59 || (second!) > 59)) {
+  if (hour !== undefined && (hour > 23 || minute! > 59 || second! > 59)) {
     return false;
   }
 
-  if (offsetHours !== undefined && (offsetHours > 23 || (offsetMinutes!) > 59)) {
+  if (offsetHours !== undefined && (offsetHours > 23 || offsetMinutes! > 59)) {
     return false;
   }
 
@@ -160,7 +164,9 @@ const isIpv4 = (value: string): boolean => {
 };
 
 const isIpv6 = (value: string): boolean => {
-  return /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$/u.test(value);
+  return /^(([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:))$/u.test(
+    value,
+  );
 };
 
 /**

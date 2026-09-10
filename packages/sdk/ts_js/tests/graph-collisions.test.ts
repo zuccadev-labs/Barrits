@@ -1,23 +1,29 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import {
-  isAggregatorFile,
-  collectPublicNamespaceEntries,
-  collectCollisions,
-} from "../src/barrits/sdk/graph/collisions";
+import { isAggregatorFile, collectPublicNamespaceEntries, collectCollisions } from "../src/barrits/sdk/graph/collisions";
 import type { BarritsFileIntegration, BarritsDomainIntegration, BarritsFileExport } from "../src/barrits/sdk/contracts";
 
 const makeExport = (name: string, accessPath: string, visibility: "public" | "internal" = "public"): BarritsFileExport => ({
-  name, accessPath, accessStrategy: "file-system", kind: "const", visibility,
+  name,
+  accessPath,
+  accessStrategy: "file-system",
+  kind: "const",
+  visibility,
 });
 
 const makeFile = (path: string, ...exports: BarritsFileExport[]): BarritsFileIntegration => ({
-  path, isIndex: path === "index.ts" || path.endsWith("/index.ts"), kind: "domain",
-  sourceLayer: "barrits", exports, traitDescriptors: [],
+  path,
+  isIndex: path === "index.ts" || path.endsWith("/index.ts"),
+  kind: "domain",
+  sourceLayer: "barrits",
+  exports,
+  traitDescriptors: [],
 });
 
 const makeDomain = (name: string, ...files: BarritsFileIntegration[]): BarritsDomainIntegration => ({
-  name, path: `/project/${name}`, files,
+  name,
+  path: `/project/${name}`,
+  files,
 });
 
 describe("isAggregatorFile", () => {
@@ -41,20 +47,14 @@ describe("isAggregatorFile", () => {
 
 describe("collectPublicNamespaceEntries", () => {
   it("collects entries from root index", () => {
-    const entries = collectPublicNamespaceEntries(
-      [makeFile("index.ts", makeExport("sumar", "sumar"))],
-      [],
-    );
+    const entries = collectPublicNamespaceEntries([makeFile("index.ts", makeExport("sumar", "sumar"))], []);
     assert.equal(entries.length, 1);
     assert.equal(entries[0].namespace, "root");
     assert.equal(entries[0].exportName, "sumar");
   });
 
   it("collects entries from domain files", () => {
-    const entries = collectPublicNamespaceEntries(
-      [],
-      [makeDomain("logic", makeFile("logic/math.ts", makeExport("sumar", "math.sumar")))],
-    );
+    const entries = collectPublicNamespaceEntries([], [makeDomain("logic", makeFile("logic/math.ts", makeExport("sumar", "math.sumar")))]);
     assert.equal(entries.length, 1);
     assert.equal(entries[0].namespace, "logic");
     assert.equal(entries[0].exportName, "math.sumar");
@@ -63,28 +63,25 @@ describe("collectPublicNamespaceEntries", () => {
   it("filters only api/flat.ts from api domain", () => {
     const entries = collectPublicNamespaceEntries(
       [],
-      [makeDomain("api",
-        makeFile("api/flat.ts", makeExport("hello", "hello")),
-        makeFile("api/internal.ts", makeExport("secret", "secret")),
-      )],
+      [
+        makeDomain(
+          "api",
+          makeFile("api/flat.ts", makeExport("hello", "hello")),
+          makeFile("api/internal.ts", makeExport("secret", "secret")),
+        ),
+      ],
     );
     assert.equal(entries.length, 1);
     assert.equal(entries[0].sourceFile, "api/flat.ts");
   });
 
   it("uses exportName for api domain entries", () => {
-    const entries = collectPublicNamespaceEntries(
-      [],
-      [makeDomain("api", makeFile("api/flat.ts", makeExport("hello", "api.hello")))],
-    );
+    const entries = collectPublicNamespaceEntries([], [makeDomain("api", makeFile("api/flat.ts", makeExport("hello", "api.hello")))]);
     assert.equal(entries[0].exportName, "hello");
   });
 
   it("filters non-public exports", () => {
-    const entries = collectPublicNamespaceEntries(
-      [makeFile("index.ts", makeExport("hidden", "hidden", "internal"))],
-      [],
-    );
+    const entries = collectPublicNamespaceEntries([makeFile("index.ts", makeExport("hidden", "hidden", "internal"))], []);
     assert.equal(entries.length, 0);
   });
 
@@ -102,8 +99,13 @@ describe("collectCollisions", () => {
   it("detects project-project collisions", () => {
     const collisions = collectCollisions(
       [makeFile("index.ts", makeExport("shared", "domain.shared"))],
-      [makeDomain("domain", makeFile("domain/a.ts", makeExport("shared", "domain.shared")),
-        makeFile("domain/b.ts", makeExport("shared", "domain.shared")))],
+      [
+        makeDomain(
+          "domain",
+          makeFile("domain/a.ts", makeExport("shared", "domain.shared")),
+          makeFile("domain/b.ts", makeExport("shared", "domain.shared")),
+        ),
+      ],
       [],
       [],
     );

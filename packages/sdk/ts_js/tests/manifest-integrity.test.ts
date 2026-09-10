@@ -43,7 +43,15 @@ const makeGraph = (overrides: Partial<BarritsIntegrationGraph> = {}): BarritsInt
     },
   ],
   traitDiagnostics: [],
-  importActions: [{ exportName: "duplicar", domain: "logic", sourceFile: "logic/duplicar.ts", kind: "named-import", statement: 'import { duplicar } from "./barrits";' }],
+  importActions: [
+    {
+      exportName: "duplicar",
+      domain: "logic",
+      sourceFile: "logic/duplicar.ts",
+      kind: "named-import",
+      statement: 'import { duplicar } from "./barrits";',
+    },
+  ],
   collisions: [],
   ...overrides,
 });
@@ -70,12 +78,22 @@ describe("build manifest integrity", () => {
     const baseline = await createBuildManifest(makeGraph());
     const tamperedStatement = await createBuildManifest(
       makeGraph({
-        importActions: [{ exportName: "duplicar", domain: "logic", sourceFile: "logic/duplicar.ts", kind: "named-import", statement: 'import { duplicar } from "evil";' }],
+        importActions: [
+          {
+            exportName: "duplicar",
+            domain: "logic",
+            sourceFile: "logic/duplicar.ts",
+            kind: "named-import",
+            statement: 'import { duplicar } from "evil";',
+          },
+        ],
       }),
     );
     const tamperedDiagnostics = await createBuildManifest(
       makeGraph({
-        traitDiagnostics: [{ code: "trait-self-requires", category: "impossible", severity: "error", message: "m", sourceFile: "traits/slug.ts" }],
+        traitDiagnostics: [
+          { code: "trait-self-requires", category: "impossible", severity: "error", message: "m", sourceFile: "traits/slug.ts" },
+        ],
       }),
     );
     const tamperedCollisions = await createBuildManifest(

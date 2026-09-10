@@ -15,7 +15,12 @@ const getCapacity = <NodeId extends GraphNodeId>(capacities: Map<NodeId, Map<Nod
   return capacities.get(from)?.get(to) ?? 0;
 };
 
-const addCapacity = <NodeId extends GraphNodeId>(capacities: Map<NodeId, Map<NodeId, number>>, from: NodeId, to: NodeId, delta: number): void => {
+const addCapacity = <NodeId extends GraphNodeId>(
+  capacities: Map<NodeId, Map<NodeId, number>>,
+  from: NodeId,
+  to: NodeId,
+  delta: number,
+): void => {
   const row = capacities.get(from) ?? new Map<NodeId, number>();
   row.set(to, (row.get(to) ?? 0) + delta);
   capacities.set(from, row);
@@ -35,7 +40,11 @@ const addCapacity = <NodeId extends GraphNodeId>(capacities: Map<NodeId, Map<Nod
  * @returns [EN] The maximum flow value and the augmenting paths used. [ES] El valor del flujo máximo y los caminos de aumento utilizados.
  * @throws RangeError - [EN] When an edge has a negative capacity. [ES] Cuando una arista tiene capacidad negativa.
  */
-export const maxFlow = <NodeId extends GraphNodeId>(edges: readonly GraphEdge<NodeId>[], source: NodeId, sink: NodeId): MaxFlowResult<NodeId> => {
+export const maxFlow = <NodeId extends GraphNodeId>(
+  edges: readonly GraphEdge<NodeId>[],
+  source: NodeId,
+  sink: NodeId,
+): MaxFlowResult<NodeId> => {
   const capacities = new Map<NodeId, Map<NodeId, number>>();
   const neighbors = new Map<NodeId, NodeId[]>();
   const connect = (from: NodeId, to: NodeId): void => {
@@ -55,7 +64,9 @@ export const maxFlow = <NodeId extends GraphNodeId>(edges: readonly GraphEdge<No
     const capacity = edge.weight ?? 1;
 
     if (!Number.isFinite(capacity) || capacity < 0) {
-      throw new RangeError(`maxFlow requires finite, non-negative capacities (edge ${String(edge.from)} -> ${String(edge.to)} has ${String(edge.weight)}).`);
+      throw new RangeError(
+        `maxFlow requires finite, non-negative capacities (edge ${String(edge.from)} -> ${String(edge.to)} has ${String(edge.weight)}).`,
+      );
     }
 
     addCapacity(capacities, edge.from, edge.to, capacity);

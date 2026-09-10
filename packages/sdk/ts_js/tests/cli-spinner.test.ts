@@ -5,13 +5,20 @@ import { BarritsSpinner } from "../src/barrits/sdk/cli-spinner";
 const suppressStderr = <TResult>(fn: () => TResult): TResult => {
   const originalWrite = process.stderr.write;
   process.stderr.write = () => true;
-  try { return fn(); } finally { process.stderr.write = originalWrite; }
+  try {
+    return fn();
+  } finally {
+    process.stderr.write = originalWrite;
+  }
 };
 
 const captureStderr = <TResult>(fn: () => TResult): { result: TResult; output: string } => {
   const chunks: string[] = [];
   const originalWrite = process.stderr.write.bind(process.stderr);
-  process.stderr.write = (chunk: unknown) => { chunks.push(String(chunk)); return true; };
+  process.stderr.write = (chunk: unknown) => {
+    chunks.push(String(chunk));
+    return true;
+  };
   try {
     const result = fn();
     return { result, output: chunks.join("") };

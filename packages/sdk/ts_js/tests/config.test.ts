@@ -36,12 +36,7 @@ describe("DEFAULT_AUTOMATION_DIRECTORY", () => {
 
 describe("BARRITS_CONFIG_FILENAMES", () => {
   it("contains expected filenames in order", () => {
-    assert.deepEqual([...BARRITS_CONFIG_FILENAMES], [
-      "barrits.config.ts",
-      "barrits.config.mts",
-      "barrits.config.js",
-      "barrits.config.mjs",
-    ]);
+    assert.deepEqual([...BARRITS_CONFIG_FILENAMES], ["barrits.config.ts", "barrits.config.mts", "barrits.config.js", "barrits.config.mjs"]);
   });
 });
 
@@ -138,7 +133,8 @@ describe("loadBarritsConfig", () => {
 });
 
 describe("loadBarritsConfig TypeScript fallback", () => {
-  const unknownExtensionError = (): Error => Object.assign(new Error('Unknown file extension ".ts"'), { code: "ERR_UNKNOWN_FILE_EXTENSION" });
+  const unknownExtensionError = (): Error =>
+    Object.assign(new Error('Unknown file extension ".ts"'), { code: "ERR_UNKNOWN_FILE_EXTENSION" });
 
   it("transpiles a .ts config next to the original file when the runtime cannot import TypeScript", async () => {
     const dir = await createTempDir();
