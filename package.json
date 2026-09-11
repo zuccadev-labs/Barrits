@@ -37,7 +37,7 @@
     "@emnapi/core": "^1.11.3",
     "@emnapi/runtime": "^1.11.3",
     "@eslint/js": "^10.0.1",
-    "@stryker-mutator/core": "^9.6.1",
+    "@stryker-mutator/core": "^10.0.0",
     "@stryker-mutator/tap-runner": "^9.6.1",
     "@stryker-mutator/typescript-checker": "^9.6.1",
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
