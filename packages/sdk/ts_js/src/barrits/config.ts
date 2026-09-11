@@ -42,8 +42,16 @@ export type { LegacyTraitConflictStrategy, TraitConflictStrategy } from "./trait
 export type BarritsTraitConflictStrategy = TraitConflictStrategy | LegacyTraitConflictStrategy;
 
 /**
- * [EN] Candidate config filenames resolved in project root order.
- * [ES] Nombres de archivos de configuración candidatos resueltos en orden desde la raíz del proyecto.
+ * Candidate config filenames resolved in project root order.
+ *
+ * Searched sequentially in the project root: TypeScript first (ts/mts), then JavaScript (js/mjs).
+ * The first file found is loaded and used. If none exist, default config is applied.
+ *
+ * @example
+ * ```typescript
+ * // BARRITS_CONFIG_FILENAMES = ["barrits.config.ts", "barrits.config.mts", "barrits.config.js", "barrits.config.mjs"]
+ * // Search order: TypeScript (preferred) → JavaScript (fallback)
+ * ```
  */
 export const BARRITS_CONFIG_FILENAMES = ["barrits.config.ts", "barrits.config.mts", "barrits.config.js", "barrits.config.mjs"] as const;
 
@@ -483,15 +491,33 @@ export const loadBarritsConfig = async (
 };
 
 /**
- * [EN] Resolves final runtime config by merging file config and explicit options.
- * [ES] Resuelve la configuración final de tiempo de ejecución fusionando la configuración de archivo y las opciones explícitas.
+ * Resolves final runtime config by merging file config and explicit options.
  *
- * [EN] Explicit `options` values override values loaded from config file.
- * [ES] Los valores de `options` explícitos anulan los valores cargados desde el archivo de configuración.
+ * Searches for barrits.config.* in the project root, loads if found, then merges with explicit options.
+ * Explicit options override file config values. Applies normalization (namespace validation,
+ * path resolution, runtime detection) to ensure config is usable at runtime.
  *
- * @param options - [EN] Explicit runtime options. [ES] Opciones explícitas de tiempo de ejecución.
- * @param fallbackProjectRoot - [EN] Default project root when none is provided. [ES] Raíz del proyecto por defecto cuando no se proporciona ninguna.
- * @returns [EN] Fully resolved config used by automation and adapters. [ES] Configuración completamente resuelta utilizada por la automatización y los adaptadores.
+ * @param options Explicit runtime options to override file config values
+ * @param fallbackProjectRoot Default project root (usually process.cwd()) when not provided in options
+ * @returns Promise resolving to fully normalized config ready for consumption
+ * @throws {Error} If namespace is invalid (not a JavaScript identifier or reserved)
+ * @throws {Error} If barrits.config.* exists but fails to load
+ *
+ * @example
+ * ```typescript
+ * // Auto-discover from cwd
+ * const config1 = await resolveBarritsConfig();
+ * console.log(config1.projectRoot); // process.cwd()
+ * console.log(config1.namespace); // default "barrits"
+ *
+ * // Override namespace
+ * const config2 = await resolveBarritsConfig({ namespace: "myapp" });
+ * console.log(config2.namespace); // "myapp"
+ *
+ * // Specify project root
+ * const config3 = await resolveBarritsConfig({}, "/path/to/project");
+ * console.log(config3.projectRoot); // "/path/to/project"
+ * ```
  */
 export const resolveBarritsConfig = async (
   options: BarritsRootConfig = {},
