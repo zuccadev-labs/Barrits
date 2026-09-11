@@ -1,69 +1,68 @@
+import { buildAdjacencyList } from "./build-adjacency-list";
 import type { GraphEdge, GraphNodeId } from "./types";
 
+type Frame<NodeId extends GraphNodeId> = {
+  readonly node: NodeId;
+  readonly neighbors: readonly NodeId[];
+  nextNeighborIndex: number;
+};
+
 /**
- * [EN] Detects cycles in a directed graph. 
- * Returns the path of the first cycle found, or null if acyclic.
- * [ES] Detecta ciclos en un grafo dirigido.
- * Devuelve el camino del primer ciclo encontrado, o null si es acíclico.
- * 
- * @param edges [EN] Collection of graph edges. [ES] Colección de aristas del grafo.
+ * [EN] Detects cycles in a directed graph with an iterative depth-first search (explicit stack, so graphs with
+ * tens of thousands of nodes never overflow the call stack). Returns the first cycle found as a closed path
+ * (`[a, b, c, a]`), or `null` when the graph is acyclic. Runs in O(V + E).
+ * [ES] Detecta ciclos en un grafo dirigido con una búsqueda en profundidad iterativa (pila explícita, de modo que
+ * grafos con decenas de miles de nodos nunca desbordan la pila). Devuelve el primer ciclo encontrado como camino
+ * cerrado (`[a, b, c, a]`), o `null` si el grafo es acíclico. Se ejecuta en O(V + E).
+ *
+ * @param edges [EN] Collection of directed edges. [ES] Colección de aristas dirigidas.
  * @returns [EN] Path of the cycle or null. [ES] Camino del ciclo o null.
  */
-export const detectDirectedCycle = <NodeId extends GraphNodeId>(
-  edges: readonly GraphEdge<NodeId>[],
-): NodeId[] | null => {
-  const adjacencyList = new Map<NodeId, NodeId[]>();
-
-  for (const edge of edges) {
-    const neighbors = adjacencyList.get(edge.from);
-
-    if (neighbors) {
-      neighbors.push(edge.to);
-    } else {
-      adjacencyList.set(edge.from, [edge.to]);
-    }
-
-    if (!adjacencyList.has(edge.to)) {
-      adjacencyList.set(edge.to, []);
-    }
-  }
-
+export const detectDirectedCycle = <NodeId extends GraphNodeId>(edges: readonly GraphEdge<NodeId>[]): NodeId[] | null => {
+  const adjacencyList = buildAdjacencyList(edges, { directed: true });
   const visited = new Set<NodeId>();
-  const visiting = new Set<NodeId>();
+  const onPath = new Map<NodeId, number>();
   const path: NodeId[] = [];
 
-  const visit = (node: NodeId): NodeId[] | null => {
-    if (visiting.has(node)) {
-      const cycleStartIndex = path.indexOf(node);
-      return [...path.slice(cycleStartIndex), node];
+  for (const root of adjacencyList.keys()) {
+    if (visited.has(root)) {
+      continue;
     }
 
-    if (visited.has(node)) {
-      return null;
-    }
+    const stack: Frame<NodeId>[] = [
+      { node: root, neighbors: (adjacencyList.get(root) ?? []).map((entry) => entry.to), nextNeighborIndex: 0 },
+    ];
+    visited.add(root);
+    onPath.set(root, 0);
+    path.push(root);
 
-    visited.add(node);
-    visiting.add(node);
-    path.push(node);
+    while (stack.length > 0) {
+      const frame = stack[stack.length - 1];
 
-    for (const neighbor of adjacencyList.get(node) ?? []) {
-      const cycle = visit(neighbor);
-
-      if (cycle) {
-        return cycle;
+      if (frame.nextNeighborIndex >= frame.neighbors.length) {
+        stack.pop();
+        onPath.delete(frame.node);
+        path.pop();
+        continue;
       }
-    }
 
-    visiting.delete(node);
-    path.pop();
-    return null;
-  };
+      const neighbor = frame.neighbors[frame.nextNeighborIndex];
+      frame.nextNeighborIndex += 1;
 
-  for (const node of adjacencyList.keys()) {
-    const cycle = visit(node);
+      const cycleStart = onPath.get(neighbor);
 
-    if (cycle) {
-      return cycle;
+      if (cycleStart !== undefined) {
+        return [...path.slice(cycleStart), neighbor];
+      }
+
+      if (visited.has(neighbor)) {
+        continue;
+      }
+
+      visited.add(neighbor);
+      onPath.set(neighbor, path.length);
+      path.push(neighbor);
+      stack.push({ node: neighbor, neighbors: (adjacencyList.get(neighbor) ?? []).map((entry) => entry.to), nextNeighborIndex: 0 });
     }
   }
 

@@ -1,13 +1,29 @@
 import type { BarritsExportVisibility, BarritsFileKind } from "./contracts";
 
 /**
- * [EN] Set of valid file kinds for type checking. [ES] Conjunto de tipos de archivo válidos para comprobación de tipos.
+ * [EN] Every architectural file kind recognized by the crawler, in a stable order (source of truth for validation,
+ * CLI filters and shell completions).
+ * [ES] Todos los tipos arquitectónicos de archivo reconocidos por el crawler, en orden estable (fuente de verdad para
+ * validación, filtros de la CLI y completado de shell).
  */
-const FILE_KINDS = new Set<BarritsFileKind>(["barrel", "internal", "trait", "shared", "domain", "sdk", "root"]);
+export const BARRITS_FILE_KINDS = [
+  "barrel",
+  "internal",
+  "trait",
+  "shared",
+  "domain",
+  "sdk",
+  "root",
+] as const satisfies readonly BarritsFileKind[];
+
 /**
- * [EN] Set of valid export visibilities for type checking. [ES] Conjunto de visibilidades de exportación válidas para comprobación de tipos.
+ * [EN] Every export visibility level, in a stable order.
+ * [ES] Todos los niveles de visibilidad de exportación, en orden estable.
  */
-const EXPORT_VISIBILITIES = new Set<BarritsExportVisibility>(["public", "internal"]);
+export const BARRITS_EXPORT_VISIBILITIES = ["public", "internal"] as const satisfies readonly BarritsExportVisibility[];
+
+const FILE_KINDS = new Set<string>(BARRITS_FILE_KINDS);
+const EXPORT_VISIBILITIES = new Set<string>(BARRITS_EXPORT_VISIBILITIES);
 
 /**
  * [EN] Checks if a value is a valid Barrits file kind. [ES] Comprueba si un valor es un tipo de archivo Barrits válido.
@@ -15,7 +31,7 @@ const EXPORT_VISIBILITIES = new Set<BarritsExportVisibility>(["public", "interna
  * @returns [EN] True if the value is a valid Barrits file kind. [ES] True si el valor es un tipo de archivo Barrits válido.
  */
 export const isBarritsFileKind = (value: string): value is BarritsFileKind => {
-  return FILE_KINDS.has(value as BarritsFileKind);
+  return FILE_KINDS.has(value);
 };
 
 /**
@@ -24,5 +40,5 @@ export const isBarritsFileKind = (value: string): value is BarritsFileKind => {
  * @returns [EN] True if the value is a valid Barrits export visibility. [ES] True si el valor es una visibilidad de exportación Barrits válida.
  */
 export const isBarritsExportVisibility = (value: string): value is BarritsExportVisibility => {
-  return EXPORT_VISIBILITIES.has(value as BarritsExportVisibility);
+  return EXPORT_VISIBILITIES.has(value);
 };

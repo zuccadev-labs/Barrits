@@ -72,7 +72,7 @@ export const FILE_MODES = new Set(["watch", "dev"]);
 /** [EN] Valid kinds of import actions the SDK can generate. [ES] Tipos válidos de acciones de importación que el SDK puede generar. */
 export const IMPORT_ACTION_KINDS = new Set<BarritsImportAction["kind"]>(["named-import", "namespace-access", "alias-namespace-access"]);
 /** [EN] Valid export kinds for file export entries. [ES] Tipos de exportación válidos para entradas de exportación de archivos. */
-export const EXPORT_KINDS = new Set(["const", "function", "reexport"]);
+export const EXPORT_KINDS = new Set(["const", "function", "class", "reexport"]);
 /** [EN] Valid source layers that can own exported symbols. [ES] Capas de origen válidas que pueden poseer símbolos exportados. */
 export const SOURCE_LAYERS = new Set(["barrits", "barrits_lib"]);
 /** [EN] Valid binding kinds for trait descriptors. [ES] Tipos de binding válidos para descriptores de traits. */

@@ -13,6 +13,9 @@ import {
 } from "../src/barrits/sdk/ast/traits";
 import type { BarritsTraitDescriptorInspection } from "../src/barrits/sdk/contracts";
 import type { BarritsTraitContractConfig } from "../src/barrits/config";
+import { loadTypeScript } from "../src/barrits/sdk/ast/cache";
+
+await loadTypeScript();
 
 const sf = (code: string) => ts.createSourceFile("test.ts", code, 99, true);
 const expr = (code: string) => (sf(code).statements[0] as any)?.declarationList?.declarations?.[0]?.initializer ?? sf(code).statements[0];
@@ -45,13 +48,15 @@ describe("resolveTraitDescriptorFactoryFromExpression", () => {
   });
 
   it("resolves through satisfies expression", () => {
-    const node = sf("const x = (createTraitDescriptor({ name: 't', create: () => ({}) }) satisfies Record<string, unknown>);").statements[0] as any;
+    const node = sf("const x = (createTraitDescriptor({ name: 't', create: () => ({}) }) satisfies Record<string, unknown>);")
+      .statements[0] as any;
     const initializer = node.declarationList.declarations[0].initializer;
     assert.equal(resolveTraitDescriptorFactoryFromExpression(initializer), "createTraitDescriptor");
   });
 
   it("resolves through as expression", () => {
-    const node = sf("const x = (createTraitDescriptor({ name: 't', create: () => ({}) }) as Record<string, unknown>);").statements[0] as any;
+    const node = sf("const x = (createTraitDescriptor({ name: 't', create: () => ({}) }) as Record<string, unknown>);")
+      .statements[0] as any;
     const initializer = node.declarationList.declarations[0].initializer;
     assert.equal(resolveTraitDescriptorFactoryFromExpression(initializer), "createTraitDescriptor");
   });
@@ -216,10 +221,9 @@ describe("collectTraitDescriptorMetadata", () => {
   });
 
   it("sorts descriptors by name", () => {
-    const sourceB = [
-      "/** @barrits-trait beta */",
-      "export const beta = createTraitDescriptor({ name: 'beta', create: () => ({}) });",
-    ].join("\n");
+    const sourceB = ["/** @barrits-trait beta */", "export const beta = createTraitDescriptor({ name: 'beta', create: () => ({}) });"].join(
+      "\n",
+    );
     const sourceA = [
       "/** @barrits-trait alpha */",
       "export const alpha = createTraitDescriptor({ name: 'alpha', create: () => ({}) });",
@@ -279,8 +283,17 @@ describe("toTraitContractDescriptor", () => {
 
 describe("mergeTraitDescriptors", () => {
   const base: BarritsTraitDescriptorInspection = {
-    name: "test", sourceFile: "test.ts", bindingName: "test", bindingKind: "const",
-    requires: [], conflicts: [], state: [], consumes: [], provides: [], tags: [], runtimes: [],
+    name: "test",
+    sourceFile: "test.ts",
+    bindingName: "test",
+    bindingKind: "const",
+    requires: [],
+    conflicts: [],
+    state: [],
+    consumes: [],
+    provides: [],
+    tags: [],
+    runtimes: [],
   };
 
   it("merges discovered and contract descriptors", () => {
@@ -291,7 +304,8 @@ describe("mergeTraitDescriptors", () => {
 
   it("deduplicates by sourceFile::bindingName key, preferring contract values", () => {
     const contract: BarritsTraitDescriptorInspection = {
-      ...base, summary: "contract summary",
+      ...base,
+      summary: "contract summary",
     };
     const result = mergeTraitDescriptors([base], [contract]);
     assert.equal(result.length, 1);

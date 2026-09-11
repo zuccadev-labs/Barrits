@@ -1,64 +1,20 @@
 import type { CompareFunction, SortDirection } from "../internal/compare";
 import { defaultCompare, reverseCompare } from "../internal/compare";
-
-const swap = <Value>(heap: Value[], leftIndex: number, rightIndex: number): void => {
-  [heap[leftIndex], heap[rightIndex]] = [heap[rightIndex], heap[leftIndex]];
-};
-
-const siftUp = <Value>(
-  heap: Value[],
-  index: number,
-  compare: CompareFunction<Value>,
-): void => {
-  let cursor = index;
-
-  while (cursor > 0) {
-    const parentIndex = Math.floor((cursor - 1) / 2);
-
-    if (compare(heap[cursor], heap[parentIndex]) >= 0) {
-      break;
-    }
-
-    swap(heap, cursor, parentIndex);
-    cursor = parentIndex;
-  }
-};
-
-const siftDown = <Value>(
-  heap: Value[],
-  index: number,
-  compare: CompareFunction<Value>,
-): void => {
-  let cursor = index;
-
-  for (;;) {
-    const leftIndex = (cursor * 2) + 1;
-    const rightIndex = leftIndex + 1;
-    let nextIndex = cursor;
-
-    if (leftIndex < heap.length && compare(heap[leftIndex], heap[nextIndex]) < 0) {
-      nextIndex = leftIndex;
-    }
-
-    if (rightIndex < heap.length && compare(heap[rightIndex], heap[nextIndex]) < 0) {
-      nextIndex = rightIndex;
-    }
-
-    if (nextIndex === cursor) {
-      break;
-    }
-
-    swap(heap, cursor, nextIndex);
-    cursor = nextIndex;
-  }
-};
+import { createBinaryHeap } from "../internal/binary-heap";
+import { toNonNegativeInteger } from "../internal/normalize";
 
 /**
- * [EN] Efficiently extracts the top K elements from a collection based on a comparison function.
- * [ES] Extrae eficientemente los primeros K elementos de una colección basado en una función de comparación.
- * 
+ * [EN] Selects the K best elements of a collection in O(n log k) with a bounded binary heap, then returns
+ * them sorted. With `direction: "asc"` (default) the K smallest elements come back ascending; with `"desc"`
+ * the K largest come back descending. When `k` exceeds the collection size every element is returned.
+ * The relative order of equal elements is not guaranteed.
+ * [ES] Selecciona los K mejores elementos de una colección en O(n log k) con un montículo binario acotado y los
+ * devuelve ordenados. Con `direction: "asc"` (por defecto) vuelven los K menores en orden ascendente; con
+ * `"desc"`, los K mayores en orden descendente. Si `k` supera el tamaño de la colección se devuelven todos.
+ * El orden relativo de elementos iguales no está garantizado.
+ *
  * @param values [EN] The collection of values. [ES] La colección de valores.
- * @param k [EN] Number of elements to extract. [ES] Número de elementos a extraer.
+ * @param k [EN] Number of elements to extract (values below 0 or non-finite yield an empty result). [ES] Número de elementos a extraer (valores menores que 0 o no finitos devuelven vacío).
  * @param compare [EN] Comparison algorithm. [ES] Algoritmo de comparación.
  * @param direction [EN] Sorting direction (default: 'asc'). [ES] Dirección de ordenamiento.
  * @returns [EN] The top K elements. [ES] Los primeros K elementos.
@@ -69,7 +25,7 @@ export const topK = <Value>(
   compare: CompareFunction<Value> = defaultCompare,
   direction: SortDirection = "asc",
 ): Value[] => {
-  const boundedCount = Math.max(0, Math.floor(k));
+  const boundedCount = toNonNegativeInteger(k, 0);
 
   if (boundedCount === 0) {
     return [];
@@ -77,22 +33,20 @@ export const topK = <Value>(
 
   const worstCompare = direction === "desc" ? compare : reverseCompare(compare);
   const resultCompare = direction === "desc" ? reverseCompare(compare) : compare;
-  const heap: Value[] = [];
+  const heap = createBinaryHeap(worstCompare);
 
   for (const value of values) {
-    if (heap.length < boundedCount) {
+    if (heap.size() < boundedCount) {
       heap.push(value);
-      siftUp(heap, heap.length - 1, worstCompare);
       continue;
     }
 
-    if (worstCompare(value, heap[0]) <= 0) {
-      continue;
-    }
+    const worst = heap.peek() as Value;
 
-    heap[0] = value;
-    siftDown(heap, 0, worstCompare);
+    if (worstCompare(value, worst) > 0) {
+      heap.replaceTop(value);
+    }
   }
 
-  return [...heap].sort(resultCompare);
+  return heap.toArray().sort(resultCompare);
 };

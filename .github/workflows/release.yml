@@ -20,9 +20,19 @@ on:
     tags:
       - 'v*'
       - 'pre-v*'
+
 permissions:
-  contents: write
-  id-token: write
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: 22
+  NPM_VERSION: 11.6.2
+  DENO_VERSION: v2.x
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
@@ -44,12 +54,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup npm
-        run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: ${{ env.NODE_VERSION }}
+
       - name: Resolve release context
         id: context
         run: |
@@ -103,10 +112,9 @@ jobs:
           $packageVersion = node -p "require('./packages/sdk/ts_js/package.json').version"
           $jsrVersion = node -p "require('./packages/sdk/ts_js/jsr.json').version"
           $monorepoVersion = node -p "require('./package.json').version"
-          # Version validation
+          # The three version fields must agree with the tag (prerelease tags may extend the stable version).
           if ($channel -eq "prerelease") {
-            # Accept matching prerelease or stable prefix for prerelease tags
-            if ($monorepoVersion -ne $version -and $monorepoVersion -ne "0.1.0" -and -not $version.StartsWith($monorepoVersion)) {
+            if ($monorepoVersion -ne $version -and -not $version.StartsWith($monorepoVersion)) {
               throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version' (or its stable prefix)."
             }
             if ($packageVersion -ne $version -and -not $version.StartsWith($packageVersion)) {
@@ -134,11 +142,15 @@ jobs:
           "npm_dist_tag=$npmTag" >> $env:GITHUB_OUTPUT
           "is_prerelease=$isPrerelease" >> $env:GITHUB_OUTPUT
           "release_name=$releaseName" >> $env:GITHUB_OUTPUT
+
   publish-npm:
     needs: prepare
     if: github.event_name != 'workflow_dispatch' || inputs.publish_npm
     runs-on: ubuntu-latest
     environment: npm
+    permissions:
+      contents: read
+      id-token: write
     defaults:
       run:
         shell: pwsh
@@ -149,25 +161,30 @@ jobs:
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
 
-      - name: Setup npm
-        run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
           cache: npm
+
+      - name: Setup npm
+        run: npm install --global npm@${{ env.NPM_VERSION }}
 
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.x
+          deno-version: ${{ env.DENO_VERSION }}
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
       - name: Build SDK
         run: npm run build
+
       - name: Run tests
         run: npm test
+
       - name: Publish npm package
         working-directory: packages/sdk/ts_js
         run: |
@@ -185,6 +202,7 @@ jobs:
             Write-Host "Publishing $packageName@$version with dist-tag '$distTag'."
             npm publish --access public --provenance --tag $distTag
           }
+
   publish-jsr:
     needs: prepare
     if: github.event_name != 'workflow_dispatch' || inputs.publish_jsr
@@ -202,25 +220,30 @@ jobs:
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
 
-      - name: Setup npm
-        run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
+
+      - name: Setup npm
+        run: npm install --global npm@${{ env.NPM_VERSION }}
 
       - name: Setup Deno
         uses: denoland/setup-deno@v2
         with:
-          deno-version: v2.x
+          deno-version: ${{ env.DENO_VERSION }}
+
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
       - name: Validate JSR payload
         run: npm run publish:jsr:dry-run
+
       - name: Publish JSR package
         working-directory: packages/sdk/ts_js
-        run: npx jsr publish --allow-dirty
+        run: deno publish --allow-dirty --config jsr.json
+
   github-release:
     needs:
       - prepare
@@ -228,6 +251,8 @@ jobs:
       - publish-jsr
     if: always() && needs.prepare.result == 'success' && needs['publish-npm'].result == 'success' && needs['publish-jsr'].result == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2

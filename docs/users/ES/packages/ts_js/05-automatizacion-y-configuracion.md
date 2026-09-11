@@ -91,21 +91,6 @@ Regla práctica estándar:
 
 Para separar artefactos de automatización del dominio visible del proyecto, se configura un `automationDirectory` personalizado. Esto mueve manifests, snapshots e imports generados fuera de `.barrits` hacia la ruta configurada.
 
-## Método main personalizado
-
-Se puede declarar un método main personalizado en la configuración para controlar el comportamiento de arranque:
-
-```ts
-import { defineBarritsConfig } from "@zuccadev-labs/barrits";
-
-export default defineBarritsConfig({
-  runtime: "node",
-  main: async () => {
-    console.log("Aplicación iniciando con configuración personalizada");
-  },
-});
-```
-
 ## Instanciación segura con patrón Factory
 
 Cuando se configura el campo `namespace`, `createBarrits()` devuelve un objeto tipado y aislado sin contaminar el scope global:

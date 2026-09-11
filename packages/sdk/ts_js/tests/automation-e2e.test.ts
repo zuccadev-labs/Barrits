@@ -109,19 +109,15 @@ test("automation infers nested namespace paths from the file tree and accepts JS
 
   await mkdir(join(barritsRoot, "logic", "math"), { recursive: true });
   await writeFile(join(barritsRoot, "index.ts"), 'export { duplicar } from "./logic/index";\n', "utf8");
-  await writeFile(join(barritsRoot, "logic", "index.ts"), 'export const duplicar = (value: number) => value * 2;\n', "utf8");
+  await writeFile(join(barritsRoot, "logic", "index.ts"), "export const duplicar = (value: number) => value * 2;\n", "utf8");
   await writeFile(
     join(barritsRoot, "logic", "math", "sumar.ts"),
-    [
-      "/**",
-      " * @barrits-path aggregate.sumar",
-      " */",
-      "export const sumar = (left: number, right: number) => left + right;",
-      "",
-    ].join("\n"),
+    ["/**", " * @barrits-path aggregate.sumar", " */", "export const sumar = (left: number, right: number) => left + right;", ""].join(
+      "\n",
+    ),
     "utf8",
   );
-  await writeFile(join(barritsRoot, "logic", "path.ts"), 'export const normalizeInput = (value: string) => value.trim();\n', "utf8");
+  await writeFile(join(barritsRoot, "logic", "path.ts"), "export const normalizeInput = (value: string) => value.trim();\n", "utf8");
 
   const adapter = createNodeFileSystemAdapter();
   const discovery = await findBarritsDirectory(adapter, { startDirectory: projectRoot });
@@ -148,10 +144,10 @@ test("automation inspection ignores export-like text inside comments and strings
     [
       '// export const fantasma = () => "comment";',
       'const debugSnippet = "export const sombra = () => 0;";',
-      '',
-      'export const duplicar = (value: number) => value * 2;',
-      'void debugSnippet;',
-      '',
+      "",
+      "export const duplicar = (value: number) => value * 2;",
+      "void debugSnippet;",
+      "",
     ].join("\n"),
     "utf8",
   );
@@ -162,12 +158,13 @@ test("automation inspection ignores export-like text inside comments and strings
   assert.ok(discovery);
 
   const graph = await inspectBarritsIntegrations(adapter, discovery);
-  const logicFile = graph.domains
-    .find((domain) => domain.name === "logic")
-    ?.files.find((file) => file.path === "logic/duplicar.ts");
+  const logicFile = graph.domains.find((domain) => domain.name === "logic")?.files.find((file) => file.path === "logic/duplicar.ts");
 
   assert.ok(logicFile);
-  assert.deepEqual(logicFile.exports.map((entry) => entry.name), ["duplicar"]);
+  assert.deepEqual(
+    logicFile.exports.map((entry) => entry.name),
+    ["duplicar"],
+  );
   assert.ok(graph.importActions.every((action) => action.exportName !== "fantasma"));
   assert.ok(graph.importActions.every((action) => action.exportName !== "sombra"));
 });
@@ -199,9 +196,9 @@ test("automation inspection exposes declarative trait metadata from barrits/trai
       " * @barrits-runtime browser node",
       " */",
       "export const slugTrait = createTraitDescriptor({",
-      "  name: \"slug\",",
-      "  requires: [\"normalize\"],",
-      "  provides: [\"toSlug\"],",
+      '  name: "slug",',
+      '  requires: ["normalize"],',
+      '  provides: ["toSlug"],',
       "  create: ({ traits }) => ({",
       "    toSlug(value: string) {",
       "      return traits.normalize?.(value) ?? value;",
@@ -221,12 +218,12 @@ test("automation inspection exposes declarative trait metadata from barrits/trai
       " * @barrits-provides toSlug",
       " */",
       "export const duplicateSlugTrait = {",
-      "  name: \"slug\"",
+      '  name: "slug"',
       "};",
       "",
       "const unrelatedFactory = createTraitDescriptor({",
-      "  name: \"ignored-local\",",
-      "  provides: [\"ignoredCapability\"],",
+      '  name: "ignored-local",',
+      '  provides: ["ignoredCapability"],',
       "  create: () => ({ ignoredCapability() { return true; } }),",
       "});",
       "void unrelatedFactory;",
@@ -241,9 +238,7 @@ test("automation inspection exposes declarative trait metadata from barrits/trai
   assert.ok(discovery);
 
   const graph = await inspectBarritsIntegrations(adapter, discovery);
-  const slugFile = graph.domains
-    .find((domain) => domain.name === "traits")
-    ?.files.find((file) => file.path === "traits/routing/slug.ts");
+  const slugFile = graph.domains.find((domain) => domain.name === "traits")?.files.find((file) => file.path === "traits/routing/slug.ts");
 
   assert.ok(slugFile);
   assert.deepEqual(slugFile.traitDescriptors, [
@@ -286,10 +281,7 @@ test("automation inspection exposes declarative trait metadata from barrits/trai
     ],
   );
   assert.ok(graph.traitDescriptors.every((descriptor) => descriptor.name !== "ignored-helper"));
-  assert.equal(
-    graph.traitDescriptors.find((descriptor) => descriptor.bindingName === "duplicateSlugTrait")?.factory,
-    undefined,
-  );
+  assert.equal(graph.traitDescriptors.find((descriptor) => descriptor.bindingName === "duplicateSlugTrait")?.factory, undefined);
 
   const traitDiagnosticCodes = graph.traitDiagnostics.map((diagnostic) => diagnostic.code);
   assert.ok(traitDiagnosticCodes.includes("trait-duplicate-name"));
@@ -322,8 +314,8 @@ test("automation inspection reports mismatches between JSDoc metadata and runtim
       " * @barrits-provides toSlug normalizeSlug",
       " */",
       "export const slugTrait = createTraitDescriptor({",
-      "  name: \"slug-runtime\",",
-      "  provides: [\"toSlug\"],",
+      '  name: "slug-runtime",',
+      '  provides: ["toSlug"],',
       "  create: () => ({",
       "    toSlug(value: string) {",
       "      return value;",
@@ -346,7 +338,9 @@ test("automation inspection reports mismatches between JSDoc metadata and runtim
   assert.ok(traitDiagnosticCodes.includes("trait-name-mismatch"));
   assert.ok(traitDiagnosticCodes.includes("trait-provides-mismatch"));
   assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-name-mismatch" && diagnostic.severity === "error"));
-  assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-provides-mismatch" && diagnostic.severity === "warning"));
+  assert.ok(
+    graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-provides-mismatch" && diagnostic.severity === "warning"),
+  );
 });
 
 test("automation inspection reports dependency and state drift between JSDoc metadata and runtime createTraitDescriptor contracts", async () => {
@@ -367,12 +361,12 @@ test("automation inspection reports dependency and state drift between JSDoc met
       " * @barrits-provides toSlug",
       " */",
       "export const slugTrait = createTraitDescriptor({",
-      "  name: \"slug\",",
-      "  conflicts: [\"normalize\"],",
+      '  name: "slug",',
+      '  conflicts: ["normalize"],',
       "  requires: [],",
-      "  consumes: [\"formatPath\"],",
-      "  state: [\"cache\"],",
-      "  provides: [\"toSlug\"],",
+      '  consumes: ["formatPath"],',
+      '  state: ["cache"],',
+      '  provides: ["toSlug"],',
       "  create: () => ({",
       "    toSlug(value: string) {",
       "      return value;",
@@ -396,9 +390,15 @@ test("automation inspection reports dependency and state drift between JSDoc met
   assert.ok(traitDiagnosticCodes.includes("trait-requires-mismatch"));
   assert.ok(traitDiagnosticCodes.includes("trait-consumes-mismatch"));
   assert.ok(traitDiagnosticCodes.includes("trait-state-mismatch"));
-  assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-conflicts-mismatch" && diagnostic.severity === "warning"));
-  assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-requires-mismatch" && diagnostic.severity === "warning"));
-  assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-consumes-mismatch" && diagnostic.severity === "warning"));
+  assert.ok(
+    graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-conflicts-mismatch" && diagnostic.severity === "warning"),
+  );
+  assert.ok(
+    graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-requires-mismatch" && diagnostic.severity === "warning"),
+  );
+  assert.ok(
+    graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-consumes-mismatch" && diagnostic.severity === "warning"),
+  );
   assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-state-mismatch" && diagnostic.severity === "warning"));
 });
 
@@ -446,7 +446,9 @@ test("automation inspection reports contradictory portable trait contracts befor
   assert.ok(traitDiagnosticCodes.includes("trait-requires-conflict-overlap"));
   assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-self-requires" && diagnostic.severity === "error"));
   assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-self-conflict" && diagnostic.severity === "error"));
-  assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-requires-conflict-overlap" && diagnostic.severity === "error"));
+  assert.ok(
+    graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-requires-conflict-overlap" && diagnostic.severity === "error"),
+  );
 });
 
 test("automation inspection warns when a required trait is missing from the inspected portable graph", async () => {
@@ -487,7 +489,9 @@ test("automation inspection warns when a required trait is missing from the insp
   const traitDiagnosticCodes = graph.traitDiagnostics.map((diagnostic) => diagnostic.code);
 
   assert.ok(traitDiagnosticCodes.includes("trait-missing-required-trait"));
-  assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-missing-required-trait" && diagnostic.severity === "warning"));
+  assert.ok(
+    graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-missing-required-trait" && diagnostic.severity === "warning"),
+  );
 });
 
 test("automation inspection does not warn about missing required traits that exist later in the inspected graph", async () => {
@@ -496,7 +500,11 @@ test("automation inspection does not warn about missing required traits that exi
 
   await mkdir(join(barritsRoot, "traits", "routing"), { recursive: true });
   await mkdir(join(barritsRoot, "traits", "zz-formatting"), { recursive: true });
-  await writeFile(join(barritsRoot, "index.ts"), 'export {} from "./traits/routing/slug";\nexport {} from "./traits/zz-formatting/normalize";\n', "utf8");
+  await writeFile(
+    join(barritsRoot, "index.ts"),
+    'export {} from "./traits/routing/slug";\nexport {} from "./traits/zz-formatting/normalize";\n',
+    "utf8",
+  );
   await writeFile(
     join(barritsRoot, "traits", "routing", "slug.ts"),
     [
@@ -589,7 +597,11 @@ test("automation inspection warns when a consumed capability is missing from the
   const traitDiagnosticCodes = graph.traitDiagnostics.map((diagnostic) => diagnostic.code);
 
   assert.ok(traitDiagnosticCodes.includes("trait-missing-consumed-capability"));
-  assert.ok(graph.traitDiagnostics.some((diagnostic) => diagnostic.code === "trait-missing-consumed-capability" && diagnostic.severity === "warning"));
+  assert.ok(
+    graph.traitDiagnostics.some(
+      (diagnostic) => diagnostic.code === "trait-missing-consumed-capability" && diagnostic.severity === "warning",
+    ),
+  );
   assert.ok(graph.traitDiagnostics.every((diagnostic) => diagnostic.code !== "trait-missing-required-trait"));
 });
 
@@ -654,11 +666,7 @@ test("automation infers named imports without root re-exports and allows private
   await writeFile(join(barritsRoot, "index.ts"), "\n", "utf8");
   await writeFile(
     join(barritsRoot, "logic", "math", "operations.ts"),
-    [
-      "export const duplicar = (value: number) => value * 2;",
-      "export const triplicar = (value: number) => value * 3;",
-      "",
-    ].join("\n"),
+    ["export const duplicar = (value: number) => value * 2;", "export const triplicar = (value: number) => value * 3;", ""].join("\n"),
     "utf8",
   );
   await writeFile(
@@ -696,9 +704,7 @@ test("automation infers named imports without root re-exports and allows private
 
   const graph = await inspectBarritsIntegrations(adapter, discovery);
   const statements = graph.importActions.map((action) => action.statement);
-  const logicPathFile = graph.domains
-    .find((domain) => domain.name === "logic")
-    ?.files.find((file) => file.path === "logic/path.ts");
+  const logicPathFile = graph.domains.find((domain) => domain.name === "logic")?.files.find((file) => file.path === "logic/path.ts");
 
   assert.ok(statements.includes('import { duplicar } from "@zuccadev-labs/barrits";'));
   assert.ok(statements.includes('import { triplicar } from "@zuccadev-labs/barrits";'));

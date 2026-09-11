@@ -3,91 +3,38 @@
  * Deno adapter entrypoint for Barrits runtime APIs, algorithms, and tooling helpers.
  */
 
-/** Package identification constants shared across runtimes. */
-export { PACKAGE_ALIAS, PACKAGE_NAME } from "../../src/barrits/shared";
-
 /** Domain namespaces (`barrits`, `brt`) for package-first composition. */
 export { barrits, brt } from "../../src/barrits/api/domains";
 
-/** Flat algorithm and functional API exports for direct Deno consumption. */
+/** Flat public API: standard library, trait helpers, path helpers, manifest parsers and package constants. */
+export * from "../../src/barrits/api/flat";
+
+/** Discovery, inspection, manifest, import and query engine (runtime-agnostic, adapter-driven). */
+export * from "../../src/barrits/sdk";
+
+/** Package-level configuration helpers and vocabulary used by runtimes and plugins. */
 export {
-  aggregateAlgorithms,
-  algorithms,
-  annualizedVolatility,
-  arithmetic,
-  averageBy,
-  binarySearch,
-  breadthFirstSearch,
-  bucketByInterval,
-  buildAdjacencyList,
-  buildPath,
-  chunk,
-  collectionAlgorithms,
-  composePipeline,
-  composeTraitDescriptors,
-  createTraitDescriptor,
-  createTraitDescriptorFromJsDoc,
-  depthFirstSearch,
-  detectDirectedCycle,
-  detectTimeSeriesGaps,
-  differenceSeries,
-  dijkstraShortestPath,
-  exponentialMovingAverage,
-  findSortedRange,
-  graphAlgorithms,
-  groupBy,
-  histogramBy,
-  indexBy,
-  insertSorted,
-  linearSearch,
-  lowerBound,
-  maxBy,
-  maxDrawdown,
-  maxFlow,
-  mergeTraits,
-  minBy,
-  minimumSpanningTree,
-  movingAverage,
-  movingAverageSeries,
-  orderBy,
-  paginate,
-  parsePath,
-  parseTraitDescriptorJsDoc,
-  partitionBy,
-  quickSort,
-  rankBy,
-  resampleSeries,
-  restar,
-  returnsSeries,
-  rollingSum,
-  searchAlgorithms,
-  selectionAlgorithms,
-  slidingWindow,
-  sortAlgorithms,
-  sortTimeSeries,
-  stableSortBy,
-  sumBy,
-  sumar,
-  timeSeriesAlgorithms,
-  topK,
-  topologicalSort,
-  uniqueBy,
-  upperBound,
-  windowAlgorithms,
-  windowDelta,
-} from "../../src/barrits/api/flat";
+  BARRITS_RUNTIME_KINDS,
+  BARRITS_WATCH_MODES,
+  DEFAULT_AUTOMATION_DIRECTORY,
+  DEFAULT_RUNTIME_KIND,
+  DEFAULT_WATCH_MODE,
+  defineBarritsConfig,
+  defineBarritsPackage,
+  isBarritsRuntimeKind,
+  isBarritsWatchMode,
+  toBarritsAutomationOptions,
+} from "../../src/barrits/package";
 
-/** Package-level configuration helpers used by runtimes and plugins. */
-export { defineBarritsConfig, defineBarritsPackage, toBarritsAutomationOptions } from "../../src/barrits/package";
-
-/** Standard library helpers: hashing, validation, datetime, resilience. */
-export { sha256Hex, deterministicStringify, murmurHash3 } from "../../src/barrits_lib/logic/hashing";
-export { isEmail, isUuid, assertNonNullish } from "../../src/barrits_lib/logic/validation";
-export { toIsoString, toRelativeTime } from "../../src/barrits_lib/logic/datetime";
-export { retryWithBackoff, withTimeout, createCircuitBreaker } from "../../src/barrits_lib/logic/resilience";
-
-/** Runtime and watch mode types used by package-first config. */
-export type { BarritsRuntimeKind, BarritsWatchMode } from "../../src/barrits/package";
+/** Configuration types used by package-first config. */
+export type {
+  BarritsRootConfig,
+  BarritsRuntimeKind,
+  BarritsTraitConflictStrategy,
+  BarritsWatchMode,
+  ResolvedBarritsConfig,
+  ResolvedBarritsPackageOptions,
+} from "../../src/barrits/package";
 
 /** File system adapter implementation backed by Deno APIs. */
 export { createDenoFileSystemAdapter } from "./filesystem";

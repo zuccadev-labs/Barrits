@@ -166,10 +166,10 @@ export class BarritsSpinner {
 
     if (isTerminal()) {
       this.clearLine();
-      this.writeStderr(`${symbol} ${text}\n`);
-    } else {
-      this.writeStderr(`${symbol} ${text}\n`);
     }
+
+    this.writeStderr(`${symbol} ${text}
+`);
   }
 
   /**

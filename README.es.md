@@ -138,7 +138,7 @@ A pesar de su simplicidad conceptual, Barrits es un motor de grado corporativo q
 | :--- | :--- | :--- |
 | **Inversión de Control (IoC) Dinámica** | Contenedor que lee el manifiesto AST y auto-inyecta dependencias sin configuración manual. | Un servicio de facturación declara `@barrits-consumes database` y recibe la conexión automáticamente. |
 | **Generación Automática de OpenAPI** | Transforma los Traits descubiertos en documentación Swagger v3.1 al vuelo. | Los endpoints etiquetados con `http-endpoint` generan su esquema sin YAML duplicado. |
-| **Trazabilidad Matemática (SHA-256)** | Cada build se sella criptográficamente para prevenir ataques en la cadena de suministro. | CI/CD verifica que el manifiesto no fue adulterado entre el build y el deploy. |
+| **Sello de integridad (SHA-256)** | Cada manifiesto de build lleva un checksum calculado sobre todo su contenido determinista; `verifyBuildManifest` / `assertBuildManifestIntegrity` detectan cualquier modificación posterior a la generación. | CI/CD verifica que el manifiesto no fue alterado entre el build y el deploy. |
 | **Agnóstico de Runtime y Framework** | Funciona idénticamente en Node.js, Deno, Bun, Tauri, React, Vue, Solid y Svelte. | Un mismo contrato de Traits se consume en el backend Deno y en el frontend React sin cambios. |
 
 ---

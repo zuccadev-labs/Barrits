@@ -210,19 +210,21 @@ Options for `composeTraitDescriptors`:
 
 | Property | Type | Description |
 | :--- | :--- | :--- |
-| `input` | TraitDescriptor[] | Array of trait descriptors to compose |
-| `conflictStrategy` | TraitConflictStrategy | How to resolve conflicts (see below) |
+| `state` | TState | Initial shared state passed to every `create()` |
+| `onConflict` | TraitConflictStrategy | How a capability provided by two traits is resolved (see below) |
+| `resolveConflict` | (key, left, right, leftTrait, rightTrait) => unknown | Custom resolver; takes precedence over `onConflict` |
 
 ### TraitConflictStrategy
 
-Defines how to handle conflicts during trait composition:
+Single vocabulary shared by `composeTraitDescriptors`, `mergeTraits` and the `traitConflictStrategy` option of `barrits.config.*` (`createBarrits().composeTraits` uses the configured value as its default `onConflict`):
 
 | Value | Description |
 | :--- | :--- |
-| `"error"` | Throw an error when conflicts are detected (default) |
-| `"warn"` | Log a warning but continue composition |
-| `"ignore"` | Silently ignore conflicts |
-| `"replace"` | Replace conflicting traits with later ones |
+| `"throw"` | Throw on the first capability collision (default) |
+| `"left"` | Keep the capability of the first provider |
+| `"right"` | Let the last provider win |
+
+Legacy config spellings are still accepted and normalized: `"error"` → `"throw"`, `"override"` and `"merge"` → `"right"`. Any other value throws a `TypeError` while the configuration is resolved.
 
 ### ComposedTraitDescriptorsResult
 

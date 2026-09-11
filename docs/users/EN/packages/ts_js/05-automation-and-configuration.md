@@ -91,21 +91,6 @@ Standard lifecycle rule:
 
 To separate automation artifacts from the visible project domain, set a custom `automationDirectory`. This moves manifests, snapshots, and generated imports outside of `.barrits` into the configured path.
 
-## Custom Main Method
-
-A custom main method can be declared in the configuration to control application startup behavior:
-
-```ts
-import { defineBarritsConfig } from "@zuccadev-labs/barrits";
-
-export default defineBarritsConfig({
-  runtime: "node",
-  main: async () => {
-    console.log("Application starting with custom configuration");
-  },
-});
-```
-
 ## Safe Instantiation with Factory Pattern
 
 When the `namespace` field is configured, `createBarrits()` returns a typed, isolated object without polluting global scope:

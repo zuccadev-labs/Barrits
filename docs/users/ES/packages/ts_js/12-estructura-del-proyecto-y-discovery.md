@@ -25,7 +25,7 @@ Puedes ubicar la carpeta de dominio visible en la raíz del proyecto, en un subd
 
 1. `findBarritsConfigFile(projectRoot)` busca `barrits.config.ts` → `.mts` → `.js` → `.mjs` (en ese orden) en la raíz del proyecto. Soportado en Node y Deno.
 2. El `default` export del módulo cargado (o los named `barritsConfig` / `config`) se parsea y valida.
-3. El objeto fusionado se normaliza en `ResolvedBarritsConfig` (runtime, watch, namespace, ruta de manifiesto, discovery roots, estrategia de conflictos de traits, etc.).
+3. El objeto fusionado se normaliza en `ResolvedBarritsConfig` (runtime, watch, namespace, ruta de manifiesto, discovery roots, estrategia de conflictos de traits, etc.). Los campos enumerados se validan: `runtime` debe ser uno de `BARRITS_RUNTIME_KINDS`, `watch` uno de `BARRITS_WATCH_MODES`, `traitConflictStrategy` uno de `"throw"` | `"left"` | `"right"` (los valores heredados `"error"`/`"override"`/`"merge"` se mapean) y `namespace` debe ser un identificador JavaScript distinto de `brt` o `config`. Un valor inválido lanza `TypeError` en lugar de conservarse en silencio.
 
 El campo `namespace` aquí es lo que hace que el **nombre principal de la API sea personalizable** (ver [Referencia de API — Configuración](09a-referencia-de-api-configuracion.md)).
 
@@ -67,7 +67,37 @@ Una vez descubierta la estructura, el motor construye un grafo de integración y
 - El comando `build` de la CLI (o un plugin de bundler) escribe `<automationDirectory>/build-manifest.json`.
 - Los modos `watch` y `dev` escriben `<automationDirectory>/watch-snapshot.json`.
 
-El manifiesto lleva dominios, exports, descriptores de traits, acciones de importación, colisiones y un checksum SHA-256 para integridad de la cadena de suministro.
+El manifiesto lleva dominios, exports, descriptores de traits, acciones de importación, colisiones y un checksum SHA-256 calculado sobre todo su contenido determinista (todos los campos salvo `checksum` y `generatedAt`). Tras leer un manifiesto, `verifyBuildManifest(manifest)` devuelve `{ valid, expected, actual }` y `assertBuildManifestIntegrity(manifest)` lanza cuando el contenido ya no coincide con el sello; ambos se exportan desde `@zuccadev-labs/barrits/consume` y desde la raíz del paquete.
+
+### 4.1 Usar el motor de forma programática
+
+El motor de discovery e inspección se exporta desde la raíz del paquete, desde `@zuccadev-labs/barrits/sdk` y desde cada adaptador de runtime (`./node`, `./bun`, `./deno`). Es agnóstico del runtime: solo necesita un adaptador de filesystem.
+
+```ts
+import { createNodeFileSystemAdapter, findBarritsDirectory, inspectBarritsIntegrations, createBuildManifest } from "@zuccadev-labs/barrits/node";
+
+const adapter = createNodeFileSystemAdapter();
+const discovery = await findBarritsDirectory(adapter, { startDirectory: process.cwd() });
+if (!discovery) throw new Error("directorio barrits no encontrado");
+
+const graph = await inspectBarritsIntegrations(adapter, { ...discovery, discoveryRoots: ["src"] });
+const manifest = await createBuildManifest(graph);
+```
+
+Las `discoveryRoots` se resuelven relativas a `projectRoot`; los archivos de traits encontrados bajo una raíz extra se leen desde esa raíz y su `sourceFile` queda relativo a ella.
+
+### 4.2 Qué lee el crawler
+
+El crawler recorre la carpeta de dominio (y cada entrada de `discoveryRoots`) con estas reglas:
+
+| Regla | Comportamiento |
+| --- | --- |
+| **Archivos fuente** | `.ts`, `.tsx`, `.mts`, `.cts`, `.js`, `.jsx`, `.mjs`, `.cjs`. Se omiten los archivos de declaraciones (`*.d.ts`) y los de test (`*.test.*`, `*.spec.*`). |
+| **Directorios ignorados** | `node_modules`, `dist`, `build`, `coverage`, `.git`, `.next`, `.turbo`, `.barrits`, `.cache`, `__tests__`, `__mocks__`. |
+| **Tipos de archivo** | `index.<ext>` en la raíz es `root`; los archivos bajo `traits/` son `trait`; `<dominio>/.../index.<ext>` es `barrel`; las carpetas `internal`, `shared` y `sdk` conservan su tipo; el resto es `domain`. |
+| **Exports** | Se recogen `export const`, `export function`, `export class` y los reexports con nombre (`kind`: `const`, `function`, `class`, `reexport`). `export let`/`var` se ignoran a propósito. |
+| **`export * from`** | Los especificadores relativos se resuelven contra los archivos que existen: `./math.js` prueba también `math.ts` (convención ESM de TypeScript) y un `./math` sin extensión prueba todas las extensiones soportadas más `math/index.<ext>`. |
+| **JSDoc** | Los bloques `@barrits-trait` y `@barrits-path` se leen desde el nodo del AST al que el parser de TypeScript los asocia. Un comentario `/* ... */` o una sentencia no exportada entre dos declaraciones nunca filtra un bloque al siguiente export. |
 
 ## 5. Lectura del manifiesto por runtime (el contrato de consumo)
 

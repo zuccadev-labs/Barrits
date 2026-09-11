@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const exampleDirectory = resolve(scriptDirectory, "..");
-const bunCliPath = resolve(exampleDirectory, "../../adapters/bun/cli.ts");
+const bunCliPath = resolve(exampleDirectory, "../../adapters/bun/bin.ts");
 
 const child = spawn(
   "bun",

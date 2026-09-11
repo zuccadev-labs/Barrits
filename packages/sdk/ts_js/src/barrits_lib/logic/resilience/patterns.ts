@@ -31,11 +31,11 @@ export type RetryOptions = {
  * @param operation - The asynchronous function to execute and potentially retry.
  * @param options - Configuration for retry behavior.
  * @returns A promise resolving to the operation result.
- * @throws The last encountered error if all retry attempts are exhausted.
+ * @throws The last encountered error if all retry attempts are exhausted or the error is not retryable.
  *
  * @example
  * ```ts
- * import { retryWithBackoff } from "@aspect/barrits";
+ * import { retryWithBackoff } from "@zuccadev-labs/barrits";
  *
  * const data = await retryWithBackoff(
  *   () => fetch("https://api.example.com/data").then(r => r.json()),
@@ -47,24 +47,17 @@ export type RetryOptions = {
  * );
  * ```
  */
-export const retryWithBackoff = async <T>(
-  operation: () => Promise<T>,
-  options: RetryOptions = {},
-): Promise<T> => {
-  const maxRetries = options.maxRetries ?? 3;
+export const retryWithBackoff = async <T>(operation: () => Promise<T>, options: RetryOptions = {}): Promise<T> => {
+  const maxRetries = Math.max(0, options.maxRetries ?? 3);
   const initialDelayMs = options.initialDelayMs ?? 200;
   const backoffFactor = options.backoffFactor ?? 2;
   const maxDelayMs = options.maxDelayMs ?? 30_000;
   const isRetryable = options.isRetryable ?? (() => true);
 
-  let lastError: unknown;
-
-  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+  for (let attempt = 0; ; attempt++) {
     try {
       return await operation();
     } catch (error: unknown) {
-      lastError = error;
-
       if (attempt >= maxRetries || !isRetryable(error)) {
         throw error;
       }
@@ -74,61 +67,79 @@ export const retryWithBackoff = async <T>(
       await new Promise((resolve) => setTimeout(resolve, jitter));
     }
   }
-
-  throw lastError;
 };
+
+/**
+ * Error rejected by `withTimeout` when the wrapped operation exceeds its deadline.
+ * Detect it with `error instanceof TimeoutError` or `error.name === "TimeoutError"`.
+ */
+export class TimeoutError extends Error {
+  /** Deadline that was exceeded, in milliseconds. */
+  readonly timeoutMs: number;
+  /** Label of the operation that timed out. */
+  readonly label: string;
+
+  /** Creates a timeout error for the given operation label and deadline. */
+  constructor(label: string, timeoutMs: number) {
+    super(`Timeout: "${label}" did not complete within ${timeoutMs}ms`);
+    this.name = "TimeoutError";
+    this.label = label;
+    this.timeoutMs = timeoutMs;
+  }
+}
 
 /**
  * Wraps an asynchronous operation with a timeout constraint.
  *
- * If the operation does not resolve within the specified duration,
- * the returned promise rejects with a `TimeoutError`. The underlying
- * operation continues executing but its result is discarded.
+ * If the operation does not settle within the specified duration, the returned promise rejects with a
+ * `TimeoutError`. The underlying operation keeps running but its result is discarded. The operation may be
+ * passed as a promise or as a thunk (`() => Promise<T>`), matching `retryWithBackoff` and `CircuitBreaker.call`;
+ * with a thunk the deadline starts when the thunk is invoked, i.e. inside this call.
  *
- * This function is essential for enforcing SLA deadlines at service
- * boundaries, preventing unbounded waits on unresponsive dependencies.
+ * This function is essential for enforcing SLA deadlines at service boundaries, preventing unbounded waits
+ * on unresponsive dependencies.
  *
  * @typeParam T - The return type of the operation.
- * @param operation - The asynchronous operation to constrain.
+ * @param operation - The asynchronous operation (promise or thunk) to constrain.
  * @param timeoutMs - Maximum allowed execution time in milliseconds.
  * @param label - Optional label included in the timeout error for diagnostics.
- * @returns A promise that resolves with the operation result or rejects on timeout.
+ * @returns A promise that resolves with the operation result or rejects with `TimeoutError`.
  *
  * @example
  * ```ts
- * import { withTimeout } from "@aspect/barrits";
+ * import { withTimeout, TimeoutError } from "@zuccadev-labs/barrits";
  *
- * const result = await withTimeout(
- *   fetch("https://slow-api.example.com/data"),
- *   5000,
- *   "slow-api fetch",
- * );
+ * try {
+ *   const result = await withTimeout(() => fetch("https://slow-api.example.com/data"), 5000, "slow-api fetch");
+ * } catch (error) {
+ *   if (error instanceof TimeoutError) {
+ *     // handle the deadline
+ *   }
+ * }
  * ```
  */
-export const withTimeout = <T>(
-  operation: Promise<T>,
-  timeoutMs: number,
-  label: string = "operation",
-): Promise<T> => {
+export const withTimeout = <T>(operation: Promise<T> | (() => Promise<T>), timeoutMs: number, label = "operation"): Promise<T> => {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => {
-      reject(new Error(`Timeout: "${label}" did not complete within ${timeoutMs}ms`));
+      reject(new TimeoutError(label, timeoutMs));
     }, timeoutMs);
 
-    operation
+    const promise = typeof operation === "function" ? Promise.resolve().then(operation) : operation;
+
+    promise
       .then((result) => {
         clearTimeout(timer);
         resolve(result);
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         clearTimeout(timer);
-        reject(error);
+        reject(error instanceof Error ? error : new Error(String(error)));
       });
   });
 };
 
 /** Internal state representation of a circuit breaker instance. */
-type CircuitBreakerState = "closed" | "open" | "half-open";
+export type CircuitBreakerState = "closed" | "open" | "half-open";
 
 /**
  * Configuration options for the `createCircuitBreaker` factory.
@@ -155,13 +166,25 @@ export type CircuitBreaker = {
 };
 
 /**
+ * Error rejected by a circuit breaker while its circuit is open.
+ * Detect it with `error instanceof CircuitOpenError` or `error.name === "CircuitOpenError"`.
+ */
+export class CircuitOpenError extends Error {
+  /** Creates the error with the standard open-circuit message. */
+  constructor() {
+    super("Circuit breaker is open. Request rejected.");
+    this.name = "CircuitOpenError";
+  }
+}
+
+/**
  * Creates a circuit breaker instance implementing the standard three-state
  * pattern (closed → open → half-open → closed).
  *
  * The circuit breaker pattern prevents cascading failures in distributed
  * systems by short-circuiting calls to a failing dependency. When the
  * failure count exceeds the threshold, the circuit opens and immediately
- * rejects subsequent calls without executing the operation. After the
+ * rejects subsequent calls with `CircuitOpenError` without executing the operation. After the
  * reset timeout elapses, the circuit enters a half-open state and allows
  * a limited number of test calls to determine whether the dependency
  * has recovered.
@@ -171,7 +194,7 @@ export type CircuitBreaker = {
  *
  * @example
  * ```ts
- * import { createCircuitBreaker } from "@aspect/barrits";
+ * import { createCircuitBreaker } from "@zuccadev-labs/barrits";
  *
  * const breaker = createCircuitBreaker({
  *   failureThreshold: 3,
@@ -201,7 +224,7 @@ export const createCircuitBreaker = (options: CircuitBreakerOptions = {}): Circu
         state = "half-open";
         successCount = 0;
       } else {
-        throw new Error("Circuit breaker is open. Request rejected.");
+        throw new CircuitOpenError();
       }
     }
 

@@ -3,11 +3,7 @@ import { dirname, join } from "node:path";
 
 import type { BarritsBuildManifest } from "../../src/barrits/sdk";
 
-export const writeProjectFile = async (
-  projectRoot: string,
-  relativePath: string,
-  source: string,
-): Promise<string> => {
+export const writeProjectFile = async (projectRoot: string, relativePath: string, source: string): Promise<string> => {
   const filePath = join(projectRoot, relativePath);
   await mkdir(dirname(filePath), { recursive: true });
   await writeFile(filePath, source, "utf8");

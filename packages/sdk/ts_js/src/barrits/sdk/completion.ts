@@ -1,4 +1,13 @@
-const BARRITS_COMMANDS = ["detect", "info", "watch", "dev", "imports", "build", "help", "completion"] as const;
+/**
+ * @module
+ * [EN] Shell completion scripts (bash, zsh, fish) generated from the same constants the CLI parser validates
+ * against, so completions can never advertise values the CLI rejects.
+ * [ES] Scripts de completado de shell (bash, zsh, fish) generados a partir de las mismas constantes que valida el
+ * parser de la CLI, de modo que el completado nunca ofrezca valores que la CLI rechaza.
+ */
+import { CLI_COMMANDS, CLI_COMMAND_DESCRIPTIONS } from "./cli-parser";
+import { BARRITS_EXPORT_VISIBILITIES, BARRITS_FILE_KINDS } from "./guards";
+import { IMPORT_ACTION_KINDS } from "./validation";
 
 const BARRITS_OPTIONS = [
   "--json",
@@ -15,7 +24,11 @@ const BARRITS_OPTIONS = [
   "--help",
 ] as const;
 
-const BARRITS_KINDS = ["named-import", "namespace-access", "alias-namespace-access"] as const;
+const COMMAND_WORDS = CLI_COMMANDS.join(" ");
+const IMPORT_KIND_WORDS = Array.from(IMPORT_ACTION_KINDS).join(" ");
+const FILE_KIND_WORDS = BARRITS_FILE_KINDS.join(" ");
+const VISIBILITY_WORDS = BARRITS_EXPORT_VISIBILITIES.join(" ");
+const SHELL_WORDS = "bash zsh fish";
 
 const generateBashCompletion = (): string => `_barrits_completion() {
   local cur prev
@@ -24,7 +37,7 @@ const generateBashCompletion = (): string => `_barrits_completion() {
   prev="\${COMP_WORDS[COMP_CWORD-1]}"
 
   if [[ $COMP_CWORD -eq 1 ]]; then
-    COMPREPLY=($(compgen -W "${BARRITS_COMMANDS.join(" ")}" -- "$cur"))
+    COMPREPLY=($(compgen -W "${COMMAND_WORDS}" -- "$cur"))
     return 0
   fi
 
@@ -33,15 +46,19 @@ const generateBashCompletion = (): string => `_barrits_completion() {
       return 0
       ;;
     --kind|--mode)
-      COMPREPLY=($(compgen -W "${BARRITS_KINDS.join(" ")}" -- "$cur"))
+      COMPREPLY=($(compgen -W "${IMPORT_KIND_WORDS}" -- "$cur"))
       return 0
       ;;
     --file-kind)
-      COMPREPLY=($(compgen -W "source barrel config" -- "$cur"))
+      COMPREPLY=($(compgen -W "${FILE_KIND_WORDS}" -- "$cur"))
       return 0
       ;;
     --visibility)
-      COMPREPLY=($(compgen -W "public internal" -- "$cur"))
+      COMPREPLY=($(compgen -W "${VISIBILITY_WORDS}" -- "$cur"))
+      return 0
+      ;;
+    completion)
+      COMPREPLY=($(compgen -W "${SHELL_WORDS}" -- "$cur"))
       return 0
       ;;
   esac
@@ -58,7 +75,7 @@ const generateZshCompletion = (): string => `#compdef barrits brt
 _barrits_commands() {
   local -a commands
   commands=(
-    ${BARRITS_COMMANDS.map((c) => `"${c}:${getCommandDescription(c)}"`).join("\n    ")}
+    ${CLI_COMMANDS.map((command) => `"${command}:${CLI_COMMAND_DESCRIPTIONS[command]}"`).join("\n    ")}
   )
   _describe 'command' commands
 }
@@ -82,9 +99,11 @@ _barrits() {
             '--json[Output as JSON]' \\
             '--domain[Filter by domain]:domain' \\
             '--export[Filter by export]:export' \\
-            '--file-kind[Filter by file kind]:kind:(source barrel config)' \\
-            '--visibility[Filter by visibility]:visibility:(public internal)' \\
-            '--kind[Filter by import kind]:kind:(${BARRITS_KINDS.join(" ")})' \\
+            '--file-kind[Filter by file kind]:kind:(${FILE_KIND_WORDS})' \\
+            '--visibility[Filter by visibility]:visibility:(${VISIBILITY_WORDS})' \\
+            '--kind[Filter by import kind]:kind:(${IMPORT_KIND_WORDS})' \\
+            '--write-snapshot[Write snapshot file]' \\
+            '--snapshot[Snapshot file path]:snapshot:_files' \\
             '--help[Show help]'
           ;;
         imports)
@@ -92,68 +111,51 @@ _barrits() {
             '--json[Output as JSON]' \\
             '--write[Write imports to disk]' \\
             '--target[Target file]:target:_files' \\
-            '--mode[Import mode]:mode:(${BARRITS_KINDS.join(" ")})' \\
+            '--mode[Import mode]:mode:(${IMPORT_KIND_WORDS})' \\
             '--domain[Filter by domain]:domain' \\
             '--export[Filter by export]:export' \\
-            '--kind[Filter by kind]:kind:(${BARRITS_KINDS.join(" ")})' \\
+            '--kind[Filter by kind]:kind:(${IMPORT_KIND_WORDS})' \\
             '--help[Show help]'
           ;;
-        help|completion)
-          case $words[1] in
-            completion)
-              _arguments '1:shell:(bash zsh fish)'
-              ;;
-          esac
+        completion)
+          _arguments '1:shell:(${SHELL_WORDS})'
           ;;
       esac
       ;;
   esac
 }
 
-_compdef _barrits barrits brt
+compdef _barrits barrits brt
 `;
 
-const generateFishCompletion = (): string => `complete -c barrits -f -n '__fish_use_subcommand' -a '${BARRITS_COMMANDS.join("' '")}'
-complete -c brt -f -n '__fish_use_subcommand' -a '${BARRITS_COMMANDS.join("' '")}'
+const generateFishCompletion = (): string => `complete -c barrits -f -n '__fish_use_subcommand' -a '${CLI_COMMANDS.join("' '")}'
+complete -c brt -f -n '__fish_use_subcommand' -a '${CLI_COMMANDS.join("' '")}'
 
-${BARRITS_COMMANDS.filter((c) => c !== "help" && c !== "completion")
+${CLI_COMMANDS.filter((command) => command !== "help" && command !== "completion")
   .map(
-    (cmd) => `# ${cmd} options
-complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l json -d 'Output as JSON'
-complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l domain -d 'Filter by domain' -r
-complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l export -d 'Filter by export' -r
-complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l file-kind -d 'Filter by file kind' -r -f -a 'source barrel config'
-complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l visibility -d 'Filter by visibility' -r -f -a 'public internal'
-complete -c barrits -n '__fish_seen_subcommand_from ${cmd}' -l help -d 'Show help'
+    (command) => `# ${command} options
+complete -c barrits -n '__fish_seen_subcommand_from ${command}' -l json -d 'Output as JSON'
+complete -c barrits -n '__fish_seen_subcommand_from ${command}' -l domain -d 'Filter by domain' -r
+complete -c barrits -n '__fish_seen_subcommand_from ${command}' -l export -d 'Filter by export' -r
+complete -c barrits -n '__fish_seen_subcommand_from ${command}' -l file-kind -d 'Filter by file kind' -r -f -a '${FILE_KIND_WORDS}'
+complete -c barrits -n '__fish_seen_subcommand_from ${command}' -l visibility -d 'Filter by visibility' -r -f -a '${VISIBILITY_WORDS}'
+complete -c barrits -n '__fish_seen_subcommand_from ${command}' -l kind -d 'Filter by import kind' -r -f -a '${IMPORT_KIND_WORDS}'
+complete -c barrits -n '__fish_seen_subcommand_from ${command}' -l help -d 'Show help'
 `,
   )
   .join("\n")}
 # imports specific
 complete -c barrits -n '__fish_seen_subcommand_from imports' -l write -d 'Write imports to disk'
 complete -c barrits -n '__fish_seen_subcommand_from imports' -l target -d 'Target file' -r
-complete -c barrits -n '__fish_seen_subcommand_from imports' -l mode -d 'Import mode' -r -f -a '${BARRITS_KINDS.join(" ")}'
+complete -c barrits -n '__fish_seen_subcommand_from imports' -l mode -d 'Import mode' -r -f -a '${IMPORT_KIND_WORDS}'
 
 # watch/dev specific
 complete -c barrits -n '__fish_seen_subcommand_from watch dev' -l write-snapshot -d 'Write snapshot file'
 complete -c barrits -n '__fish_seen_subcommand_from watch dev' -l snapshot -d 'Snapshot file path' -r
 
 # completion specific
-complete -c barrits -n '__fish_seen_subcommand_from completion' -f -a 'bash zsh fish'
+complete -c barrits -n '__fish_seen_subcommand_from completion' -f -a '${SHELL_WORDS}'
 `;
-
-const getCommandDescription = (command: string): string => {
-  const descriptions: Record<string, string> = {
-    detect: "Detect barrits directory and integrations",
-    info: "Show integration graph overview",
-    watch: "Watch barrits directory for changes",
-    dev: "Start dev session with child process",
-    imports: "Generate and manage import actions",
-    build: "Generate build manifest",
-    help: "Show help text",
-    completion: "Generate shell completion script",
-  };
-  return descriptions[command] ?? "";
-};
 
 /**
  * [EN] Generates a shell completion script (bash/zsh/fish) for the Barrits CLI.

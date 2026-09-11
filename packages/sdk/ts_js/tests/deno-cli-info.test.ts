@@ -12,74 +12,86 @@ const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const denoCliPath = join(repositoryRoot, "adapters", "deno", "cli.ts");
 
 const writeDependencyDriftTrait = async (projectRoot: string): Promise<void> => {
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-requires normalize",
-    " * @barrits-consumes normalize",
-    " * @barrits-conflicts legacySlug",
-    " * @barrits-state session",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  conflicts: ["normalize"],',
-    "  requires: [],",
-    '  consumes: ["formatPath"],',
-    '  state: ["cache"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-requires normalize",
+      " * @barrits-consumes normalize",
+      " * @barrits-conflicts legacySlug",
+      " * @barrits-state session",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  conflicts: ["normalize"],',
+      "  requires: [],",
+      '  consumes: ["formatPath"],',
+      '  state: ["cache"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
+  );
 };
 
 const writeContradictoryPortableTrait = async (projectRoot: string): Promise<void> => {
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-requires normalize slug",
-    " * @barrits-conflicts normalize slug",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  requires: ["normalize", "slug"],',
-    '  conflicts: ["normalize", "slug"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-requires normalize slug",
+      " * @barrits-conflicts normalize slug",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  requires: ["normalize", "slug"],',
+      '  conflicts: ["normalize", "slug"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
+  );
 };
 
 const writeMissingConsumedCapabilityTrait = async (projectRoot: string): Promise<void> => {
-  await writeProjectFile(projectRoot, "barrits/traits/routing/slug.ts", [
-    "/**",
-    " * @barrits-trait slug",
-    " * @barrits-consumes normalize",
-    " * @barrits-provides toSlug",
-    " */",
-    "export const slugTrait = createTraitDescriptor({",
-    '  name: "slug",',
-    '  consumes: ["normalize"],',
-    '  provides: ["toSlug"],',
-    "  create: () => ({",
-    "    toSlug(value: string) {",
-    "      return value;",
-    "    },",
-    "  }),",
-    "});",
-    "",
-  ].join("\n"));
+  await writeProjectFile(
+    projectRoot,
+    "barrits/traits/routing/slug.ts",
+    [
+      "/**",
+      " * @barrits-trait slug",
+      " * @barrits-consumes normalize",
+      " * @barrits-provides toSlug",
+      " */",
+      "export const slugTrait = createTraitDescriptor({",
+      '  name: "slug",',
+      '  consumes: ["normalize"],',
+      '  provides: ["toSlug"],',
+      "  create: () => ({",
+      "    toSlug(value: string) {",
+      "      return value;",
+      "    },",
+      "  }),",
+      "});",
+      "",
+    ].join("\n"),
+  );
 };
 
 test("deno info prints dependency, state, and conflicts drift diagnostics in human-readable output", { concurrency: false }, async () => {
@@ -87,12 +99,7 @@ test("deno info prints dependency, state, and conflicts drift diagnostics in hum
   await createAutomationProjectFixture(projectRoot);
   await writeDependencyDriftTrait(projectRoot);
 
-  const result = await runCommand(
-    "deno",
-    ["run", "-A", denoCliPath, "info", projectRoot],
-    repositoryRoot,
-    process.env,
-  );
+  const result = await runCommand("deno", ["run", "-A", denoCliPath, "info", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /traits: 1/);
@@ -109,12 +116,7 @@ test("deno build prints dependency, state, and conflicts drift summary in human-
   await createAutomationProjectFixture(projectRoot);
   await writeDependencyDriftTrait(projectRoot);
 
-  const result = await runCommand(
-    "deno",
-    ["run", "-A", denoCliPath, "build", projectRoot],
-    repositoryRoot,
-    process.env,
-  );
+  const result = await runCommand("deno", ["run", "-A", denoCliPath, "build", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /buildManifest:/);
@@ -132,12 +134,7 @@ test("deno info prints contradictory portable trait contract diagnostics in huma
   await createAutomationProjectFixture(projectRoot);
   await writeContradictoryPortableTrait(projectRoot);
 
-  const result = await runCommand(
-    "deno",
-    ["run", "-A", denoCliPath, "info", projectRoot],
-    repositoryRoot,
-    process.env,
-  );
+  const result = await runCommand("deno", ["run", "-A", denoCliPath, "info", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /traits: 1/);
@@ -154,12 +151,7 @@ test("deno build prints contradictory portable trait contract summary in human-r
   await createAutomationProjectFixture(projectRoot);
   await writeContradictoryPortableTrait(projectRoot);
 
-  const result = await runCommand(
-    "deno",
-    ["run", "-A", denoCliPath, "build", projectRoot],
-    repositoryRoot,
-    process.env,
-  );
+  const result = await runCommand("deno", ["run", "-A", denoCliPath, "build", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /buildManifest:/);
@@ -176,12 +168,7 @@ test("deno info prints missing consumed capability diagnostics in human-readable
   await createAutomationProjectFixture(projectRoot);
   await writeMissingConsumedCapabilityTrait(projectRoot);
 
-  const result = await runCommand(
-    "deno",
-    ["run", "-A", denoCliPath, "info", projectRoot],
-    repositoryRoot,
-    process.env,
-  );
+  const result = await runCommand("deno", ["run", "-A", denoCliPath, "info", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /traits: 1/);
@@ -195,12 +182,7 @@ test("deno build prints missing consumed capability summary in human-readable ou
   await createAutomationProjectFixture(projectRoot);
   await writeMissingConsumedCapabilityTrait(projectRoot);
 
-  const result = await runCommand(
-    "deno",
-    ["run", "-A", denoCliPath, "build", projectRoot],
-    repositoryRoot,
-    process.env,
-  );
+  const result = await runCommand("deno", ["run", "-A", denoCliPath, "build", projectRoot], repositoryRoot, process.env);
 
   assert.equal(result.exitCode, 0);
   assert.match(result.stdout, /buildManifest:/);

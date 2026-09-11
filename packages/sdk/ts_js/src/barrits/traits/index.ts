@@ -1,5 +1,11 @@
 import { compose, composePipeline, mergeTraits } from "./compose";
 import { composeTraitDescriptors, createTraitDescriptor, createTraitDescriptorFromJsDoc, parseTraitDescriptorJsDoc } from "./descriptor";
+import {
+  DEFAULT_TRAIT_CONFLICT_STRATEGY,
+  TRAIT_CONFLICT_STRATEGIES,
+  isTraitConflictStrategy,
+  normalizeTraitConflictStrategy,
+} from "./conflict";
 
 export {
   compose,
@@ -7,13 +13,19 @@ export {
   composeTraitDescriptors,
   createTraitDescriptor,
   createTraitDescriptorFromJsDoc,
+  DEFAULT_TRAIT_CONFLICT_STRATEGY,
+  isTraitConflictStrategy,
   mergeTraits,
+  normalizeTraitConflictStrategy,
   parseTraitDescriptorJsDoc,
+  TRAIT_CONFLICT_STRATEGIES,
 };
+export type { LegacyTraitConflictStrategy, TraitConflictStrategy } from "./conflict";
 export type {
+  AnyTraitDescriptor,
   ComposedTraitDescriptorsResult,
   ComposeTraitDescriptorsOptions,
-  TraitConflictStrategy,
+  MergeTraitProvides,
   TraitDescriptor,
   TraitDescriptorContext,
   TraitDescriptorFromJsDocInput,

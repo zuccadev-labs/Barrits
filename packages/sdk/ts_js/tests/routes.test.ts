@@ -1,11 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import {
-  buildPath,
-  parsePath,
-  path,
-  routes,
-} from "../src/barrits/routes";
+import { buildPath, parsePath, path, routes } from "../src/barrits/routes";
 
 describe("routes namespace object (barrits.routes)", () => {
   it("is an object", () => {

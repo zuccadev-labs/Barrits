@@ -1,9 +1,17 @@
 #!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+# Pre-commit quality gate for the barrits monorepo.
+#
+# Installed by `npm run prepare` (scripts/prepare-hooks.mjs sets `git config core.hooksPath .husky`),
+# so it works without the husky runtime or lint-staged. It runs the same gates as CI on the whole
+# SDK: lint, typecheck and the test suite. Skip deliberately with `git commit --no-verify` only for
+# work-in-progress commits that will be amended before pushing.
+set -e
 
+npm run lint
+npm run typecheck
 npm test
 
-# ── git-secrets: prevent accidental commit of credentials ──────────────────
+# ── git-secrets: prevent accidental commit of credentials (only when installed) ───────────
 if command -v git-secrets > /dev/null 2>&1; then
   git diff --cached --name-only -z | xargs -0 git secrets --scan
   SECRETS_EXIT_CODE=$?

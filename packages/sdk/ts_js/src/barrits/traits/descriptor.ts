@@ -2,11 +2,24 @@ type UnionToIntersection<TValue> = (TValue extends unknown ? (value: TValue) => 
   ? TIntersection
   : never;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyTraitDescriptor = TraitDescriptor<string, any, any>;
+/**
+ * [EN] Any trait descriptor regardless of its state and provided capabilities. `create` is intentionally loose so
+ * concrete descriptors (whose context carries a literal `descriptorName`) satisfy the constraint without casts.
+ * [ES] Cualquier descriptor de trait con independencia de su estado y capacidades. `create` es deliberadamente laxo
+ * para que los descriptores concretos (cuyo contexto lleva un `descriptorName` literal) cumplan la restricción sin casts.
+ */
+export type AnyTraitDescriptor = Omit<TraitDescriptor<string, object, object>, "create" | "provides"> & {
+  /** [EN] Provided capability keys. [ES] Claves de capacidades proporcionadas. */
+  readonly provides: readonly string[];
+  /** [EN] Factory accepting any composition context. [ES] Factoría que acepta cualquier contexto de composición. */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  readonly create: (context: any) => object;
+};
 
 /** Collision strategy for capability keys during trait composition. */
-export type TraitConflictStrategy = "throw" | "left" | "right";
+export type { TraitConflictStrategy } from "./conflict";
+import type { TraitConflictStrategy } from "./conflict";
+import { DEFAULT_TRAIT_CONFLICT_STRATEGY } from "./conflict";
 
 /** Context object passed to each trait factory during composition. */
 export type TraitDescriptorContext<TState extends object, TResolvedTraits extends object, TName extends string> = {
@@ -174,9 +187,14 @@ export type ComposedTraitDescriptorsResult<TState extends object, TTraits extend
   readonly traitMetadata: Readonly<Record<string, TraitDescriptorMetadata>>;
 };
 
-type TraitProvides<TDescriptor> = TDescriptor extends TraitDescriptor<string, object, infer TProvides> ? TProvides : never;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type TraitProvides<TDescriptor> = TDescriptor extends TraitDescriptor<any, any, infer TProvides> ? TProvides : never;
 
-type MergeTraitProvides<TDescriptors extends readonly AnyTraitDescriptor[]> =
+/**
+ * [EN] Intersection of the capabilities provided by a tuple of descriptors (the `traits` type of a composition).
+ * [ES] Intersección de las capacidades proporcionadas por una tupla de descriptores (el tipo `traits` de una composición).
+ */
+export type MergeTraitProvides<TDescriptors extends readonly AnyTraitDescriptor[]> =
   UnionToIntersection<TraitProvides<TDescriptors[number]>> extends object
     ? UnionToIntersection<TraitProvides<TDescriptors[number]>>
     : Record<string, never>;
@@ -208,7 +226,7 @@ const normalizeJsDocBlock = (value: string): string => {
 };
 
 const parseTagValues = (jsDocBlock: string, tagName: string): string[] => {
-  const tagExpression = new RegExp(`@${tagName}\\s+([^\\n\\r]+)`, "gu");
+  const tagExpression = new RegExp(`(?:^|\\s)@${tagName}[ \\t]+([^\\n\\r]+)`, "gu");
 
   return normalizeUniqueStrings(
     Array.from(jsDocBlock.matchAll(tagExpression))
@@ -219,7 +237,7 @@ const parseTagValues = (jsDocBlock: string, tagName: string): string[] => {
 };
 
 const parseSingleTagValue = (jsDocBlock: string, tagName: string): string | undefined => {
-  const tagExpression = new RegExp(`@${tagName}\\s+([^\\n\\r]+)`, "u");
+  const tagExpression = new RegExp(`(?:^|\\s)@${tagName}[ \\t]+([^\\n\\r]+)`, "u");
   const matchedValue = jsDocBlock.match(tagExpression)?.[1]?.trim();
 
   // Empty/undefined match must resolve to undefined (intentional falsy check).
@@ -260,10 +278,40 @@ export const parseTraitDescriptorJsDoc = (jsDoc: string): TraitDescriptorJsDocMe
 };
 
 /**
- * Creates a trait descriptor with normalized metadata arrays and stable ordering.
+ * [EN] Creates a trait descriptor with normalized metadata arrays and stable ordering.
+ * [ES] Crea un descriptor de trait con arrays de metadatos normalizados y ordenamiento estable.
  *
- * @param descriptor Trait declaration input authored in code.
- * @returns Normalized trait descriptor ready for composition.
+ * [EN] Accepts partial metadata input and normalizes it into a normalized descriptor suitable
+ * for trait composition, inspection, and runtime resolution. Handles deduplication, validation,
+ * and type-safe factory context.
+ * [ES] Acepta entrada de metadatos parcial y la normaliza en un descriptor adecuado para
+ * composición de traits, inspección y resolución en tiempo de ejecución. Maneja deduplicación,
+ * validación y contexto de factoría type-safe.
+ *
+ * @template TName Literal trait name (e.g., "cache-layer")
+ * @template TState Trait state shape (properties shared by all instances)
+ * @template TProvides Capabilities provided by this trait (returned by factory)
+ * @param descriptor Trait declaration input authored in code
+ * @returns Normalized trait descriptor ready for composition and runtime use
+ * @throws {TypeError} If descriptor.name is missing or empty
+ * @throws {TypeError} If descriptor.create is not a function
+ *
+ * @example
+ * ```typescript
+ * const dbTrait = createTraitDescriptor({
+ *   name: "database",
+ *   requires: ["config:db"],
+ *   provides: ["db:query", "db:execute"],
+ *   state: { connected: false, pool: null },
+ *   create: async (context) => ({
+ *     query: async (sql: string) => [...],
+ *     execute: async (sql: string) => 0
+ *   })
+ * });
+ * // dbTrait.name = "database"
+ * // dbTrait.provides = ["db:query", "db:execute"]
+ * // dbTrait.create is callable with TraitDescriptorContext
+ * ```
  */
 export const createTraitDescriptor = <const TName extends string, TState extends object, TProvides extends object>(
   descriptor: TraitDescriptorInput<TName, TState, TProvides>,
@@ -283,14 +331,42 @@ export const createTraitDescriptor = <const TName extends string, TState extends
 };
 
 /**
- * Creates a trait descriptor from JSDoc metadata plus explicit runtime factory logic.
+ * [EN] Creates a trait descriptor from JSDoc metadata plus explicit runtime factory logic.
+ * [ES] Crea un descriptor de trait a partir de metadatos JSDoc más lógica de factoría en tiempo de ejecución.
  *
- * Explicit descriptor fields override metadata parsed from the JSDoc block.
+ * [EN] Parses `@barrits-*` tags from JSDoc, merges with explicit overrides, and returns
+ * a normalized descriptor. Useful for declarative trait authoring where metadata lives in JSDoc.
+ * Explicit fields override parsed values.
+ * [ES] Analiza etiquetas `@barrits-*` de JSDoc, fusiona con sobrescrituras explícitas y devuelve
+ * un descriptor normalizado. Útil para autoría declarativa de traits donde los metadatos viven en JSDoc.
+ * Los campos explícitos sobrescriben valores analizados.
  *
- * @param jsDoc Raw JSDoc block containing `@barrits-*` tags.
- * @param descriptor Trait factory configuration and optional override metadata.
- * @returns Normalized trait descriptor built from metadata and explicit overrides.
- * @throws Error when no descriptor name is available from metadata or explicit options.
+ * @template TName Literal trait name from metadata or override
+ * @template TState Trait state shape
+ * @template TProvides Capabilities provided
+ * @param jsDoc Raw JSDoc block containing `@barrits-*` tags (e.g., "@barrits-provides db:query db:execute")
+ * @param descriptor Trait factory configuration and optional override metadata (fields override JSDoc)
+ * @returns Normalized trait descriptor built from JSDoc + explicit overrides
+ * @throws {Error} When no descriptor name available from JSDoc metadata or explicit options
+ * @throws {TypeError} When factory function is missing or invalid
+ *
+ * @example
+ * ```typescript
+ * const jsDocBlock = `
+ *   * @barrits-requires config:db
+ *   * @barrits-provides db:query db:execute
+ * `;
+ *
+ * const descriptor = createTraitDescriptorFromJsDoc("database", jsDocBlock, {
+ *   name: "database",
+ *   create: async (context) => ({
+ *     query: async (sql) => [...],
+ *     execute: async (sql) => 0
+ *   })
+ * });
+ * // descriptor.requires = ["config:db"]
+ * // descriptor.provides = ["db:query", "db:execute"]
+ * ```
  */
 export const createTraitDescriptorFromJsDoc = <
   const TName extends string = string,
@@ -510,7 +586,7 @@ export const composeTraitDescriptors = <
   const traitProviders: Record<string, readonly string[]> = {};
   const traitMetadata: Record<string, TraitDescriptorMetadata> = {};
   const state = options.state ?? ({} as TState);
-  const conflictStrategy = options.onConflict ?? "throw";
+  const conflictStrategy = options.onConflict ?? DEFAULT_TRAIT_CONFLICT_STRATEGY;
 
   const resolveCapabilityConflict = (
     providedKey: string,

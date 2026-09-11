@@ -19,6 +19,9 @@ import { createRuntimeFileSystemAdapter } from "../src/barrits/sdk/adapters";
 import { mkdir, writeFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { loadTypeScript } from "../src/barrits/sdk/ast/cache";
+
+await loadTypeScript();
 
 describe("relativeFromBase", () => {
   it("returns empty string when paths are equal", () => {

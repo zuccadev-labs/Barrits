@@ -47,7 +47,7 @@ describe("generateCompletionScript", () => {
     assert.match(script, /#compdef barrits brt/);
     assert.match(script, /_barrits_commands/);
     assert.match(script, /_barrits\(\)/);
-    assert.match(script, /_compdef _barrits barrits brt/);
+    assert.match(script, /^compdef _barrits barrits brt$/m);
   });
 
   it("zsh script includes command descriptions", () => {
@@ -158,7 +158,9 @@ describe("printCompletion", () => {
   it("prints bash completion to console", () => {
     const lines: string[] = [];
     const originalLog = console.log;
-    console.log = (...args: unknown[]) => { lines.push(args.map(String).join(" ")); };
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
 
     try {
       printCompletion("bash");
@@ -173,13 +175,15 @@ describe("printCompletion", () => {
   it("prints zsh completion to console", () => {
     const lines: string[] = [];
     const originalLog = console.log;
-    console.log = (...args: unknown[]) => { lines.push(args.map(String).join(" ")); };
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
 
     try {
       printCompletion("zsh");
       assert.equal(lines.length, 1);
       assert.match(lines[0], /#compdef barrits brt/);
-      assert.match(lines[0], /_compdef _barrits barrits brt/);
+      assert.match(lines[0], /^compdef _barrits barrits brt$/m);
     } finally {
       console.log = originalLog;
     }
@@ -188,7 +192,9 @@ describe("printCompletion", () => {
   it("prints fish completion to console", () => {
     const lines: string[] = [];
     const originalLog = console.log;
-    console.log = (...args: unknown[]) => { lines.push(args.map(String).join(" ")); };
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
 
     try {
       printCompletion("fish");
@@ -203,7 +209,9 @@ describe("printCompletion", () => {
   it("prints error message for unknown shell", () => {
     const lines: string[] = [];
     const originalLog = console.log;
-    console.log = (...args: unknown[]) => { lines.push(args.map(String).join(" ")); };
+    console.log = (...args: unknown[]) => {
+      lines.push(args.map(String).join(" "));
+    };
 
     try {
       printCompletion("unknown");

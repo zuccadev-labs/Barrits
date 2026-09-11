@@ -10,21 +10,25 @@ import { BarritsWebpackPlugin } from "../src/barrits/plugins/webpack";
 test("webpack plugin materializes a manifest module and aliases it", async () => {
   const tempDirectory = await mkdtemp(join(tmpdir(), "barrits-webpack-plugin-"));
   const manifestPath = join(tempDirectory, "build-manifest.json");
-  await writeFile(manifestPath, JSON.stringify({
-    generatedAt: "2026-04-06T00:00:00.000Z",
-    projectRoot: ".",
-    barritsDirectory: "./barrits",
-    strategy: "direct-child",
-    filesCount: 1,
-    exportsCount: 1,
-    publicExportsCount: 1,
-    internalExportsCount: 0,
-    barrelsCount: 1,
-    domains: ["logic"],
-    traitDescriptors: [],
-    traitDiagnostics: [],
-    importActions: [],
-  }), "utf8");
+  await writeFile(
+    manifestPath,
+    JSON.stringify({
+      generatedAt: "2026-04-06T00:00:00.000Z",
+      projectRoot: ".",
+      barritsDirectory: "./barrits",
+      strategy: "direct-child",
+      filesCount: 1,
+      exportsCount: 1,
+      publicExportsCount: 1,
+      internalExportsCount: 0,
+      barrelsCount: 1,
+      domains: ["logic"],
+      traitDescriptors: [],
+      traitDiagnostics: [],
+      importActions: [],
+    }),
+    "utf8",
+  );
 
   let beforeRunCallback: (() => Promise<void>) | undefined;
   const compiler = {
@@ -63,21 +67,25 @@ test("webpack plugin materializes a manifest module and aliases it", async () =>
 test("webpack plugin also accepts package-first automation options", async () => {
   const tempDirectory = await mkdtemp(join(tmpdir(), "barrits-webpack-package-"));
   const manifestPath = join(tempDirectory, "build-manifest.json");
-  await writeFile(manifestPath, JSON.stringify({
-    generatedAt: "2026-04-06T00:00:00.000Z",
-    projectRoot: tempDirectory,
-    barritsDirectory: join(tempDirectory, "barrits"),
-    strategy: "direct-child",
-    filesCount: 1,
-    exportsCount: 1,
-    publicExportsCount: 1,
-    internalExportsCount: 0,
-    barrelsCount: 1,
-    domains: ["logic"],
-    traitDescriptors: [],
-    traitDiagnostics: [],
-    importActions: [],
-  }), "utf8");
+  await writeFile(
+    manifestPath,
+    JSON.stringify({
+      generatedAt: "2026-04-06T00:00:00.000Z",
+      projectRoot: tempDirectory,
+      barritsDirectory: join(tempDirectory, "barrits"),
+      strategy: "direct-child",
+      filesCount: 1,
+      exportsCount: 1,
+      publicExportsCount: 1,
+      internalExportsCount: 0,
+      barrelsCount: 1,
+      domains: ["logic"],
+      traitDescriptors: [],
+      traitDiagnostics: [],
+      importActions: [],
+    }),
+    "utf8",
+  );
 
   let beforeRunCallback: (() => Promise<void>) | undefined;
   const compiler = {

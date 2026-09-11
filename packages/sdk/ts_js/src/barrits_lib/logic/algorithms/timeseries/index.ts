@@ -11,7 +11,7 @@ export { detectTimeSeriesGaps } from "./detect-gaps";
 export type { TimeGap } from "./detect-gaps";
 export { differenceSeries } from "./difference-series";
 export { annualizedVolatility, exponentialMovingAverage, financeTimeSeriesAlgorithms, maxDrawdown, returnsSeries } from "./finance";
-export type { DrawdownPoint } from "./finance";
+export type { AnnualizedVolatilityOptions, DrawdownPoint } from "./finance";
 export { movingAverageSeries } from "./moving-average-series";
 export { resampleSeries } from "./resample-series";
 export { sortTimeSeries } from "./sort-time-series";

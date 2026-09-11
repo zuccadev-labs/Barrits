@@ -39,10 +39,7 @@ describe("BarritsIoCContainer", () => {
 
   it("throws for unresolved capability", async () => {
     const container = new BarritsIoCContainer();
-    await assert.rejects(
-      () => container.resolve("nonexistent"),
-      /Unresolved dependency/,
-    );
+    await assert.rejects(() => container.resolve("nonexistent"), /Unresolved dependency/);
   });
 
   it("allows factory to resolve sub-dependencies", async () => {
@@ -73,7 +70,19 @@ describe("BarritsIoCContainer", () => {
     const manifest = {
       projectRoot: "/test",
       traitDescriptors: [
-        { name: "myTrait", provides: ["capA"], sourceFile: "traits/a.ts", bindingName: "a", bindingKind: "const" as const, requires: [], conflicts: [], state: [], consumes: [], tags: [], runtimes: [] },
+        {
+          name: "myTrait",
+          provides: ["capA"],
+          sourceFile: "traits/a.ts",
+          bindingName: "a",
+          bindingKind: "const" as const,
+          requires: [],
+          conflicts: [],
+          state: [],
+          consumes: [],
+          tags: [],
+          runtimes: [],
+        },
       ],
     } as unknown as BarritsBuildManifest;
     const container = new BarritsIoCContainer(manifest);

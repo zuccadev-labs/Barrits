@@ -1,9 +1,10 @@
-import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { DEFAULT_AUTOMATION_DIRECTORY, resolveBarritsConfig } from "../config";
 import { parseJsonSource } from "../sdk/validation";
-import type { BarritsBuildManifest, RuntimeFileSystemAdapter, RuntimeFileSystemEntry } from "../sdk/contracts";
+import type { BarritsBuildManifest } from "../sdk/contracts";
+import { createNodeFileSystemAdapter } from "../sdk/adapters";
 
 /**
  * [EN] Type definition for BarritsPackageAutomationOptions.
@@ -27,41 +28,6 @@ type ResolvedBarritsPackageAutomationOptions = {
   automationDirectory: string;
 };
 
-const createPluginFileSystemAdapter = (projectRoot: string): RuntimeFileSystemAdapter => {
-  return {
-    cwd: () => projectRoot,
-    directoryExists: async (path) => {
-      try {
-        return (await stat(path)).isDirectory();
-      } catch {
-        return false;
-      }
-    },
-    listDirectories: async (path) => {
-      try {
-        const entries = await readdir(path, { withFileTypes: true });
-        return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name);
-      } catch {
-        return [];
-      }
-    },
-    listEntries: async (path) => {
-      try {
-        const entries = await readdir(path, { withFileTypes: true });
-        return entries
-          .filter((entry) => entry.isDirectory() || entry.isFile())
-          .map<RuntimeFileSystemEntry>((entry) => ({
-            name: entry.name,
-            type: entry.isDirectory() ? "directory" : "file",
-          }));
-      } catch {
-        return [];
-      }
-    },
-    readTextFile: async (path) => readFile(path, "utf8"),
-  };
-};
-
 const ensureAutomaticManifest = async (
   projectRoot: string,
   automationDirectory = DEFAULT_AUTOMATION_DIRECTORY,
@@ -71,7 +37,7 @@ const ensureAutomaticManifest = async (
     import("../sdk/inspect"),
     import("../sdk/manifest"),
   ]);
-  const adapter = createPluginFileSystemAdapter(projectRoot);
+  const adapter = createNodeFileSystemAdapter();
   const discovery = await findBarritsDirectory(adapter, { startDirectory: projectRoot });
 
   if (!discovery) {

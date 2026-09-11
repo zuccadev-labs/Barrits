@@ -1,8 +1,12 @@
+import type { BarritsRuntimeKind } from "../../internal/config_defaults";
+
 /**
- * [EN] Type definition for RuntimeName.
- * [ES] Definición de tipo para RuntimeName.
+ * [EN] Host runtime detected at execution time (`detectRuntime()`): a JavaScript engine from the configuration
+ * vocabulary, or `unknown` (browsers, workers, exotic hosts).
+ * [ES] Runtime anfitrión detectado en ejecución (`detectRuntime()`): un motor JavaScript del vocabulario de
+ * configuración, o `unknown` (navegadores, workers, hosts exóticos).
  */
-export type RuntimeName = "node" | "deno" | "unknown";
+export type RuntimeName = Extract<BarritsRuntimeKind, "node" | "deno" | "bun"> | "unknown";
 
 /**
  * [EN] Type definition for PathParts.

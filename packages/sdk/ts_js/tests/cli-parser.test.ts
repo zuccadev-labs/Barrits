@@ -171,21 +171,33 @@ test("hasCollisions returns true when graph has collisions", () => {
 const suppressConsoleError = <TResult>(fn: () => TResult): TResult => {
   const original = console.error;
   console.error = () => {};
-  try { return fn(); } finally { console.error = original; }
+  try {
+    return fn();
+  } finally {
+    console.error = original;
+  }
 };
 
 test("failOnCollisions returns 0 when no collisions", () => {
-  assert.equal(suppressConsoleError(() => failOnCollisions({ collisions: [] } as any, false)), 0);
+  assert.equal(
+    suppressConsoleError(() => failOnCollisions({ collisions: [] } as any, false)),
+    0,
+  );
 });
 
 test("failOnCollisions returns 1 when collisions exist", () => {
-  assert.equal(suppressConsoleError(() => failOnCollisions({ collisions: [{ message: "collision detected" }] } as any, false)), 1);
+  assert.equal(
+    suppressConsoleError(() => failOnCollisions({ collisions: [{ message: "collision detected" }] } as any, false)),
+    1,
+  );
 });
 
 test("failOnCollisions prints JSON when json flag is true", () => {
   const calls: unknown[][] = [];
   const original = console.error;
-  console.error = (...args: unknown[]) => { calls.push(args); };
+  console.error = (...args: unknown[]) => {
+    calls.push(args);
+  };
   try {
     const result = failOnCollisions({ collisions: [{ message: "test collision" }] } as any, true);
     assert.equal(result, 1);
@@ -297,7 +309,23 @@ test("MR: parseArguments --mode rejects invalid values", () => {
 });
 
 test("MR: parseArguments cascades flags correctly", () => {
-  const opts = parseArguments(["info", "--json", "--write", "--domain", "api", "--export", "foo", "--kind", "named-import", "--file-kind", "trait", "--visibility", "public", "--mode", "namespace-access"]);
+  const opts = parseArguments([
+    "info",
+    "--json",
+    "--write",
+    "--domain",
+    "api",
+    "--export",
+    "foo",
+    "--kind",
+    "named-import",
+    "--file-kind",
+    "trait",
+    "--visibility",
+    "public",
+    "--mode",
+    "namespace-access",
+  ]);
   assert.equal(opts.command, "info");
   assert.equal(opts.json, true);
   assert.equal(opts.write, true);
@@ -320,7 +348,18 @@ test("MR: toSelectionFilters with empty arrays returns undefined", () => {
 });
 
 test("MR: toSelectionFilters with all filters populated", () => {
-  const opts = parseArguments(["--domain", "api", "--export", "foo", "--kind", "named-import", "--file-kind", "trait", "--visibility", "public"]);
+  const opts = parseArguments([
+    "--domain",
+    "api",
+    "--export",
+    "foo",
+    "--kind",
+    "named-import",
+    "--file-kind",
+    "trait",
+    "--visibility",
+    "public",
+  ]);
   const filter = toSelectionFilters(opts);
   assert.deepEqual(filter.domains, ["api"]);
   assert.deepEqual(filter.exports, ["foo"]);
@@ -460,8 +499,12 @@ const captureConsoleLog = <TResult>(fn: () => TResult): { output: string[]; resu
   const lines: string[] = [];
   const originalLog = console.log;
   const originalError = console.error;
-  console.log = (...args: unknown[]) => { lines.push(args.map(String).join(" ")); };
-  console.error = (...args: unknown[]) => { lines.push(args.map(String).join(" ")); };
+  console.log = (...args: unknown[]) => {
+    lines.push(args.map(String).join(" "));
+  };
+  console.error = (...args: unknown[]) => {
+    lines.push(args.map(String).join(" "));
+  };
   try {
     const result = fn();
     return { output: lines, result };
@@ -535,13 +578,50 @@ test("MR: printInfoSummary outputs basic fields", () => {
 test("MR: printInfoSummary with domains and collisions", () => {
   const graph = {
     ...MINIMAL_GRAPH,
-    domains: [{
-      name: "core",
-      path: "core",
-      files: [{ path: "core/helper.ts", isIndex: false, kind: "internal", sourceLayer: "barrits", exports: [{ name: "helperFn", visibility: "public", bindingName: "helperFn", bindingKind: "function", accessStrategy: "export-name", sourceLayer: "barrits" }], traitDescriptors: [] }],
-    }],
-    collisions: [{ type: "project-project", namespace: "core", exportName: "helperFn", projectSourceFile: "core/helper.ts", conflictSourceFile: "lib/helper.ts", message: "collision-detail" }],
-    importActions: [{ exportName: "helperFn", domain: "core", sourceFile: "core/helper.ts", kind: "named-import", statement: "import { helperFn } from './core/helper'" }],
+    domains: [
+      {
+        name: "core",
+        path: "core",
+        files: [
+          {
+            path: "core/helper.ts",
+            isIndex: false,
+            kind: "internal",
+            sourceLayer: "barrits",
+            exports: [
+              {
+                name: "helperFn",
+                visibility: "public",
+                bindingName: "helperFn",
+                bindingKind: "function",
+                accessStrategy: "export-name",
+                sourceLayer: "barrits",
+              },
+            ],
+            traitDescriptors: [],
+          },
+        ],
+      },
+    ],
+    collisions: [
+      {
+        type: "project-project",
+        namespace: "core",
+        exportName: "helperFn",
+        projectSourceFile: "core/helper.ts",
+        conflictSourceFile: "lib/helper.ts",
+        message: "collision-detail",
+      },
+    ],
+    importActions: [
+      {
+        exportName: "helperFn",
+        domain: "core",
+        sourceFile: "core/helper.ts",
+        kind: "named-import",
+        statement: "import { helperFn } from './core/helper'",
+      },
+    ],
   };
   const { output } = captureConsoleLog(() => printInfoSummary(graph as any));
   assert.ok(output.some((l) => l.includes("core")));
@@ -551,7 +631,11 @@ test("MR: printInfoSummary with domains and collisions", () => {
 
 test("MR: printInfoSummary with 13+ importActions shows truncation", () => {
   const actions = Array.from({ length: 15 }, (_, i) => ({
-    exportName: `exp${i}`, domain: "core", sourceFile: `f${i}.ts`, kind: "named-import" as const, statement: `import { exp${i} }`,
+    exportName: `exp${i}`,
+    domain: "core",
+    sourceFile: `f${i}.ts`,
+    kind: "named-import" as const,
+    statement: `import { exp${i} }`,
   }));
   const graph = { ...MINIMAL_GRAPH, rootFiles: [], importActions: actions };
   const { output } = captureConsoleLog(() => printInfoSummary(graph as any));
@@ -575,13 +659,19 @@ test("MR: printGraph with json=false delegates to printInfoSummary", () => {
 // ── NoCoverage: printImportActions ───────────────────────────────────
 
 test("MR: printImportActions with json=true outputs JSON", () => {
-  const graph = { ...MINIMAL_GRAPH, importActions: [{ exportName: "foo", domain: "core", sourceFile: "f.ts", kind: "named-import", statement: "import { foo }" }] };
+  const graph = {
+    ...MINIMAL_GRAPH,
+    importActions: [{ exportName: "foo", domain: "core", sourceFile: "f.ts", kind: "named-import", statement: "import { foo }" }],
+  };
   const { output } = captureConsoleLog(() => printImportActions(graph as any, true));
   assert.ok(output.some((l) => l.includes("foo")));
 });
 
 test("MR: printImportActions with json=false outputs formatted lines", () => {
-  const graph = { ...MINIMAL_GRAPH, importActions: [{ exportName: "bar", domain: "core", sourceFile: "f.ts", kind: "named-import", statement: "import { bar }" }] };
+  const graph = {
+    ...MINIMAL_GRAPH,
+    importActions: [{ exportName: "bar", domain: "core", sourceFile: "f.ts", kind: "named-import", statement: "import { bar }" }],
+  };
   const { output } = captureConsoleLog(() => printImportActions(graph as any, false));
   assert.ok(output.some((l) => l.includes("bar")));
 });

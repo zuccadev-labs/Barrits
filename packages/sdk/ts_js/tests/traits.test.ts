@@ -74,10 +74,7 @@ describe("traits namespace object (barrits.traits)", () => {
   });
 
   it("references the same createTraitDescriptorFromJsDoc function", () => {
-    assert.equal(
-      traits.createTraitDescriptorFromJsDoc,
-      createTraitDescriptorFromJsDoc,
-    );
+    assert.equal(traits.createTraitDescriptorFromJsDoc, createTraitDescriptorFromJsDoc);
   });
 
   it("references the same mergeTraits function", () => {

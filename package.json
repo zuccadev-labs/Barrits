@@ -1,6 +1,6 @@
 {
   "name": "barrits-monorepo",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Monorepo for barrits SDKs, examples and open-source development tooling.",
   "license": "MIT",
   "author": "David Euclides Zuccarini Barrueta (devzucca / zuccadev)",
@@ -23,13 +23,15 @@
     "test": "npm run test --workspace @zuccadev-labs/barrits",
     "test:coverage": "npm run test:coverage --workspace @zuccadev-labs/barrits",
     "typecheck": "npm run typecheck --workspace @zuccadev-labs/barrits",
-    "lint": "eslint packages/sdk/ts_js/src/barrits packages/sdk/ts_js/adapters",
-    "lint:fix": "eslint packages/sdk/ts_js/src/barrits packages/sdk/ts_js/adapters --fix",
-    "format": "prettier --check packages/sdk/ts_js/src/barrits packages/sdk/ts_js/adapters",
+    "lint": "eslint packages/sdk/ts_js/src packages/sdk/ts_js/adapters",
+    "lint:fix": "eslint packages/sdk/ts_js/src packages/sdk/ts_js/adapters --fix",
+    "format": "prettier --check packages/sdk/ts_js/src packages/sdk/ts_js/adapters packages/sdk/ts_js/tests",
     "benchmark:algorithms": "npm run benchmark:algorithms --workspace @zuccadev-labs/barrits",
     "publish:jsr:dry-run": "npm run publish:jsr:dry-run --workspace @zuccadev-labs/barrits",
     "barrits:dev": "npm run barrits:dev --workspace @zuccadev-labs/barrits",
-    "barrits:build": "npm run barrits:build --workspace @zuccadev-labs/barrits"
+    "barrits:build": "npm run barrits:build --workspace @zuccadev-labs/barrits",
+    "prepare": "node scripts/prepare-hooks.mjs",
+    "format:write": "prettier --write packages/sdk/ts_js/src packages/sdk/ts_js/adapters packages/sdk/ts_js/tests"
   },
   "devDependencies": {
     "@emnapi/core": "^1.11.3",
@@ -42,7 +44,7 @@
     "@types/node": "^26.4.1",
     "@typescript-eslint/eslint-plugin": "^8.69.0",
     "@typescript-eslint/parser": "^8.63.0",
-    "@vitejs/plugin-react": "^6.1.1",
+    "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
@@ -67,5 +69,9 @@
       "esbuild": "^0.28.1"
     },
     "vite": "^8.1.4"
-  }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@11.6.2"
 }

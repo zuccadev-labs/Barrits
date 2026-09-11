@@ -63,13 +63,11 @@ export type MinimumSpanningTreeResult<NodeId extends GraphNodeId = GraphNodeId> 
 /**
  * [EN] Computes the Minimum Spanning Tree (MST) of a graph using Kruskal's algorithm.
  * [ES] Calcula el Árbol de Recubrimiento Mínimo (MST) de un grafo utilizando el algoritmo de Kruskal.
- * 
+ *
  * @param edges [EN] Collection of weighted graph edges. [ES] Colección de aristas de grafo con peso.
  * @returns [EN] The MST edges and collective weight mapping. [ES] Las aristas del MST y el mapeo de peso colectivo.
  */
-export const minimumSpanningTree = <NodeId extends GraphNodeId>(
-  edges: readonly GraphEdge<NodeId>[],
-): MinimumSpanningTreeResult<NodeId> => {
+export const minimumSpanningTree = <NodeId extends GraphNodeId>(edges: readonly GraphEdge<NodeId>[]): MinimumSpanningTreeResult<NodeId> => {
   const nodes = Array.from(new Set(edges.flatMap((edge) => [edge.from, edge.to])));
   const disjointSet = createDisjointSet(nodes);
   const sortedEdges = [...edges].sort((left, right) => (left.weight ?? 1) - (right.weight ?? 1));

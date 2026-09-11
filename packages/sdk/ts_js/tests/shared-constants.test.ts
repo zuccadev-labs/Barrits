@@ -11,6 +11,4 @@ describe("shared constants", () => {
   it("PACKAGE_ALIAS is 'brt'", () => {
     assert.equal(PACKAGE_ALIAS, "brt");
   });
-
-
 });

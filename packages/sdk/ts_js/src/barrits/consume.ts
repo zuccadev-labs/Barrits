@@ -69,3 +69,27 @@ export { createWatchSnapshotSummary } from "./sdk/summarization";
  * [ES] Crea un modelo de snapshot enfocado en el editor para pipelines de herramientas.
  */
 export { createLanguageToolSnapshot } from "./sdk/summarization";
+
+/**
+ * [EN] Recomputes the SHA-256 seal of a build manifest and compares it with the stored checksum.
+ * [ES] Recalcula el sello SHA-256 de un manifiesto de build y lo compara con el checksum almacenado.
+ */
+export { verifyBuildManifest } from "./sdk/manifest";
+
+/**
+ * [EN] Verifies a build manifest and throws when it was modified after generation.
+ * [ES] Verifica un manifiesto de build y lanza cuando fue modificado tras su generación.
+ */
+export { assertBuildManifestIntegrity } from "./sdk/manifest";
+
+/**
+ * [EN] Computes the checksum of a manifest payload (useful to seal manifests produced by custom tooling).
+ * [ES] Calcula el checksum de un payload de manifiesto (útil para sellar manifiestos producidos por herramientas propias).
+ */
+export { computeBuildManifestChecksum } from "./sdk/manifest";
+
+/**
+ * [EN] Integrity verification result and payload contract types.
+ * [ES] Tipos del resultado de verificación de integridad y del contrato de payload.
+ */
+export type { BarritsBuildManifestIntegrity, BarritsBuildManifestPayload } from "./sdk/manifest";

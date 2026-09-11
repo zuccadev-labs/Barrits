@@ -61,9 +61,9 @@ export type FindBarritsOptions = {
   readonly ignoredDirectories?: readonly string[];
 };
 
-/** [EN] Technical kind of an exported binding (constant, function, or re-export).
- *  [ES] Tipo técnico de un binding exportado (constante, función o re-exportación). */
-export type BarritsExportKind = "const" | "function" | "reexport";
+/** [EN] Technical kind of an exported binding (constant, function, class, or re-export).
+ *  [ES] Tipo técnico de un binding exportado (constante, función, clase o re-exportación). */
+export type BarritsExportKind = "const" | "function" | "class" | "reexport";
 
 /** [EN] Strategy for accessing an export (via its name, filesystem path, or JSDoc alias).
  *  [ES] Estrategia para acceder a una exportación (vía su nombre, ruta de archivos o alias JSDoc). */

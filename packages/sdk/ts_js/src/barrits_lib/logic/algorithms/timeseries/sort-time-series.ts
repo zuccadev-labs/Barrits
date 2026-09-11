@@ -4,7 +4,7 @@ import type { TimeSeriesPoint } from "./types";
 /**
  * [EN] Orders a time-series collection by timestamp in ascending order.
  * [ES] Ordena una colección de series temporales por marca de tiempo en orden ascendente.
- * 
+ *
  * @param points [EN] Collection of time-series points. [ES] Colección de puntos de series temporales.
  * @returns [EN] A new sorted time-series. [ES] Una nueva serie temporal ordenada.
  */

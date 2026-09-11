@@ -50,10 +50,7 @@ test("NodeFileSystemAdapter.listEntries returns entries for existing directory",
 
 test("NodeFileSystemAdapter.listEntries throws for non-existing directory", async () => {
   const adapter = new NodeFileSystemAdapter();
-  await assert.rejects(
-    () => adapter.listEntries(join(process.cwd(), "nonexistent-xyz-987")),
-    /ENOENT/,
-  );
+  await assert.rejects(() => adapter.listEntries(join(process.cwd(), "nonexistent-xyz-987")), /ENOENT/);
 });
 
 test("NodeFileSystemAdapter.listDirectories returns subdirectories", async () => {
@@ -84,10 +81,7 @@ test("NodeFileSystemAdapter.readTextFile reads file content", async () => {
 
 test("NodeFileSystemAdapter.readTextFile throws for non-existing file", async () => {
   const adapter = new NodeFileSystemAdapter();
-  await assert.rejects(
-    () => adapter.readTextFile(join(process.cwd(), "nonexistent-file-xyz.txt")),
-    /ENOENT/,
-  );
+  await assert.rejects(() => adapter.readTextFile(join(process.cwd(), "nonexistent-file-xyz.txt")), /ENOENT/);
 });
 
 test("adapter interface contract is satisfied by NodeFileSystemAdapter", () => {

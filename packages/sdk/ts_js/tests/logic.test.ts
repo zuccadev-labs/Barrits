@@ -1,94 +1,31 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+
+import * as library from "../src/barrits_lib/logic";
 import {
   logic,
+  logicFamilies,
   aggregateAlgorithms,
   algorithms,
   arithmetic,
   binarySearch,
   chunk,
+  comparators,
   groupBy,
+  isEmail,
   maxBy,
   minBy,
   movingAverage,
   quickSort,
   restar,
+  slugify,
   sumar,
   topologicalSort,
 } from "../src/barrits/logic";
 
-const EXPECTED_PROPERTIES = [
-  "aggregateAlgorithms",
-  "algorithms",
-  "averageBy",
-  "annualizedVolatility",
-  "breadthFirstSearch",
-  "buildAdjacencyList",
-  "bucketByInterval",
-  "maxBy",
-  "minBy",
-  "movingAverage",
-  "movingAverageSeries",
-  "arithmetic",
-  "binarySearch",
-  "chunk",
-  "collectionAlgorithms",
-  "depthFirstSearch",
-  "detectDirectedCycle",
-  "detectTimeSeriesGaps",
-  "differenceSeries",
-  "dijkstraShortestPath",
-  "exponentialMovingAverage",
-  "findSortedRange",
-  "graphAlgorithms",
-  "histogramBy",
-  "maxDrawdown",
-  "maxFlow",
-  "minimumSpanningTree",
-  "resampleSeries",
-  "returnsSeries",
-  "rollingSum",
-  "groupBy",
-  "indexBy",
-  "insertSorted",
-  "linearSearch",
-  "slidingWindow",
-  "sortTimeSeries",
-  "lowerBound",
-  "orderBy",
-  "sumBy",
-  "timeSeriesAlgorithms",
-  "topologicalSort",
-  "paginate",
-  "partitionBy",
-  "quickSort",
-  "windowAlgorithms",
-  "windowDelta",
-  "rankBy",
-  "sumar",
-  "restar",
-  "searchAlgorithms",
-  "selectionAlgorithms",
-  "sortAlgorithms",
-  "stableSortBy",
-  "topK",
-  "uniqueBy",
-  "upperBound",
-  // Resilience patterns
-  "retryWithBackoff",
-  "withTimeout",
-  "createCircuitBreaker",
-  // Hashing utilities
-  "sha256Hex",
-  "murmurHash3",
-  "deterministicStringify",
-  // Datetime utilities
-  "toIsoString",
-  "fromIsoString",
-  "diffMs",
-  "addMs",
-  "toRelativeTime",
-];
+const libraryRuntimeExports = Object.keys(library)
+  .filter((key) => key !== "logicFamilies")
+  .sort();
 
 describe("logic namespace object (barrits.logic)", () => {
   it("is an object", () => {
@@ -96,17 +33,33 @@ describe("logic namespace object (barrits.logic)", () => {
     assert.notEqual(logic, null);
   });
 
-  it("has the correct number of properties", () => {
-    assert.equal(Object.keys(logic).length, EXPECTED_PROPERTIES.length);
+  it("mirrors every runtime export of barrits_lib/logic and nothing else", () => {
+    assert.deepEqual(Object.keys(logic).sort(), libraryRuntimeExports);
   });
 
-  for (const prop of EXPECTED_PROPERTIES) {
-    it(`has ${prop} property`, () => {
-      const key = prop as keyof typeof logic;
-      assert.ok(key in logic);
-      assert.notEqual(logic[key], undefined);
+  for (const key of libraryRuntimeExports) {
+    it(`references the same ${key} as the standard library`, () => {
+      assert.equal((logic as Record<string, unknown>)[key], (library as Record<string, unknown>)[key]);
     });
   }
+
+  it("exposes the string, validation and comparator families that were previously unreachable", () => {
+    assert.equal(logic.slugify, slugify);
+    assert.equal(logic.isEmail, isEmail);
+    assert.equal(logic.comparators, comparators);
+    assert.equal(typeof logic.stringAlgorithms, "object");
+    assert.equal(typeof logic.validationAlgorithms, "object");
+    assert.equal(typeof logic.hashingAlgorithms, "object");
+    assert.equal(typeof logic.datetimeAlgorithms, "object");
+    assert.equal(typeof logic.resilienceAlgorithms, "object");
+    assert.equal(typeof logic.createOrderComparator, "function");
+  });
+
+  it("does not nest the grouped families object inside the flat namespace", () => {
+    assert.equal("logicFamilies" in logic, false);
+    assert.equal(logicFamilies.algorithms, algorithms);
+    assert.equal(logicFamilies.strings.slugify, slugify);
+  });
 });
 
 describe("logic sampled function references", () => {

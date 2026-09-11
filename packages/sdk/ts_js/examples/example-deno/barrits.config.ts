@@ -5,7 +5,7 @@
  * discovery roots, and trait conflict resolution strategy used by the
  * Barrits SDK during contract scanning and manifest generation.
  *
- * @see {@link https://jsr.io/@aspect/barrits} for the full configuration schema.
+ * @see {@link https://jsr.io/@zuccadev-labs/barrits} for the full configuration schema.
  */
 import { defineBarritsConfig } from "../../dist/adapters/deno/mod.js";
 
@@ -24,10 +24,10 @@ export default defineBarritsConfig({
   discoveryRoots: ["barrits"],
 
   /**
-   * Trait conflict resolution strategy.
-   * - "error": Halts discovery when conflicting trait compositions are detected.
-   * - "override": Last-declared trait wins in case of conflict.
-   * - "merge": Attempts to merge conflicting trait capabilities.
+   * Trait conflict resolution strategy (default `onConflict` of `createBarrits().composeTraits`).
+   * - "throw": Fail on the first capability provided by two traits.
+   * - "left": Keep the capability of the first provider.
+   * - "right": Let the last provider win.
    */
-  traitConflictStrategy: "error",
+  traitConflictStrategy: "throw",
 });

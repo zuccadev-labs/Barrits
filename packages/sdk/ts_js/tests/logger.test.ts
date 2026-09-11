@@ -17,7 +17,9 @@ describe("DefaultBarritsLogger", () => {
   it("logs debug when level is debug", () => {
     const log = new DefaultBarritsLogger("debug");
     const calls: string[] = [];
-    mock.method(console, "debug", (msg: string) => { calls.push(msg); });
+    mock.method(console, "debug", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.debug("test debug");
     assert.equal(calls.length, 1);
@@ -28,7 +30,9 @@ describe("DefaultBarritsLogger", () => {
   it("does not log debug when level is info", () => {
     const log = new DefaultBarritsLogger("info");
     const calls: string[] = [];
-    mock.method(console, "debug", (msg: string) => { calls.push(msg); });
+    mock.method(console, "debug", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.debug("should not appear");
     assert.equal(calls.length, 0);
@@ -38,7 +42,9 @@ describe("DefaultBarritsLogger", () => {
   it("does not log debug when level is warn", () => {
     const log = new DefaultBarritsLogger("warn");
     const calls: string[] = [];
-    mock.method(console, "debug", (msg: string) => { calls.push(msg); });
+    mock.method(console, "debug", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.debug("should not appear");
     assert.equal(calls.length, 0);
@@ -48,9 +54,15 @@ describe("DefaultBarritsLogger", () => {
   it("does not log anything when level is off", () => {
     const log = new DefaultBarritsLogger("off");
     const calls: string[] = [];
-    mock.method(console, "info", (msg: string) => { calls.push(msg); });
-    mock.method(console, "warn", (msg: string) => { calls.push(msg); });
-    mock.method(console, "error", (msg: string) => { calls.push(msg); });
+    mock.method(console, "info", (msg: string) => {
+      calls.push(msg);
+    });
+    mock.method(console, "warn", (msg: string) => {
+      calls.push(msg);
+    });
+    mock.method(console, "error", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.info("nope");
     log.warn("nope");
@@ -62,7 +74,9 @@ describe("DefaultBarritsLogger", () => {
   it("logs info when level is info", () => {
     const log = new DefaultBarritsLogger("info");
     const calls: string[] = [];
-    mock.method(console, "info", (msg: string) => { calls.push(msg); });
+    mock.method(console, "info", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.info("test info");
     assert.equal(calls.length, 1);
@@ -73,7 +87,9 @@ describe("DefaultBarritsLogger", () => {
   it("does not log info when level is warn", () => {
     const log = new DefaultBarritsLogger("warn");
     const calls: string[] = [];
-    mock.method(console, "info", (msg: string) => { calls.push(msg); });
+    mock.method(console, "info", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.info("should not appear");
     assert.equal(calls.length, 0);
@@ -83,7 +99,9 @@ describe("DefaultBarritsLogger", () => {
   it("logs warn when level is warn", () => {
     const log = new DefaultBarritsLogger("warn");
     const calls: string[] = [];
-    mock.method(console, "warn", (msg: string) => { calls.push(msg); });
+    mock.method(console, "warn", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.warn("test warn");
     assert.equal(calls.length, 1);
@@ -94,7 +112,9 @@ describe("DefaultBarritsLogger", () => {
   it("logs warn when level is info", () => {
     const log = new DefaultBarritsLogger("info");
     const calls: string[] = [];
-    mock.method(console, "warn", (msg: string) => { calls.push(msg); });
+    mock.method(console, "warn", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.warn("test warn");
     assert.equal(calls.length, 1);
@@ -104,7 +124,9 @@ describe("DefaultBarritsLogger", () => {
   it("logs error when level is error", () => {
     const log = new DefaultBarritsLogger("error");
     const calls: string[] = [];
-    mock.method(console, "error", (msg: string) => { calls.push(msg); });
+    mock.method(console, "error", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.error("test error");
     assert.equal(calls.length, 1);
@@ -115,7 +137,9 @@ describe("DefaultBarritsLogger", () => {
   it("logs error when level is info", () => {
     const log = new DefaultBarritsLogger("info");
     const calls: string[] = [];
-    mock.method(console, "error", (msg: string) => { calls.push(msg); });
+    mock.method(console, "error", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.error("test error");
     assert.equal(calls.length, 1);
@@ -125,7 +149,9 @@ describe("DefaultBarritsLogger", () => {
   it("forwards extra args to console methods", () => {
     const log = new DefaultBarritsLogger("info");
     const calls: unknown[][] = [];
-    mock.method(console, "info", (msg: string, ...args: unknown[]) => { calls.push([msg, ...args]); });
+    mock.method(console, "info", (msg: string, ...args: unknown[]) => {
+      calls.push([msg, ...args]);
+    });
 
     log.info("value is", 42, { key: "val" });
     assert.equal(calls.length, 1);
@@ -138,7 +164,9 @@ describe("DefaultBarritsLogger", () => {
   it("includes timestamp in format", () => {
     const log = new DefaultBarritsLogger("info");
     const calls: string[] = [];
-    mock.method(console, "info", (msg: string) => { calls.push(msg); });
+    mock.method(console, "info", (msg: string) => {
+      calls.push(msg);
+    });
 
     log.info("msg");
     assert.match(calls[0], /^\[\d{4}-\d{2}-\d{2}T/);

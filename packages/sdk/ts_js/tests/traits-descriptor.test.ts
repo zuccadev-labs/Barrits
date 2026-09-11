@@ -39,7 +39,7 @@ test("trait descriptors compose in dependency order with explicit state ownershi
     }),
   });
 
-  const result = composeTraitDescriptors([slugTrait, baseTrait] as any, { state }) as any;
+  const result = composeTraitDescriptors([slugTrait, baseTrait], { state }) as any;
 
   assert.deepEqual(result.order, ["base", "slug"]);
   assert.deepEqual(result.stateOwners, { calls: "base" });
@@ -94,10 +94,7 @@ test("trait descriptors reject duplicated state ownership and explicit conflicts
     }),
   });
 
-  assert.throws(
-    () => composeTraitDescriptors([first, second] as any),
-    /cannot be composed with "first"|State key "session"/,
-  );
+  assert.throws(() => composeTraitDescriptors([first, second]), /cannot be composed with "first"|State key "session"/);
 });
 
 test("trait descriptors reject self-referential requires as a cyclic dependency", () => {
@@ -110,10 +107,7 @@ test("trait descriptors reject self-referential requires as a cyclic dependency"
     }),
   });
 
-  assert.throws(
-    () => composeTraitDescriptors([recursive] as any),
-    /cyclic dependency graph/,
-  );
+  assert.throws(() => composeTraitDescriptors([recursive]), /cyclic dependency graph/);
 });
 
 test("trait descriptors surface capability collisions unless the caller resolves them explicitly", () => {
@@ -133,12 +127,9 @@ test("trait descriptors surface capability collisions unless the caller resolves
     }),
   });
 
-  assert.throws(
-    () => composeTraitDescriptors([left, right] as any),
-    /Trait capability collision for "format"/,
-  );
+  assert.throws(() => composeTraitDescriptors([left, right]), /Trait capability collision for "format"/);
 
-  const resolved = composeTraitDescriptors([left, right] as any, {
+  const resolved = composeTraitDescriptors([left, right], {
     resolveConflict: (key, leftValue, rightValue, leftTraitName, rightTraitName) => {
       assert.equal(key, "format");
       assert.equal(leftTraitName, "left");
@@ -182,11 +173,7 @@ test("trait descriptor JSDoc metadata parses declarative tags consistently", () 
 });
 
 test("trait descriptors can be created from JSDoc metadata with explicit overrides", () => {
-  const normalizeTrait = createTraitDescriptorFromJsDoc<
-    "normalize",
-    Record<string, string>,
-    { normalize: (value: string) => string }
-  >(
+  const normalizeTrait = createTraitDescriptorFromJsDoc<"normalize", Record<string, string>, { normalize: (value: string) => string }>(
     `
     /**
      * @barrits-trait normalize
@@ -207,11 +194,7 @@ test("trait descriptors can be created from JSDoc metadata with explicit overrid
     },
   );
 
-  const slugTrait = createTraitDescriptorFromJsDoc<
-    "slug",
-    object,
-    { toSlug: (value: string) => string }
-  >(
+  const slugTrait = createTraitDescriptorFromJsDoc<"slug", object, { toSlug: (value: string) => string }>(
     `
     /**
      * @barrits-trait slug
@@ -231,7 +214,7 @@ test("trait descriptors can be created from JSDoc metadata with explicit overrid
     },
   );
 
-  const result = composeTraitDescriptors([slugTrait, normalizeTrait] as any, {
+  const result = composeTraitDescriptors([slugTrait, normalizeTrait], {
     state: {
       session: "",
     },
@@ -280,8 +263,5 @@ test("trait descriptors fail when declared consumed capabilities are missing", (
     },
   );
 
-  assert.throws(
-    () => composeTraitDescriptors([slugTrait]),
-    /consumes "normalize", but that capability is not available/,
-  );
+  assert.throws(() => composeTraitDescriptors([slugTrait]), /consumes "normalize", but that capability is not available/);
 });

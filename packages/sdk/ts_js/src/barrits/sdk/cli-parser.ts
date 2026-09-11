@@ -109,7 +109,31 @@ const BOOLEAN_FLAGS = new Map<string, (opts: CliOptions) => void>([
   ],
 ]);
 
-const COMMANDS = new Set<string>(["detect", "info", "watch", "dev", "imports", "build"]);
+/** [EN] Every CLI command, in help/completion order. [ES] Todos los comandos de la CLI, en orden de ayuda/completado. */
+export const CLI_COMMANDS = [
+  "detect",
+  "info",
+  "watch",
+  "dev",
+  "imports",
+  "build",
+  "help",
+  "completion",
+] as const satisfies readonly CliCommand[];
+
+/** [EN] One-line description per CLI command (shared by help and completions). [ES] Descripción de una línea por comando (compartida por ayuda y completado). */
+export const CLI_COMMAND_DESCRIPTIONS: Readonly<Record<CliCommand, string>> = {
+  detect: "Detect barrits directory and integrations",
+  info: "Show integration graph overview",
+  watch: "Watch barrits directory for changes",
+  dev: "Start dev session with child process",
+  imports: "Generate and manage import actions",
+  build: "Generate build manifest",
+  help: "Show help text",
+  completion: "Generate shell completion script",
+};
+
+const COMMANDS = new Set<string>(CLI_COMMANDS.filter((command) => command !== "help" && command !== "completion"));
 
 const HELP_ALIASES = new Set<string>(["help", "--help", "-h"]);
 

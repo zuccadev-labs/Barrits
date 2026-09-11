@@ -2,7 +2,7 @@
 # ADR 0001: Use Conventional Commits and Lint-Staged for Code Quality
 
 ## Status
-Accepted
+Accepted (amended 2026-09-09, see below)
 
 ## Context
 As part of improving the developer experience and code quality in the Barrits monorepo, we need to establish consistent practices for:
@@ -39,6 +39,15 @@ We will implement:
 ## Related Decisions
 - May eventually integrate with automated changelog tools (standard-version, changesets)
 - Could be extended to include commitlint for enforcing conventional commits
+
+## Amendment (2026-09-09)
+The lint-staged part of this decision was never operational: `husky` and `lint-staged` were not listed in `package.json`, no `prepare` script installed the hooks, and `.husky/pre-commit` never invoked lint-staged, so `.lintstagedrc.json` was dead configuration. The audit of 2026-09 replaced it with a dependency-free mechanism:
+
+- `scripts/prepare-hooks.mjs` (run by the root `prepare` script) sets `git config core.hooksPath .husky`.
+- `.husky/pre-commit` runs the same gates as CI on the whole SDK: `npm run lint`, `npm run typecheck` and `npm test`, plus `git-secrets` when it is installed.
+- `.lintstagedrc.json` was removed. Formatting is enforced by `npm run format` in CI (Prettier `--check`) and applied locally with `npm run format:write`.
+
+Conventional Commits remain in force.
 
 ## References
 - [Conventional Commits Specification](https://www.conventionalcommits.org/)

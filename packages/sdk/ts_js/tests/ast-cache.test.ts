@@ -1,6 +1,9 @@
 import { describe, it, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { createCachedSourceFile, clearAstCache } from "../src/barrits/sdk/ast/cache";
+import { loadTypeScript } from "../src/barrits/sdk/ast/cache";
+
+await loadTypeScript();
 
 afterEach(() => {
   clearAstCache();

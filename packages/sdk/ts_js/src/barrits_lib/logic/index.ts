@@ -1,3 +1,10 @@
+/**
+ * @module
+ * [EN] Barrits standard library: algorithm families plus string, hashing, validation, datetime and resilience
+ * utilities. Every symbol is runtime-agnostic (no filesystem, process or DOM access).
+ * [ES] Librería estándar de Barrits: familias de algoritmos más utilidades de strings, hashing, validación, fechas y
+ * resiliencia. Todos los símbolos son agnósticos del runtime (sin acceso a filesystem, proceso ni DOM).
+ */
 import { algorithms } from "./algorithms/index";
 import { stringAlgorithms } from "./strings/index";
 import { hashingAlgorithms } from "./hashing/index";
@@ -5,122 +12,31 @@ import { validationAlgorithms } from "./validation/index";
 import { datetimeAlgorithms } from "./datetime/index";
 import { resilienceAlgorithms } from "./resilience/index";
 
-export { algorithms } from "./algorithms/index";
-export { accentInsensitiveRegex, capitalize, capitalizeWords, slugify, stringAlgorithms, truncate } from "./strings/index";
-export { hashingAlgorithms, sha256Hex, murmurHash3, deterministicStringify } from "./hashing/index";
-export { validationAlgorithms, isEmail, isUrl, isUuid, isIsoDate, isIpAddress, assertNonNullish } from "./validation/index";
-export { datetimeAlgorithms, toIsoString, fromIsoString, diffMs, addMs, toRelativeTime } from "./datetime/index";
-export { resilienceAlgorithms, retryWithBackoff, withTimeout, createCircuitBreaker } from "./resilience/index";
-export type { RetryOptions, CircuitBreakerOptions, CircuitBreaker } from "./resilience/index";
-
-/**
- * Root export object for all logic algorithms and utility services.
- *
- * This namespace aggregates every algorithm family in the Barrits standard
- * library, providing a single entry point for discovery and consumption.
- */
-export const BarritsLogic = {
-  /** Computational algorithms collection (aggregate, graph, search, sort, timeseries, window). */
-  algorithms,
-  /** String manipulation services (capitalize, slugify, truncate, accent-insensitive). */
-  strings: stringAlgorithms,
-  /** Hashing and integrity services (SHA-256, MurmurHash3, deterministic JSON). */
-  hashing: hashingAlgorithms,
-  /** Validation and assertion guards (email, URL, UUID, ISO date, IP address). */
-  validation: validationAlgorithms,
-  /** Date and time manipulation (ISO 8601 serialize/parse, diff, add, relative). */
-  datetime: datetimeAlgorithms,
-  /** Resilience patterns (retry with backoff, timeout, circuit breaker). */
-  resilience: resilienceAlgorithms,
-};
-
-export {
-  aggregateAlgorithms,
-  averageBy,
-  binarySearch,
-  breadthFirstSearch,
-  buildAdjacencyList,
-  bucketByInterval,
-  chunk,
-  collectionAlgorithms,
-  depthFirstSearch,
-  detectDirectedCycle,
-  detectTimeSeriesGaps,
-  differenceSeries,
-  dijkstraShortestPath,
-  annualizedVolatility,
-  exponentialMovingAverage,
-  findSortedRange,
-  graphAlgorithms,
-  groupBy,
-  histogramBy,
-  indexBy,
-  insertSorted,
-  linearSearch,
-  lowerBound,
-  maxDrawdown,
-  maxFlow,
-  maxBy,
-  minBy,
-  minimumSpanningTree,
-  movingAverage,
-  movingAverageSeries,
-  orderBy,
-  paginate,
-  partitionBy,
-  quickSort,
-  rankBy,
-  resampleSeries,
-  returnsSeries,
-  rollingSum,
-  searchAlgorithms,
-  selectionAlgorithms,
-  slidingWindow,
-  sortTimeSeries,
-  sortAlgorithms,
-  stableSortBy,
-  sumBy,
-  timeSeriesAlgorithms,
-  topologicalSort,
-  topK,
-  uniqueBy,
-  upperBound,
-  windowAlgorithms,
-  windowDelta,
-} from "./algorithms/index";
-export type {
-  CompareFunction,
-  DrawdownPoint,
-  GraphAdjacencyEntry,
-  GraphEdge,
-  GraphNodeId,
-  GraphPath,
-  MaxFlowResult,
-  MinimumSpanningTreeResult,
-  OrderCriterion,
-  PaginatedResult,
-  PaginationOptions,
-  PartitionResult,
-  RankedValue,
-  SearchPredicate,
-  SortDirection,
-  SortedRangeMatch,
-  TimeBucket,
-  TimeGap,
-  TimeSeriesPoint,
-} from "./algorithms/index";
-
-/**
- * [EN] Implementation of Logic.
- * [ES] Implementación de Logic.
- */
-export const logic = {
-  algorithms,
-  strings: stringAlgorithms,
-  hashing: hashingAlgorithms,
-  validation: validationAlgorithms,
-  datetime: datetimeAlgorithms,
-  resilience: resilienceAlgorithms,
-};
-
+export * from "./algorithms/index";
+export * from "./strings/index";
+export * from "./hashing/index";
+export * from "./validation/index";
+export * from "./datetime/index";
+export * from "./resilience/index";
 export * from "./arithmetic/index";
+
+/**
+ * [EN] Algorithm and utility families grouped by domain (`algorithms`, `strings`, `hashing`, `validation`,
+ * `datetime`, `resilience`). Use it when you prefer navigating by family instead of flat imports.
+ * [ES] Familias de algoritmos y utilidades agrupadas por dominio (`algorithms`, `strings`, `hashing`, `validation`,
+ * `datetime`, `resilience`). Úsalo cuando prefieras navegar por familia en lugar de imports planos.
+ */
+export const logicFamilies = {
+  /** [EN] Computational algorithms (aggregate, collection, graph, search, selection, sort, timeseries, window). [ES] Algoritmos computacionales (aggregate, collection, graph, search, selection, sort, timeseries, window). */
+  algorithms,
+  /** [EN] String manipulation (capitalize, slugify, truncate, accent-insensitive). [ES] Manipulación de strings (capitalize, slugify, truncate, insensible a acentos). */
+  strings: stringAlgorithms,
+  /** [EN] Hashing and integrity (SHA-256, MurmurHash3, deterministic JSON). [ES] Hashing e integridad (SHA-256, MurmurHash3, JSON determinista). */
+  hashing: hashingAlgorithms,
+  /** [EN] Validation and assertion guards (email, URL, UUID, ISO date, IP address). [ES] Validación y guardas de aserción (email, URL, UUID, fecha ISO, dirección IP). */
+  validation: validationAlgorithms,
+  /** [EN] Date and time (ISO 8601 serialize/parse, diff, add, relative). [ES] Fecha y hora (serializar/parsear ISO 8601, diff, add, relativo). */
+  datetime: datetimeAlgorithms,
+  /** [EN] Resilience patterns (retry with backoff, timeout, circuit breaker). [ES] Patrones de resiliencia (reintento con backoff, timeout, circuit breaker). */
+  resilience: resilienceAlgorithms,
+} as const;

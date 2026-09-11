@@ -25,7 +25,7 @@ You can place the visible domain folder at the project root, in a subdirectory, 
 
 1. `findBarritsConfigFile(projectRoot)` looks for `barrits.config.ts` → `.mts` → `.js` → `.mjs` (in that order) in the project root. It is supported on Node and Deno.
 2. The loaded module's `default` export (or `barritsConfig` / `config` named export) is parsed and validated.
-3. The merged object is normalized into `ResolvedBarritsConfig` (runtime, watch, namespace, manifest path, discovery roots, trait conflict strategy, etc.).
+3. The merged object is normalized into `ResolvedBarritsConfig` (runtime, watch, namespace, manifest path, discovery roots, trait conflict strategy, etc.). Enumerated fields are validated: `runtime` must be one of `BARRITS_RUNTIME_KINDS`, `watch` one of `BARRITS_WATCH_MODES`, `traitConflictStrategy` one of `"throw"` | `"left"` | `"right"` (legacy `"error"`/`"override"`/`"merge"` are mapped), and `namespace` must be a JavaScript identifier other than `brt` or `config`. An invalid value throws a `TypeError` instead of being silently kept.
 
 The `namespace` field here is what makes the **main API name customizable** (see [API Reference — Package Config](09a-api-reference-package-config.md)).
 
@@ -67,7 +67,37 @@ Once the structure is discovered, the engine builds an integration graph and ser
 - The CLI `build` command (or a bundler plugin) writes `<automationDirectory>/build-manifest.json`.
 - `watch` and `dev` modes write `<automationDirectory>/watch-snapshot.json`.
 
-The manifest carries domains, exports, trait descriptors, import actions, collisions, and a SHA-256 checksum for supply-chain integrity.
+The manifest carries domains, exports, trait descriptors, import actions, collisions, and a SHA-256 checksum computed over its full deterministic content (every field except `checksum` and `generatedAt`). After reading a manifest, `verifyBuildManifest(manifest)` returns `{ valid, expected, actual }` and `assertBuildManifestIntegrity(manifest)` throws when the content no longer matches the seal; both are exported from `@zuccadev-labs/barrits/consume` and from the package root.
+
+### 4.1 Driving the engine programmatically
+
+The discovery and inspection engine is exported from the package root, from `@zuccadev-labs/barrits/sdk`, and from every runtime adapter (`./node`, `./bun`, `./deno`). It is runtime-agnostic: it only needs a filesystem adapter.
+
+```ts
+import { createNodeFileSystemAdapter, findBarritsDirectory, inspectBarritsIntegrations, createBuildManifest } from "@zuccadev-labs/barrits/node";
+
+const adapter = createNodeFileSystemAdapter();
+const discovery = await findBarritsDirectory(adapter, { startDirectory: process.cwd() });
+if (!discovery) throw new Error("barrits directory not found");
+
+const graph = await inspectBarritsIntegrations(adapter, { ...discovery, discoveryRoots: ["src"] });
+const manifest = await createBuildManifest(graph);
+```
+
+`discoveryRoots` are resolved relative to `projectRoot`; trait files found under an extra root are read from that root, and their `sourceFile` stays relative to it.
+
+### 4.2 What the crawler reads
+
+The crawler walks the domain folder (and every `discoveryRoots` entry) with these rules:
+
+| Rule | Behaviour |
+| --- | --- |
+| **Source files** | `.ts`, `.tsx`, `.mts`, `.cts`, `.js`, `.jsx`, `.mjs`, `.cjs`. Declaration files (`*.d.ts`) and test files (`*.test.*`, `*.spec.*`) are skipped. |
+| **Ignored directories** | `node_modules`, `dist`, `build`, `coverage`, `.git`, `.next`, `.turbo`, `.barrits`, `.cache`, `__tests__`, `__mocks__`. |
+| **File kinds** | `index.<ext>` at the root is `root`; files under `traits/` are `trait`; `<domain>/.../index.<ext>` is `barrel`; `internal`, `shared` and `sdk` folders keep their kind; everything else is `domain`. |
+| **Exports** | `export const`, `export function`, `export class` and named re-exports are collected (`kind`: `const`, `function`, `class`, `reexport`). `export let`/`var` are ignored on purpose. |
+| **`export * from`** | Relative specifiers are resolved against the files that exist: `./math.js` also tries `math.ts` (TypeScript ESM convention), and an extension-less `./math` tries every supported extension plus `math/index.<ext>`. |
+| **JSDoc** | `@barrits-trait` and `@barrits-path` blocks are read from the AST node the TypeScript parser attaches them to. A plain `/* ... */` comment or a non-exported statement between two declarations never leaks a block onto the next export. |
 
 ## 5. Reading the manifest per runtime (the consumption contract)
 

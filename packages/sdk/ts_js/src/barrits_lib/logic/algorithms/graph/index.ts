@@ -15,7 +15,7 @@ export { dijkstraShortestPath } from "./dijkstra-shortest-path";
 export { maxFlow } from "./max-flow";
 export { minimumSpanningTree } from "./minimum-spanning-tree";
 export { topologicalSort } from "./topological-sort";
-export type { GraphAdjacencyEntry, GraphEdge, GraphNodeId, GraphPath } from "./types";
+export type { GraphAdjacencyEntry, GraphEdge, GraphNodeId, GraphPath, GraphTraversalOptions } from "./types";
 export type { MaxFlowResult } from "./max-flow";
 export type { MinimumSpanningTreeResult } from "./minimum-spanning-tree";
 

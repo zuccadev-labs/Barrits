@@ -1,10 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import {
-  compose,
-  composePipeline,
-  mergeTraits,
-} from "../src/barrits/traits/compose";
+import { compose, composePipeline, mergeTraits } from "../src/barrits/traits/compose";
 
 describe("compose namespace object (barrits.traits.compose)", () => {
   it("is an object", () => {

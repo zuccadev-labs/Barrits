@@ -3,7 +3,18 @@ import assert from "node:assert/strict";
 import fc from "fast-check";
 import { isBarritsFileKind, isBarritsExportVisibility } from "../src/barrits/sdk/guards";
 import { normalizePath, dirnamePath, basenamePath, joinPath, isRootPath } from "../src/barrits/sdk/path";
-import { expectString, expectNumber, expectRecord, expectStringArray, expectEnumValue, DISCOVERY_STRATEGIES, FILE_MODES, SOURCE_LAYERS, BINDING_KINDS, TRAIT_FACTORIES } from "../src/barrits/sdk/validation";
+import {
+  expectString,
+  expectNumber,
+  expectRecord,
+  expectStringArray,
+  expectEnumValue,
+  DISCOVERY_STRATEGIES,
+  FILE_MODES,
+  SOURCE_LAYERS,
+  BINDING_KINDS,
+  TRAIT_FACTORIES,
+} from "../src/barrits/sdk/validation";
 
 // ── guards.ts ────────────────────────────────────────────────────────────────
 
@@ -545,5 +556,3 @@ test("MR: joinPath normalizes result through normalizePath", () => {
   assert.equal(joinPath("a", ".", "b"), "a/b");
   assert.equal(joinPath("a", "..", "b"), "b");
 });
-
-

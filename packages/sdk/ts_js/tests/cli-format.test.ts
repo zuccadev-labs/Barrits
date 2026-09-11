@@ -43,17 +43,12 @@ test("formatTraitDiagnosticDetailLines returns empty for no diagnostics", () => 
 });
 
 test("formatTraitDiagnosticDetailLines includes category summary", () => {
-  const lines = formatTraitDiagnosticDetailLines([
-    makeDiagnostic({ category: "drift" }),
-    makeDiagnostic({ category: "impossible" }),
-  ]);
+  const lines = formatTraitDiagnosticDetailLines([makeDiagnostic({ category: "drift" }), makeDiagnostic({ category: "impossible" })]);
   assert.ok(lines.includes("  - categories: 1 drift, 1 impossible"));
 });
 
 test("formatTraitDiagnosticDetailLines formats diagnostic entries", () => {
-  const lines = formatTraitDiagnosticDetailLines([
-    makeDiagnostic({ code: "trait-duplicate-name", message: "name conflict" }),
-  ]);
+  const lines = formatTraitDiagnosticDetailLines([makeDiagnostic({ code: "trait-duplicate-name", message: "name conflict" })]);
   assert.ok(lines.some((line) => line.includes("[warning]") && line.includes("trait-duplicate-name") && line.includes("name conflict")));
 });
 
