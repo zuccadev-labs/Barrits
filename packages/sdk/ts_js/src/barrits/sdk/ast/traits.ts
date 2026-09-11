@@ -349,14 +349,34 @@ export const collectExportedTraitBindings = (source: string, relativePath: strin
 const TRAIT_TAG_PATTERN = /(?:^|\s)@barrits-trait(?:\s|$)/u;
 
 /**
- * [EN] Builds trait descriptor inspections from the exported bindings whose attached JSDoc declares
- * `@barrits-trait`. Attachment follows the TypeScript parser, so unrelated comments never leak a trait onto the
- * next export. A bare `@barrits-trait` (no value) names the trait after the `name` literal of its initializer
- * (`createTraitDescriptor({ name })` or an object literal) and, failing that, after the exported binding.
- * [ES] Construye inspecciones de descriptores de trait a partir de los bindings exportados cuyo JSDoc asociado declara
- * `@barrits-trait`. La asociación sigue al parser de TypeScript, por lo que comentarios ajenos nunca filtran un trait
- * al siguiente export. Un `@barrits-trait` sin valor toma el nombre del literal `name` de su inicializador
- * (`createTraitDescriptor({ name })` o un literal de objeto) y, en su defecto, el del binding exportado.
+ * Builds trait descriptor inspections from exported bindings with `@barrits-trait` JSDoc.
+ *
+ * Scans source file for exported bindings (const, function, class) with attached JSDoc containing
+ * `@barrits-trait` tag. Parses trait metadata (name, summary, requires, provides, conflicts, tags).
+ * JSDoc attachment follows TypeScript parser rules—unrelated comments never leak onto next export.
+ * Trait name: explicit `@barrits-trait name-value` → `name` field in initializer → exported binding name.
+ *
+ * @param source TypeScript/JavaScript source code string
+ * @param relativePath Relative path for error messages and source attribution
+ * @returns Array of trait descriptor inspections extracted from source
+ * @throws {SyntaxError} If source is not valid TypeScript/JavaScript
+ *
+ * @example
+ * ```typescript
+ * const source = `
+ *   /**
+ *    * @barrits-trait
+ *    * @barrits-provides db:query db:execute
+ *    * @barrits-requires config:db
+ *    * /
+ *   export const createDataLayerTrait = () => ({...});
+ * `;
+ *
+ * const descriptors = collectTraitDescriptorMetadata(source, "traits/data-layer.ts");
+ * // descriptors[0].name = "createDataLayerTrait" (inferred from binding name)
+ * // descriptors[0].provides = ["db:query", "db:execute"]
+ * // descriptors[0].requires = ["config:db"]
+ * ```
  */
 export const collectTraitDescriptorMetadata = (source: string, relativePath: string): BarritsTraitDescriptorInspection[] => {
   const descriptors: BarritsTraitDescriptorInspection[] = [];
