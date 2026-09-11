@@ -47,7 +47,7 @@ jobs:
       - name: Setup npm
         run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
       - name: Resolve release context
@@ -152,7 +152,7 @@ jobs:
       - name: Setup npm
         run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           registry-url: 'https://registry.npmjs.org'
@@ -205,7 +205,7 @@ jobs:
       - name: Setup npm
         run: sudo npm install --global npm@11.6.2
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
