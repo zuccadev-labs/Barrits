@@ -5,6 +5,8 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-11
+
 ### Auditoría 2026-09 — plan de remediación por hitos
 
 Serie de commits en `dev` que corrigen los hallazgos de la auditoría forense del 2026-09-09 (críticos, altos, medios y bajos). Cada hito es un commit y se documenta aquí con qué cambió, por qué, impacto y validación.
@@ -91,6 +93,12 @@ Serie de commits en `dev` que corrigen los hallazgos de la auditoría forense de
 - Prettier `--check`: scope del SDK limpio.
 - Ejemplos validados (build/test): `example-react` ✅, `example-vue` ✅, `example-svelte` ✅, `example-solid` ✅, `example-tauri` (vite) ✅, `example-bundlers` (vite + esbuild + rollup + webpack) ✅; `example-nodejs` 8 tests ✅, `example-bun` 14 tests ✅, `example-deno` 8 tests ✅, `example-deno-baas` 13 tests ✅.
 - `example-tauri` `tauri:build` y los runtimes Deno/Bun no se ejecutan en su forma nativa de empaquetado en este entorno (requieren Rust/toolchain de Tauri); se validó su etapa Vite, que es la afectada por el bump.
+
+### Release engineering · cierre del ciclo 0.3.0
+
+- **`jsr.json` alineado a `0.3.0`**: el manifiesto JSR seguía declarando `0.2.4`, la última versión publicada, mientras `package.json` ya estaba en `0.3.0`. El job `prepare` del workflow de release compara los tres campos de versión contra el tag y aborta si alguno difiere, por lo que un tag `v0.3.0` habría fallado. Validado con `deno publish --dry-run` (sin errores de slow types) y `npm publish --dry-run` (311 archivos, 558.6 kB).
+- **Rutas literales a `node_modules` eliminadas de los scripts del SDK y de los 7 ejemplos**: `dev`, `build`, `benchmark:algorithms`, `test`, `test:coverage`, `typecheck`, `docs`, `docs:serve`, `barrits:dev` y `barrits:build` invocaban `tsx`, `tsup`, `tsc` y `typedoc` por rutas relativas a un `node_modules` concreto, y cuál era la correcta dependía de la decisión de hoisting de npm. Ahora se llama a los binarios por nombre. `scripts/build-runner.mjs` y `tests/helpers/setup.ts` de `example-nodejs`, que lanzan `tsx` como proceso hijo y no pueden usar PATH, lo resuelven vía `createRequire(...).resolve("tsx/package.json")`. `test:coverage` pasa de `node --experimental-test-coverage <cli>` a `tsx --experimental-test-coverage`, que tsx reenvía a node.
+- **`typescript` acotado en `peerDependencies` a `>=5.0.0 <7.0.0`**: el rango sin techo estaba metiendo TypeScript 7.0.2 como peer auto-instalado dentro del workspace, ensombreciendo el 6.0.3 hoisteado, y prometía un soporte que el paquete no tiene. TypeScript 7 es la reescritura nativa: su export raíz es `./lib/version.cjs` y la API del compilador se movió a subpaths marcados `unstable`, por lo que `createSourceFile`, `ScriptTarget`, `VariableStatement` y `getJSDocCommentsAndTags` no son alcanzables desde la raíz del paquete y el descubrimiento de traits no compila.
 
 ## [0.2.4] - 2026-07-10
 
