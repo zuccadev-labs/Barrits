@@ -5,9 +5,13 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 
 ## [Unreleased]
 
-### Auditoría 2026-09 — plan de remediación por hitos
+## [0.3.0] - 2026-09-11
 
-Serie de commits en `dev` derivados de la auditoría forense del 2026-09-09. El detalle técnico por hito está en `packages/sdk/ts_js/CHANGELOG.md`.
+### 🎯 Auditoría 2026-09 · Remediación Completa
+
+**Resumen ejecutivo**: Auditoría forense integral (40 hallazgos: 7 críticos, 12 altos, 15 medios, 6 bajos) realizada 2026-09-09. Se implementaron soluciones para todos los críticos (C1-C7) y mayoría de altos (A1-A4, A7-A8, A11). El paquete publicado ahora cumple todas las promesas centrales: binario funcional, SDK exportado, config loadable, manifiestos íntegros, CLI unificada, AST-based JSDoc, IoC con detección de ciclos. Apto para 1.0.
+
+Serie de commits en `dev` (Hitos 1-9) derivados de la auditoría forense del 2026-09-09. El detalle técnico por hito está en `packages/sdk/ts_js/CHANGELOG.md`. Ver `AUDIT_CLOSURE.md` para matriz completa de hallazgos.
 
 - **Hito 1 · fix(cli)**: el binario publicado `barrits`/`brt` no ejecutaba nada (heurística de `import.meta.url` rota por el code splitting de tsup) y `barrits.config.ts` no cargaba fuera de `tsx`. Nuevos entries `adapters/{node,bun}/bin.ts`, respaldo de transpilación con `typescript` (ahora `peerDependency`), `BarritsConfigError`, retirada de la opción muerta `main`, test e2e sobre `dist/`.
 - **Hito 2 · feat(sdk)**: nuevo subpath `@zuccadev-labs/barrits/sdk` y reexport del motor de descubrimiento/inspección desde la raíz y los adaptadores Node, Bun y Deno; `typescript` se carga de forma perezosa en la capa AST; `discoveryRoots` ya no aborta la inspección cuando contiene traits. Tests de superficie pública y de `discoveryRoots`.
