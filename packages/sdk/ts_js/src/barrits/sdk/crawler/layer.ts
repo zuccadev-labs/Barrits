@@ -29,23 +29,39 @@ const EXCLUDED_SOURCE_FILE = /(?:.d.[cm]?ts|.(?:test|spec).(?:[cm]?[jt]s|[jt]sx)
 const INDEX_FILE = /^index.(?:[cm]?[jt]s|[jt]sx)$/i;
 
 /**
- * [EN] Whether a relative path is the root index module (`index.ts`, `index.js`, `index.mts`...).
- * [ES] Indica si una ruta relativa es el módulo índice raíz (`index.ts`, `index.js`, `index.mts`...).
+ * Whether a relative path is the root index module (`index.ts`, `index.js`, `index.mts`...).
+ *
+ * @param relativePath Path to check (e.g., "index.ts", "src/index.js")
+ * @returns true if path basename matches index pattern
+ *
+ * @example
+ * ```typescript
+ * isRootIndexPath("index.ts") // true
+ * isRootIndexPath("src/index.mts") // true (checks basename only)
+ * isRootIndexPath("index.test.ts") // false
+ * ```
  */
 export const isRootIndexPath = (relativePath: string): boolean => INDEX_FILE.test(relativePath);
 
 /**
- * [EN] Whether a relative path is a barrel (`<domain>/.../index.<ext>`).
- * [ES] Indica si una ruta relativa es un barrel (`<dominio>/.../index.<ext>`).
+ * Whether a relative path is a barrel (`<domain>/.../index.<ext>`).
+ * Barrel files re-export multiple exports for aggregation.
+ * @param relativePath Path to check
+ * @returns true if path contains "/" and basename is index file
+ * @example isBarrelIndexPath("domain/index.ts") // true
  */
 export const isBarrelIndexPath = (relativePath: string): boolean =>
   relativePath.includes("/") && INDEX_FILE.test(relativePath.slice(relativePath.lastIndexOf("/") + 1));
 
 /**
- * [EN] Whether a file name is a crawlable source module: TypeScript/JavaScript, excluding declaration files
- * (`.d.ts`) and test/spec files.
- * [ES] Indica si un nombre de archivo es un módulo fuente rastreable: TypeScript/JavaScript, excluyendo archivos de
- * declaraciones (`.d.ts`) y archivos de test/spec.
+ * Whether a file name is a crawlable source module: TypeScript/JavaScript, excluding declaration files and tests.
+ * Filters out `.d.ts` (declaration) and `.test/.spec` files automatically.
+ * @param fileName File to check (e.g., "trait.ts", "index.js")
+ * @returns true if valid crawlable source file
+ * @example
+ * isCrawlableSourceFile("trait.ts") // true
+ * isCrawlableSourceFile("trait.d.ts") // false (declaration)
+ * isCrawlableSourceFile("trait.test.ts") // false (test)
  */
 export const isCrawlableSourceFile = (fileName: string): boolean =>
   SUPPORTED_SOURCE_FILE.test(fileName) && !EXCLUDED_SOURCE_FILE.test(fileName);

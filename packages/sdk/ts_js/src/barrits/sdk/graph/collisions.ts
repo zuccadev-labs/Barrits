@@ -98,7 +98,22 @@ export const collectPublicNamespaceEntries = (
 };
 
 /**
- * Determines runtime domain conflict events where cross-project namespace interfaces collide overriding native structural payloads.
+ * Detects namespace collisions where same export name appears in multiple files.
+ *
+ * Scans project and library exports, building collision index. Same export name from
+ * different files = collision flagged as error. Cross-project collisions detected separately.
+ *
+ * @param projectRootFiles Root index files from project
+ * @param projectDomains Domain files from project
+ * @param libraryRootFiles Root files from external libraries
+ * @param libraryDomains Domain files from external libraries
+ * @returns Array of export collisions with severity and sources
+ *
+ * @example
+ * ```typescript
+ * const collisions = collectCollisions(projRoots, projDomains, libRoots, libDomains);
+ * collisions.forEach(c => console.log(`Collision: ${c.exportName} in ${c.sources.join(', ')}`));
+ * ```
  */
 export const collectCollisions = (
   projectRootFiles: readonly BarritsFileIntegration[],

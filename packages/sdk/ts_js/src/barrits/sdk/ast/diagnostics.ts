@@ -333,7 +333,24 @@ const sortDiagnostics = (diagnostics: BarritsTraitDiagnostic[]): BarritsTraitDia
 };
 
 /**
- * Validates abstract portable graph contracts against programmatic runtime mappings.
+ * Validates trait descriptors for consistency, missing dependencies, and global conflicts.
+ *
+ * Performs multi-pass validation: self-consistency checks, runtime/JSDoc mismatches,
+ * missing dependencies, and global duplicate detection. Returns sorted diagnostics by severity.
+ *
+ * @param descriptors Trait descriptor inspections to validate
+ * @param bindingsBySourceFile Map of source files to exported trait bindings
+ * @returns Array of diagnostic issues (errors/warnings) sorted by severity
+ * @throws {TypeError} If descriptors array is invalid
+ *
+ * @example
+ * ```typescript
+ * const descriptors = [...]; // from AST crawl
+ * const diagnostics = collectTraitDiagnostics(descriptors, bindingsBySourceFile);
+ * for (const diag of diagnostics) {
+ *   console.log(`[${diag.severity}] ${diag.trait}: ${diag.message}`);
+ * }
+ * ```
  */
 export const collectTraitDiagnostics = (
   descriptors: readonly BarritsTraitDescriptorInspection[],
