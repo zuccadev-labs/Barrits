@@ -1,7 +1,18 @@
 version: 2
+
+# Dependabot opens its pull requests against `dev`, never `main`.
+#
+# Without an explicit target-branch Dependabot uses the repository default
+# branch, which is `main`. That put dependency commits straight onto `main`
+# while feature work accumulated on `dev`, so the two branches diverged and
+# every `dev` -> `main` promotion had to resolve lockfile and manifest
+# conflicts by hand. Targeting `dev` keeps the one-way flow the project
+# actually follows: everything lands on `dev`, CI proves it there, and a
+# single pull request promotes it to `main`.
 updates:
   - package-ecosystem: npm
     directory: "/"
+    target-branch: dev
     schedule:
       interval: weekly
     open-pull-requests-limit: 10
@@ -10,9 +21,25 @@ updates:
         update-types:
           - minor
           - patch
+      # The Stryker packages are versioned and released in lockstep. Grouping
+      # them keeps a major upgrade as one reviewable pull request instead of
+      # three that are individually unmergeable.
+      stryker:
+        patterns:
+          - "@stryker-mutator/*"
+    ignore:
+      # TypeScript 7 is the native rewrite. Its root export is ./lib/version.cjs
+      # and the compiler API moved to subpaths marked unstable, so the classic
+      # surface this SDK is built on (createSourceFile, ScriptTarget,
+      # VariableStatement, getJSDocCommentsAndTags) is no longer reachable.
+      # Trait discovery cannot compile against it. Revisit when the SDK is
+      # ported to the ./unstable/ast API and that API is declared stable.
+      - dependency-name: typescript
+        versions: [">=7.0.0"]
 
   - package-ecosystem: github-actions
     directory: "/"
+    target-branch: dev
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
@@ -20,6 +47,7 @@ updates:
   # Tauri example (Rust crate). Deno is not supported by Dependabot; the Deno examples pin the SDK by path.
   - package-ecosystem: cargo
     directory: "/packages/sdk/ts_js/examples/example-tauri/src-tauri"
+    target-branch: dev
     schedule:
       interval: monthly
     open-pull-requests-limit: 3
