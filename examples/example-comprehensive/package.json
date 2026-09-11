@@ -1,0 +1,26 @@
+{
+  "name": "example-comprehensive",
+  "version": "0.1.0",
+  "description": "Comprehensive example demonstrating all Barrits patterns: discovery, composition, diagnostics, IoC, manifests, OpenAPI, namespaced API.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test tests/**/*.test.ts",
+    "demo": "node --loader tsx src/main.ts",
+    "inspect": "barrits inspect --root . --config barrits/barrits.config.ts"
+  },
+  "keywords": [
+    "barrits",
+    "traits",
+    "IoC",
+    "manifests",
+    "OpenAPI"
+  ],
+  "dependencies": {
+    "@zuccadev-labs/barrits": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "workspace:*",
+    "tsx": "workspace:*"
+  }
+}
