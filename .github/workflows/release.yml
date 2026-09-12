@@ -254,10 +254,38 @@ jobs:
     permissions:
       contents: write
     steps:
+      # The annotated tag message is the human-written summary of the release.
+      # generate_release_notes on its own discards it and publishes only a flat
+      # list of merged pull request titles, which misrepresents any change that
+      # was merged and later reverted within the same cycle. Reading the
+      # annotation and passing it as the body puts the summary first and keeps
+      # the generated list appended underneath it.
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
+          fetch-depth: 0
+
+      - name: Read annotated tag message
+        id: tag_message
+        shell: bash
+        run: |
+          tag="${{ needs.prepare.outputs.release_tag }}"
+          body="$(git tag -l --format='%(contents)' "$tag")"
+          if [ -z "$body" ]; then
+            echo "::warning::Tag $tag carries no annotation; falling back to generated notes only."
+          fi
+          {
+            echo "body<<TAG_ANNOTATION_EOF"
+            echo "$body"
+            echo "TAG_ANNOTATION_EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.prepare.outputs.release_tag }}
           name: ${{ needs.prepare.outputs.release_name }}
           prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' }}
+          body: ${{ steps.tag_message.outputs.body }}
           generate_release_notes: true
