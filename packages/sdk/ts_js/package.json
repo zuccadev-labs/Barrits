@@ -149,7 +149,7 @@
     "barrits:build": "tsx adapters/node/bin.ts build -- node -e \"console.log(process.env.BARRITS_BUILD_MANIFEST || '')\""
   },
   "devDependencies": {
-    "@types/node": "^26.4.1",
+    "@types/node": "^26.6.1",
     "tsup": "^8.5.1",
     "tsx": "^4.23.13",
     "typedoc": "^0.28.20",
