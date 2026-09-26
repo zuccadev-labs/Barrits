@@ -14,7 +14,7 @@
     "@zuccadev-labs/barrits": "file:../.."
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.11.4",
+    "@tauri-apps/cli": "^2.11.5",
     "vite": "^8.1.4"
   }
 }
