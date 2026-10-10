@@ -16,9 +16,9 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^16.0.3",
     "esbuild": "^0.28.1",
-    "rollup": "^4.63.1",
+    "rollup": "^4.64.1",
     "vite": "^8.1.4",
-    "webpack": "^5.110.3",
+    "webpack": "^5.111.1",
     "webpack-cli": "^7.2.3"
   }
 }
