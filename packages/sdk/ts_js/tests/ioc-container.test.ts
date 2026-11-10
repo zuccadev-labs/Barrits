@@ -91,4 +91,49 @@ describe("BarritsIoCContainer", () => {
     const value = await container.resolve<string>("capA");
     assert.equal(value, "capability-a");
   });
+
+  it("concurrent resolves of one capability share a single factory call", async () => {
+    const container = new BarritsIoCContainer();
+    let calls = 0;
+    container.register("db", async () => {
+      calls++;
+      await new Promise((r) => setTimeout(r, 5));
+      return { id: calls };
+    });
+    const [a, b] = await Promise.all([container.resolve("db"), container.resolve("db")]);
+    assert.equal(calls, 1);
+    assert.equal(a, b);
+  });
+
+  it("concurrent resolves through a shared dependency do not look circular", async () => {
+    const container = new BarritsIoCContainer();
+    container.register("config", async () => {
+      await new Promise((r) => setTimeout(r, 5));
+      return { url: "x" };
+    });
+    container.register("a", async (c) => ({ cfg: await c.resolve("config") }));
+    container.register("b", async (c) => ({ cfg: await c.resolve("config") }));
+    const [a, b] = await Promise.all([container.resolve<{ cfg: unknown }>("a"), container.resolve<{ cfg: unknown }>("b")]);
+    assert.equal(a.cfg, b.cfg);
+  });
+
+  it("detects a real cycle and names the chain", async () => {
+    const container = new BarritsIoCContainer();
+    container.register("a", async (c) => await c.resolve("b"));
+    container.register("b", async (c) => await c.resolve("a"));
+    await assert.rejects(() => container.resolve("a"), /Circular dependency detected: a -> b -> a/);
+    // The failure is not cached: fixing the registration makes it resolvable.
+    container.register("b", () => "b");
+    assert.equal(await container.resolve("a"), "b");
+  });
+
+  it("register validates its arguments and replaces the cached instance", async () => {
+    const container = new BarritsIoCContainer();
+    assert.throws(() => container.register("", () => 1), TypeError);
+    assert.throws(() => container.register("x", "nope" as unknown as () => number), TypeError);
+    container.register("x", () => 1);
+    assert.equal(await container.resolve("x"), 1);
+    container.register("x", () => 2);
+    assert.equal(await container.resolve("x"), 2);
+  });
 });

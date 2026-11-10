@@ -37,7 +37,8 @@ export class BarritsIoCContainer {
   private readonly instances = new Map<string, unknown>();
   private readonly factories = new Map<string, Factory>();
   private readonly manifest?: BarritsBuildManifest;
-  private readonly resolvingStack = new Set<string>();
+  /** Resolutions in flight: concurrent `resolve()` calls for one capability share its factory call. */
+  private readonly pending = new Map<string, Promise<unknown>>();
 
   /**
    * [EN] Initializes the IoC container with optional build manifest.
@@ -89,7 +90,15 @@ export class BarritsIoCContainer {
    * ```
    */
   register<T>(capability: string, factory: Factory<T>): void {
+    if (typeof capability !== "string" || capability.length === 0) {
+      throw new TypeError("[Barrits IoC] register(): capability must be a non-empty string");
+    }
+    if (typeof factory !== "function") {
+      throw new TypeError(`[Barrits IoC] register(): the factory for '${capability}' must be a function`);
+    }
     this.factories.set(capability, factory);
+    // A new factory replaces the cached instance, or resolve() would keep returning the old one.
+    this.instances.delete(capability);
   }
 
   /**
@@ -142,9 +151,9 @@ export class BarritsIoCContainer {
    * [ES] Resuelve una capacidad del contenedor, detectando dependencias circulares.
    *
    * [EN] Looks up capability in cache; if not found, calls factory and caches result.
-   * Detects circular dependencies via resolvingStack tracking.
+   * Detects circular dependencies per resolution chain; concurrent calls share one factory call.
    * [ES] Busca la capacidad en caché; si no está, llama a la fábrica y cachea el resultado.
-   * Detecta dependencias circulares mediante seguimiento de resolvingStack.
+   * Detecta ciclos por cadena de resolución; las llamadas concurrentes comparten una sola fábrica.
    *
    * @template T Type of resolved capability
    * @param capability Capability identifier to resolve
@@ -163,12 +172,26 @@ export class BarritsIoCContainer {
    * ```
    */
   async resolve<T>(capability: string): Promise<T> {
+    return await this.resolveIn<T>(capability, []);
+  }
+
+  /**
+   * Resolves `capability` for the dependency chain `chain`. Each resolution carries its own chain,
+   * so a capability already in it is a real cycle, while concurrent resolutions of the same
+   * capability (Promise.all) share one factory call instead of failing as "circular".
+   */
+  private async resolveIn<T>(capability: string, chain: readonly string[]): Promise<T> {
     if (this.instances.has(capability)) {
       return this.instances.get(capability) as T;
     }
 
-    if (this.resolvingStack.has(capability)) {
-      throw new Error(`[Barrits IoC] Circular dependency detected: ${capability}`);
+    if (chain.includes(capability)) {
+      throw new Error(`[Barrits IoC] Circular dependency detected: ${[...chain, capability].join(" -> ")}`);
+    }
+
+    const inFlight = this.pending.get(capability);
+    if (inFlight) {
+      return (await inFlight) as T;
     }
 
     const factory = this.factories.get(capability);
@@ -176,14 +199,24 @@ export class BarritsIoCContainer {
       throw new Error(`[Barrits IoC] Unresolved dependency: Cannot find factory for capability '${capability}'`);
     }
 
-    this.resolvingStack.add(capability);
+    const promise = Promise.resolve().then(() => factory(this.scoped([...chain, capability])));
+    this.pending.set(capability, promise);
     try {
-      const instance = await factory(this);
+      const instance = await promise;
       this.instances.set(capability, instance);
       return instance as T;
     } finally {
-      this.resolvingStack.delete(capability);
+      this.pending.delete(capability);
     }
+  }
+
+  /** The container as seen by a factory: same registrations, its own resolution chain. */
+  private scoped(chain: readonly string[]): BarritsIoCContainer {
+    const view = Object.create(this) as BarritsIoCContainer;
+    Object.defineProperty(view, "resolve", {
+      value: <T>(capability: string): Promise<T> => this.resolveIn<T>(capability, chain),
+    });
+    return view;
   }
 
   /**
