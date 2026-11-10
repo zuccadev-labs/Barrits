@@ -5,6 +5,84 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 
 ## [Unreleased]
 
+## [0.3.1] - pendiente de publicar
+
+Versión aditiva: no cambia ni retira nada de la API pública de 0.3.0, así que sale como 0.3.1 y llega a
+quien usa `^0.3.0`. Las correcciones de comportamiento (IoC) arreglan fallos, no cambian contratos.
+
+### Añadido
+- **OpenAPI por rutas: `generateOpenApiFromRoutes`, `collectRoutes`, `isRoutesCapability`, `toOpenApiPath`**
+  (en `src/barrits/schema/openapi.ts`, subpath `./schema/openapi`; sin imports relativos en ejecución, para que
+  Deno pueda importar el fuente directamente).
+  - **Qué hace:** un trait expone sus rutas en una capacidad cuya clave contiene `routes`; el servidor monta esa
+    lista y el generador documenta la misma, así que la spec no puede separarse de lo servido.
+  - **Detalle generado:** parámetros de ruta, `requestBody`, respuestas, seguridad por ruta (`securityFor`),
+    `securitySchemes`, `servers` y etiquetas.
+  - **Garantías:** salida determinista; un método+ruta u `operationId` duplicado lanza un error
+    (`onDuplicate: "first" | "last"` para imitar al router).
+  - **Por qué:** `generateOpenApiSchema` (un endpoint por trait a partir de etiquetas `http:*`) no sirve para un
+    BaaS. Sus rutas se crean dentro de `create()`, donde el análisis AST no las ve.
+  - **Validado contra Zenith** (backend real compuesto con barrits): 221/221 rutas con las features por defecto y
+    265/265 con todas, en modo estricto.
+- **JSR exporta `./ioc`, `./schema/openapi` y `./deno/cli`.** Ya se subían en el paquete de 0.3.0, pero no eran
+  importables; ahora coinciden con npm (`./cli` sigue existiendo).
+- **`TYPESCRIPT6_COMPAT_PACKAGE` y `pickClassicTypeScript`:** si el `typescript` instalado es TypeScript 7 (sin API
+  de compilador estable), barrits usa `@typescript/typescript6`, el paquete de Microsoft para convivir con TS 7. Si
+  tampoco está, da un error que dice qué instalar. Antes fallaba con un error confuso.
+
+### Corregido
+- **`BarritsIoCContainer.resolve`:** el registro de resoluciones en curso era global, así que dos `resolve()`
+  concurrentes de la misma capacidad (o de dos que comparten una dependencia) fallaban con un falso "Circular
+  dependency". Ahora cada resolución lleva su cadena y las concurrentes comparten una sola llamada a la fábrica.
+  El error de ciclo nombra la cadena (`a -> b -> a`).
+  La fábrica recibe una vista del contenedor con su cadena de resolución: misma API y `instanceof
+  BarritsIoCContainer`, pero no es el mismo objeto (`c === container` es falso).
+- **`BarritsIoCContainer.register`:** valida sus argumentos (`TypeError`, como ya documentaba) y, al volver a
+  registrar, descarta la instancia cacheada.
+- **Documentación:**
+  - imports inexistentes: `@zuccadev-labs/barrits/schema` y `/bundler`;
+  - `wire(): Promise<void>` → `void`;
+  - `jsr:…@^0.1.0` → `^0.3.1`;
+  - la errata `@baritr-provides` del ejemplo Deno BaaS;
+  - los escenarios 4 y 6 de `example-comprehensive`, que usaban `createIoCContainer` (no existe) y pasaban
+    traits donde va un manifiesto;
+  - las tablas de subpaths de los READMEs.
+- **Ejemplo Bun (resiliencia):** llamaba a `breaker.execute()`, que no existe (la API es `call()`), así que la demo
+  solo mostraba "is not a function". Ahora enseña dos fallos y el circuito abierto.
+
+### Release
+- **`release.yml`:**
+  - los manifiestos deben llevar exactamente la versión del tag, porque npm y JSR publican la del manifiesto.
+    Antes, `pre-v0.4.0-rc.1` podía publicar `0.4.0` como versión final en JSR;
+  - lint y typecheck antes de publicar en npm; lint, typecheck y tests antes de JSR, con `environment: jsr`;
+  - se vuelve a leer el tag anotado antes de usar su mensaje.
+- **Guía de mantenimiento:** tags anotados (`git tag -a`).
+
+### Dependencias (2026-11-10)
+- **Todo a la última versión dentro de su mayor**, incluidos los PR #139, #138 y #132 de Dependabot, aplicados a
+  mano y llevados más allá:
+  - stryker 10.1.1;
+  - typescript-eslint 8.72.2;
+  - eslint 10.14.0;
+  - prettier 3.9.10;
+  - rollup 4.68.2, vite 8.3.7, webpack 5.112.2;
+  - tsx 4.23.15, `@types/node` 26.6.6;
+  - los frameworks de los ejemplos;
+  - Tauri 2.12.4 (JS) y 2.12.5 (crate), tauri-build 2.7.4.
+- **`tsup` 8.5.1 → 9.0.0:** su única ruptura es exigir Node ≥ 22.18, que CI cumple.
+- **`typescript` se queda en 6.0.3**, a propósito:
+  - typescript-eslint 8.72.2 (la última) sigue pidiendo `<6.1.0`;
+  - TypeScript 7.0.2 solo expone su API en `unstable/*`.
+- **Seguridad:** `npm audit` pasa de 28 avisos (2 críticos, 6 altos) a 17 moderados o bajos, y a **0 en la puerta
+  de CI** (`--omit=dev`).
+  - **Riesgo aceptado:** los 17 restantes son de herramientas de desarrollo. Son `minimatch` 10 y `glob` 13
+    (denegación de servicio con patrones glob escritos por el propio equipo, no por un atacante) y `deepmerge`
+    (sin versión parcheada).
+  - **Por qué no se fuerzan las versiones parcheadas:** `minimatch` 11 elimina `matchOne()`, que usa typedoc, así
+    que romperían las herramientas.
+  - **El paquete publicado no tiene dependencias de ejecución.** Se revisará cuando eslint, typescript-eslint y
+    typedoc adopten `minimatch` 11.
+
 ## [0.3.0] - 2026-09-11
 
 ### Auditoría 2026-09 — plan de remediación por hitos
