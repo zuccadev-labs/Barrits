@@ -2,12 +2,12 @@
  * Scenario 4: IoC Container — Register, resolve, and wire dependencies.
  */
 
-import { createIoCContainer } from "@zuccadev-labs/barrits/ioc";
+import { BarritsIoCContainer } from "@zuccadev-labs/barrits/ioc";
 
 export function scenario4IoC() {
   console.log("\n=== SCENARIO 4: IOC CONTAINER ===\n");
 
-  const container = createIoCContainer();
+  const container = new BarritsIoCContainer();
 
   console.log("📦 Registering capabilities...");
   container.register("db:query", async () => ({ query: async (sql: string) => [] }));

@@ -233,7 +233,7 @@ Contenedor dinámico de Inversión de Control (IoC) impulsado por el descubrimie
 | `constructor` | `new BarritsIoCContainer(manifest?: BarritsBuildManifest)` | Inicializa el contenedor. Opcionalmente recibe un manifiesto para auto-conexión. |
 | `register` | `register<T>(capability: string, factory: Factory<T>): void` | Registra una fábrica para una capacidad (dependencia). |
 | `resolve` | `resolve<T>(capability: string): Promise<T>` | Resuelve y retorna la instancia singleton de una capacidad. |
-| `wire` | `wire(): Promise<void>` | Auto-conecta el contenedor usando los Traits del manifiesto. |
+| `wire` | `wire(): void` | Auto-conecta el contenedor usando los Traits del manifiesto. |
 
 ### `Factory<T>`
 

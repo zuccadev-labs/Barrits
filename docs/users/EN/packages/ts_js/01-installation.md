@@ -31,7 +31,7 @@ Or as a dependency in `deno.json`:
 ```json
 {
   "imports": {
-    "@zuccadev-labs/barrits": "jsr:@zuccadev-labs/barrits@^0.1.0"
+    "@zuccadev-labs/barrits": "jsr:@zuccadev-labs/barrits@^0.3.1"
   }
 }
 ```

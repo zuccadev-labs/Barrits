@@ -235,7 +235,7 @@ flowchart TD
 | :--- | :--- | :--- |
 | Node.js tooling | Stable | npm |
 | Deno tooling | Stable | JSR |
-| Deno BaaS Core (IoC, Schema) | Stable | JSR |
+| Deno BaaS Core (IoC, OpenAPI) | Experimental | npm and JSR (`/ioc`, `/schema/openapi`, on JSR since 0.3.1) |
 | Vite plugin | Stable | npm |
 | esbuild plugin | Stable | npm |
 | Rollup plugin | Stable | npm |
@@ -259,7 +259,7 @@ This release is **fully backward-compatible** with v0.1.x. No breaking changes w
 | **Datetime utilities** | `toIsoString`, `fromIsoString`, `diffMs`, `addMs`, `toRelativeTime` | `@zuccadev-labs/barrits` or `barrits.logic` |
 | **Bun runtime** | Full Bun adapter — `@zuccadev-labs/barrits/bun` | `./bun`, `./bun/cli` |
 | **IoC Container** | `BarritsIoCContainer` for runtime dependency injection | `@zuccadev-labs/barrits/ioc` |
-| **OpenAPI Generator** | Auto-generate Swagger v3.1 schemas from trait metadata | `@zuccadev-labs/barrits/schema/openapi` |
+| **OpenAPI Generator** | OpenAPI 3.1 from the routes composed traits expose (`generateOpenApiFromRoutes`, since 0.3.1) or one endpoint per trait from `http:method=`/`http:path=` tags (`generateOpenApiSchema`) | `@zuccadev-labs/barrits/schema/openapi` |
 | **Discovery engine** | `findBarritsDirectory`, `inspectBarritsIntegrations`, `createBuildManifest` driven by any filesystem adapter | `@zuccadev-labs/barrits/sdk` (also re-exported from the root and every runtime adapter) |
 
 ### New API Subpaths
@@ -268,8 +268,8 @@ This release is **fully backward-compatible** with v0.1.x. No breaking changes w
 // IoC Container (new in v0.2.0)
 import { BarritsIoCContainer } from "@zuccadev-labs/barrits/ioc";
 
-// OpenAPI Schema Generation (new in v0.2.0)
-import { generateOpenApiSchema } from "@zuccadev-labs/barrits/schema/openapi";
+// OpenAPI Schema Generation (new in v0.2.0; route-level generation since v0.3.1)
+import { generateOpenApiFromRoutes, generateOpenApiSchema } from "@zuccadev-labs/barrits/schema/openapi";
 
 // Bun Adapter (new in v0.2.0)
 import { runBunCli } from "@zuccadev-labs/barrits/bun";
