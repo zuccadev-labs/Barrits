@@ -5,7 +5,7 @@
  * Each endpoint maps to a REST resource managed by the BaaS.
  *
  * @barrits-trait http-endpoint
- * @baritr-provides http:api
+ * @barrits-provides http:api
  * @barrits-consumes database:connection
  * @barrits-state RequestHandler
  */

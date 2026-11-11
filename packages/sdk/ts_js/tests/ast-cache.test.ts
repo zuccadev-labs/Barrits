@@ -1,7 +1,7 @@
 import { describe, it, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { createCachedSourceFile, clearAstCache } from "../src/barrits/sdk/ast/cache";
-import { loadTypeScript } from "../src/barrits/sdk/ast/cache";
+import { loadTypeScript, pickClassicTypeScript, TYPESCRIPT6_COMPAT_PACKAGE } from "../src/barrits/sdk/ast/cache";
 
 await loadTypeScript();
 
@@ -63,5 +63,32 @@ describe("clearAstCache", () => {
     clearAstCache();
     const sf = createCachedSourceFile("idempotent.ts", "const x = 1;");
     assert.ok(sf);
+  });
+});
+
+describe("pickClassicTypeScript (TypeScript 7 has no classic compiler API)", () => {
+  const classic = { createSourceFile: () => ({}), transpileModule: () => ({}), version: "6.0.3" };
+  const native = { version: "7.0.2" }; // TypeScript 7's root export: a version string module
+
+  it("uses the installed typescript when it has the classic API", async () => {
+    const api = await pickClassicTypeScript({ default: classic }, () => Promise.reject(new Error("not needed")));
+    assert.equal(api, classic as unknown);
+  });
+
+  it("falls back to @typescript/typescript6 next to TypeScript 7", async () => {
+    const asked: string[] = [];
+    const api = await pickClassicTypeScript(native, (specifier) => {
+      asked.push(specifier);
+      return Promise.resolve({ default: classic });
+    });
+    assert.equal(api, classic as unknown);
+    assert.deepEqual(asked, [TYPESCRIPT6_COMPAT_PACKAGE]);
+  });
+
+  it("explains what to install when neither is available", async () => {
+    await assert.rejects(
+      () => pickClassicTypeScript(native, () => Promise.reject(new Error("missing"))),
+      /TypeScript 5\/6 compiler API.*\(7\.0\.2\).*typescript@\^6.*@typescript\/typescript6/,
+    );
   });
 });

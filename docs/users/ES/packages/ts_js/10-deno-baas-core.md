@@ -8,7 +8,7 @@ Barrits va más allá de compilar y empaquetar. Al explotar el poder del AST gen
 
 ## 1. Inversión de Control Dinámica (IoC)
 
-El `BarritsIoCContainer` es un contenedor de inyección de dependencias altamente optimizado que lee el manifiesto estático AST. En lugar de depender de decoradores en tiempo de ejecución (como `reflect-metadata`) que añaden sobrecarga y acoplamiento a frameworks, Barrits conecta las dependencias matemáticamente basándose en el análisis estático.
+El `BarritsIoCContainer` es un contenedor de inyección de dependencias altamente optimizado que lee el manifiesto estático AST. En lugar de depender de decoradores en tiempo de ejecución (como `reflect-metadata`) que añaden sobrecarga y acoplamiento a frameworks, Barrits resuelve las dependencias por nombre de capacidad; cada fábrica recibe el contenedor para resolver las suyas, los ciclos se informan con su cadena y las resoluciones concurrentes comparten una sola llamada a la fábrica.
 
 ### Ejemplo de Uso
 
@@ -24,7 +24,7 @@ container.register("Database", () => {
 });
 
 // 3. Auto-conectar todas las dependencias en tu aplicación
-await container.wire();
+container.wire();
 
 // 4. Resolver instancias fácilmente
 const db = await container.resolve<any>("Database");
@@ -37,7 +37,7 @@ const db = await container.resolve<any>("Database");
 Escribir YAML a mano o añadir decoradores pesados a tus controladores es propenso a errores. Barrits usa el trait `@barrits-trait http-endpoint` para inferir y generar automáticamente esquemas **OpenAPI v3.1** en milisegundos.
 
 ```typescript
-import { generateOpenApiSchema } from "@zuccadev-labs/barrits/schema";
+import { generateOpenApiSchema } from "@zuccadev-labs/barrits/schema/openapi";
 
 const schema = generateOpenApiSchema(manifest, {
   title: "My Corporate BaaS API",
@@ -48,7 +48,44 @@ const schema = generateOpenApiSchema(manifest, {
 console.log(JSON.stringify(schema, null, 2));
 ```
 
-Esto garantiza que tu código y tu documentación de API estén **matemáticamente sincronizados**.
+`generateOpenApiSchema` documenta un endpoint por trait a partir de sus etiquetas `http:method=`/`http:path=` (declaradas con `@barrits-tags`).
+
+---
+
+### OpenAPI por rutas (desde 0.3.1)
+
+Un trait de un BaaS suele exponer muchas rutas, creadas dentro de `create()`, donde el análisis estático
+no las ve. Exponlas en una capacidad cuya clave contenga `routes`, monta esa lista en tu router y documenta
+la misma lista: la spec no puede separarse de lo que sirve el servidor.
+
+```typescript
+import { composeTraitDescriptors, createTraitDescriptor } from "@zuccadev-labs/barrits";
+import { collectRoutes, generateOpenApiFromRoutes } from "@zuccadev-labs/barrits/schema/openapi";
+
+const users = createTraitDescriptor({
+  name: "users",
+  provides: ["users-routes"],
+  create: () => ({
+    "users-routes": [
+      { method: "GET", path: "/users/:id", access: "user", handler: getUser, _openapi: { summary: "Obtener un usuario" } },
+      { method: "POST", path: "/users", access: "admin", handler: createUser },
+    ],
+  }),
+});
+
+const { traits } = composeTraitDescriptors([users]);
+for (const { route } of collectRoutes(traits)) router.on(route.method, route.path, route.handler);
+
+const spec = generateOpenApiFromRoutes(traits, {
+  title: "Mi BaaS",
+  securitySchemes: { bearer: { type: "http", scheme: "bearer" } },
+  securityFor: (route) => (route.access === "public" ? [] : [{ bearer: [] }]),
+});
+```
+
+- Las rutas `:param` y `{param}` generan parámetros de ruta obligatorios; `_openapi` sustituye lo derivado.
+- Salida determinista; un método+ruta u `operationId` duplicado lanza un error (`onDuplicate: "first"` imita a un router que sirve la primera coincidencia).
+- Las rutas fuera de los traits (health checks) van en `extraRoutes`. Los métodos que OpenAPI no puede expresar (`*`) se omiten.
 
 ---
 

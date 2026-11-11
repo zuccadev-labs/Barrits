@@ -81,3 +81,5 @@ agent.md
 # context7.json — Project-level Context7 indexer configuration
 # Uncomment below to exclude from version control if using local-only indexing
 # context7.json
+# Claude Code local settings
+.claude/

@@ -34,22 +34,70 @@ const describeError = (error: unknown): string => {
  * @returns [EN] The TypeScript compiler API. [ES] La API del compilador de TypeScript.
  * @throws Error - [EN] When the peer dependency cannot be resolved. [ES] Cuando la dependencia peer no puede resolverse.
  */
+/**
+ * [EN] Microsoft's package that re-exports the TypeScript 6 compiler API next to TypeScript 7, whose
+ * native compiler has no stable JavaScript API (no `createSourceFile`) yet.
+ * [ES] Paquete de Microsoft que reexporta la API de TypeScript 6 junto a TypeScript 7.
+ */
+export const TYPESCRIPT6_COMPAT_PACKAGE = "@typescript/typescript6";
+
+const hasClassicCompilerApi = (candidate: unknown): candidate is TypeScriptModule =>
+  typeof (candidate as { createSourceFile?: unknown } | null)?.createSourceFile === "function" &&
+  typeof (candidate as { transpileModule?: unknown } | null)?.transpileModule === "function";
+
+const unwrapDefault = (imported: unknown): unknown => (imported as { default?: unknown } | null)?.default ?? imported;
+
+/**
+ * [EN] Returns the classic compiler API from `imported` (the "typescript" module), or from
+ * `@typescript/typescript6` when "typescript" is TypeScript 7+. Throws an actionable error otherwise.
+ * [ES] Devuelve la API clásica del compilador desde "typescript" o, si es TypeScript 7+, desde
+ * `@typescript/typescript6`; si no, lanza un error accionable.
+ *
+ * @param imported - [EN] The loaded "typescript" module. [ES] El módulo "typescript" cargado.
+ * @param importer - [EN] Imports a module by specifier. [ES] Importa un módulo por especificador.
+ * @returns [EN] The classic compiler API. [ES] La API clásica del compilador.
+ */
+export const pickClassicTypeScript = async (
+  imported: unknown,
+  importer: (specifier: string) => Promise<unknown>,
+): Promise<TypeScriptModule> => {
+  const primary = unwrapDefault(imported);
+  if (hasClassicCompilerApi(primary)) {
+    return primary;
+  }
+  const compat = await importer(TYPESCRIPT6_COMPAT_PACKAGE).then(unwrapDefault, () => undefined);
+  if (hasClassicCompilerApi(compat)) {
+    return compat;
+  }
+  const version = (primary as { version?: unknown } | null)?.version;
+  throw new Error(
+    `Barrits needs the TypeScript 5/6 compiler API, but the installed "typescript"${typeof version === "string" ? ` (${version})` : ""} does not expose it (TypeScript 7 has no stable JavaScript API yet). Install "typescript@^6" or add "${TYPESCRIPT6_COMPAT_PACKAGE}" next to TypeScript 7.`,
+  );
+};
+
+// A variable specifier keeps bundlers from trying to resolve the optional compat package.
+const importOptional = (specifier: string): Promise<unknown> => import(specifier);
+
 export const loadTypeScript = async (): Promise<TypeScriptModule> => {
   if (typescriptModule) {
     return typescriptModule;
   }
 
-  typescriptLoading ??= (import("typescript") as Promise<TypeScriptModule & { default?: TypeScriptModule }>)
-    .then((imported) => {
-      typescriptModule = imported.default ?? imported;
-      return typescriptModule;
-    })
+  typescriptLoading ??= (import("typescript") as Promise<unknown>)
     .catch((error: unknown) => {
-      typescriptLoading = undefined;
       throw new Error(
         `Barrits AST inspection requires the "typescript" peer dependency. Install it with your package manager (or "deno add npm:typescript"). Cause: ${describeError(error)}`,
         { cause: error },
       );
+    })
+    .then((imported) => pickClassicTypeScript(imported, importOptional))
+    .then((api) => {
+      typescriptModule = api;
+      return api;
+    })
+    .catch((error: unknown) => {
+      typescriptLoading = undefined;
+      throw error;
     });
 
   return typescriptLoading;

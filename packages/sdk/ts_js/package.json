@@ -1,6 +1,6 @@
 {
   "name": "@zuccadev-labs/barrits",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Package-first functional automation for barrits/ domains, manifests and live watch flows.",
   "license": "MIT",
   "author": "David Euclides Zuccarini Barrueta (devzucca / zuccadev)",
@@ -149,9 +149,9 @@
     "barrits:build": "tsx adapters/node/bin.ts build -- node -e \"console.log(process.env.BARRITS_BUILD_MANIFEST || '')\""
   },
   "devDependencies": {
-    "@types/node": "^26.4.1",
-    "tsup": "^8.5.1",
-    "tsx": "^4.23.13",
+    "@types/node": "^26.6.6",
+    "tsup": "^9.0.0",
+    "tsx": "^4.23.15",
     "typedoc": "^0.28.20",
     "typescript": "^6.0.3"
   },

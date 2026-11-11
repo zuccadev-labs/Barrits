@@ -38,7 +38,7 @@ export const createResilienceExamples = async () => {
   // Two calls should trip the breaker
   for (let i = 0; i < 3; i++) {
     try {
-      const result = await breaker.execute(async () => {
+      const result = await breaker.call(async () => {
         throw new Error("Service unavailable");
       });
       breakerResults.push(result);

@@ -12,9 +12,15 @@
     "Conventional commits: feat:, fix:, refactor:, chore:, docs:",
     "Use @barrits-trait JSDoc annotations for trait discovery and composition",
     "Create barrits.config.ts at project root for build configuration",
-    "Run npm test after changes to validate 946+ tests pass"
+    "Run npm test after changes to validate 1090+ tests pass"
   ],
   "previousVersions": [
+    { "tag": "v0.3.0", "title": "version 0.3.0" },
+    { "tag": "v0.2.4", "title": "version 0.2.4" },
+    { "tag": "v0.2.3", "title": "version 0.2.3" },
+    { "tag": "v0.2.2", "title": "version 0.2.2" },
+    { "tag": "v0.2.1", "title": "version 0.2.1" },
+    { "tag": "v0.2.0", "title": "version 0.2.0" },
     { "tag": "v0.1.7", "title": "version 0.1.7" },
     { "tag": "v0.1.6", "title": "version 0.1.6" },
     { "tag": "v0.1.5", "title": "version 0.1.5" },

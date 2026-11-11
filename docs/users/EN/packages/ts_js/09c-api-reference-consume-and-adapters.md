@@ -236,7 +236,7 @@ Dynamic Inversion of Control (IoC) Container powered by AST Trait discovery.
 | `constructor` | `new BarritsIoCContainer(manifest?: BarritsBuildManifest)` | Initializes the container. Optionally receives a manifest for auto-wiring. |
 | `register` | `register<T>(capability: string, factory: Factory<T>): void` | Registers a factory for a capability (dependency). |
 | `resolve` | `resolve<T>(capability: string): Promise<T>` | Resolves and returns the singleton instance of a capability. |
-| `wire` | `wire(): Promise<void>` | Auto-wires the container using the Traits from the manifest. |
+| `wire` | `wire(): void` | Auto-wires the container using the Traits from the manifest. |
 
 ### `Factory<T>`
 

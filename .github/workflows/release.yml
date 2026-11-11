@@ -112,26 +112,12 @@ jobs:
           $packageVersion = node -p "require('./packages/sdk/ts_js/package.json').version"
           $jsrVersion = node -p "require('./packages/sdk/ts_js/jsr.json').version"
           $monorepoVersion = node -p "require('./package.json').version"
-          # The three version fields must agree with the tag (prerelease tags may extend the stable version).
-          if ($channel -eq "prerelease") {
-            if ($monorepoVersion -ne $version -and -not $version.StartsWith($monorepoVersion)) {
-              throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version' (or its stable prefix)."
-            }
-            if ($packageVersion -ne $version -and -not $version.StartsWith($packageVersion)) {
-              throw "package.json version '$packageVersion' does not match tag version '$version' (or its stable prefix)."
-            }
-            if ($jsrVersion -ne $version -and -not $version.StartsWith($jsrVersion)) {
-              throw "jsr.json version '$jsrVersion' does not match tag version '$version' (or its stable prefix)."
-            }
-          } else {
-            if ($monorepoVersion -ne $version) {
-              throw "monorepo package.json version '$monorepoVersion' does not match tag version '$version'."
-            }
-            if ($packageVersion -ne $version) {
-              throw "package.json version '$packageVersion' does not match tag version '$version'."
-            }
-            if ($jsrVersion -ne $version) {
-              throw "jsr.json version '$jsrVersion' does not match tag version '$version'."
+          # The three version fields must equal the tag version exactly. npm and JSR publish the
+          # manifest version, not the tag: accepting a stable prefix let pre-v0.4.0-rc.1 publish
+          # "0.4.0" (final on JSR) and made the real v0.4.0 tag a no-op.
+          foreach ($pair in @(@("monorepo package.json", $monorepoVersion), @("package.json", $packageVersion), @("jsr.json", $jsrVersion))) {
+            if ($pair[1] -ne $version) {
+              throw "$($pair[0]) version '$($pair[1])' does not match tag version '$version'. Set it to '$version' before tagging."
             }
           }
           "release_tag=$tag" >> $env:GITHUB_OUTPUT
@@ -179,6 +165,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Quality gates
+        run: |
+          npm run lint
+          npm run typecheck
+
       - name: Build SDK
         run: npm run build
 
@@ -207,6 +198,7 @@ jobs:
     needs: prepare
     if: github.event_name != 'workflow_dispatch' || inputs.publish_jsr
     runs-on: ubuntu-latest
+    environment: jsr
     permissions:
       contents: read
       id-token: write
@@ -236,6 +228,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Quality gates
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test
 
       - name: Validate JSR payload
         run: npm run publish:jsr:dry-run
@@ -271,6 +269,8 @@ jobs:
         shell: bash
         run: |
           tag="${{ needs.prepare.outputs.release_tag }}"
+          # actions/checkout may leave a lightweight copy of the tag; fetch the annotated object.
+          git fetch --force origin "refs/tags/$tag:refs/tags/$tag"
           body="$(git tag -l --format='%(contents)' "$tag")"
           if [ -z "$body" ]; then
             echo "::warning::Tag $tag carries no annotation; falling back to generated notes only."

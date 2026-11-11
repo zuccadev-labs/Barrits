@@ -89,7 +89,7 @@ npm run publish:jsr:dry-run
 ```bash
 git add -A
 git commit -m "chore(release): bump to 0.2.0-rc.1"
-git tag pre-v0.2.0-rc.1
+git tag -a pre-v0.2.0-rc.1 -m "Barrits 0.2.0-rc.1: <release summary>"  # annotated: its message becomes the GitHub Release body
 git push && git push --tags
 ```
 
@@ -102,7 +102,7 @@ git checkout main
 git merge dev
 git add -A
 git commit -m "chore(release): v0.2.0"
-git tag v0.2.0
+git tag -a v0.2.0 -m "Barrits 0.2.0: <release summary>"  # annotated; manifests must carry exactly the tag version
 git push && git push --tags
 ```
 

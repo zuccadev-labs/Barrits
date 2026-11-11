@@ -13,12 +13,16 @@ While Vite is the primary recommendation for web projects, Barrits provides dedi
 All bundler plugins follow the same declarative configuration:
 
 ```ts
-import { barritsPlugin } from "@zuccadev-labs/barrits/bundler";
+// One subpath per tool: /vite, /esbuild, /rollup, /webpack
+import { barritsVitePlugin } from "@zuccadev-labs/barrits/vite";
+// import { barritsEsbuildPlugin } from "@zuccadev-labs/barrits/esbuild";
+// import { barritsRollupPlugin } from "@zuccadev-labs/barrits/rollup";
+// import { barritsWebpackPlugin } from "@zuccadev-labs/barrits/webpack";
 
 // Configuration is consistent across all tools
 export default {
   plugins: [
-    barritsPlugin({ /* automation options */ })
+    barritsVitePlugin({ /* automation options */ })
   ]
 };
 ```
