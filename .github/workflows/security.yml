@@ -92,7 +92,7 @@ jobs:
 
       - name: Upload audit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: npm-audit-report
           path: audit-report.json
@@ -136,11 +136,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Pinned: an unpinned npx runs whatever was published last. cyclonedx-npm 7.0.0 dropped its
+      # bundled XML serializer (optional peer xmlbuilder2) and broke this job on main. JSON is
+      # CycloneDX's primary format and needs no optional peer.
       - name: Generate SBOM
-        run: npx --yes @cyclonedx/cyclonedx-npm --output-format XML --output-file bom.xml
+        run: npx --yes @cyclonedx/cyclonedx-npm@7.0.0 --output-format JSON --output-file bom.json
 
       - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: software-bill-of-materials
-          path: bom.xml
+          path: bom.json
