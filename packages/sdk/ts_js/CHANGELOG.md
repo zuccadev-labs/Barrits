@@ -5,7 +5,7 @@ Todos los cambios relevantes para el SDK se documentan aquí.
 
 ## [Unreleased]
 
-## [0.3.1] - pendiente de publicar
+## [0.3.1] - 2026-11-11
 
 Versión aditiva: no cambia ni retira nada de la API pública de 0.3.0, así que sale como 0.3.1 y llega a
 quien usa `^0.3.0`. Las correcciones de comportamiento (IoC) arreglan fallos, no cambian contratos.
@@ -57,6 +57,9 @@ quien usa `^0.3.0`. Las correcciones de comportamiento (IoC) arreglan fallos, no
   - lint y typecheck antes de publicar en npm; lint, typecheck y tests antes de JSR, con `environment: jsr`;
   - se vuelve a leer el tag anotado antes de usar su mensaje.
 - **Guía de mantenimiento:** tags anotados (`git tag -a`).
+- **`security.yml`:** `cyclonedx-npm` fijado en 7.0.0 y SBOM en JSON (CycloneDX 1.7). La 7.0.0 quitó el
+  serializador XML incluido y rompió el job `sbom` de `main`, que ejecutaba `npx` sin versión.
+- **Acciones en Node 24:** `actions/upload-artifact` v7 y `softprops/action-gh-release` v3.
 
 ### Dependencias (2026-11-10)
 - **Todo a la última versión dentro de su mayor**, incluidos los PR #139, #138 y #132 de Dependabot, aplicados a
