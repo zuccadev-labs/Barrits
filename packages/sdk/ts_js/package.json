@@ -32,8 +32,8 @@
   },
   "type": "module",
   "bin": {
-    "barrits": "./dist/adapters/node/bin.js",
-    "brt": "./dist/adapters/node/bin.js"
+    "barrits": "dist/adapters/node/bin.js",
+    "brt": "dist/adapters/node/bin.js"
   },
   "main": "./dist/src/index.cjs",
   "module": "./dist/src/index.js",

@@ -229,10 +229,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # The test suite runs the built CLI (dist/), so the build goes before it, as in publish-npm.
       - name: Quality gates
         run: |
           npm run lint
           npm run typecheck
+          npm run build
           npm test
 
       - name: Validate JSR payload
@@ -247,7 +249,13 @@ jobs:
       - prepare
       - publish-npm
       - publish-jsr
-    if: always() && needs.prepare.result == 'success' && needs['publish-npm'].result == 'success' && needs['publish-jsr'].result == 'success'
+    # A manual run may publish only one registry (publish_npm / publish_jsr); the job it skips
+    # counts as done. Any failure still blocks the GitHub release.
+    if: >-
+      always() && needs.prepare.result == 'success' &&
+      contains(fromJSON('["success","skipped"]'), needs['publish-npm'].result) &&
+      contains(fromJSON('["success","skipped"]'), needs['publish-jsr'].result) &&
+      !(needs['publish-npm'].result == 'skipped' && needs['publish-jsr'].result == 'skipped')
     runs-on: ubuntu-latest
     permissions:
       contents: write
