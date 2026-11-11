@@ -50,24 +50,28 @@ jobs:
         shell: pwsh
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
+          package-manager-cache: false # no dependency cache in a publishing workflow (cache poisoning)
 
       - name: Resolve release context
         id: context
+        # Inputs through the environment, never expanded into the script (template injection: a tag name is
+        # chosen by whoever dispatches the workflow).
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.release_tag }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           git fetch --force origin main dev --tags
-          $tag = if ("${{ github.event_name }}" -eq "workflow_dispatch") {
-            "${{ inputs.release_tag }}"
-          } else {
-            "${{ github.ref_name }}"
-          }
+          $tag = if ($env:EVENT_NAME -eq "workflow_dispatch") { $env:INPUT_TAG } else { $env:REF_NAME }
           if (-not $tag) {
             throw "A release tag is required. Use vX.Y.Z for stable releases or pre-vX.Y.Z-rc.N for prereleases."
           }
@@ -142,23 +146,24 @@ jobs:
         shell: pwsh
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: 'https://registry.npmjs.org'
-          cache: npm
+          package-manager-cache: false # no dependency cache in a publishing workflow (cache poisoning)
 
       - name: Setup npm
         run: npm install --global npm@${{ env.NPM_VERSION }}
 
       - name: Setup Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: ${{ env.DENO_VERSION }}
 
@@ -207,22 +212,23 @@ jobs:
         shell: pwsh
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          package-manager-cache: false # no dependency cache in a publishing workflow (cache poisoning)
 
       - name: Setup npm
         run: npm install --global npm@${{ env.NPM_VERSION }}
 
       - name: Setup Deno
-        uses: denoland/setup-deno@v2
+        uses: denoland/setup-deno@22d081ff2d3a40755e97629de92e3bcbfa7cf2ed # v2.0.5
         with:
           deno-version: ${{ env.DENO_VERSION }}
 
@@ -259,6 +265,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write # attestation: Sigstore signature bound to this workflow
+      attestations: write
     steps:
       # The annotated tag message is the human-written summary of the release.
       # generate_release_notes on its own discards it and publishes only a flat
@@ -267,8 +275,9 @@ jobs:
       # annotation and passing it as the body puts the summary first and keeps
       # the generated list appended underneath it.
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           ref: refs/tags/${{ needs.prepare.outputs.release_tag }}
           fetch-depth: 0
 
@@ -289,11 +298,37 @@ jobs:
             echo "TAG_ANNOTATION_EOF"
           } >> "$GITHUB_OUTPUT"
 
+      # The npm tarball, rebuilt from the tag, attached to the release with a SLSA build provenance attestation
+      # (`gh attestation verify <file> -R zuccadev-labs/Barrits`). npm already carries its own provenance.
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          package-manager-cache: false # no dependency cache in a publishing workflow (cache poisoning)
+
+      - name: Setup npm
+        run: npm install --global npm@${{ env.NPM_VERSION }}
+
+      - name: Build and pack the SDK
+        shell: bash
+        run: |
+          npm ci
+          npm run build
+          mkdir -p "$RUNNER_TEMP/dist"
+          (cd packages/sdk/ts_js && npm pack --pack-destination "$RUNNER_TEMP/dist")
+          ls -l "$RUNNER_TEMP/dist"
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: ${{ runner.temp }}/dist/*.tgz
+
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
           tag_name: ${{ needs.prepare.outputs.release_tag }}
           name: ${{ needs.prepare.outputs.release_name }}
           prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' }}
           body: ${{ steps.tag_message.outputs.body }}
           generate_release_notes: true
+          files: ${{ runner.temp }}/dist/*.tgz

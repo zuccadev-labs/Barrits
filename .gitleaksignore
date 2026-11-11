@@ -1,0 +1,6 @@
+# Reviewed gitleaks false positives, by fingerprint (commit:file:rule:line).
+# "subpath APIs: `barrits/consume`" in the API reference reads as a generic API key; it is prose.
+ac7c6fb01a6f0f4b9b7a4a266228023496b0777f:docs/users/EN/packages/ts_js/09c-api-reference-consume-and-adapters.md:generic-api-key:8
+a77134073cd91a18750509a74f7ad9fd79db7219:docs/users/EN/packages/ts_js/09c-api-reference-consume-and-adapters.md:generic-api-key:8
+ffb1f46f6505d01e88509d711b6401ebf8ee8da0:docs/users/EN/packages/ts_js/09c-api-reference-consume-and-adapters.md:generic-api-key:3
+6986d57f26c64d28295b5a36a382e4f8b5412f65:docs/users/EN/packages/ts_js/09c-api-reference-consume-and-adapters.md:generic-api-key:3
