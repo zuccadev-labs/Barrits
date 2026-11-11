@@ -1,43 +1,36 @@
 /**
- * Scenario 6: OpenAPI — Generate OpenAPI v3.1 schemas from trait metadata.
+ * Scenario 6: OpenAPI — Generate an OpenAPI 3.1 document from the routes composed traits expose.
  */
 
-import { generateOpenApiSchema } from "@zuccadev-labs/barrits/schema/openapi";
-import { createTraitDescriptor } from "@zuccadev-labs/barrits/sdk";
+import { generateOpenApiFromRoutes } from "@zuccadev-labs/barrits/schema/openapi";
+import { composeTraitDescriptors, createTraitDescriptor } from "@zuccadev-labs/barrits";
 
 export function scenario6OpenAPI() {
   console.log("\n=== SCENARIO 6: OPENAPI SCHEMA ===\n");
 
-  const apiTrait = createTraitDescriptor({
-    name: "api-gateway",
-    provides: ["http:listen", "http:route"],
-    metadata: {
-      "http:method": "GET",
-      "http:path": "/api/users",
-      "http:response-type": "application/json",
-    },
-    create: async () => ({
-      listen: async (port: number) => {},
-      route: async () => {},
+  // A trait exposes its HTTP routes under a capability whose key contains "routes".
+  const usersTrait = createTraitDescriptor({
+    name: "users-api",
+    provides: ["users-routes"],
+    create: () => ({
+      "users-routes": [
+        { method: "GET", path: "/api/users", access: "public", _openapi: { summary: "List users" } },
+        { method: "GET", path: "/api/users/:id", access: "user", _openapi: { summary: "Get a user" } },
+        { method: "POST", path: "/api/users", access: "admin", _openapi: { summary: "Create a user" } },
+      ],
     }),
   });
 
-  console.log("📄 Trait with OpenAPI tags:");
-  console.log(`   Name: ${apiTrait.name}`);
-  console.log(`   Method: ${(apiTrait.metadata as Record<string, unknown>)["http:method"]}`);
-  console.log(`   Path: ${(apiTrait.metadata as Record<string, unknown>)["http:path"]}`);
+  const { traits } = composeTraitDescriptors([usersTrait]);
+  const schema = generateOpenApiFromRoutes(traits as Record<string, unknown>, {
+    title: "Comprehensive Example API",
+    version: "0.1.0",
+    securitySchemes: { bearer: { type: "http", scheme: "bearer" } },
+    securityFor: (route) => (route.access === "public" ? [] : [{ bearer: [] }]),
+  });
 
-  try {
-    const schema = generateOpenApiSchema([apiTrait], {
-      title: "Comprehensive Example API",
-      version: "0.1.0",
-    });
-
-    console.log("\n✅ OpenAPI schema generated");
-    console.log(`   Title: ${schema.info.title}`);
-    console.log(`   Version: ${schema.info.version}`);
-    console.log(`   Paths: ${Object.keys(schema.paths || {}).length}`);
-  } catch (error) {
-    console.log("\n⚠️  OpenAPI generation (demo mode)");
-  }
+  console.log("✅ OpenAPI schema generated");
+  console.log(`   Title: ${schema.info.title}`);
+  console.log(`   Version: ${schema.info.version}`);
+  console.log(`   Paths: ${Object.keys(schema.paths).join(", ")}`);
 }

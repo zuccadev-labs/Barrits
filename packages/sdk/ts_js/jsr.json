@@ -1,6 +1,6 @@
 {
   "name": "@zuccadev-labs/barrits",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Package-first functional automation for barrits domains, manifests, and runtime tooling.",
   "license": "MIT",
   "exports": {
@@ -8,7 +8,10 @@
     "./sdk": "./src/barrits/sdk/index.ts",
     "./consume": "./src/barrits/consume.ts",
     "./deno": "./adapters/deno/mod.ts",
-    "./cli": "./adapters/deno/cli.ts"
+    "./cli": "./adapters/deno/cli.ts",
+    "./deno/cli": "./adapters/deno/cli.ts",
+    "./ioc": "./src/barrits/ioc/index.ts",
+    "./schema/openapi": "./src/barrits/schema/openapi.ts"
   },
   "publish": {
     "include": [

@@ -2,6 +2,7 @@ import { detectRuntime, getCurrentWorkingDirectory } from "./internal/runtime";
 import { normalizeResolvedConfig } from "./internal/config_normalization";
 import type { BarritsRuntimeKind, BarritsWatchMode } from "./internal/config_defaults";
 import type { LegacyTraitConflictStrategy, TraitConflictStrategy } from "./traits/conflict";
+import { pickClassicTypeScript } from "./sdk/ast/cache";
 
 /**
  * @module
@@ -318,12 +319,15 @@ const isNativeTypeScriptLoaderFailure = (configFilePath: string, error: unknown)
 };
 
 const transpileTypeScriptConfig = async (configFilePath: string, source: string): Promise<string> => {
-  const ts = await runtimeImport<typeof import("typescript")>("typescript").catch((error: unknown) => {
+  const imported = await runtimeImport<unknown>("typescript").catch((error: unknown) => {
     throw new BarritsConfigError(
       `Barrits config "${configFilePath}" is written in TypeScript but the current runtime cannot import it natively and the "typescript" peer dependency is not installed. Install "typescript" or author the config as barrits.config.mjs.`,
       configFilePath,
       { cause: error },
     );
+  });
+  const ts = await pickClassicTypeScript(imported, runtimeImport).catch((error: unknown) => {
+    throw new BarritsConfigError(`Barrits config "${configFilePath}": ${describeError(error)}`, configFilePath, { cause: error });
   });
 
   const output = ts.transpileModule(source, {

@@ -122,7 +122,11 @@ export const authTrait = createTraitDescriptor({
 | `@zuccadev-labs/barrits/rollup` | Rollup plugin |
 | `@zuccadev-labs/barrits/webpack` | Webpack plugin |
 | `@zuccadev-labs/barrits/node/cli` | Node.js CLI entry |
-| `@zuccadev-labs/barrits/deno/cli` | Deno CLI entry |
+| `@zuccadev-labs/barrits/deno/cli` | Deno CLI entry (also `./cli` on JSR) |
+| `@zuccadev-labs/barrits/sdk` | Discovery engine (filesystem-adapter driven) |
+| `@zuccadev-labs/barrits/bun`, `/bun/cli` | Bun helpers and CLI entry (npm) |
+| `@zuccadev-labs/barrits/ioc` | `BarritsIoCContainer` (npm and JSR) |
+| `@zuccadev-labs/barrits/schema/openapi` | `generateOpenApiFromRoutes`, `generateOpenApiSchema` (npm and JSR) |
 
 ### Key Capabilities
 

@@ -8,7 +8,7 @@ Barrits goes beyond compiling and bundling. By exploiting the power of the AST g
 
 ## 1. Dynamic Inversion of Control (IoC)
 
-The `BarritsIoCContainer` is a highly optimized, dependency injection container that reads the static AST manifest. Instead of relying on runtime decorators (like `reflect-metadata`) which add overhead and framework lock-in, Barrits wires dependencies mathematically based on static analysis.
+The `BarritsIoCContainer` is a highly optimized, dependency injection container that reads the static AST manifest. Instead of relying on runtime decorators (like `reflect-metadata`) which add overhead and framework lock-in, Barrits resolves dependencies by capability name; factories receive the container to resolve their own dependencies, cycles are reported with their chain, and concurrent resolutions share one factory call.
 
 ### Usage Example
 
@@ -24,7 +24,7 @@ container.register("Database", () => {
 });
 
 // 3. Auto-Wire all dependencies across your application
-await container.wire();
+container.wire();
 
 // 4. Resolve instances easily
 const db = await container.resolve<any>("Database");
@@ -37,7 +37,7 @@ const db = await container.resolve<any>("Database");
 Writing YAML by hand or adding heavy decorators to your controllers is error-prone. Barrits uses the `@barrits-trait http-endpoint` to automatically infer and generate **OpenAPI v3.1** schemas in milliseconds.
 
 ```typescript
-import { generateOpenApiSchema } from "@zuccadev-labs/barrits/schema";
+import { generateOpenApiSchema } from "@zuccadev-labs/barrits/schema/openapi";
 
 const schema = generateOpenApiSchema(manifest, {
   title: "My Corporate BaaS API",
@@ -48,7 +48,44 @@ const schema = generateOpenApiSchema(manifest, {
 console.log(JSON.stringify(schema, null, 2));
 ```
 
-This ensures your code and your API documentation are **mathematically synchronized**.
+`generateOpenApiSchema` documents one endpoint per trait from its `http:method=`/`http:path=` tags (declared with `@barrits-tags`).
+
+---
+
+### Route-level OpenAPI (since 0.3.1)
+
+A BaaS trait usually exposes many routes, built inside `create()`, where static analysis cannot see
+them. Expose them as a capability whose key contains `routes`, mount that list in your router, and
+document the same list: the spec cannot drift from what the server serves.
+
+```typescript
+import { composeTraitDescriptors, createTraitDescriptor } from "@zuccadev-labs/barrits";
+import { collectRoutes, generateOpenApiFromRoutes } from "@zuccadev-labs/barrits/schema/openapi";
+
+const users = createTraitDescriptor({
+  name: "users",
+  provides: ["users-routes"],
+  create: () => ({
+    "users-routes": [
+      { method: "GET", path: "/users/:id", access: "user", handler: getUser, _openapi: { summary: "Get a user" } },
+      { method: "POST", path: "/users", access: "admin", handler: createUser },
+    ],
+  }),
+});
+
+const { traits } = composeTraitDescriptors([users]);
+for (const { route } of collectRoutes(traits)) router.on(route.method, route.path, route.handler);
+
+const spec = generateOpenApiFromRoutes(traits, {
+  title: "My BaaS",
+  securitySchemes: { bearer: { type: "http", scheme: "bearer" } },
+  securityFor: (route) => (route.access === "public" ? [] : [{ bearer: [] }]),
+});
+```
+
+- `:param` and `{param}` paths become required path parameters; `_openapi` overrides anything derived.
+- Deterministic output; a duplicated method+path or `operationId` throws (`onDuplicate: "first"` mirrors a first-match router).
+- Routes outside the traits (health checks) go in `extraRoutes`. Methods OpenAPI cannot express (`*`) are skipped.
 
 ---
 

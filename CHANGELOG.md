@@ -5,6 +5,20 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 
 ## [Unreleased]
 
+## [0.3.1] - pendiente de publicar
+
+Versión aditiva del SDK; el detalle está en `packages/sdk/ts_js/CHANGELOG.md`.
+
+- **OpenAPI por rutas** (`generateOpenApiFromRoutes`), validado contra el backend real de Zenith.
+- **JSR exporta `./ioc` y `./schema/openapi`.**
+- **TypeScript 7:** barrits recurre a `@typescript/typescript6` o explica qué instalar.
+- **Corregido:** el contenedor IoC con resoluciones concurrentes, y la documentación.
+- **Release:** versión exacta del tag en los manifiestos, puertas de calidad antes de publicar y tags anotados.
+- **Dependencias** a la última versión (PR #139, #138 y #132 de Dependabot aplicados a mano):
+  - `npm audit --omit=dev`: 0 avisos;
+  - los 17 restantes son de herramientas de desarrollo, con el riesgo documentado.
+- `.claude/` en `.gitignore`.
+
 ## [0.3.0] - 2026-09-11
 
 ### 🎯 Auditoría 2026-09 · Remediación Completa
