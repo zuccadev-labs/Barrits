@@ -5,7 +5,7 @@ Todos los cambios relevantes de este repositorio se documentan aquí.
 
 ## [Unreleased]
 
-## [0.3.1] - pendiente de publicar
+## [0.3.1] - 2026-11-11
 
 Versión aditiva del SDK; el detalle está en `packages/sdk/ts_js/CHANGELOG.md`.
 
@@ -13,7 +13,8 @@ Versión aditiva del SDK; el detalle está en `packages/sdk/ts_js/CHANGELOG.md`.
 - **JSR exporta `./ioc` y `./schema/openapi`.**
 - **TypeScript 7:** barrits recurre a `@typescript/typescript6` o explica qué instalar.
 - **Corregido:** el contenedor IoC con resoluciones concurrentes, y la documentación.
-- **Release:** versión exacta del tag en los manifiestos, puertas de calidad antes de publicar y tags anotados.
+- **Release:** versión exacta del tag en los manifiestos, puertas de calidad antes de publicar y tags anotados;
+  SBOM con `cyclonedx-npm` 7.0.0 fijado (JSON) y acciones en Node 24.
 - **Dependencias** a la última versión (PR #139, #138 y #132 de Dependabot aplicados a mano):
   - `npm audit --omit=dev`: 0 avisos;
   - los 17 restantes son de herramientas de desarrollo, con el riesgo documentado.
