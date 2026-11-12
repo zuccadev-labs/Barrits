@@ -32,7 +32,9 @@ If an organization needs internal distribution, I recommend evaluating an intern
 
 If you identify a security issue, do not open a public issue with exploit details.
 
-Use a private disclosure path controlled by the maintainers. At minimum, include:
+Report it privately through GitHub: **Security → Report a vulnerability** on
+[zuccadev-labs/Barrits](https://github.com/zuccadev-labs/Barrits/security/advisories/new) (private vulnerability
+reporting is enabled). At minimum, include:
 
 - affected surface or package entrypoint
 - reproduction steps
@@ -48,3 +50,28 @@ Before publishing, I expect at least:
 3. a clean `npm audit --omit=dev --audit-level=high`
 4. a clean `deno publish --dry-run` for the JSR surface
 5. review of release notes and package metadata by a maintainer
+
+## Supply-chain controls
+
+Every push and pull request to `main` and `dev` runs:
+
+- **CodeQL**, through GitHub's default setup;
+- **gitleaks** over the whole history, with the image pinned by digest;
+- **zizmor** and **actionlint** on the workflows;
+- **npm audit** and the dependency review.
+
+**OpenSSF Scorecard** runs weekly and publishes its result. GitHub's secret scanning, with push protection, blocks
+known secret formats before they land.
+
+The branch rulesets on `main` and `dev` require a pull request and passing checks, and they forbid force pushes
+and deletion.
+
+Every third-party action is pinned to a commit SHA, with its version in a comment; Dependabot keeps them up to
+date.
+
+Releases are verifiable:
+
+```bash
+npm audit signatures                      # npm provenance of the published package
+gh attestation verify barrits-*.tgz -R zuccadev-labs/Barrits   # the tarball attached to the GitHub release
+```
