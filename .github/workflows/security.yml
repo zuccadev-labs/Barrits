@@ -52,7 +52,9 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Dependency graph unavailable
         if: needs.dependency-review-support.outputs.supported != 'true'
@@ -62,17 +64,19 @@ jobs:
 
       - name: Dependency review
         if: needs.dependency-review-support.outputs.supported == 'true'
-        uses: actions/dependency-review-action@v5
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
 
   # ── npm audit (every event) ────────────────────────────────────────────────
   npm-audit:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -92,7 +96,7 @@ jobs:
 
       - name: Upload audit report
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: npm-audit-report
           path: audit-report.json
@@ -102,21 +106,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          persist-credentials: false
           fetch-depth: 0
 
-      - name: Install git-secrets
+      # gitleaks with its default rules (hundreds of providers), not git-secrets' AWS-only patterns; the image
+      # is pinned by digest (before, git-secrets was cloned from its moving default branch on every run).
+      # Reviewed false positives are listed by fingerprint in .gitleaksignore.
+      - name: Scan history for secrets (gitleaks)
         run: |
-          git clone --depth 1 https://github.com/awslabs/git-secrets.git /tmp/git-secrets
-          sudo make -C /tmp/git-secrets install
-          rm -rf /tmp/git-secrets
+          docker run --rm -v "$PWD:/repo:ro" \
+            zricethezav/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f \
+            git /repo --no-banner --redact --gitleaks-ignore-path /repo/.gitleaksignore
 
-      - name: Register AWS patterns
-        run: git secrets --register-aws --global
+  # ── Workflow security (zizmor) ─────────────────────────────────────────────
+  # Static analysis of the GitHub Actions workflows themselves: template injection, credentials left in the
+  # checkout, excessive permissions, unpinned actions.
+  zizmor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
-      - name: Scan history for secrets
-        run: git secrets --scan-history
+      - name: Audit workflows
+        run: |
+          docker run --rm -v "$PWD:/src:ro" -w /src ghcr.io/zizmorcore/zizmor:1.32.0 \
+            --offline --min-severity medium .github/workflows
+
+      - name: Lint workflows (actionlint)
+        run: docker run --rm -v "$PWD:/repo:ro" -w /repo rhysd/actionlint:1.7.12 -color=false
 
   # ── SBOM (main only) ───────────────────────────────────────────────────────
   sbom:
@@ -125,10 +146,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -143,7 +166,7 @@ jobs:
         run: npx --yes @cyclonedx/cyclonedx-npm@7.0.0 --output-format JSON --output-file bom.json
 
       - name: Upload SBOM artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: software-bill-of-materials
           path: bom.json
