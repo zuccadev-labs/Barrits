@@ -1,0 +1,17 @@
+# Reviewed OSV-Scanner findings with no fix reachable yet. Each one expires, so it is reviewed again.
+# The Security workflow (job osv-scanner) fails on any other known vulnerability in a lockfile of the repository.
+
+[[IgnoredVulns]]
+id = "GHSA-gcqx-w48m-w2h4"
+ignoreUntil = 2027-02-12
+reason = "deepmerge 4.3.1 (low; no fixed release exists) through @rollup/plugin-node-resolve and @sveltejs/vite-plugin-svelte: build tooling only, it merges our own config objects, never untrusted input."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2024-0429"
+ignoreUntil = 2027-02-12
+reason = "glib 0.18 (unsound VariantStrIter) through Tauri 2's GTK3 stack (gtk 0.18) in examples/example-tauri; fixed only in glib 0.20, which Tauri's Linux backend does not use yet. The example's own code does not use glib; only Tauri's Linux webview layer does."
+
+[[IgnoredVulns]]
+id = "RUSTSEC-2024-0370"
+ignoreUntil = 2027-02-12
+reason = "proc-macro-error unmaintained (no fix): a compile-time dependency of glib-macros/gtk3-macros 0.18 in examples/example-tauri, same Tauri GTK3 stack as RUSTSEC-2024-0429."
