@@ -120,6 +120,24 @@ jobs:
             zricethezav/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f \
             git /repo --no-banner --redact --gitleaks-ignore-path /repo/.gitleaksignore
 
+  # ── Known vulnerabilities in every lockfile (OSV-Scanner) ──────────────────
+  # npm-audit covers only the root npm lockfile and fails only on high/critical; this reads every lockfile of the
+  # repository (npm and the Tauri example's Cargo.lock) against osv.dev, which is what OpenSSF Scorecard reports.
+  # Reviewed findings without a reachable fix are in osv-scanner.toml, each with a reason and an expiry date.
+  osv-scanner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Scan lockfiles (OSV-Scanner)
+        run: |
+          docker run --rm -v "$PWD:/src:ro" \
+            ghcr.io/google/osv-scanner:v2.7.1@sha256:a70ffffc2bfd33482953e5d6b64c6fcdb30239717a07b0f0d3ab2859ce3e4cde \
+            scan source -r --config /src/osv-scanner.toml /src
+
   # ── Workflow security (zizmor) ─────────────────────────────────────────────
   # Static analysis of the GitHub Actions workflows themselves: template injection, credentials left in the
   # checkout, excessive permissions, unpinned actions.

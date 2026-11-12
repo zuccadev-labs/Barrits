@@ -11,15 +11,12 @@ npm run lint
 npm run typecheck
 npm test
 
-# ── git-secrets: prevent accidental commit of credentials (only when installed) ───────────
-if command -v git-secrets > /dev/null 2>&1; then
-  git diff --cached --name-only -z | xargs -0 git secrets --scan
-  SECRETS_EXIT_CODE=$?
-  if [ $SECRETS_EXIT_CODE -ne 0 ]; then
+# ── gitleaks: block staged credentials (only when installed; CI scans the whole history anyway) ─────
+if command -v gitleaks > /dev/null 2>&1; then
+  if ! gitleaks git --pre-commit --staged --redact --no-banner --gitleaks-ignore-path .gitleaksignore; then
     echo ""
-    echo "[SECURITY] git-secrets detected potential credentials in staged files."
-    echo "If false positive, add an exception with:"
-    echo "  git secrets --add --global 'your-pattern'"
+    echo "[SECURITY] gitleaks detected potential credentials in staged files."
+    echo "If it is a reviewed false positive, add its fingerprint to .gitleaksignore."
     exit 1
   fi
 fi
