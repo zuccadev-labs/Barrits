@@ -55,7 +55,7 @@
     "@vitejs/plugin-vue": "^6.0.10",
     "rollup": "^4.68.2",
     "vite": "^8.3.7",
-    "vite-plugin-solid": "^2.11.15",
+    "vite-plugin-solid": "^2.11.16",
     "webpack": "^5.112.2",
     "webpack-cli": "^7.3.1"
   },
